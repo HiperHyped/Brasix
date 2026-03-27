@@ -62,6 +62,106 @@
       }
     },
     {
+      "id": "graph_node_1774574040180",
+      "name": "Curitibanos",
+      "label": "Curitibanos, SC",
+      "state_code": "SC",
+      "state_name": "Santa Catarina",
+      "source_region_name": "Curitibanos",
+      "population_thousands": 40.045,
+      "latitude": -27.31317,
+      "longitude": -50.5656,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Curitibanos, Região Geográfica Imediata de Curitibanos, Região Geográfica Intermediária de Lages, Santa Catarina, Região Sul, 89520-000, Brasil. Populacao consultada no IBGE: 40045.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "graph_node_1774579811095",
+      "name": "Humaitá",
+      "label": "Humaitá, AM",
+      "state_code": "AM",
+      "state_name": "Amazonas",
+      "source_region_name": "Região Geográfica Intermediária de Lábrea",
+      "population_thousands": 57.473,
+      "latitude": -7.5193,
+      "longitude": -63.00904,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Humaitá, Região Geográfica Imediata de Manicoré, Região Geográfica Intermediária de Lábrea, Amazonas, Região Norte, 69800-000, Brasil. Populacao consultada no IBGE: 57473.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "graph_node_1774576897604",
+      "name": "Itaberaí",
+      "label": "Itaberaí, GO",
+      "state_code": "GO",
+      "state_name": "Goiás",
+      "source_region_name": "Região Geográfica Intermediária de Goiânia",
+      "population_thousands": 44.734,
+      "latitude": -16.05476,
+      "longitude": -49.80095,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Itaberaí, Região Geográfica Imediata de Inhumas - Itaberaí - Anicuns, Região Geográfica Intermediária de Goiânia, Goiás, Região Centro-Oeste, 76630-000, Brasil. Populacao consultada no IBGE: 44734.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "graph_node_1774580502898",
+      "name": "Itaituba",
+      "label": "Itaituba, PA",
+      "state_code": "PA",
+      "state_name": "Pará",
+      "source_region_name": "Região Geográfica Intermediária de Santarém",
+      "population_thousands": 123.314,
+      "latitude": -4.29438,
+      "longitude": -55.96195,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Itaituba, Região Geográfica Imediata de Itaituba, Região Geográfica Intermediária de Santarém, Pará, Região Norte, Brasil. Populacao consultada no IBGE: 123314.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774620893762",
+      "name": "Itajaí",
+      "label": "Itajaí, SC",
+      "state_code": "SC",
+      "state_name": "Santa Catarina",
+      "source_region_name": "Itajaí",
+      "population_thousands": 264.054,
+      "latitude": -26.91595,
+      "longitude": -48.66394,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Itajaí, Região Geográfica Imediata de Itajaí, Região Geográfica Intermediária de Blumenau, Santa Catarina, Região Sul, Brasil. Populacao consultada no IBGE: 264054.",
+        "last_error": null
+      }
+    },
+    {
       "id": "custom-city-1774616975848",
       "name": "Jales",
       "label": "Jales, SP",
@@ -267,6 +367,26 @@
       "autofill": null
     },
     {
+      "id": "graph_node_1774578101877",
+      "name": "Porto de Moz",
+      "label": "Porto de Moz, PA",
+      "state_code": "PA",
+      "state_name": "Pará",
+      "source_region_name": "Região Geográfica Intermediária de Altamira",
+      "population_thousands": 40.597,
+      "latitude": -1.54257,
+      "longitude": -52.30892,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Porto de Moz, Região Geográfica Imediata de Almeirim - Porto de Moz, Região Geográfica Intermediária de Altamira, Pará, Região Norte, Brasil. Populacao consultada no IBGE: 40597.",
+        "last_error": null
+      }
+    },
+    {
       "id": "custom-city-1774617065834",
       "name": "São Gabriel da Cachoeira",
       "label": "São Gabriel da Cachoeira, AM",
@@ -283,6 +403,26 @@
         "status": "completed",
         "confidence": "high",
         "summary": "Municipio identificado por Nominatim: São Gabriel da Cachoeira, Região Geográfica Imediata de São Gabriel da Cachoeira, Região Geográfica Intermediária de Manaus, Amazonas, Região Norte, 69750-000, Brasil. Populacao consultada no IBGE: 51795.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "graph_node_1774583767044",
+      "name": "Três Lagoas",
+      "label": "Três Lagoas, MS",
+      "state_code": "MS",
+      "state_name": "Mato Grosso do Sul",
+      "source_region_name": "Região Geográfica Intermediária de Campo Grande",
+      "population_thousands": 132.152,
+      "latitude": -20.79062,
+      "longitude": -51.6493,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Três Lagoas, Região Geográfica Imediata de Três Lagoas, Região Geográfica Intermediária de Campo Grande, Mato Grosso do Sul, Região Centro-Oeste, Brasil. Populacao consultada no IBGE: 132152.",
         "last_error": null
       }
     },

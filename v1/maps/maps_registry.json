@@ -1,0 +1,66 @@
+{
+  "id": "maps_registry_v1",
+  "active_map_id": "map_mapa-5",
+  "maps": [
+    {
+      "id": "map_brasix_default",
+      "name": "Brasix Base",
+      "slug": "brasix-base",
+      "description": "Mapa inicial migrado do v1 atual.",
+      "created_at": "2026-03-27T11:49:31-03:00",
+      "updated_at": "2026-03-27T11:49:31-03:00",
+      "path": "maps/map_brasix_default/map_bundle.json",
+      "city_count": 162,
+      "route_count": 198,
+      "graph_node_count": 17
+    },
+    {
+      "id": "map_mapa-2",
+      "name": "Mapa 2",
+      "slug": "mapa-2",
+      "description": "",
+      "created_at": "2026-03-27T11:54:30-03:00",
+      "updated_at": "2026-03-27T11:55:05-03:00",
+      "path": "maps/map_mapa-2/map_bundle.json",
+      "city_count": 162,
+      "route_count": 0,
+      "graph_node_count": 7
+    },
+    {
+      "id": "map_mapa-3",
+      "name": "Mapa 3",
+      "slug": "mapa-3",
+      "description": "",
+      "created_at": "2026-03-27T12:06:03-03:00",
+      "updated_at": "2026-03-27T12:06:03-03:00",
+      "path": "maps/map_mapa-3/map_bundle.json",
+      "city_count": 162,
+      "route_count": 198,
+      "graph_node_count": 17
+    },
+    {
+      "id": "map_mapa-4",
+      "name": "Mapa 4",
+      "slug": "mapa-4",
+      "description": "",
+      "created_at": "2026-03-27T12:06:32-03:00",
+      "updated_at": "2026-03-27T12:43:30-03:00",
+      "path": "maps/map_mapa-4/map_bundle.json",
+      "city_count": 186,
+      "route_count": 29,
+      "graph_node_count": 1
+    },
+    {
+      "id": "map_mapa-5",
+      "name": "Mapa 5",
+      "slug": "mapa-5",
+      "description": "",
+      "created_at": "2026-03-27T12:43:50-03:00",
+      "updated_at": "2026-03-27T12:44:33-03:00",
+      "path": "maps/map_mapa-5/map_bundle.json",
+      "city_count": 162,
+      "route_count": 198,
+      "graph_node_count": 17
+    }
+  ]
+}

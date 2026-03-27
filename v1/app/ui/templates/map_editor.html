@@ -3,10 +3,13 @@
 {% block body %}
 <main class="editor-shell">
   <header class="topbar editor-topbar">
-    <div class="brand-lockup">
-      <h1 id="editor-brand-title">Brasix</h1>
-      <span class="brand-divider"></span>
-      <p id="editor-brand-subtitle">Editor de mapa</p>
+    <div class="editor-topbar-left">
+      <div class="brand-lockup">
+        <h1 id="editor-brand-title">Brasix</h1>
+        <span class="brand-divider"></span>
+        <p id="editor-brand-subtitle">Editor de mapa</p>
+      </div>
+      <div id="editor-map-actions" class="editor-map-actions" aria-label="Acoes de mapa"></div>
     </div>
 
     <div id="editor-header-badges" class="editor-header-badges" aria-label="Estado do editor"></div>
@@ -112,11 +115,80 @@
       <div id="editor-shortcuts-list" class="editor-shortcuts-list editor-shortcuts-dialog-list"></div>
     </form>
   </dialog>
+
+  <dialog id="editor-map-new-dialog" class="editor-shortcuts-dialog editor-map-dialog" aria-labelledby="editor-map-new-title">
+    <form method="dialog" class="editor-shortcuts-dialog-card editor-map-dialog-card" id="editor-map-new-form">
+      <div class="editor-shortcuts-dialog-head">
+        <div class="editor-shortcuts-dialog-copy">
+          <p id="editor-map-new-eyebrow" class="eyebrow">Mapas</p>
+          <h2 id="editor-map-new-title">Novo mapa</h2>
+          <p id="editor-map-new-copy" class="editor-dialog-copy"></p>
+        </div>
+        <button id="editor-map-new-close-button" class="secondary-button" type="submit">Cancelar</button>
+      </div>
+      <div class="editor-map-dialog-body">
+        <label class="field">
+          <span id="editor-map-new-name-label">Nome do mapa</span>
+          <input id="editor-map-new-name-input" class="editor-input" type="text" maxlength="80" />
+        </label>
+        <label class="field">
+          <span id="editor-map-new-description-label">Descricao</span>
+          <input id="editor-map-new-description-input" class="editor-input" type="text" maxlength="160" />
+        </label>
+        <div id="editor-map-new-options" class="editor-map-options"></div>
+      </div>
+      <div class="editor-map-dialog-footer">
+        <button id="editor-map-new-submit-button" class="editor-header-action" type="button">Criar mapa</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="editor-map-save-dialog" class="editor-shortcuts-dialog editor-map-dialog" aria-labelledby="editor-map-save-title">
+    <form method="dialog" class="editor-shortcuts-dialog-card editor-map-dialog-card" id="editor-map-save-form">
+      <div class="editor-shortcuts-dialog-head">
+        <div class="editor-shortcuts-dialog-copy">
+          <p id="editor-map-save-eyebrow" class="eyebrow">Mapas</p>
+          <h2 id="editor-map-save-title">Salvar mapa</h2>
+          <p id="editor-map-save-copy" class="editor-dialog-copy"></p>
+        </div>
+        <button id="editor-map-save-close-button" class="secondary-button" type="submit">Cancelar</button>
+      </div>
+      <div class="editor-map-dialog-body">
+        <div id="editor-map-save-current" class="editor-inline-feedback"></div>
+        <label class="field">
+          <span id="editor-map-save-name-label">Nome do mapa</span>
+          <input id="editor-map-save-name-input" class="editor-input" type="text" maxlength="80" />
+        </label>
+        <label class="field">
+          <span id="editor-map-save-description-label">Descricao</span>
+          <input id="editor-map-save-description-input" class="editor-input" type="text" maxlength="160" />
+        </label>
+      </div>
+      <div class="editor-map-dialog-footer editor-map-dialog-footer-split">
+        <button id="editor-map-save-current-button" class="editor-header-action" type="button">Salvar atual</button>
+        <button id="editor-map-save-as-button" class="secondary-button" type="button">Salvar como novo</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="editor-map-load-dialog" class="editor-shortcuts-dialog editor-map-dialog" aria-labelledby="editor-map-load-title">
+    <form method="dialog" class="editor-shortcuts-dialog-card editor-map-dialog-card" id="editor-map-load-form">
+      <div class="editor-shortcuts-dialog-head">
+        <div class="editor-shortcuts-dialog-copy">
+          <p id="editor-map-load-eyebrow" class="eyebrow">Mapas</p>
+          <h2 id="editor-map-load-title">Carregar mapa</h2>
+          <p id="editor-map-load-copy" class="editor-dialog-copy"></p>
+        </div>
+        <button id="editor-map-load-close-button" class="secondary-button" type="submit">Fechar</button>
+      </div>
+      <div id="editor-map-load-list" class="editor-map-load-list"></div>
+    </form>
+  </dialog>
 </main>
 
   <script type="module">
   const editorModuleUrl = new URL("{{ request.url_for('static', path='js/editors/map-editor.js') }}", window.location.href);
-  editorModuleUrl.searchParams.set("v", "20260327-13");
+  editorModuleUrl.searchParams.set("v", "20260327-18");
 
   function showEditorLoadError(error) {
     const statusBox = document.getElementById("editor-draft-status");

@@ -22,6 +22,11 @@
       "label": "Entra em modo rota com hidrovia"
     },
     {
+      "id": "shortcut_editor_route_railway",
+      "key": "5",
+      "label": "Entra em modo rota com ferrovia"
+    },
+    {
       "id": "shortcut_editor_node_mode",
       "key": "N",
       "label": "Entra em modo no de ligacao livre ou com snap em rota"
@@ -32,9 +37,14 @@
       "label": "Entra em modo cidade manual"
     },
     {
+      "id": "shortcut_editor_node_to_city_mode",
+      "key": "X",
+      "label": "Transforma um no de ligacao em cidade manual com autofill"
+    },
+    {
       "id": "shortcut_editor_mouse_left",
       "key": "Clique esquerdo",
-      "label": "Com C, cria cidade manual; com N, cria no livre ou com snap em rota; com 1, 2, 3 e 4, escolhe origem, vertices e destino da rota"
+      "label": "Com C, cria cidade manual; com N, cria no livre ou com snap em rota; com X, converte um no em cidade; com 1, 2, 3, 4 e 5, escolhe origem, vertices e destino da rota"
     },
     {
       "id": "shortcut_editor_node_force_free",

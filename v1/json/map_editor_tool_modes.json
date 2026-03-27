@@ -22,9 +22,14 @@
       "shortcut_key": "C"
     },
     {
+      "id": "tool_graph_node_promote_city",
+      "label": "Transformar no em cidade manual",
+      "shortcut_key": "X"
+    },
+    {
       "id": "tool_route_draw",
       "label": "Desenhar rota",
-      "shortcut_key": "1/2/3/4"
+      "shortcut_key": "1/2/3/4/5"
     }
   ]
 }

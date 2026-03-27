@@ -4,8 +4,9 @@
     {
       "id": "route_surface_double_road",
       "code": "double_road",
-      "label": "Estrada dupla",
+      "label": "Rodovia dupla",
       "shortcut_key": "1",
+      "mode": "road",
       "style": {
         "base_color": "#2f5a28",
         "base_weight": 8,
@@ -19,8 +20,9 @@
     {
       "id": "route_surface_single_road",
       "code": "single_road",
-      "label": "Estrada simples",
+      "label": "Rodovia simples",
       "shortcut_key": "2",
+      "mode": "road",
       "style": {
         "base_color": "#4f6f45",
         "base_weight": 5,
@@ -34,8 +36,9 @@
     {
       "id": "route_surface_dirt_road",
       "code": "dirt_road",
-      "label": "Estrada de terra",
+      "label": "Rodovia de terra",
       "shortcut_key": "3",
+      "mode": "road",
       "style": {
         "base_color": "#8c4f10",
         "base_weight": 4,
@@ -51,6 +54,7 @@
       "code": "waterway",
       "label": "Hidrovia",
       "shortcut_key": "4",
+      "mode": "river",
       "style": {
         "base_color": "#2b6f8f",
         "base_weight": 6,
@@ -59,6 +63,22 @@
         "overlay_weight": 1.8,
         "overlay_opacity": 0.92,
         "dash_array": "14 8"
+      }
+    },
+    {
+      "id": "route_surface_railway",
+      "code": "railway",
+      "label": "Ferrovia",
+      "shortcut_key": "5",
+      "mode": "rail",
+      "style": {
+        "base_color": "#5b6167",
+        "base_weight": 5,
+        "base_opacity": 0.88,
+        "overlay_color": "#f4eee2",
+        "overlay_weight": 1.6,
+        "overlay_opacity": 0.94,
+        "dash_array": "10 6"
       }
     }
   ]

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from app.services.data_loader import (
+    build_reference_data_from_city_catalog_payload,
+    build_user_city_catalog_payload,
+    load_base_city_catalog_payload,
     load_city_catalog_payload,
     load_city_product_matrix_payload,
     load_map_editor_payload,
@@ -11,8 +14,25 @@ from app.services.data_loader import (
     load_user_city_catalog_payload,
     save_json,
 )
+from app.services.map_repository import (
+    create_map_bundle,
+    delete_map_bundle,
+    ensure_map_repository,
+    load_active_map_bundle,
+    load_map_bundle,
+    load_maps_registry,
+    map_repository_payload,
+    save_active_map,
+    save_active_map_as,
+    save_map_bundle,
+    save_maps_registry,
+    set_active_map,
+)
 
 __all__ = [
+    "build_reference_data_from_city_catalog_payload",
+    "build_user_city_catalog_payload",
+    "load_base_city_catalog_payload",
     "load_city_catalog_payload",
     "load_city_product_matrix_payload",
     "load_map_editor_payload",
@@ -21,5 +41,17 @@ __all__ = [
     "load_reference_data",
     "load_ui_payload",
     "load_user_city_catalog_payload",
+    "create_map_bundle",
+    "delete_map_bundle",
+    "ensure_map_repository",
+    "load_active_map_bundle",
+    "load_map_bundle",
+    "load_maps_registry",
+    "map_repository_payload",
+    "save_active_map",
+    "save_active_map_as",
+    "save_map_bundle",
+    "save_maps_registry",
     "save_json",
+    "set_active_map",
 ]

@@ -845,7 +845,10 @@ export function createRouteLayer({
   return group;
 }
 
-export function renderPopulationLegend(target, { cities, bands, pinsById, fillColor = "#2d5a27", fillColorResolver = null }) {
+export function renderPopulationLegend(
+  target,
+  { cities, bands, pinsById, fillColor = "#2d5a27", fillColorResolver = null, routeSurfaceTypes = [] },
+) {
   const items = countCitiesByPopulationBands(cities, bands)
     .map((band) => {
       const pin = pinsById[band.pin_id] || pinsById[Object.keys(pinsById)[0]] || { shape: "solid_circle", stroke_width_px: 2 };
@@ -869,13 +872,48 @@ export function renderPopulationLegend(target, { cities, bands, pinsById, fillCo
     })
     .join("");
 
+  const routeItems = routeSurfaceTypes
+    .map((surfaceType) => {
+      const style = surfaceType?.style || {};
+      const baseColor = style.base_color || "#4f6f45";
+      const overlayColor = style.overlay_color;
+      const dashArray = style.dash_array || "";
+      const svg = `
+        <svg width="34" height="12" viewBox="0 0 34 12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <line x1="2" y1="6" x2="32" y2="6" stroke="${baseColor}" stroke-width="6" stroke-linecap="round" ${dashArray ? `stroke-dasharray="${dashArray}"` : ""} />
+          ${overlayColor ? `<line x1="2" y1="6" x2="32" y2="6" stroke="${overlayColor}" stroke-width="2" stroke-linecap="round" ${dashArray ? `stroke-dasharray="${dashArray}"` : ""} />` : ""}
+        </svg>
+      `;
+      return `
+        <div class="legend-row legend-route-row" data-surface-id="${surfaceType.id}">
+          <span class="legend-icon legend-route-swatch">${svg}</span>
+          <span class="legend-label">${escapeHtml(surfaceType.label || "Rota")}</span>
+          <strong class="legend-count">${escapeHtml(surfaceType.shortcut_key || "")}</strong>
+        </div>
+      `;
+    })
+    .join("");
+
   target.innerHTML = `
-    <div class="legend-head">
-      <span>Faixas populacionais</span>
-      <strong>${numberFormatter(0).format(cities.length)} cidades</strong>
+    <div class="legend-section">
+      <div class="legend-head">
+        <span>Faixas populacionais</span>
+        <strong>${numberFormatter(0).format(cities.length)} cidades</strong>
+      </div>
+      <div class="legend-body">
+        ${items}
+      </div>
     </div>
-    <div class="legend-body">
-      ${items}
-    </div>
+    ${routeItems ? `
+      <div class="legend-section">
+        <div class="legend-head">
+          <span>Tipos de rota</span>
+          <strong>Atalhos</strong>
+        </div>
+        <div class="legend-body">
+          ${routeItems}
+        </div>
+      </div>
+    ` : ""}
   `;
 }

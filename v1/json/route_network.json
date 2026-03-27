@@ -3,36 +3,12 @@
   "version": 3,
   "nodes": [
     {
-      "id": "graph_node_1774573964367",
-      "label": "Ligacao 01",
-      "node_kind": "junction",
-      "placement_mode": "free",
-      "latitude": -26.87699,
-      "longitude": -48.66608,
-      "style_id": "graph_node_style_junction_circle",
-      "size_px": 10,
-      "snapped_from_edge_id": null,
-      "notes": "Criado no editor de mapa"
-    },
-    {
       "id": "graph_node_1774573986916",
       "label": "Ligacao 02",
       "node_kind": "junction",
       "placement_mode": "free",
       "latitude": -28.74684,
       "longitude": -49.28515,
-      "style_id": "graph_node_style_junction_circle",
-      "size_px": 10,
-      "snapped_from_edge_id": null,
-      "notes": "Criado no editor de mapa"
-    },
-    {
-      "id": "graph_node_1774574040180",
-      "label": "Ligacao 03",
-      "node_kind": "junction",
-      "placement_mode": "free",
-      "latitude": -27.31317,
-      "longitude": -50.5656,
       "style_id": "graph_node_style_junction_circle",
       "size_px": 10,
       "snapped_from_edge_id": null,
@@ -135,18 +111,6 @@
       "notes": "Criado com snap em rota no editor de mapa"
     },
     {
-      "id": "graph_node_1774576897604",
-      "label": "Ligacao 13",
-      "node_kind": "junction",
-      "placement_mode": "snapped_route",
-      "latitude": -16.05476,
-      "longitude": -49.80095,
-      "style_id": "graph_node_style_junction_circle",
-      "size_px": 10,
-      "snapped_from_edge_id": "edge-go-goiania-go-crixas-1774576643355",
-      "notes": "Criado com snap em rota no editor de mapa"
-    },
-    {
       "id": "graph_node_1774577446951",
       "label": "Ligacao 14",
       "node_kind": "junction",
@@ -168,18 +132,6 @@
       "style_id": "graph_node_style_junction_circle",
       "size_px": 10,
       "snapped_from_edge_id": "edge-pa-belem-pa-santarem-1774577929361",
-      "notes": "Criado com snap em rota no editor de mapa"
-    },
-    {
-      "id": "graph_node_1774578101877",
-      "label": "Ligacao 16",
-      "node_kind": "junction",
-      "placement_mode": "snapped_route",
-      "latitude": -1.54257,
-      "longitude": -52.30892,
-      "style_id": "graph_node_style_junction_circle",
-      "size_px": 10,
-      "snapped_from_edge_id": "edge-graph_node_1774578087914-pa-santarem-1774578087914b",
       "notes": "Criado com snap em rota no editor de mapa"
     },
     {
@@ -229,42 +181,6 @@
       "size_px": 10,
       "snapped_from_edge_id": "edge-pa-altamira-pa-maraba-1774579453011",
       "notes": "Criado com snap em rota no editor de mapa"
-    },
-    {
-      "id": "graph_node_1774579811095",
-      "label": "Ligacao 21",
-      "node_kind": "junction",
-      "placement_mode": "snapped_route",
-      "latitude": -7.5193,
-      "longitude": -63.00904,
-      "style_id": "graph_node_style_junction_circle",
-      "size_px": 10,
-      "snapped_from_edge_id": "edge-ro-porto-velho-am-itacoatiara-1774579791536",
-      "notes": "Criado com snap em rota no editor de mapa"
-    },
-    {
-      "id": "graph_node_1774580502898",
-      "label": "Ligacao 22",
-      "node_kind": "junction",
-      "placement_mode": "free",
-      "latitude": -4.29438,
-      "longitude": -55.96195,
-      "style_id": "graph_node_style_junction_circle",
-      "size_px": 10,
-      "snapped_from_edge_id": null,
-      "notes": "Criado livre no editor de mapa"
-    },
-    {
-      "id": "graph_node_1774583767044",
-      "label": "Ligacao 27",
-      "node_kind": "junction",
-      "placement_mode": "free",
-      "latitude": -20.79062,
-      "longitude": -51.6493,
-      "style_id": "graph_node_style_junction_circle",
-      "size_px": 10,
-      "snapped_from_edge_id": null,
-      "notes": "Criado livre no editor de mapa"
     },
     {
       "id": "graph_node_1774583888248",
@@ -1633,94 +1549,6 @@
       ]
     },
     {
-      "id": "edge-graph_node_1774573964367-sc-joinville-1774573964367b",
-      "from_node_id": "graph_node_1774573964367",
-      "to_node_id": "sc-joinville",
-      "from_city_id": null,
-      "to_city_id": "sc-joinville",
-      "mode": "road",
-      "surface_type_id": "route_surface_double_road",
-      "surface_code": "double_road",
-      "geometry_type_id": "route_geometry_polycurve",
-      "geometry_code": "polycurve",
-      "render_smoothing_enabled": true,
-      "status": "active",
-      "bidirectional": true,
-      "distance_km": 67.3,
-      "notes": "Criada no editor de mapa",
-      "waypoints": [
-        {
-          "id": "route_point_1774573964367b_1",
-          "latitude": -26.67177,
-          "longitude": -48.69692
-        },
-        {
-          "id": "route_point_1774573964367b_2",
-          "latitude": -26.46668,
-          "longitude": -48.76694
-        },
-        {
-          "id": "route_point_1774573964367b_3",
-          "latitude": -26.42489,
-          "longitude": -48.815
-        }
-      ]
-    },
-    {
-      "id": "edge-sc-blumenau-graph_node_1774573964367-1774573977755",
-      "from_node_id": "sc-blumenau",
-      "to_node_id": "graph_node_1774573964367",
-      "from_city_id": "sc-blumenau",
-      "to_city_id": null,
-      "mode": "road",
-      "surface_type_id": "route_surface_double_road",
-      "surface_code": "double_road",
-      "geometry_type_id": "route_geometry_polycurve",
-      "geometry_code": "polycurve",
-      "render_smoothing_enabled": true,
-      "status": "active",
-      "bidirectional": true,
-      "distance_km": 44.3,
-      "notes": "Criada no editor de mapa",
-      "waypoints": [
-        {
-          "id": "route_point_1774573977755_1",
-          "latitude": -26.88338,
-          "longitude": -49.02923
-        },
-        {
-          "id": "route_point_1774573977755_2",
-          "latitude": -26.89685,
-          "longitude": -48.96538
-        },
-        {
-          "id": "route_point_1774573977755_3",
-          "latitude": -26.90113,
-          "longitude": -48.9283
-        },
-        {
-          "id": "route_point_1774573977755_4",
-          "latitude": -26.88828,
-          "longitude": -48.87405
-        },
-        {
-          "id": "route_point_1774573977755_5",
-          "latitude": -26.85767,
-          "longitude": -48.80333
-        },
-        {
-          "id": "route_point_1774573977755_6",
-          "latitude": -26.83868,
-          "longitude": -48.76351
-        },
-        {
-          "id": "route_point_1774573977755_7",
-          "latitude": -26.84603,
-          "longitude": -48.71681
-        }
-      ]
-    },
-    {
       "id": "edge-rs-porto-alegre-graph_node_1774573986916-1774573986916a",
       "from_node_id": "rs-porto-alegre",
       "to_node_id": "graph_node_1774573986916",
@@ -2215,35 +2043,6 @@
           "id": "route_point_1774574167636_6",
           "latitude": -26.07865,
           "longitude": -51.15647
-        }
-      ]
-    },
-    {
-      "id": "edge-graph_node_1774574222713-graph_node_1774573964367-1774574222713b",
-      "from_node_id": "graph_node_1774574222713",
-      "to_node_id": "graph_node_1774573964367",
-      "from_city_id": null,
-      "to_city_id": null,
-      "mode": "road",
-      "surface_type_id": "route_surface_double_road",
-      "surface_code": "double_road",
-      "geometry_type_id": "route_geometry_polycurve",
-      "geometry_code": "polycurve",
-      "render_smoothing_enabled": true,
-      "status": "active",
-      "bidirectional": true,
-      "distance_km": 80.0,
-      "notes": "Criada no editor de mapa",
-      "waypoints": [
-        {
-          "id": "route_point_1774574222713b_1",
-          "latitude": -27.45931,
-          "longitude": -48.66394
-        },
-        {
-          "id": "route_point_1774574222713b_2",
-          "latitude": -27.27644,
-          "longitude": -48.64746
         }
       ]
     },

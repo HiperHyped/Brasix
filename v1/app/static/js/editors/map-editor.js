@@ -13,7 +13,7 @@ import {
   fitBrasixBounds,
   renderPopulationLegend,
   sortPopulationBands,
-} from "../shared/leaflet-map.js";
+} from "../shared/leaflet-map.js?v=20260327-route-legend-1";
 import { escapeHtml, numberFormatter } from "../shared/formatters.js";
 import { addDraftWaypoint, buildEdgeFromDraft, createDraftState, removeDraftWaypoint, resetDraft } from "./map-editor-geometry.js";
 
@@ -83,6 +83,8 @@ const editorState = {
   leafletSettingsSaveTimer: null,
   draft: null,
   screen: null,
+  mapRepository: null,
+  mapRepositoryControls: null,
   shortcutsPanel: null,
   themesDocument: null,
   themesById: {},
@@ -148,6 +150,19 @@ function cityAutofillConfig() {
 
 function cityAutofillProviderLabel() {
   return cityAutofillConfig().provider_label || "Nominatim + IBGE";
+}
+
+function mapRepositoryControls() {
+  return editorState.mapRepositoryControls || { header_actions: [] };
+}
+
+function activeMapEntry() {
+  return editorState.mapRepository?.active_map || null;
+}
+
+function nextMapDraftName() {
+  const count = Number(editorState.mapRepository?.maps?.length || 0) + 1;
+  return `Mapa ${count}`;
 }
 
 function nextPaint() {
@@ -297,6 +312,22 @@ function isUserCreatedCity(cityOrId) {
   return Boolean(city?.is_user_created);
 }
 
+function activeMapId() {
+  return editorState.bootstrap?.map_repository?.active_map_id || "map_brasix_default";
+}
+
+function isBaseMapActive() {
+  return activeMapId() === "map_brasix_default";
+}
+
+function citiesAreUnifiedInActiveMap() {
+  return !isBaseMapActive();
+}
+
+function canDeleteCity(cityOrId) {
+  return citiesAreUnifiedInActiveMap() || isUserCreatedCity(cityOrId);
+}
+
 function selectedNode() {
   return editorState.selectedNodeId ? editorState.nodesById[editorState.selectedNodeId] : null;
 }
@@ -413,7 +444,14 @@ function rebuildCityCatalogsFromBootstrap() {
 
 function renderHeader() {
   const badgeContainer = document.getElementById("editor-header-badges");
-  const badges = editorState.screen.header_badges || [];
+  const activeMap = activeMapEntry();
+  const badges = [
+    ...(editorState.screen.header_badges || []),
+    ...(activeMap ? [{
+      id: `map_active_badge_${activeMap.id}`,
+      label: activeMap.name,
+    }] : []),
+  ];
   badgeContainer.innerHTML = badges
     .map((badge) => `<span class="editor-badge" data-badge-id="${badge.id}">${escapeHtml(badge.label)}</span>`)
     .join("");
@@ -449,11 +487,23 @@ function renderHeader() {
       `;
     })
     .join("");
+
+  const mapActions = mapRepositoryControls().header_actions || [];
+  document.getElementById("editor-map-actions").innerHTML = mapActions
+    .map((action) => `
+      <button class="editor-map-action" type="button" data-map-action-id="${action.action}">
+        <span class="material-symbols-outlined">${action.icon}</span>
+        <span>${escapeHtml(action.label)}</span>
+      </button>
+    `)
+    .join("");
 }
 
 function buildDerivedData() {
   editorState.routeNetwork = editorState.bootstrap.route_network;
   editorState.screen = editorState.bootstrap.map_editor.screen;
+  editorState.mapRepository = cloneJsonPayload(editorState.bootstrap.map_repository || {});
+  editorState.mapRepositoryControls = cloneJsonPayload(editorState.bootstrap.map_editor.map_repository_controls || {});
   editorState.shortcutsPanel = editorState.bootstrap.map_editor.shortcuts_panel || {};
   editorState.themesDocument = editorState.bootstrap.map_editor.themes || { themes: [] };
   editorState.themesById = Object.fromEntries(
@@ -570,6 +620,10 @@ function nodeModeActive() {
 
 function cityModeActive() {
   return editorState.draft.activeToolId === "tool_city_draw";
+}
+
+function nodeToCityModeActive() {
+  return editorState.draft.activeToolId === "tool_graph_node_promote_city";
 }
 
 function defaultGraphNodeStyle() {
@@ -855,6 +909,225 @@ function closeShortcutsDialog() {
     return;
   }
   dialog.removeAttribute("open");
+}
+
+function dialogById(id) {
+  return document.getElementById(id);
+}
+
+function openDialogElement(dialog, focusTargetId = "") {
+  if (!dialog) {
+    return;
+  }
+  if (!dialog.open && typeof dialog.showModal === "function") {
+    dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "open");
+  }
+  if (focusTargetId) {
+    document.getElementById(focusTargetId)?.focus();
+  }
+}
+
+function closeDialogElement(dialog) {
+  if (!dialog) {
+    return;
+  }
+  if (dialog.open && typeof dialog.close === "function") {
+    dialog.close();
+    return;
+  }
+  dialog.removeAttribute("open");
+}
+
+function mapRepositoryStatusMessages() {
+  return mapRepositoryControls().status_messages || {};
+}
+
+function renderMapRepositoryDialogs() {
+  const controls = mapRepositoryControls();
+  const activeMap = activeMapEntry();
+  const registry = editorState.mapRepository || { maps: [] };
+
+  const newDialog = controls.new_map_dialog || {};
+  const saveDialog = controls.save_map_dialog || {};
+  const loadDialog = controls.load_map_dialog || {};
+
+  document.getElementById("editor-map-new-eyebrow").textContent = newDialog.eyebrow || "Mapas";
+  document.getElementById("editor-map-new-title").textContent = newDialog.title || "Novo mapa";
+  document.getElementById("editor-map-new-copy").textContent = newDialog.copy || "";
+  document.getElementById("editor-map-new-name-label").textContent = newDialog.name_label || "Nome do mapa";
+  document.getElementById("editor-map-new-description-label").textContent = newDialog.description_label || "Descricao";
+  document.getElementById("editor-map-new-submit-button").textContent = newDialog.primary_button_label || "Criar mapa";
+  document.getElementById("editor-map-new-close-button").textContent = newDialog.secondary_button_label || "Cancelar";
+  document.getElementById("editor-map-new-options").innerHTML = (newDialog.options || [])
+    .map((option) => `
+      <label class="editor-map-option">
+        <input type="checkbox" data-map-option-field="${option.field}" checked />
+        <div class="editor-map-option-copy">
+          <strong>${escapeHtml(option.label)}</strong>
+          <span>${escapeHtml(option.description || "")}</span>
+        </div>
+      </label>
+    `)
+    .join("");
+
+  document.getElementById("editor-map-save-eyebrow").textContent = saveDialog.eyebrow || "Mapas";
+  document.getElementById("editor-map-save-title").textContent = saveDialog.title || "Salvar mapa";
+  document.getElementById("editor-map-save-copy").textContent = saveDialog.copy || "";
+  document.getElementById("editor-map-save-name-label").textContent = saveDialog.name_label || "Nome do mapa";
+  document.getElementById("editor-map-save-description-label").textContent = saveDialog.description_label || "Descricao";
+  document.getElementById("editor-map-save-close-button").textContent = saveDialog.secondary_button_label || "Cancelar";
+  document.getElementById("editor-map-save-current-button").textContent = saveDialog.save_button_label || "Salvar atual";
+  document.getElementById("editor-map-save-as-button").textContent = saveDialog.save_as_button_label || "Salvar como novo";
+  document.getElementById("editor-map-save-current").innerHTML = `
+    <strong>${escapeHtml(saveDialog.current_map_label || "Mapa ativo")}</strong>
+    <span>${escapeHtml(activeMap?.name || "Mapa atual")}</span>
+  `;
+
+  document.getElementById("editor-map-load-eyebrow").textContent = loadDialog.eyebrow || "Mapas";
+  document.getElementById("editor-map-load-title").textContent = loadDialog.title || "Carregar mapa";
+  document.getElementById("editor-map-load-copy").textContent = loadDialog.copy || "";
+  document.getElementById("editor-map-load-close-button").textContent = loadDialog.close_button_label || "Fechar";
+
+  const loadList = document.getElementById("editor-map-load-list");
+  if (!registry.maps?.length) {
+    loadList.innerHTML = `
+      <div class="editor-map-load-item">
+        <div class="editor-map-load-copy">
+          <strong>${escapeHtml(loadDialog.empty_label || "Nenhum mapa salvo ainda.")}</strong>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  loadList.innerHTML = registry.maps
+    .map((item) => `
+      <div class="editor-map-load-item" data-map-entry-id="${item.id}">
+        <div class="editor-map-load-copy">
+          <strong>${escapeHtml(item.name)}</strong>
+          <div class="editor-map-load-meta">
+            <span>${Number(item.city_count || 0)} cidades</span>
+            <span>${Number(item.route_count || 0)} rotas</span>
+            <span>${Number(item.graph_node_count || 0)} nos</span>
+            ${item.id === registry.active_map_id ? `<span class="editor-map-load-badge">${escapeHtml(loadDialog.active_badge_label || "Ativo")}</span>` : ""}
+          </div>
+        </div>
+        <div class="editor-map-load-actions">
+          <button class="editor-header-action" type="button" data-load-map-id="${item.id}">
+            <span class="material-symbols-outlined">folder_open</span>
+            <span>${escapeHtml(loadDialog.load_button_label || "Carregar")}</span>
+          </button>
+          ${item.id !== "map_brasix_default" ? `
+            <button class="secondary-button" type="button" data-delete-map-id="${item.id}">
+              ${escapeHtml(loadDialog.delete_button_label || "Excluir")}
+            </button>
+          ` : ""}
+        </div>
+      </div>
+    `)
+    .join("");
+}
+
+function openNewMapDialog() {
+  renderMapRepositoryDialogs();
+  document.getElementById("editor-map-new-name-input").value = nextMapDraftName();
+  document.getElementById("editor-map-new-description-input").value = "";
+  openDialogElement(dialogById("editor-map-new-dialog"), "editor-map-new-name-input");
+}
+
+function openSaveMapDialog() {
+  renderMapRepositoryDialogs();
+  const activeMap = activeMapEntry();
+  document.getElementById("editor-map-save-name-input").value = activeMap?.name || "";
+  document.getElementById("editor-map-save-description-input").value = activeMap?.description || "";
+  openDialogElement(dialogById("editor-map-save-dialog"), "editor-map-save-name-input");
+}
+
+function openLoadMapDialog() {
+  renderMapRepositoryDialogs();
+  openDialogElement(dialogById("editor-map-load-dialog"));
+}
+
+async function submitMapAction(url, payload, successMessage) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    setDraftStatus(data.detail || mapRepositoryStatusMessages().map_action_failed || "Nao foi possivel concluir a operacao do mapa.");
+    return false;
+  }
+  broadcastSync("map-repository");
+  setDraftStatus(successMessage || mapRepositoryStatusMessages().map_loaded || "Mapa carregado.");
+  window.location.reload();
+  return true;
+}
+
+async function createMapFromDialog() {
+  const options = Object.fromEntries(
+    Array.from(document.querySelectorAll("[data-map-option-field]"))
+      .map((input) => [input.dataset.mapOptionField, Boolean(input.checked)]),
+  );
+  const payload = {
+    name: document.getElementById("editor-map-new-name-input").value.trim() || nextMapDraftName(),
+    description: document.getElementById("editor-map-new-description-input").value.trim(),
+    options,
+  };
+  return submitMapAction(
+    "/api/editor/maps/new",
+    payload,
+    mapRepositoryStatusMessages().map_created || "Novo mapa criado e carregado no editor.",
+  );
+}
+
+async function saveMapFromDialog({ saveAsNew = false } = {}) {
+  const payload = {
+    name: document.getElementById("editor-map-save-name-input").value.trim() || activeMapEntry()?.name || "Mapa",
+    description: document.getElementById("editor-map-save-description-input").value.trim(),
+  };
+  return submitMapAction(
+    saveAsNew ? "/api/editor/maps/save-as" : "/api/editor/maps/save",
+    payload,
+    saveAsNew
+      ? (mapRepositoryStatusMessages().map_saved_as || "Mapa salvo como nova versao.")
+      : (mapRepositoryStatusMessages().map_saved || "Mapa ativo salvo."),
+  );
+}
+
+async function loadMapById(mapId) {
+  const response = await fetch("/api/editor/maps/active", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ map_id: mapId }),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    setDraftStatus(data.detail || mapRepositoryStatusMessages().map_action_failed || "Nao foi possivel concluir a operacao do mapa.");
+    return false;
+  }
+  broadcastSync("map-repository");
+  setDraftStatus(mapRepositoryStatusMessages().map_loaded || "Mapa carregado no editor.");
+  window.location.reload();
+  return true;
+}
+
+async function deleteMapById(mapId) {
+  const response = await fetch(`/api/editor/maps/${encodeURIComponent(mapId)}`, {
+    method: "DELETE",
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    setDraftStatus(data.detail || mapRepositoryStatusMessages().map_action_failed || "Nao foi possivel concluir a operacao do mapa.");
+    return false;
+  }
+  broadcastSync("map-repository");
+  setDraftStatus(mapRepositoryStatusMessages().map_deleted || "Mapa excluido do repositorio.");
+  window.location.reload();
+  return true;
 }
 
 function renderNodeControls() {
@@ -1242,7 +1515,7 @@ function editorCityFillColor(city, band) {
   if (city.id === editorState.selectedCityId) {
     return displayCityRender().selected_fill_color || "#8c4f10";
   }
-  if (isUserCreatedCity(city)) {
+  if (!citiesAreUnifiedInActiveMap() && isUserCreatedCity(city)) {
     return customCityFillColor();
   }
   const mode = displayCityRender().color_mode || "commodity";
@@ -1292,6 +1565,7 @@ function renderLegend() {
     pinsById: editorState.pinsById,
     fillColor: displayCityRender().uniform_fill_color || "#2d5a27",
     fillColorResolver: mode === "population_band" ? populationBandFillColor : null,
+    routeSurfaceTypes: Object.values(editorState.surfaceTypesById || {}),
   });
 }
 
@@ -1644,17 +1918,17 @@ function buildGraphNodeRecord({
   };
 }
 
-function buildManualCityRecord(latlng) {
-  const name = nextManualCityName();
-  const stateCode = "ZZ";
+function buildManualCityRecord(latlng, overrides = {}) {
+  const name = overrides.name || nextManualCityName();
+  const stateCode = (overrides.state_code || "ZZ").toUpperCase();
   return {
-    id: buildManualCityId(),
+    id: overrides.id || buildManualCityId(),
     name,
     label: buildManualCityLabel(name, stateCode),
     state_code: stateCode,
-    state_name: "Estado manual",
-    source_region_name: "Cidade criada no editor",
-    population_thousands: 100,
+    state_name: overrides.state_name || "Estado manual",
+    source_region_name: overrides.source_region_name || "Cidade criada no editor",
+    population_thousands: Number(overrides.population_thousands || 100),
     latitude: normalizedRouteCoordinate(latlng.lat),
     longitude: normalizedRouteCoordinate(latlng.lng),
     is_user_created: true,
@@ -1674,7 +1948,7 @@ async function createManualCityAt(latlng, popupAnchor = null) {
   const previousCities = [...(editorState.bootstrap.cities || [])];
   editorState.bootstrap.cities = [...previousCities, city];
   rebuildCityCatalogsFromBootstrap();
-  const saved = await saveCustomCities(
+  const saved = await saveMapCities(
     editorState.screen.status_messages.custom_city_created
     || editorState.screen.status_messages.city_selected
     || editorState.screen.status_messages.idle,
@@ -1700,11 +1974,86 @@ async function createManualCityAt(latlng, popupAnchor = null) {
   void requestCustomCityAutofill(city.id);
 }
 
-async function deleteCustomCityById(cityId) {
-  const city = editorState.citiesById[cityId];
-  if (!city || !isUserCreatedCity(city)) {
+async function convertGraphNodeToManualCity(nodeId, popupAnchor = null) {
+  const node = editorState.graphNodesById[nodeId];
+  if (!node) {
     return;
   }
+  if (!serverSupportsGraphNodes()) {
+    setDraftStatus(editorState.screen.status_messages.node_server_restart || editorState.screen.status_messages.idle);
+    return;
+  }
+
+  const previousCities = [...(editorState.bootstrap.cities || [])];
+  const previousNodes = [...(editorState.routeNetwork.nodes || [])];
+  const city = buildManualCityRecord(
+    { lat: node.latitude, lng: node.longitude },
+    {
+      id: node.id,
+      source_region_name: node.notes || "Cidade criada a partir de no de ligacao",
+    },
+  );
+
+  editorState.bootstrap.cities = [...previousCities, city];
+  rebuildCityCatalogsFromBootstrap();
+
+  const savedCities = await saveMapCities(
+    editorState.screen.status_messages.node_to_city_converted
+    || editorState.screen.status_messages.custom_city_created
+    || editorState.screen.status_messages.idle,
+  );
+  if (!savedCities) {
+    editorState.bootstrap.cities = previousCities;
+    rebuildCityCatalogsFromBootstrap();
+    renderMap();
+    return;
+  }
+
+  editorState.routeNetwork.nodes = previousNodes.filter((item) => item.id !== nodeId);
+  rebuildCityCatalogsFromBootstrap();
+  rebuildNodeCatalogs();
+
+  const savedRoutes = await saveRouteNetwork(
+    editorState.screen.status_messages.node_to_city_converted
+    || editorState.screen.status_messages.custom_city_created
+    || editorState.screen.status_messages.idle,
+  );
+  if (!savedRoutes) {
+    editorState.bootstrap.cities = previousCities;
+    editorState.routeNetwork.nodes = previousNodes;
+    rebuildCityCatalogsFromBootstrap();
+    rebuildNodeCatalogs();
+    await saveMapCities(editorState.screen.status_messages.idle);
+    renderMap();
+    return;
+  }
+
+  editorState.selectedCityId = city.id;
+  editorState.selectedNodeId = city.id;
+  editorState.selectedEdgeId = null;
+  setCityPopupAnchor(popupAnchor);
+  setCityAutofillState(city.id, {
+    loading: false,
+    error: "",
+    requestId: 0,
+  });
+  renderCustomCityControls();
+  renderMap();
+  void requestCustomCityAutofill(city.id);
+}
+
+async function deleteCityById(cityId) {
+  const city = editorState.citiesById[cityId];
+  if (!city || !canDeleteCity(city)) {
+    return;
+  }
+
+  const deletedCityMessage = citiesAreUnifiedInActiveMap()
+    ? (editorState.screen.status_messages.city_deleted || editorState.screen.status_messages.custom_city_deleted || editorState.screen.status_messages.idle)
+    : (editorState.screen.status_messages.custom_city_deleted || editorState.screen.status_messages.idle);
+  const deletedCityWithRoutesMessage = citiesAreUnifiedInActiveMap()
+    ? (editorState.screen.status_messages.city_deleted_with_routes || editorState.screen.status_messages.custom_city_deleted_with_routes || deletedCityMessage)
+    : (editorState.screen.status_messages.custom_city_deleted_with_routes || deletedCityMessage);
 
   const previousCities = [...(editorState.bootstrap.cities || [])];
   const previousEdges = [...(editorState.routeNetwork.edges || [])];
@@ -1717,9 +2066,7 @@ async function deleteCustomCityById(cityId) {
 
   const savedRoutes = removedRouteCount > 0
     ? await saveRouteNetwork(
-        editorState.screen.status_messages.custom_city_deleted_with_routes
-        || editorState.screen.status_messages.custom_city_deleted
-        || editorState.screen.status_messages.idle,
+        deletedCityWithRoutesMessage,
       )
     : true;
   if (!savedRoutes) {
@@ -1730,12 +2077,10 @@ async function deleteCustomCityById(cityId) {
     return;
   }
 
-  const savedCities = await saveCustomCities(
+  const savedCities = await saveMapCities(
     removedRouteCount > 0
-      ? (editorState.screen.status_messages.custom_city_deleted_with_routes
-        || editorState.screen.status_messages.custom_city_deleted
-        || editorState.screen.status_messages.idle)
-      : (editorState.screen.status_messages.custom_city_deleted || editorState.screen.status_messages.idle),
+      ? deletedCityWithRoutesMessage
+      : deletedCityMessage,
   );
   if (!savedCities) {
     editorState.bootstrap.cities = previousCities;
@@ -1990,6 +2335,10 @@ function initializeMap() {
       void createManualCityAt(event.latlng, popupAnchorFromPointerEvent(event.originalEvent));
       return;
     }
+    if (nodeToCityModeActive()) {
+      setDraftStatus(editorState.screen.status_messages.node_to_city_need_node || editorState.screen.status_messages.idle);
+      return;
+    }
     if (nodeModeActive()) {
       void createGraphNodeAt(event.latlng, {
         forceFree: Boolean(event.originalEvent?.altKey),
@@ -2022,7 +2371,7 @@ function initializeMap() {
 
 function cityTooltip(city) {
   const dominant = city.dominant_product_id ? editorState.productsById[city.dominant_product_id] : null;
-  const dominantLine = isUserCreatedCity(city)
+  const dominantLine = (!citiesAreUnifiedInActiveMap() && isUserCreatedCity(city))
     ? (screenLabels().city_created_badge_label || "Criada no editor")
     : (dominant ? `${dominant.icon} ${dominant.name}` : "Sem destaque");
   return `
@@ -2192,8 +2541,8 @@ function renderMap() {
       marker.on("contextmenu", (event) => {
         event.originalEvent?.preventDefault?.();
         event.originalEvent?.stopPropagation?.();
-        if (isUserCreatedCity(city)) {
-          void deleteCustomCityById(city.id);
+        if (canDeleteCity(city)) {
+          void deleteCityById(city.id);
           return;
         }
         eraseDraftStep();
@@ -2217,7 +2566,7 @@ function renderMap() {
         offset: [0, -8],
         sticky: true,
       });
-      marker.on("click", async () => handleNodeClick(node.id));
+      marker.on("click", async (event) => handleNodeClick(node.id, { popupAnchor: popupAnchorFromPointerEvent(event.originalEvent) }));
       marker.on("contextmenu", (event) => {
         event.originalEvent?.preventDefault?.();
         event.originalEvent?.stopPropagation?.();
@@ -2239,6 +2588,23 @@ async function handleNodeClick(nodeId, options = {}) {
   editorState.selectedNodeId = nodeId;
   editorState.selectedCityId = isCityNode(nodeId) ? nodeId : null;
   editorState.selectedEdgeId = null;
+
+  if (nodeToCityModeActive()) {
+    if (isCityNode(nodeId)) {
+      setDraftStatus(editorState.screen.status_messages.node_to_city_invalid_target || editorState.screen.status_messages.idle);
+      if (isUserCreatedCity(nodeId)) {
+        setCityPopupAnchor(options.popupAnchor || editorState.cityPopupAnchor || { x: 18, y: 18 });
+      } else {
+        hideCustomCityPopup();
+      }
+      renderMap();
+      renderCustomCityControls();
+      return;
+    }
+
+    await convertGraphNodeToManualCity(nodeId, options.popupAnchor || editorState.cityPopupAnchor || { x: 18, y: 18 });
+    return;
+  }
 
   if (routeModeActive()) {
     if (!editorState.draft.fromCityId) {
@@ -2316,12 +2682,22 @@ async function savePopulationBands() {
   broadcastSync("population-bands");
 }
 
-function customCitiesDocument() {
+function mapCitiesDocument() {
   return {
-    id: editorState.bootstrap?.map_editor?.user_city_catalog?.id || "city_catalog_user_v1",
-    cities: (editorState.bootstrap.cities || [])
-      .filter((city) => city.is_user_created)
-      .map((city) => serializeCustomCity(city)),
+    id: "map_city_catalog_v1",
+    cities: (editorState.bootstrap.cities || []).map((city) => ({
+      id: city.id,
+      name: city.name,
+      label: city.label,
+      state_code: city.state_code,
+      state_name: city.state_name,
+      source_region_name: city.source_region_name,
+      population_thousands: Number(city.population_thousands || 0),
+      latitude: Number(city.latitude),
+      longitude: Number(city.longitude),
+      is_user_created: Boolean(city.is_user_created),
+      autofill: city.autofill ? { ...city.autofill } : null,
+    })),
   };
 }
 
@@ -2420,7 +2796,7 @@ async function requestCustomCityAutofill(cityId) {
     });
     renderMap();
     renderCustomCityControls();
-    await saveCustomCities(
+    await saveMapCities(
       editorState.screen.status_messages.custom_city_autofill_completed
       || editorState.screen.status_messages.custom_city_updated
       || editorState.screen.status_messages.idle,
@@ -2444,11 +2820,11 @@ async function requestCustomCityAutofill(cityId) {
   }
 }
 
-async function saveCustomCities(message) {
-  const response = await fetch("/api/editor/map/custom-cities", {
+async function saveMapCities(message) {
+  const response = await fetch("/api/editor/map/cities", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(customCitiesDocument()),
+    body: JSON.stringify(mapCitiesDocument()),
   });
   const data = await response.json();
   if (!response.ok) {
@@ -2456,7 +2832,12 @@ async function saveCustomCities(message) {
     return false;
   }
 
-  editorState.bootstrap.map_editor.user_city_catalog = data;
+  editorState.bootstrap.cities = data.cities || [];
+  editorState.bootstrap.map_editor.user_city_catalog = {
+    id: "city_catalog_user_v1",
+    cities: (editorState.bootstrap.cities || []).filter((city) => city.is_user_created).map((city) => serializeCustomCity(city)),
+  };
+  rebuildCityCatalogsFromBootstrap();
   setDraftStatus(message);
   broadcastSync("city-catalog");
   return true;
@@ -2468,7 +2849,7 @@ function scheduleCustomCitiesSave(message, delayMs = 180) {
   }
   editorState.customCitiesSaveTimer = window.setTimeout(() => {
     editorState.customCitiesSaveTimer = null;
-    void saveCustomCities(message);
+    void saveMapCities(message);
   }, delayMs);
 }
 
@@ -2688,6 +3069,18 @@ function enterCityMode() {
   renderCustomCityControls();
 }
 
+function enterNodeToCityMode() {
+  editorState.draft.activeToolId = "tool_graph_node_promote_city";
+  editorState.selectedCityId = null;
+  editorState.selectedNodeId = null;
+  editorState.selectedEdgeId = null;
+  resetDraft(editorState.draft);
+  hideCustomCityPopup();
+  setDraftStatus(editorState.screen.status_messages.node_to_city_mode || editorState.screen.status_messages.idle);
+  renderMap();
+  renderCustomCityControls();
+}
+
 function handleKeydown(event) {
   if (event.ctrlKey || event.metaKey || event.altKey) {
     return;
@@ -2710,6 +3103,12 @@ function handleKeydown(event) {
   if (String(event.key).toLowerCase() === "c") {
     event.preventDefault();
     enterCityMode();
+    return;
+  }
+
+  if (String(event.key).toLowerCase() === "x") {
+    event.preventDefault();
+    enterNodeToCityMode();
     return;
   }
 
@@ -2921,6 +3320,24 @@ function bindUi() {
     }
   });
 
+  document.getElementById("editor-map-actions").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-map-action-id]");
+    if (!button) {
+      return;
+    }
+    if (button.dataset.mapActionId === "open-map-new") {
+      openNewMapDialog();
+      return;
+    }
+    if (button.dataset.mapActionId === "open-map-save") {
+      openSaveMapDialog();
+      return;
+    }
+    if (button.dataset.mapActionId === "open-map-load") {
+      openLoadMapDialog();
+    }
+  });
+
   const nodeStyleSelect = document.getElementById("editor-node-style-select");
   const nodeSizeInput = document.getElementById("editor-node-size-input");
   const applyNodeControlDraft = () => {
@@ -2996,6 +3413,37 @@ function bindUi() {
     closeShortcutsDialog();
   });
 
+  ["editor-map-new-dialog", "editor-map-save-dialog", "editor-map-load-dialog"].forEach((id) => {
+    const dialog = dialogById(id);
+    dialog?.addEventListener("click", (event) => {
+      if (event.target !== dialog) {
+        return;
+      }
+      closeDialogElement(dialog);
+    });
+  });
+
+  document.getElementById("editor-map-new-submit-button")?.addEventListener("click", () => {
+    void createMapFromDialog();
+  });
+  document.getElementById("editor-map-save-current-button")?.addEventListener("click", () => {
+    void saveMapFromDialog({ saveAsNew: false });
+  });
+  document.getElementById("editor-map-save-as-button")?.addEventListener("click", () => {
+    void saveMapFromDialog({ saveAsNew: true });
+  });
+  document.getElementById("editor-map-load-list")?.addEventListener("click", (event) => {
+    const loadButton = event.target.closest("[data-load-map-id]");
+    if (loadButton) {
+      void loadMapById(loadButton.dataset.loadMapId);
+      return;
+    }
+    const deleteButton = event.target.closest("[data-delete-map-id]");
+    if (deleteButton) {
+      void deleteMapById(deleteButton.dataset.deleteMapId);
+    }
+  });
+
   document.addEventListener("keydown", handleKeydown);
   bindColumnResizers();
 }
@@ -3018,6 +3466,7 @@ async function initializeEditor() {
 
   applyScreenRegistry();
   renderHeader();
+  renderMapRepositoryDialogs();
   renderSidebarTabs();
   renderShortcutsPanel();
   renderShortcuts();

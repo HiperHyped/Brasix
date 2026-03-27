@@ -29,6 +29,7 @@ from app.config import (
     UI_LAYOUT_DESKTOP_MAP_EDITOR_PATH,
     UI_MAP_EDITOR_SCREEN_PATH,
     UI_NAVIGATION_ITEMS_PATH,
+    UI_MAP_REPOSITORY_CONTROLS_PATH,
     UI_SHORTCUTS_MAP_EDITOR_PATH,
 )
 from app.domain import City, CommodityProfile, MapConfig, ReferenceData
@@ -106,6 +107,10 @@ def load_city_catalog_payload(path: Path | None = None) -> list[dict[str, Any]]:
     return base_cities + user_cities
 
 
+def load_base_city_catalog_payload(path: Path | None = None) -> list[dict[str, Any]]:
+    return list(load_json(path or CITY_CATALOG_PATH))
+
+
 def load_user_city_catalog_payload(path: Path | None = None) -> dict[str, Any]:
     target_path = path or CITY_USER_CATALOG_PATH
     if not target_path.exists():
@@ -114,6 +119,11 @@ def load_user_city_catalog_payload(path: Path | None = None) -> dict[str, Any]:
     if isinstance(payload, dict) and "cities" in payload:
         return _sanitize_user_city_payload(dict(payload))
     return _sanitize_user_city_payload({"id": "city_catalog_user_v1", "cities": list(payload)})
+
+
+def build_user_city_catalog_payload(city_catalog_payload: list[dict[str, Any]]) -> dict[str, Any]:
+    filtered_cities = [city for city in city_catalog_payload if bool(city.get("is_user_created"))]
+    return _sanitize_user_city_payload({"id": "city_catalog_user_v1", "cities": filtered_cities})
 
 
 def load_product_catalog_payload(path: Path | None = None) -> list[dict[str, Any]]:
@@ -137,7 +147,7 @@ def load_ui_payload() -> dict[str, Any]:
     }
 
 
-def load_map_editor_payload() -> dict[str, Any]:
+def load_map_editor_payload(user_city_catalog: dict[str, Any] | None = None) -> dict[str, Any]:
     return {
         "screen": load_json(UI_MAP_EDITOR_SCREEN_PATH),
         "themes": load_json(UI_MAP_EDITOR_THEMES_PATH),
@@ -151,9 +161,10 @@ def load_map_editor_payload() -> dict[str, Any]:
         "display_controls": load_json(UI_MAP_DISPLAY_CONTROLS_PATH),
         "leaflet_settings": load_json(MAP_LEAFLET_SETTINGS_PATH),
         "leaflet_controls": load_json(UI_MAP_LEAFLET_CONTROLS_PATH),
+        "map_repository_controls": load_json(UI_MAP_REPOSITORY_CONTROLS_PATH),
         "shortcuts_panel": load_json(UI_MAP_SHORTCUTS_PANEL_PATH),
         "city_autofill": load_json(AI_CITY_AUTOFILL_CONFIG_PATH),
-        "user_city_catalog": load_user_city_catalog_payload(),
+        "user_city_catalog": user_city_catalog or load_user_city_catalog_payload(),
         "route_surface_types": load_json(ROUTE_SURFACE_TYPES_PATH),
         "route_geometry_types": load_json(ROUTE_GEOMETRY_TYPES_PATH),
     }
@@ -189,6 +200,10 @@ def _city_matrix_by_city(path: Path) -> dict[str, dict[str, float]]:
 
 def _load_cities(path: Path, matrix_path: Path) -> dict[str, City]:
     payload = load_city_catalog_payload(path)
+    return _build_cities_from_payload(payload, matrix_path)
+
+
+def _build_cities_from_payload(payload: list[dict[str, Any]], matrix_path: Path) -> dict[str, City]:
     matrix_by_city = _city_matrix_by_city(matrix_path)
     cities: dict[str, City] = {}
 
@@ -240,5 +255,22 @@ def load_reference_data(
     return ReferenceData(
         commodities=_load_commodities(product_file),
         cities=_load_cities(city_file, city_product_file),
+        map_config=_load_map_config(map_file),
+    )
+
+
+def build_reference_data_from_city_catalog_payload(
+    city_catalog_payload: list[dict[str, Any]],
+    products_path: Path | None = None,
+    city_product_matrix_path: Path | None = None,
+    map_viewport_path: Path | None = None,
+) -> ReferenceData:
+    product_file = products_path or PRODUCT_CATALOG_PATH
+    city_product_file = city_product_matrix_path or CITY_PRODUCT_MATRIX_PATH
+    map_file = map_viewport_path or MAP_VIEWPORT_CONFIG_PATH
+
+    return ReferenceData(
+        commodities=_load_commodities(product_file),
+        cities=_build_cities_from_payload(city_catalog_payload, city_product_file),
         map_config=_load_map_config(map_file),
     )

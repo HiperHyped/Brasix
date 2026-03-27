@@ -8,25 +8,40 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.config import CITY_USER_CATALOG_PATH, MAP_DISPLAY_SETTINGS_PATH, MAP_EDITOR_POPULATION_BANDS_PATH, MAP_LEAFLET_SETTINGS_PATH, STATIC_DIR, TEMPLATE_DIR
-from app.maptools import RouteGraph, RouteWorkspaceRepository, RouteWorkspaceSnapshot
+from app.config import MAP_DISPLAY_SETTINGS_PATH, MAP_EDITOR_POPULATION_BANDS_PATH, MAP_LEAFLET_SETTINGS_PATH, STATIC_DIR, TEMPLATE_DIR
+from app.maptools import RouteGraph, RouteWorkspaceSnapshot
 from app.services import (
+    build_reference_data_from_city_catalog_payload,
+    build_user_city_catalog_payload,
+    create_map_bundle,
+    delete_map_bundle,
     load_city_catalog_payload,
     load_city_product_matrix_payload,
+    load_active_map_bundle,
     load_map_editor_payload,
     load_map_viewport_payload,
+    load_maps_registry,
     load_product_catalog_payload,
     load_reference_data,
     load_ui_payload,
+    map_repository_payload,
+    save_active_map,
+    save_active_map_as,
+    save_map_bundle,
     save_json,
+    set_active_map,
 )
 from app.services.openai_city_autofill import CityAutofillError, autofill_custom_city
 from app.ui.editor_models import (
     CityAutofillRequest,
     CityAutofillResponse,
     CustomCityCatalogDocument,
+    MapCityCatalogDocument,
+    MapActivateRequest,
+    MapCreateRequest,
     MapDisplaySettingsDocument,
     MapLeafletSettingsDocument,
+    MapSaveRequest,
     PopulationBandDocument,
 )
 
@@ -64,11 +79,11 @@ def _city_payload(city: Any, reference_data: Any) -> dict[str, Any]:
 
 
 def _build_bootstrap_payload() -> dict[str, Any]:
-    reference_data = load_reference_data()
-    route_repository = RouteWorkspaceRepository()
-    route_snapshot = route_repository.load_snapshot()
-    city_catalog = load_city_catalog_payload()
+    active_map = load_active_map_bundle()
+    city_catalog = [city.model_dump(mode="json") for city in active_map.cities]
     city_catalog.sort(key=lambda item: item["label"])
+    reference_data = build_reference_data_from_city_catalog_payload(city_catalog)
+    route_snapshot = active_map.route_network
     products = load_product_catalog_payload()
     products.sort(key=lambda item: (item["category"], item["name"]))
     city_product_matrix = load_city_product_matrix_payload()
@@ -79,7 +94,10 @@ def _build_bootstrap_payload() -> dict[str, Any]:
 
     return {
         "ui": load_ui_payload(),
-        "map_editor": load_map_editor_payload(),
+        "map_editor": load_map_editor_payload(
+            user_city_catalog=build_user_city_catalog_payload(city_catalog),
+        ),
+        "map_repository": map_repository_payload(),
         "cities": city_catalog,
         "products": products,
         "city_product_matrix": city_product_matrix,
@@ -116,7 +134,12 @@ def create_app() -> FastAPI:
 
     @app.get("/editor/map", response_class=HTMLResponse, include_in_schema=False)
     async def map_editor(request: Request) -> HTMLResponse:
-        editor_ui = load_map_editor_payload()
+        active_map = load_active_map_bundle()
+        editor_ui = load_map_editor_payload(
+            user_city_catalog=build_user_city_catalog_payload(
+                [city.model_dump(mode="json") for city in active_map.cities],
+            ),
+        )
         return templates.TemplateResponse(
             request=request,
             name="map_editor.html",
@@ -166,9 +189,48 @@ def create_app() -> FastAPI:
 
     @app.put("/api/editor/map/custom-cities")
     async def save_custom_cities(document: CustomCityCatalogDocument) -> dict[str, Any]:
+        active_map = load_active_map_bundle()
+        graph_node_ids = {node.id for node in active_map.route_network.nodes}
+        duplicate_city_ids = sorted({city.id for city in document.cities if city.id in graph_node_ids})
+        if duplicate_city_ids:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Os ids de cidades nao podem repetir ids de nos de ligacao: {', '.join(duplicate_city_ids)}.",
+            )
+
+        base_cities = [city for city in active_map.cities if not city.is_user_created]
+        active_map.cities = sorted(
+            [*base_cities, *document.cities],
+            key=lambda city: city.label,
+        )
+        save_map_bundle(active_map)
         payload = document.model_dump(mode="json")
         payload["cities"] = sorted(payload["cities"], key=lambda city: city["label"])
-        return save_json(CITY_USER_CATALOG_PATH, payload)
+        return payload
+
+    @app.put("/api/editor/map/cities")
+    async def save_map_cities(document: MapCityCatalogDocument) -> dict[str, Any]:
+        active_map = load_active_map_bundle()
+        graph_node_ids = {node.id for node in active_map.route_network.nodes}
+        duplicate_city_ids = sorted({city.id for city in document.cities if city.id in graph_node_ids})
+        if duplicate_city_ids:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Os ids de cidades nao podem repetir ids de nos de ligacao: {', '.join(duplicate_city_ids)}.",
+            )
+
+        if active_map.id == "map_brasix_default":
+            protected_base_cities = [city for city in active_map.cities if not city.is_user_created]
+            editable_cities = [city for city in document.cities if city.is_user_created]
+            active_map.cities = sorted([*protected_base_cities, *editable_cities], key=lambda city: city.label)
+        else:
+            active_map.cities = sorted(document.cities, key=lambda city: city.label)
+
+        save_map_bundle(active_map)
+        return {
+            "id": document.id,
+            "cities": [city.model_dump(mode="json") for city in active_map.cities],
+        }
 
     @app.post("/api/editor/map/custom-cities/autofill", response_model=CityAutofillResponse)
     async def autofill_custom_city_payload(document: CityAutofillRequest) -> CityAutofillResponse:
@@ -194,7 +256,8 @@ def create_app() -> FastAPI:
 
     @app.put("/api/editor/map/route-network")
     async def save_route_network(snapshot: RouteWorkspaceSnapshot) -> dict[str, Any]:
-        city_ids = {city["id"] for city in load_city_catalog_payload()}
+        active_map = load_active_map_bundle()
+        city_ids = {city.id for city in active_map.cities}
         graph_node_ids = {node.id for node in snapshot.nodes}
         duplicate_node_ids = sorted(city_ids & graph_node_ids)
         if duplicate_node_ids:
@@ -224,18 +287,110 @@ def create_app() -> FastAPI:
                 detail=f"As rotas precisam ligar apenas cidades ou nos do grafo conhecidos: {', '.join(invalid_edges)}.",
             )
 
-        route_repository = RouteWorkspaceRepository()
-        return route_repository.save_snapshot(snapshot).model_dump(mode="json")
+        active_map.route_network = snapshot
+        save_map_bundle(active_map)
+        return snapshot.model_dump(mode="json")
+
+    @app.get("/api/editor/maps")
+    async def editor_maps() -> dict[str, Any]:
+        return map_repository_payload()
+
+    @app.post("/api/editor/maps/new")
+    async def create_editor_map(request: MapCreateRequest) -> dict[str, Any]:
+        registry, bundle = create_map_bundle(request)
+        return {
+            "map_repository": {
+                "id": registry.id,
+                "active_map_id": registry.active_map_id,
+                "active_map": next(item.model_dump(mode="json") for item in registry.maps if item.id == registry.active_map_id),
+                "maps": [item.model_dump(mode="json") for item in registry.maps],
+            },
+            "active_map": {
+                "id": bundle.id,
+                "name": bundle.name,
+                "slug": bundle.slug,
+            },
+        }
+
+    @app.post("/api/editor/maps/save")
+    async def save_editor_map(request: MapSaveRequest) -> dict[str, Any]:
+        registry, bundle = save_active_map(request)
+        return {
+            "map_repository": {
+                "id": registry.id,
+                "active_map_id": registry.active_map_id,
+                "active_map": next(item.model_dump(mode="json") for item in registry.maps if item.id == registry.active_map_id),
+                "maps": [item.model_dump(mode="json") for item in registry.maps],
+            },
+            "active_map": {
+                "id": bundle.id,
+                "name": bundle.name,
+                "slug": bundle.slug,
+            },
+        }
+
+    @app.post("/api/editor/maps/save-as")
+    async def save_editor_map_as(request: MapSaveRequest) -> dict[str, Any]:
+        registry, bundle = save_active_map_as(request)
+        return {
+            "map_repository": {
+                "id": registry.id,
+                "active_map_id": registry.active_map_id,
+                "active_map": next(item.model_dump(mode="json") for item in registry.maps if item.id == registry.active_map_id),
+                "maps": [item.model_dump(mode="json") for item in registry.maps],
+            },
+            "active_map": {
+                "id": bundle.id,
+                "name": bundle.name,
+                "slug": bundle.slug,
+            },
+        }
+
+    @app.put("/api/editor/maps/active")
+    async def activate_editor_map(request: MapActivateRequest) -> dict[str, Any]:
+        registry, bundle = set_active_map(request)
+        return {
+            "map_repository": {
+                "id": registry.id,
+                "active_map_id": registry.active_map_id,
+                "active_map": next(item.model_dump(mode="json") for item in registry.maps if item.id == registry.active_map_id),
+                "maps": [item.model_dump(mode="json") for item in registry.maps],
+            },
+            "active_map": {
+                "id": bundle.id,
+                "name": bundle.name,
+                "slug": bundle.slug,
+            },
+        }
+
+    @app.delete("/api/editor/maps/{map_id}")
+    async def delete_editor_map(map_id: str) -> dict[str, Any]:
+        try:
+            registry = delete_map_bundle(map_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+        active_entry = next(item for item in registry.maps if item.id == registry.active_map_id)
+        return {
+            "map_repository": {
+                "id": registry.id,
+                "active_map_id": registry.active_map_id,
+                "active_map": active_entry.model_dump(mode="json"),
+                "maps": [item.model_dump(mode="json") for item in registry.maps],
+            },
+        }
 
     @app.get("/api/routes/path")
     async def route_path(
         start_city_id: str = Query(min_length=1),
         end_city_id: str = Query(min_length=1),
     ) -> dict[str, Any]:
-        reference_data = load_reference_data()
-        route_repository = RouteWorkspaceRepository()
-        route_snapshot = route_repository.load_snapshot()
-        graph = RouteGraph(list(reference_data.cities.values()), route_snapshot.edges, route_snapshot.nodes)
+        active_map = load_active_map_bundle()
+        city_catalog = [city.model_dump(mode="json") for city in active_map.cities]
+        reference_data = build_reference_data_from_city_catalog_payload(city_catalog)
+        graph = RouteGraph(list(reference_data.cities.values()), active_map.route_network.edges, active_map.route_network.nodes)
 
         try:
             path = graph.shortest_path(start_city_id=start_city_id, end_city_id=end_city_id)

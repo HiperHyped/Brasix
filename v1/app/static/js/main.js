@@ -9,7 +9,7 @@ import {
   fitBrasixBounds,
   sortPopulationBands,
   zoomMapByFactor,
-} from "./shared/leaflet-map.js";
+} from "./shared/leaflet-map.js?v=20260327-route-legend-1";
 import { escapeHtml, formatValue, numberFormatter } from "./shared/formatters.js";
 
 const POPULATION_BAND_FILL_PALETTE = ["#2d5a27", "#4d7c39", "#7b7b2d", "#8c4f10", "#a85d2a", "#2b6f8f"];
@@ -74,6 +74,14 @@ function displayRouteRender() {
 
 function displayGraphNodeRender() {
   return displaySettings().graph_node_render || {};
+}
+
+function activeMapId() {
+  return appState.bootstrap?.map_repository?.active_map_id || "map_brasix_default";
+}
+
+function citiesAreUnifiedInActiveMap() {
+  return activeMapId() !== "map_brasix_default";
 }
 
 function populationBandFillColor(band) {
@@ -372,7 +380,7 @@ function cityFillColor(city) {
   if (city.id === appState.selectedCityId) {
     return displayCityRender().selected_fill_color || "#8c4f10";
   }
-  if (city.is_user_created) {
+  if (!citiesAreUnifiedInActiveMap() && city.is_user_created) {
     return "#4f8593";
   }
   const mode = displayCityRender().color_mode || "commodity";
@@ -419,7 +427,7 @@ function routeStyleOverrides() {
 
 function cityTooltipMarkup(city) {
   const product = currentProduct();
-  const originLine = city.is_user_created ? "Cidade criada no editor" : city.source_region_name;
+  const originLine = (!citiesAreUnifiedInActiveMap() && city.is_user_created) ? "Cidade criada no editor" : city.source_region_name;
   const header = `<strong>${escapeHtml(city.label)}</strong><br>${escapeHtml(originLine)}<br>Populacao: ${numberFormatter(0).format(city.population_thousands)} mil`;
   if (product) {
     const value = city.product_values[product.id] || 0;

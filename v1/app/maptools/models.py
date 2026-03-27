@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, model_validator
 
 RouteMode = Literal["road", "rail", "river", "sea", "air", "custom"]
 RouteStatus = Literal["planned", "active", "blocked"]
-RouteSurfaceCode = Literal["double_road", "single_road", "dirt_road", "waterway"]
+RouteSurfaceCode = Literal["double_road", "single_road", "dirt_road", "waterway", "railway"]
 RouteGeometryCode = Literal["straight", "polycurve"]
 RouteGraphNodeKind = Literal["junction"]
 RouteGraphNodePlacementMode = Literal["free", "snapped_route"]

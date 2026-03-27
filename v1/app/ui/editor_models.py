@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import math
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
+
+from app.maptools.models import RouteWorkspaceSnapshot
 
 
 class PopulationBandRecord(BaseModel):
@@ -61,7 +64,7 @@ class CustomCityAutofillRecord(BaseModel):
     last_error: str | None = None
 
 
-class CustomCityRecord(BaseModel):
+class MapCityRecord(BaseModel):
     id: str
     name: str = Field(min_length=1)
     label: str = Field(min_length=1)
@@ -71,8 +74,12 @@ class CustomCityRecord(BaseModel):
     population_thousands: float = Field(ge=0)
     latitude: float = Field(ge=-90, le=90)
     longitude: float = Field(ge=-180, le=180)
-    is_user_created: bool = True
+    is_user_created: bool = False
     autofill: CustomCityAutofillRecord | None = None
+
+
+class CustomCityRecord(MapCityRecord):
+    is_user_created: bool = True
 
 
 class CustomCityCatalogDocument(BaseModel):
@@ -87,12 +94,95 @@ class CustomCityCatalogDocument(BaseModel):
         return self
 
 
+class MapCityCatalogDocument(BaseModel):
+    id: str = "map_city_catalog_v1"
+    cities: list[MapCityRecord] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_cities(self) -> "MapCityCatalogDocument":
+        ids = [city.id for city in self.cities]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Cada cidade do mapa precisa de um id unico.")
+        return self
+
+
 class CityAutofillRequest(BaseModel):
     city: CustomCityRecord
 
 
 class CityAutofillResponse(BaseModel):
     city: CustomCityRecord
+
+
+class MapSourceOptionsRecord(BaseModel):
+    include_base_cities: bool = True
+    include_created_cities: bool = True
+    include_routes: bool = True
+    include_graph_nodes: bool = True
+
+
+class MapRegistryEntryRecord(BaseModel):
+    id: str
+    name: str = Field(min_length=1)
+    slug: str = Field(min_length=1)
+    description: str = ""
+    created_at: str = Field(default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds"))
+    updated_at: str = Field(default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds"))
+    path: str = Field(min_length=1)
+    city_count: int = Field(default=0, ge=0)
+    route_count: int = Field(default=0, ge=0)
+    graph_node_count: int = Field(default=0, ge=0)
+
+
+class MapRegistryDocument(BaseModel):
+    id: str = "maps_registry_v1"
+    active_map_id: str
+    maps: list[MapRegistryEntryRecord] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_registry(self) -> "MapRegistryDocument":
+        if not self.maps:
+            raise ValueError("O repositorio de mapas precisa de pelo menos um mapa.")
+        map_ids = [item.id for item in self.maps]
+        if len(map_ids) != len(set(map_ids)):
+            raise ValueError("Cada mapa do repositorio precisa de um id unico.")
+        if self.active_map_id not in set(map_ids):
+            raise ValueError("O mapa ativo precisa existir no registro.")
+        return self
+
+
+class MapBundleDocument(BaseModel):
+    id: str
+    name: str = Field(min_length=1)
+    slug: str = Field(min_length=1)
+    description: str = ""
+    created_at: str = Field(default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds"))
+    updated_at: str = Field(default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds"))
+    source_options: MapSourceOptionsRecord = Field(default_factory=MapSourceOptionsRecord)
+    cities: list[MapCityRecord] = Field(default_factory=list)
+    route_network: RouteWorkspaceSnapshot = Field(default_factory=RouteWorkspaceSnapshot)
+
+    @model_validator(mode="after")
+    def validate_bundle(self) -> "MapBundleDocument":
+        city_ids = [city.id for city in self.cities]
+        if len(city_ids) != len(set(city_ids)):
+            raise ValueError("Cada cidade do mapa precisa de um id unico.")
+        return self
+
+
+class MapCreateRequest(BaseModel):
+    name: str = Field(min_length=1)
+    description: str = ""
+    options: MapSourceOptionsRecord = Field(default_factory=MapSourceOptionsRecord)
+
+
+class MapSaveRequest(BaseModel):
+    name: str | None = None
+    description: str | None = None
+
+
+class MapActivateRequest(BaseModel):
+    map_id: str = Field(min_length=1)
 
 
 class MapDisplayVisibilityRecord(BaseModel):

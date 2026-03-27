@@ -37,6 +37,10 @@ function edgeId(fromCityId, toCityId) {
   return `edge-${fromCityId}-${toCityId}-${Date.now()}`;
 }
 
+function routeModeFromSurfaceType(surfaceType) {
+  return surfaceType?.mode || "road";
+}
+
 export function buildEdgeFromDraft({ draft, citiesById, surfaceType, geometryType, cityIds = new Set() }) {
   const fromNodeId = draft.fromCityId;
   const toNodeId = draft.toCityId;
@@ -46,7 +50,7 @@ export function buildEdgeFromDraft({ draft, citiesById, surfaceType, geometryTyp
     to_node_id: toNodeId,
     from_city_id: cityIds.has(fromNodeId) ? fromNodeId : null,
     to_city_id: cityIds.has(toNodeId) ? toNodeId : null,
-    mode: "road",
+    mode: routeModeFromSurfaceType(surfaceType),
     surface_type_id: surfaceType.id,
     surface_code: surfaceType.code,
     geometry_type_id: geometryType.id,

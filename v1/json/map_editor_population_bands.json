@@ -17,7 +17,7 @@
       "min_population_thousands": 50.0,
       "max_population_thousands": 100.0,
       "pin_id": "pin_circle_bullseye",
-      "marker_size_px": 14,
+      "marker_size_px": 12,
       "legend_order": 2
     },
     {
@@ -26,7 +26,7 @@
       "min_population_thousands": 100.0,
       "max_population_thousands": 250.0,
       "pin_id": "pin_circle_ring",
-      "marker_size_px": 16,
+      "marker_size_px": 13,
       "legend_order": 3
     },
     {
@@ -44,7 +44,7 @@
       "min_population_thousands": 500.0,
       "max_population_thousands": 1000.0,
       "pin_id": "pin_circle_bullseye",
-      "marker_size_px": 20,
+      "marker_size_px": 17,
       "legend_order": 5
     },
     {
@@ -53,7 +53,7 @@
       "min_population_thousands": 1000.0,
       "max_population_thousands": 2500.0,
       "pin_id": "pin_diamond_solid",
-      "marker_size_px": 20,
+      "marker_size_px": 18,
       "legend_order": 6
     },
     {
@@ -62,7 +62,7 @@
       "min_population_thousands": 2500.0,
       "max_population_thousands": null,
       "pin_id": "pin_square_ring",
-      "marker_size_px": 18,
+      "marker_size_px": 16,
       "legend_order": 7
     }
   ]

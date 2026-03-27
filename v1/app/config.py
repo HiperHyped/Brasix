@@ -35,6 +35,7 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 ENV_FILE_PATH = ROOT_DIR / ".env"
 DATA_DIR = _env_path("BRASIX_DATA_DIR", ROOT_DIR / "data")
 JSON_DIR = _env_path("BRASIX_JSON_DIR", ROOT_DIR / "json")
+MAPS_DIR = _env_path("BRASIX_MAPS_DIR", ROOT_DIR / "maps")
 STATIC_DIR = ROOT_DIR / "app" / "static"
 TEMPLATE_DIR = ROOT_DIR / "app" / "ui" / "templates"
 RAW_DATA_DIR = _env_path("BRASIX_RAW_DATA_DIR", ROOT_DIR / "dados")
@@ -49,6 +50,7 @@ UI_SHORTCUTS_MAP_EDITOR_PATH = JSON_DIR / "ui_shortcuts_map_editor.json"
 UI_MAP_DISPLAY_CONTROLS_PATH = JSON_DIR / "ui_map_display_controls.json"
 UI_MAP_LEAFLET_CONTROLS_PATH = JSON_DIR / "ui_map_leaflet_controls.json"
 UI_MAP_SHORTCUTS_PANEL_PATH = JSON_DIR / "ui_map_shortcuts_panel.json"
+UI_MAP_REPOSITORY_CONTROLS_PATH = JSON_DIR / "ui_map_repository_controls.json"
 AI_CITY_AUTOFILL_CONFIG_PATH = JSON_DIR / "ai_city_autofill_config.json"
 CITY_CATALOG_PATH = JSON_DIR / "city_catalog.json"
 CITY_USER_CATALOG_PATH = JSON_DIR / "city_catalog_user.json"
@@ -64,6 +66,7 @@ MAP_DISPLAY_SETTINGS_PATH = JSON_DIR / "map_display_settings.json"
 MAP_LEAFLET_SETTINGS_PATH = JSON_DIR / "map_leaflet_settings.json"
 ROUTE_SURFACE_TYPES_PATH = JSON_DIR / "route_surface_types.json"
 ROUTE_GEOMETRY_TYPES_PATH = JSON_DIR / "route_geometry_types.json"
+MAPS_REGISTRY_PATH = MAPS_DIR / "maps_registry.json"
 
 
 def runtime_env(name: str, default: str | None = None) -> str | None:

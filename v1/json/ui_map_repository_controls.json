@@ -1,0 +1,87 @@
+{
+  "id": "ui_map_repository_controls_v1",
+  "header_actions": [
+    {
+      "id": "map_repository_action_new",
+      "label": "Novo",
+      "icon": "add",
+      "action": "open-map-new"
+    },
+    {
+      "id": "map_repository_action_save",
+      "label": "Salvar",
+      "icon": "save",
+      "action": "open-map-save"
+    },
+    {
+      "id": "map_repository_action_load",
+      "label": "Carregar",
+      "icon": "folder_open",
+      "action": "open-map-load"
+    }
+  ],
+  "new_map_dialog": {
+    "eyebrow": "Mapas",
+    "title": "Novo mapa",
+    "copy": "Escolha o que entra no novo mapa antes de comecar a editar.",
+    "name_label": "Nome do mapa",
+    "description_label": "Descricao",
+    "primary_button_label": "Criar mapa",
+    "secondary_button_label": "Cancelar",
+    "options": [
+      {
+        "id": "map_source_option_base_cities",
+        "field": "include_base_cities",
+        "label": "Incluir cidades-base",
+        "description": "Carrega a malha base de cidades do projeto."
+      },
+      {
+        "id": "map_source_option_created_cities",
+        "field": "include_created_cities",
+        "label": "Incluir cidades criadas",
+        "description": "Traz para o novo mapa as cidades criadas no editor do mapa atual."
+      },
+      {
+        "id": "map_source_option_routes",
+        "field": "include_routes",
+        "label": "Incluir rotas",
+        "description": "Copia as rotas do mapa ativo."
+      },
+      {
+        "id": "map_source_option_graph_nodes",
+        "field": "include_graph_nodes",
+        "label": "Incluir nos de ligacao",
+        "description": "Mantem os nos livres e os nos necessarios para as rotas copiadas."
+      }
+    ]
+  },
+  "save_map_dialog": {
+    "eyebrow": "Mapas",
+    "title": "Salvar mapa",
+    "copy": "Salve o mapa ativo ou crie uma nova versao com outro nome.",
+    "current_map_label": "Mapa ativo",
+    "name_label": "Nome do mapa",
+    "description_label": "Descricao",
+    "save_button_label": "Salvar atual",
+    "save_as_button_label": "Salvar como novo",
+    "secondary_button_label": "Cancelar"
+  },
+  "load_map_dialog": {
+    "eyebrow": "Mapas",
+    "title": "Carregar mapa",
+    "copy": "Escolha um mapa do repositorio para tornar ativo no editor e no app.",
+    "close_button_label": "Fechar",
+    "load_button_label": "Carregar",
+    "delete_button_label": "Excluir",
+    "active_badge_label": "Ativo",
+    "empty_label": "Nenhum mapa salvo ainda."
+  },
+  "status_messages": {
+    "map_created": "Novo mapa criado e carregado no editor.",
+    "map_saved": "Mapa ativo salvo no repositorio.",
+    "map_saved_as": "Mapa salvo como nova versao e carregado no editor.",
+    "map_loaded": "Mapa carregado no editor e no app.",
+    "map_deleted": "Mapa excluido do repositorio.",
+    "map_action_failed": "Nao foi possivel concluir a operacao do mapa."
+  }
+}
