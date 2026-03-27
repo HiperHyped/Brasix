@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="editor-shell">
+  <header class="topbar editor-topbar">
+    <div class="brand-lockup">
+      <h1 id="editor-brand-title">Brasix</h1>
+      <span class="brand-divider"></span>
+      <p id="editor-brand-subtitle">Editor de mapa</p>
+    </div>
+
+    <div id="editor-header-badges" class="editor-header-badges" aria-label="Estado do editor"></div>
+    <div id="editor-header-actions" class="editor-header-actions" aria-label="Acoes do editor"></div>
+  </header>
+
+  <section id="editor-grid" class="editor-grid">
+    <aside class="editor-sidebar">
+      <section class="editor-card editor-sidebar-card">
+        <div id="editor-sidebar-tabs" class="editor-sidebar-tabs" role="tablist" aria-label="Abas do editor">
+          <button id="editor-tab-button-legends" class="editor-sidebar-tab" type="button" role="tab" data-sidebar-tab="map_editor_tab_legends" aria-selected="true">
+            Legendas
+          </button>
+          <button id="editor-tab-button-layers" class="editor-sidebar-tab" type="button" role="tab" data-sidebar-tab="map_editor_tab_layers" aria-selected="false">
+            Camadas
+          </button>
+          <button id="editor-tab-button-leaflet" class="editor-sidebar-tab" type="button" role="tab" data-sidebar-tab="map_editor_tab_leaflet" aria-selected="false">
+            Mapa
+          </button>
+        </div>
+
+        <div id="editor-sidebar-panel-legends" class="editor-sidebar-panel" data-tab-panel="map_editor_tab_legends" style="display:grid;">
+          <div class="section-head">
+            <div>
+              <p id="editor-bands-eyebrow" class="eyebrow">Pins</p>
+              <h2 id="editor-bands-title">Faixas de populacao</h2>
+            </div>
+            <button id="editor-add-band-button" class="secondary-button" type="button">Nova faixa</button>
+          </div>
+          <div id="editor-band-list" class="editor-band-list"></div>
+          <div class="editor-node-controls editor-node-controls-compact">
+            <div class="editor-inline-fields">
+              <label class="field">
+                <span id="editor-node-style-label">Formato do no</span>
+                <select id="editor-node-style-select" class="editor-input"></select>
+              </label>
+              <label class="field">
+                <span id="editor-node-size-label">Tamanho</span>
+                <input id="editor-node-size-input" class="editor-input" type="number" min="10" max="48" step="1" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div id="editor-sidebar-panel-layers" class="editor-sidebar-panel" data-tab-panel="map_editor_tab_layers" hidden style="display:none;">
+          <div class="section-head">
+            <div>
+              <p id="editor-display-eyebrow" class="eyebrow">Camadas</p>
+              <h2 id="editor-display-title">Camadas desenhadas</h2>
+            </div>
+          </div>
+          <div id="editor-overlay-controls" class="editor-display-controls"></div>
+        </div>
+
+        <div id="editor-sidebar-panel-leaflet" class="editor-sidebar-panel" data-tab-panel="map_editor_tab_leaflet" hidden style="display:none;">
+          <div class="section-head">
+            <div>
+              <p id="editor-leaflet-eyebrow" class="eyebrow">Mapa</p>
+              <h2 id="editor-leaflet-title">Mapa Leaflet</h2>
+            </div>
+          </div>
+          <div id="editor-leaflet-controls" class="editor-display-controls"></div>
+        </div>
+      </section>
+    </aside>
+
+    <div class="editor-resizer" data-resizer="left" aria-hidden="true"></div>
+
+    <section class="editor-map-panel">
+      <div class="map-frame editor-map-frame">
+        <div id="editor-map-stage" class="map-stage editor-map-stage" aria-label="Editor de mapa do Brasil"></div>
+
+        <div id="editor-population-legend" class="editor-population-legend" aria-label="Legenda de populacao"></div>
+        <div id="editor-draft-status" class="editor-status-box editor-status-strip"></div>
+        <div id="editor-city-popup" class="editor-city-popup" hidden aria-hidden="true">
+          <div class="editor-city-popup-card">
+            <div class="editor-city-popup-head">
+              <div>
+                <p id="editor-city-eyebrow" class="eyebrow">Cidades</p>
+                <h3 id="editor-city-title" class="editor-subsection-title">Cidade manual</h3>
+              </div>
+              <button id="editor-city-popup-close-button" class="ghost-button editor-city-popup-close" type="button" aria-label="Fechar janela da cidade manual">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div id="editor-city-form" class="editor-city-form"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <dialog id="editor-shortcuts-dialog" class="editor-shortcuts-dialog" aria-labelledby="editor-shortcuts-title">
+    <form method="dialog" class="editor-shortcuts-dialog-card">
+      <div class="editor-shortcuts-dialog-head">
+        <div class="editor-shortcuts-dialog-copy">
+          <p id="editor-shortcuts-eyebrow" class="eyebrow">Atalhos</p>
+          <h2 id="editor-shortcuts-title">Janela de atalhos</h2>
+          <p id="editor-shortcuts-copy" class="editor-dialog-copy"></p>
+        </div>
+        <button id="editor-shortcuts-close-button" class="secondary-button" type="submit">Fechar</button>
+      </div>
+      <div id="editor-shortcuts-list" class="editor-shortcuts-list editor-shortcuts-dialog-list"></div>
+    </form>
+  </dialog>
+</main>
+
+  <script type="module">
+  const editorModuleUrl = new URL("{{ request.url_for('static', path='js/editors/map-editor.js') }}", window.location.href);
+  editorModuleUrl.searchParams.set("v", "20260327-13");
+
+  function showEditorLoadError(error) {
+    const statusBox = document.getElementById("editor-draft-status");
+    if (!statusBox) {
+      return;
+    }
+
+    const message = error?.message || String(error);
+    statusBox.innerHTML = "";
+
+    const copy = document.createElement("div");
+    copy.className = "editor-status-copy";
+    copy.textContent = "Falha ao carregar o editor de mapa.";
+
+    const meta = document.createElement("div");
+    meta.className = "editor-status-meta";
+
+    const item = document.createElement("div");
+    const label = document.createElement("span");
+    label.textContent = "Erro";
+    const value = document.createElement("strong");
+    value.textContent = message;
+
+    item.append(label, value);
+    meta.append(item);
+    statusBox.append(copy, meta);
+    console.error("Brasix map editor load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showEditorLoadError(event.reason);
+  });
+
+  import(editorModuleUrl.href).catch(showEditorLoadError);
+</script>
+{% endblock %}

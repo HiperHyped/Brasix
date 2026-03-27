@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Brasix Atlas | Comando Tático</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2D5A27",
+              "on-primary": "#ffffff",
+              "primary-container": "#bcf0ae",
+              "on-primary-container": "#002201",
+              "secondary": "#8c4f10",
+              "on-secondary": "#ffffff",
+              "secondary-container": "#ffdcc2",
+              "on-secondary-container": "#2e1500",
+              "tertiary": "#003c60",
+              "background": "#fef9eb",
+              "surface": "#fef9eb",
+              "surface-variant": "#e7e2d4",
+              "on-surface": "#1d1c13",
+              "on-surface-variant": "#42493e",
+              "outline": "#72796e",
+              "outline-variant": "#c2c9bb",
+              "surface-container-low": "#f8f3e5",
+              "surface-container": "#f3eee0",
+              "surface-container-high": "#ede8da",
+              "surface-container-highest": "#e7e2d4",
+              "surface-container-lowest": "#ffffff",
+            },
+            fontFamily: {
+              "sans": ["Lexend", "sans-serif"],
+              "body": ["Lexend", "sans-serif"],
+              "headline": ["Lexend", "sans-serif"],
+            },
+            borderRadius: {
+              "DEFAULT": "12px",
+              "lg": "12px",
+              "xl": "16px",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Lexend', sans-serif; height: 100vh; overflow: hidden; background-color: #fef9eb; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .atlas-grid { display: grid; grid-template-columns: 22% 50% 28%; height: calc(100vh - 64px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e7e2d4; border-radius: 10px; }
+        .map-texture { background-image: radial-gradient(#2D5A27 0.5px, transparent 0.5px); background-size: 24px 24px; opacity: 0.03; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar (as per COMPONENTS_6) -->
+<header class="flex justify-between items-center w-full px-8 py-4 bg-[#fef9eb] relative z-50">
+<div class="flex items-center gap-6">
+<h1 class="font-headline text-3xl font-bold text-[#154212] tracking-tighter">Brasix</h1>
+<div class="h-6 w-[1px] bg-surface-container-highest"></div>
+<p class="font-headline text-[#154212] tracking-tight text-lg">Cidades, commodities e rotas</p>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-[#154212] font-bold border-b-2 border-[#154212] pb-1 font-sans uppercase tracking-widest text-xs" href="#">Mapa-base do jogo</a>
+<a class="text-[#8c4f10] opacity-80 hover:bg-[#f8f3e5] transition-colors duration-200 font-sans uppercase tracking-widest text-xs" href="#">Desktop only</a>
+<a class="text-[#8c4f10] opacity-80 hover:bg-[#f8f3e5] transition-colors duration-200 font-sans uppercase tracking-widest text-xs" href="#">Rotas em evolução</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined p-2 text-secondary hover:bg-surface-container-low rounded-full transition-all active:scale-95 duration-150">settings</button>
+<button class="material-symbols-outlined p-2 text-secondary hover:bg-surface-container-low rounded-full transition-all active:scale-95 duration-150">help</button>
+<button class="material-symbols-outlined p-2 text-secondary hover:bg-surface-container-low rounded-full transition-all active:scale-95 duration-150">account_circle</button>
+</div>
+<div class="absolute bottom-0 left-0 bg-[#e7e2d4] h-[1px] w-full"></div>
+</header>
+<div class="flex h-[calc(100vh-64px)] overflow-hidden">
+<!-- SideNavBar (as per COMPONENTS_6) -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] flex flex-col z-40 bg-[#f8f3e5] w-20 border-r border-[#e7e2d4]">
+<div class="flex flex-col items-center py-6 gap-1 border-b border-[#e7e2d4] mb-4">
+<span class="material-symbols-outlined text-[#154212] text-3xl" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="text-[8px] font-bold uppercase text-center leading-none text-primary">Comando<br/>Tático</span>
+</div>
+<nav class="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+<div class="bg-[#ffffff] text-[#154212] rounded-lg shadow-sm m-2 flex flex-col items-center justify-center py-3 cursor-pointer transition-all duration-300">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[10px] font-medium mt-1">Rotas</span>
+</div>
+<div class="text-[#8c4f10] flex flex-col items-center justify-center py-3 hover:text-[#154212] hover:bg-white/50 transition-all duration-300 cursor-pointer">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-[10px] font-medium mt-1">Logística</span>
+</div>
+<div class="text-[#8c4f10] flex flex-col items-center justify-center py-3 hover:text-[#154212] hover:bg-white/50 transition-all duration-300 cursor-pointer">
+<span class="material-symbols-outlined">agriculture</span>
+<span class="text-[10px] font-medium mt-1">Commodities</span>
+</div>
+<div class="text-[#8c4f10] flex flex-col items-center justify-center py-3 hover:text-[#154212] hover:bg-white/50 transition-all duration-300 cursor-pointer">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-[10px] font-medium mt-1">Ranking</span>
+</div>
+<div class="text-[#8c4f10] flex flex-col items-center justify-center py-3 hover:text-[#154212] hover:bg-white/50 transition-all duration-300 cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-medium mt-1">Estatísticas</span>
+</div>
+</nav>
+<div class="p-2 border-t border-[#e7e2d4]">
+<button class="w-full aspect-square bg-primary text-on-primary rounded-lg flex flex-col items-center justify-center transition-transform active:scale-95">
+<span class="material-symbols-outlined">add</span>
+<span class="text-[9px] font-bold uppercase">Novo</span>
+</button>
+</div>
+</aside>
+<!-- Main Dashboard Content -->
+<main class="ml-20 w-full atlas-grid">
+<!-- LEFT COLUMN: Filters, Metrics, Ranking -->
+<section class="border-r border-surface-container-highest p-6 flex flex-col overflow-hidden">
+<div class="space-y-4 mb-8">
+<div class="space-y-1">
+<label class="font-sans uppercase tracking-widest text-[10px] text-secondary font-bold">Commodity</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg text-sm py-2 px-3 focus:ring-1 focus:ring-primary appearance-none">
+<option>Soja</option>
+<option>Milho</option>
+<option>Algodão</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1.5 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-sans uppercase tracking-widest text-[10px] text-secondary font-bold">Estado</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none rounded-lg text-sm py-2 px-3 focus:ring-1 focus:ring-primary appearance-none">
+<option>Todos</option>
+<option>Mato Grosso</option>
+<option>Goiás</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1.5 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Small Metrics Grid -->
+<div class="grid grid-cols-2 gap-3 mb-8">
+<div class="p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-lg shadow-sm">
+<p class="text-[10px] uppercase font-bold text-secondary tracking-tighter">Cidades</p>
+<p class="font-headline text-2xl text-primary font-bold leading-tight">120</p>
+</div>
+<div class="p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-lg shadow-sm">
+<p class="text-[10px] uppercase font-bold text-secondary tracking-tighter">Variedade</p>
+<p class="font-headline text-2xl text-primary font-bold leading-tight">30</p>
+</div>
+<div class="p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-lg shadow-sm">
+<p class="text-[10px] uppercase font-bold text-secondary tracking-tighter">Rotas Ativas</p>
+<p class="font-headline text-2xl text-primary font-bold leading-tight">15</p>
+</div>
+<div class="p-4 bg-primary text-on-primary rounded-lg shadow-sm">
+<p class="text-[10px] uppercase font-bold opacity-80 tracking-tighter">Líder Regional</p>
+<p class="font-headline text-sm font-bold truncate">Sorriso, MT</p>
+</div>
+</div>
+<!-- Ranking -->
+<div class="flex-1 flex flex-col overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-headline text-xl text-primary font-bold">Top Produtores</h3>
+<span class="text-[10px] font-sans bg-surface-container-highest px-2 py-1 rounded-full uppercase font-bold">Soja (t)</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar pr-2">
+<table class="w-full text-left border-separate border-spacing-y-2">
+<tbody>
+<tr class="bg-surface-container-lowest group cursor-pointer hover:bg-primary/5 transition-colors">
+<td class="py-3 pl-4 rounded-l-lg font-headline font-bold text-primary w-10">01.</td>
+<td class="py-3 text-sm font-semibold">Sorriso, MT</td>
+<td class="py-3 text-right pr-4 rounded-r-lg font-headline font-bold text-primary">15.000</td>
+</tr>
+<tr class="bg-surface-container-low group cursor-pointer hover:bg-primary/5 transition-colors">
+<td class="py-3 pl-4 rounded-l-lg font-headline font-bold text-primary w-10">02.</td>
+<td class="py-3 text-sm font-semibold">Rio Verde, GO</td>
+<td class="py-3 text-right pr-4 rounded-r-lg font-headline font-bold text-primary">14.000</td>
+</tr>
+<tr class="bg-surface-container-lowest group cursor-pointer hover:bg-primary/5 transition-colors">
+<td class="py-3 pl-4 rounded-l-lg font-headline font-bold text-primary w-10">03.</td>
+<td class="py-3 text-sm font-semibold">Sapezal, MT</td>
+<td class="py-3 text-right pr-4 rounded-r-lg font-headline font-bold text-primary">11.200</td>
+</tr>
+<tr class="bg-surface-container-low group cursor-pointer hover:bg-primary/5 transition-colors">
+<td class="py-3 pl-4 rounded-l-lg font-headline font-bold text-primary w-10">04.</td>
+<td class="py-3 text-sm font-semibold">Cristalina, GO</td>
+<td class="py-3 text-right pr-4 rounded-r-lg font-headline font-bold text-primary">9.800</td>
+</tr>
+<tr class="bg-surface-container-lowest group cursor-pointer hover:bg-primary/5 transition-colors">
+<td class="py-3 pl-4 rounded-l-lg font-headline font-bold text-primary w-10">05.</td>
+<td class="py-3 text-sm font-semibold">Nova Mutum, MT</td>
+<td class="py-3 text-right pr-4 rounded-r-lg font-headline font-bold text-primary">8.500</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- CENTER COLUMN: The Map -->
+<section class="relative bg-surface p-4 overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 map-texture"></div>
+<!-- Map UI Container -->
+<div class="relative w-full h-full rounded-xl overflow-hidden shadow-inner border border-surface-container-highest bg-[#fdfaf2] flex items-center justify-center">
+<img alt="Stylized topographic map of Brazil with agricultural zones" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsW7ksfM4E8Zp6jSnI7KVsjY3k223bthyqBYHz2e9hbjS6jVNHmN2cCN_6YLiiVFEquZkhI_ZEMkw03z7xlhUoLrS1skMuaGbdO7crPtcWxT_N1g5H1fxQ6s1uasgd20ExjEbdWJcfEmU7kKlU2xZk1BoNNcyj8lrBwE6DUowoM7FkIDm4QAsXKuyVinraybd7A2N3mlVt2IbWa1QL9N9TNfKFuRl56MhQYl3gpjkbUxeLWvKRb_aE_Qq6CK1cVQYAmxnEGH1xLA"/>
+<!-- Tactical Overlays -->
+<div class="relative w-full h-full">
+<!-- Route Line -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" viewbox="0 0 1000 800">
+<path d="M420,300 Q550,500 750,700" fill="none" stroke="#2D5A27" stroke-dasharray="8,4" stroke-width="3"></path>
+</svg>
+<!-- Point: Sorriso (Active Selection) -->
+<div class="absolute top-[37.5%] left-[42%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="absolute inset-0 scale-[2.5] bg-primary/20 rounded-full animate-pulse"></div>
+<div class="w-7 h-7 bg-primary rounded-full border-4 border-white shadow-lg relative z-10 flex items-center justify-center">
+<span class="w-2 h-2 bg-white rounded-full"></span>
+</div>
+<div class="absolute top-10 left-1/2 -translate-x-1/2 bg-primary text-on-primary text-[11px] px-3 py-1 rounded-lg shadow-lg whitespace-nowrap font-bold">Sorriso, MT</div>
+</div>
+<!-- Point: Rio Verde -->
+<div class="absolute top-[55%] left-[53%] -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="w-5 h-5 bg-secondary rounded-full border-2 border-white shadow-md"></div>
+<!-- Tooltip -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white p-3 rounded-lg shadow-xl border border-outline-variant/30 flex flex-col items-center pointer-events-none min-w-[140px] opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-xs font-bold text-on-surface">Rio Verde, GO</span>
+<div class="w-full h-[1px] bg-surface-container-highest my-1.5"></div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] uppercase font-bold text-secondary">Soja</span>
+<span class="text-sm font-headline text-primary font-bold">14.000 t</span>
+</div>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-r border-b border-outline-variant/30"></div>
+</div>
+</div>
+<!-- Point: Santos -->
+<div class="absolute top-[87.5%] left-[75%] -translate-x-1/2 -translate-y-1/2">
+<div class="w-5 h-5 bg-tertiary rounded-full border-2 border-white shadow-md"></div>
+<span class="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] text-tertiary font-bold tracking-tighter uppercase whitespace-nowrap">Porto de Santos</span>
+</div>
+</div>
+<!-- Map Controls -->
+<div class="absolute bottom-6 right-6 flex flex-col gap-2">
+<button class="w-12 h-12 bg-white shadow-lg rounded-lg flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined font-bold">add</span>
+</button>
+<button class="w-12 h-12 bg-white shadow-lg rounded-lg flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined font-bold">remove</span>
+</button>
+</div>
+<div class="absolute top-6 left-6">
+<div class="bg-white/90 backdrop-blur-md p-3 rounded-lg border border-outline-variant/30 shadow-sm flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">explore</span>
+<span class="font-sans text-xs font-bold text-secondary uppercase tracking-tight">Projeção Cartográfica Brasix v2.4</span>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Profile, Route Planner -->
+<section class="p-6 flex flex-col gap-6 overflow-hidden bg-surface-container-low">
+<!-- Profile Card -->
+<div class="bg-surface-container-lowest rounded-lg p-6 border border-outline-variant/30 shadow-sm">
+<div class="flex items-start justify-between mb-5">
+<div>
+<h2 class="font-headline text-3xl text-primary font-bold leading-none">Sorriso, MT</h2>
+<p class="text-secondary text-xs uppercase tracking-widest mt-2 font-bold">Norte Mato-Grossense</p>
+</div>
+<span class="bg-primary-container text-on-primary-container text-[10px] font-bold px-3 py-1 rounded-full uppercase">Estado: MT</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div>
+<p class="text-[10px] uppercase text-outline font-bold tracking-wider">População</p>
+<p class="font-headline text-lg text-primary font-semibold">~95k hab.</p>
+</div>
+<div>
+<p class="text-[10px] uppercase text-outline font-bold tracking-wider">Área Cultivada</p>
+<p class="font-headline text-lg text-primary font-semibold">600k ha</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-2">
+<span class="text-xl">🫘</span>
+<span class="text-sm font-bold text-on-surface">Soja</span>
+</div>
+<span class="font-headline font-bold text-primary">15.000t</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-2">
+<span class="text-xl">🌽</span>
+<span class="text-sm font-bold text-on-surface">Milho</span>
+</div>
+<span class="font-headline font-bold text-primary">2.800t</span>
+</div>
+</div>
+</div>
+<!-- Route Planner -->
+<div class="flex-1 bg-surface-container-highest rounded-lg p-6 flex flex-col overflow-hidden">
+<h3 class="font-headline text-xl text-primary font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined">route</span>
+                    Planejador
+                </h3>
+<div class="space-y-4 mb-6">
+<div class="relative">
+<label class="block text-[10px] font-bold uppercase text-secondary mb-1">Origem</label>
+<div class="flex items-center bg-white rounded-lg p-3 border border-outline-variant/30">
+<span class="material-symbols-outlined text-sm text-primary mr-2">location_on</span>
+<span class="text-sm font-medium">Sorriso, MT</span>
+</div>
+</div>
+<div class="relative">
+<label class="block text-[10px] font-bold uppercase text-secondary mb-1">Destino</label>
+<div class="flex items-center bg-white rounded-lg p-3 border border-outline-variant/30">
+<span class="material-symbols-outlined text-sm text-tertiary mr-2">anchor</span>
+<span class="text-sm font-medium">Santos, SP (Porto)</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded-lg font-bold text-sm tracking-widest uppercase shadow-md transition-all active:scale-95">
+                        Traçar Rota
+                    </button>
+</div>
+<div class="bg-white/50 border border-outline-variant/20 rounded-lg p-4 flex-1 overflow-y-auto custom-scrollbar">
+<div class="flex justify-between items-end mb-4">
+<div>
+<p class="text-[10px] font-bold text-outline uppercase tracking-wider">Distância</p>
+<p class="font-headline text-2xl text-primary font-bold">1.850 km</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-outline uppercase tracking-wider">Logística</p>
+<p class="font-headline text-lg text-primary font-bold">Multimodal</p>
+</div>
+</div>
+<div class="space-y-4 relative">
+<div class="absolute left-[3px] top-1 bottom-1 w-[2px] bg-primary/20"></div>
+<div class="relative pl-6">
+<div class="absolute left-0 top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<p class="text-xs font-bold text-on-surface">Sorriso → Cuiabá</p>
+<p class="text-[10px] text-outline font-medium">BR-163 • Rodoviário</p>
+</div>
+<div class="relative pl-6">
+<div class="absolute left-0 top-1.5 w-2 h-2 rounded-full bg-surface-container-highest border border-primary/40"></div>
+<p class="text-xs font-bold text-on-surface">Cuiabá → C. Grande</p>
+<p class="text-[10px] text-outline font-medium">BR-060 • Rodoviário</p>
+</div>
+<div class="relative pl-6">
+<div class="absolute left-0 top-1.5 w-2 h-2 rounded-full bg-tertiary"></div>
+<p class="text-xs font-bold text-on-surface">Porto de Santos</p>
+<p class="text-[10px] text-outline font-medium">Terminal Exportação</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

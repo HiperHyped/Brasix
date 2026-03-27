@@ -1,0 +1,54 @@
+{
+  "id": "ui_map_editor_themes_v1",
+  "default_theme_id": "map_editor_theme_day",
+  "themes": [
+    {
+      "id": "map_editor_theme_day",
+      "label": "Modo diurno",
+      "root_data_theme": "day",
+      "next_theme_id": "map_editor_theme_night",
+      "toggle_action_label": "Modo noturno",
+      "toggle_action_icon": "dark_mode",
+      "css_variables": {
+        "--bg": "#fef9eb",
+        "--surface": "#f8f3e5",
+        "--surface-soft": "#f3eee0",
+        "--surface-lift": "#ffffff",
+        "--surface-deep": "#e7e2d4",
+        "--text": "#1d1c13",
+        "--muted": "#5f6558",
+        "--green": "#2d5a27",
+        "--green-soft": "#bcf0ae",
+        "--copper": "#8c4f10",
+        "--blue": "#4f8593",
+        "--border": "rgba(114, 121, 110, 0.18)",
+        "--shadow-soft": "0 18px 45px rgba(63, 52, 30, 0.08)",
+        "--shadow-card": "0 12px 24px rgba(63, 52, 30, 0.06)"
+      }
+    },
+    {
+      "id": "map_editor_theme_night",
+      "label": "Modo noturno",
+      "root_data_theme": "night",
+      "next_theme_id": "map_editor_theme_day",
+      "toggle_action_label": "Modo diurno",
+      "toggle_action_icon": "light_mode",
+      "css_variables": {
+        "--bg": "#121411",
+        "--surface": "#1a1c19",
+        "--surface-soft": "#1e201d",
+        "--surface-lift": "#333532",
+        "--surface-deep": "#242929",
+        "--text": "#e3e3de",
+        "--muted": "#b6bfba",
+        "--green": "#a1d494",
+        "--green-soft": "#2d5a27",
+        "--copper": "#ffb77b",
+        "--blue": "#4ba3ff",
+        "--border": "rgba(137, 146, 146, 0.22)",
+        "--shadow-soft": "0 22px 50px rgba(0, 0, 0, 0.35)",
+        "--shadow-card": "0 16px 32px rgba(0, 0, 0, 0.28)"
+      }
+    }
+  ]
+}

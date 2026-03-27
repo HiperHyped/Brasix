@@ -1,0 +1,76 @@
+{
+  "edges": [
+    {
+      "id": "edge-mt-sinop-mt-cuiaba",
+      "from_city_id": "mt-sinop",
+      "to_city_id": "mt-cuiaba",
+      "mode": "road",
+      "status": "active",
+      "distance_km": 500,
+      "notes": "Corredor norte-sul de Mato Grosso"
+    },
+    {
+      "id": "edge-mt-cuiaba-mt-rondonopolis",
+      "from_city_id": "mt-cuiaba",
+      "to_city_id": "mt-rondonopolis",
+      "mode": "road",
+      "status": "active",
+      "distance_km": 215,
+      "notes": "Conexao interna mato-grossense"
+    },
+    {
+      "id": "edge-mt-rondonopolis-go-rio-verde",
+      "from_city_id": "mt-rondonopolis",
+      "to_city_id": "go-rio-verde",
+      "mode": "road",
+      "status": "active",
+      "distance_km": 420,
+      "notes": "Trecho de integracao agroindustrial"
+    },
+    {
+      "id": "edge-go-rio-verde-ms-campo-grande",
+      "from_city_id": "go-rio-verde",
+      "to_city_id": "ms-campo-grande",
+      "mode": "road",
+      "status": "active",
+      "distance_km": 690,
+      "notes": "Ligacao Centro-Oeste"
+    },
+    {
+      "id": "edge-ms-campo-grande-sp-ribeirao-preto",
+      "from_city_id": "ms-campo-grande",
+      "to_city_id": "sp-ribeirao-preto",
+      "mode": "road",
+      "status": "active",
+      "distance_km": 690,
+      "notes": "Corredor para o interior paulista"
+    },
+    {
+      "id": "edge-sp-ribeirao-preto-sp-santos",
+      "from_city_id": "sp-ribeirao-preto",
+      "to_city_id": "sp-santos",
+      "mode": "road",
+      "status": "active",
+      "distance_km": 380,
+      "notes": "Trecho de acesso ao porto"
+    },
+    {
+      "id": "edge-ms-campo-grande-ms-dourados",
+      "from_city_id": "ms-campo-grande",
+      "to_city_id": "ms-dourados",
+      "mode": "road",
+      "status": "active",
+      "distance_km": 230,
+      "notes": "Eixo sul-mato-grossense"
+    },
+    {
+      "id": "edge-ms-dourados-sp-ribeirao-preto",
+      "from_city_id": "ms-dourados",
+      "to_city_id": "sp-ribeirao-preto",
+      "mode": "road",
+      "status": "active",
+      "distance_km": 650,
+      "notes": "Alternativa ao corredor principal"
+    }
+  ]
+}

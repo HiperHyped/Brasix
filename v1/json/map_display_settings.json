@@ -1,0 +1,26 @@
+{
+  "id": "map_display_settings_v1",
+  "visibility": {
+    "show_cities": true,
+    "show_routes": true,
+    "show_graph_nodes": true,
+    "show_population_legend": true
+  },
+  "city_render": {
+    "color_mode": "uniform",
+    "uniform_fill_color": "#2d5a27",
+    "selected_fill_color": "#fb8a18",
+    "opacity": 1.0
+  },
+  "route_render": {
+    "opacity_scale": 1.4,
+    "highlight_color": "#41c63f",
+    "selected_color": "#bc7329"
+  },
+  "graph_node_render": {
+    "opacity": 0.95,
+    "use_style_colors": false,
+    "override_fill_color": "#e44444",
+    "override_stroke_color": "#141414"
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "id": "city_catalog_user_v1",
+  "cities": [
+    {
+      "id": "custom-city-1774616720397",
+      "name": "Barra do Bugres",
+      "label": "Barra do Bugres, MT",
+      "state_code": "MT",
+      "state_name": "Mato Grosso",
+      "source_region_name": "Região Geográfica Intermediária de Cuiabá",
+      "population_thousands": 29.403,
+      "latitude": -15.08936,
+      "longitude": -57.18349,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Barra do Bugres, Região Geográfica Imediata de Tangará da Serra, Região Geográfica Intermediária de Cuiabá, Mato Grosso, Região Centro-Oeste, 78390-000, Brasil. Populacao consultada no IBGE: 29403.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774616489414",
+      "name": "Barretos",
+      "label": "Barretos, SP",
+      "state_code": "SP",
+      "state_name": "São Paulo",
+      "source_region_name": "Região Geográfica Intermediária de Ribeirão Preto",
+      "population_thousands": 122.485,
+      "latitude": -20.56416,
+      "longitude": -48.5679,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Barretos, Região Imediata de Barretos, Região Geográfica Intermediária de Ribeirão Preto, São Paulo, Brasil. Populacao consultada no IBGE: 122485.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774616779992",
+      "name": "Benjamin Constant",
+      "label": "Benjamin Constant, AM",
+      "state_code": "AM",
+      "state_name": "Amazonas",
+      "source_region_name": "Região Geográfica Intermediária de Tefé",
+      "population_thousands": 37.648,
+      "latitude": -4.38475,
+      "longitude": -70.00729,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Benjamin Constant, Região Geográfica Imediata de Tabatinga, Região Geográfica Intermediária de Tefé, Amazonas, Região Norte, 69630-000, Brasil. Populacao consultada no IBGE: 37648.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774616975848",
+      "name": "Jales",
+      "label": "Jales, SP",
+      "state_code": "SP",
+      "state_name": "São Paulo",
+      "source_region_name": "Região Geográfica Intermediária de São José do Rio Preto",
+      "population_thousands": 48.776,
+      "latitude": -20.27146,
+      "longitude": -50.49458,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Jales, Região Imediata de Jales, Região Geográfica Intermediária de São José do Rio Preto, São Paulo, Brasil. Populacao consultada no IBGE: 48776.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774612401584",
+      "name": "Jequié",
+      "label": "Jequié, BA",
+      "state_code": "BA",
+      "state_name": "Bahia",
+      "source_region_name": "Cidade criada no editor",
+      "population_thousands": 100.0,
+      "latitude": -13.86638,
+      "longitude": -40.07679,
+      "is_user_created": true,
+      "autofill": null
+    },
+    {
+      "id": "custom-city-1774616597293",
+      "name": "Lavras",
+      "label": "Lavras, MG",
+      "state_code": "MG",
+      "state_name": "Minas Gerais",
+      "source_region_name": "Região Geográfica Intermediária de Varginha",
+      "population_thousands": 104.761,
+      "latitude": -21.25001,
+      "longitude": -44.99838,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Lavras, Região Geográfica Imediata de Lavras, Região Geográfica Intermediária de Varginha, Minas Gerais, Brasil. Populacao consultada no IBGE: 104761.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774616385241",
+      "name": "Macau",
+      "label": "Macau, RN",
+      "state_code": "RN",
+      "state_name": "Rio Grande do Norte",
+      "source_region_name": "Região Geográfica Intermediária de Mossoró",
+      "population_thousands": 27.369,
+      "latitude": -5.11386,
+      "longitude": -36.63288,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Macau, Região Geográfica Imediata de Açu, Região Geográfica Intermediária de Mossoró, Rio Grande do Norte, Região Nordeste, Brasil. Populacao consultada no IBGE: 27369.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774616051371",
+      "name": "Nova cidade 10",
+      "label": "Nova cidade 10, ZZ",
+      "state_code": "ZZ",
+      "state_name": "Estado manual",
+      "source_region_name": "Cidade criada no editor",
+      "population_thousands": 100.0,
+      "latitude": -17.90058,
+      "longitude": -39.38112,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "failed",
+        "confidence": null,
+        "summary": null,
+        "last_error": "Nao foi possivel preencher a cidade com Nominatim e IBGE."
+      }
+    },
+    {
+      "id": "custom-city-1774611926079",
+      "name": "Nova cidade 2",
+      "label": "Nova cidade 2, ZZ",
+      "state_code": "ZZ",
+      "state_name": "Estado manual",
+      "source_region_name": "Cidade criada no editor",
+      "population_thousands": 100.0,
+      "latitude": -23.62007,
+      "longitude": -45.41741,
+      "is_user_created": true,
+      "autofill": null
+    },
+    {
+      "id": "custom-city-1774614131915",
+      "name": "Nova cidade 7",
+      "label": "Nova cidade 7, ZZ",
+      "state_code": "ZZ",
+      "state_name": "Estado manual",
+      "source_region_name": "Cidade criada no editor",
+      "population_thousands": 100.0,
+      "latitude": -19.37658,
+      "longitude": -40.06508,
+      "is_user_created": true,
+      "autofill": null
+    },
+    {
+      "id": "custom-city-1774616875938",
+      "name": "Ourinhos",
+      "label": "Ourinhos, SP",
+      "state_code": "SP",
+      "state_name": "São Paulo",
+      "source_region_name": "Região Geográfica Intermediária de Marília",
+      "population_thousands": 103.97,
+      "latitude": -22.95036,
+      "longitude": -49.87819,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Ourinhos, Região Imediata de Ourinhos, Região Geográfica Intermediária de Marília, São Paulo, Brasil. Populacao consultada no IBGE: 103970.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774616476517",
+      "name": "Passos",
+      "label": "Passos, MG",
+      "state_code": "MG",
+      "state_name": "Minas Gerais",
+      "source_region_name": "Região Geográfica Intermediária de Varginha",
+      "population_thousands": 111.939,
+      "latitude": -20.72176,
+      "longitude": -46.60979,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Passos, Região Geográfica Imediata de Passos, Região Geográfica Intermediária de Varginha, Minas Gerais, Brasil. Populacao consultada no IBGE: 111939.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774611854146",
+      "name": "Patos de Minas",
+      "label": "Patos de Minas, MG",
+      "state_code": "MG",
+      "state_name": "Estado manual",
+      "source_region_name": "Cidade criada no editor",
+      "population_thousands": 60.0,
+      "latitude": -18.59679,
+      "longitude": -46.51405,
+      "is_user_created": true,
+      "autofill": null
+    },
+    {
+      "id": "custom-city-1774616697725",
+      "name": "Pimenta Bueno",
+      "label": "Pimenta Bueno, RO",
+      "state_code": "RO",
+      "state_name": "Rondônia",
+      "source_region_name": "Região Geográfica Intermediária de Ji-Paraná",
+      "population_thousands": 35.079,
+      "latitude": -11.68175,
+      "longitude": -61.18601,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Pimenta Bueno, Região Geográfica Imediata de Cacoal, Região Geográfica Intermediária de Ji-Paraná, Rondônia, Região Norte, 76970-000, Brasil. Populacao consultada no IBGE: 35079.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774613578000",
+      "name": "Porto Seguro",
+      "label": "Porto Seguro, BA",
+      "state_code": "BA",
+      "state_name": "Bahia",
+      "source_region_name": "Cidade criada no editor",
+      "population_thousands": 60.0,
+      "latitude": -16.44135,
+      "longitude": -39.06876,
+      "is_user_created": true,
+      "autofill": null
+    },
+    {
+      "id": "custom-city-1774617065834",
+      "name": "São Gabriel da Cachoeira",
+      "label": "São Gabriel da Cachoeira, AM",
+      "state_code": "AM",
+      "state_name": "Amazonas",
+      "source_region_name": "Região Geográfica Intermediária de Manaus",
+      "population_thousands": 51.795,
+      "latitude": -0.13124,
+      "longitude": -67.08354,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: São Gabriel da Cachoeira, Região Geográfica Imediata de São Gabriel da Cachoeira, Região Geográfica Intermediária de Manaus, Amazonas, Região Norte, 69750-000, Brasil. Populacao consultada no IBGE: 51795.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774616456546",
+      "name": "Ubá",
+      "label": "Ubá, MG",
+      "state_code": "MG",
+      "state_name": "Minas Gerais",
+      "source_region_name": "Região Geográfica Intermediária de Juiz de Fora",
+      "population_thousands": 103.365,
+      "latitude": -21.11778,
+      "longitude": -42.94477,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Ubá, Região Geográfica Imediata de Ubá, Região Geográfica Intermediária de Juiz de Fora, Minas Gerais, Região Sudeste, Brasil. Populacao consultada no IBGE: 103365.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774616708727",
+      "name": "Vilhena",
+      "label": "Vilhena, RO",
+      "state_code": "RO",
+      "state_name": "Rondônia",
+      "source_region_name": "Região Geográfica Intermediária de Ji-Paraná",
+      "population_thousands": 95.832,
+      "latitude": -12.709,
+      "longitude": -60.11959,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Vilhena, Região Geográfica Imediata de Vilhena, Região Geográfica Intermediária de Ji-Paraná, Rondônia, Região Norte, Brasil. Populacao consultada no IBGE: 95832.",
+        "last_error": null
+      }
+    }
+  ]
+}

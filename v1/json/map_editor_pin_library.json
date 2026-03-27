@@ -1,0 +1,61 @@
+{
+  "id": "map_editor_pin_library_v1",
+  "pins": [
+    {
+      "id": "pin_circle_solid",
+      "label": "Circulo cheio",
+      "shape": "solid_circle",
+      "stroke_width_px": 2,
+      "inner_scale": 0.0
+    },
+    {
+      "id": "pin_circle_ring",
+      "label": "Circulo com anel",
+      "shape": "ring_circle",
+      "stroke_width_px": 3,
+      "inner_scale": 0.58
+    },
+    {
+      "id": "pin_circle_bullseye",
+      "label": "Circulo alvo",
+      "shape": "bullseye_circle",
+      "stroke_width_px": 2,
+      "inner_scale": 0.34
+    },
+    {
+      "id": "pin_circle_orbit",
+      "label": "Circulo orbital",
+      "shape": "orbit_circle",
+      "stroke_width_px": 2,
+      "inner_scale": 0.54
+    },
+    {
+      "id": "pin_square_solid",
+      "label": "Quadrado cheio",
+      "shape": "solid_square",
+      "stroke_width_px": 2,
+      "inner_scale": 0.0
+    },
+    {
+      "id": "pin_square_ring",
+      "label": "Quadrado com anel",
+      "shape": "ring_square",
+      "stroke_width_px": 3,
+      "inner_scale": 0.0
+    },
+    {
+      "id": "pin_triangle_solid",
+      "label": "Triangulo cheio",
+      "shape": "solid_triangle",
+      "stroke_width_px": 2,
+      "inner_scale": 0.0
+    },
+    {
+      "id": "pin_diamond_solid",
+      "label": "Losango cheio",
+      "shape": "solid_diamond",
+      "stroke_width_px": 2,
+      "inner_scale": 0.0
+    }
+  ]
+}

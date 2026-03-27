@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="screen-shell">
+  <header class="topbar">
+    <div class="topbar-copy">
+      <p class="eyebrow">Mapa-base evolutivo</p>
+      <h1>Brasix</h1>
+      <p class="body-copy">
+        Cidades representativas da producao brasileira, preparadas para virar rede de rotas,
+        contratos e jogo.
+      </p>
+    </div>
+    <div class="topbar-badges">
+      <span class="chip">FastAPI + Plotly</span>
+      <span class="chip">JSON versionado</span>
+      <span class="chip">Pronto para rotas</span>
+    </div>
+  </header>
+
+  <section class="dashboard-layout">
+    <aside class="panel control-panel">
+      <section class="panel-block">
+        <p class="eyebrow">Filtros</p>
+        <label class="field">
+          <span>Commodity</span>
+          <select id="commodity-select"></select>
+        </label>
+        <label class="field">
+          <span>UF</span>
+          <select id="state-select"></select>
+        </label>
+      </section>
+
+      <section class="panel-block">
+        <p class="eyebrow">Leitura rapida</p>
+        <div id="summary-metrics" class="metric-grid"></div>
+      </section>
+
+      <section class="panel-block">
+        <p class="eyebrow">Ranking</p>
+        <ol id="ranking-list" class="ranking-list"></ol>
+      </section>
+    </aside>
+
+    <section class="map-card">
+      <div class="map-card-header">
+        <div>
+          <p class="eyebrow">Mapa interativo</p>
+          <h2 id="map-title">Cidades</h2>
+        </div>
+        <p id="map-subtitle" class="body-copy compact"></p>
+      </div>
+      <div id="map-stage" class="map-stage"></div>
+    </section>
+
+    <aside class="panel detail-panel">
+      <section class="panel-block">
+        <p class="eyebrow">Cidade selecionada</p>
+        <div id="city-detail" class="detail-stack"></div>
+      </section>
+
+      <section class="panel-block">
+        <p class="eyebrow">Planejador de rota</p>
+        <label class="field">
+          <span>Origem</span>
+          <select id="route-origin"></select>
+        </label>
+        <label class="field">
+          <span>Destino</span>
+          <select id="route-destination"></select>
+        </label>
+        <button id="route-button" class="primary-button" type="button">Tracar caminho</button>
+        <div id="route-status" class="route-status"></div>
+      </section>
+    </aside>
+  </section>
+</main>
+
+<script src="{{ request.url_for('static', path='js/main.js') }}"></script>
+{% endblock %}

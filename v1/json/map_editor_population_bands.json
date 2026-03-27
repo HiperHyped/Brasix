@@ -1,0 +1,69 @@
+{
+  "id": "map_editor_population_bands_v1",
+  "unit": "population_thousands",
+  "bands": [
+    {
+      "id": "population_band_up_to_250k",
+      "label": "Ate 50 mil",
+      "min_population_thousands": 0.0,
+      "max_population_thousands": 50.0,
+      "pin_id": "pin_circle_solid",
+      "marker_size_px": 13,
+      "legend_order": 1
+    },
+    {
+      "id": "population_band_250k_to_500k",
+      "label": "50 mil a 100 mil",
+      "min_population_thousands": 50.0,
+      "max_population_thousands": 100.0,
+      "pin_id": "pin_circle_bullseye",
+      "marker_size_px": 14,
+      "legend_order": 2
+    },
+    {
+      "id": "population_band_500k_to_1m",
+      "label": "100 mil a 250 mil",
+      "min_population_thousands": 100.0,
+      "max_population_thousands": 250.0,
+      "pin_id": "pin_circle_ring",
+      "marker_size_px": 16,
+      "legend_order": 3
+    },
+    {
+      "id": "population_band_1m_to_2m",
+      "label": "250 mil a 500 mil",
+      "min_population_thousands": 250.0,
+      "max_population_thousands": 500.0,
+      "pin_id": "pin_square_solid",
+      "marker_size_px": 13,
+      "legend_order": 4
+    },
+    {
+      "id": "population_band_2m_plus",
+      "label": "500 mil a 1 mi",
+      "min_population_thousands": 500.0,
+      "max_population_thousands": 1000.0,
+      "pin_id": "pin_circle_bullseye",
+      "marker_size_px": 20,
+      "legend_order": 5
+    },
+    {
+      "id": "population_band_custom_1774572109092",
+      "label": "1 mi a 2,5 mi",
+      "min_population_thousands": 1000.0,
+      "max_population_thousands": 2500.0,
+      "pin_id": "pin_diamond_solid",
+      "marker_size_px": 20,
+      "legend_order": 6
+    },
+    {
+      "id": "population_band_custom_1774572109875",
+      "label": "Acima de 2,5 mi",
+      "min_population_thousands": 2500.0,
+      "max_population_thousands": null,
+      "pin_id": "pin_square_ring",
+      "marker_size_px": 18,
+      "legend_order": 7
+    }
+  ]
+}

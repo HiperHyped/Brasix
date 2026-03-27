@@ -1,0 +1,157 @@
+{
+  "id": "ui_map_display_controls_v1",
+  "sections": [
+    {
+      "id": "map_display_section_visibility",
+      "title": "Camadas",
+      "controls": [
+        {
+          "id": "display_control_show_cities",
+          "type": "checkbox",
+          "path": "visibility.show_cities",
+          "label": "Cidades"
+        },
+        {
+          "id": "display_control_show_routes",
+          "type": "checkbox",
+          "path": "visibility.show_routes",
+          "label": "Rotas"
+        },
+        {
+          "id": "display_control_show_graph_nodes",
+          "type": "checkbox",
+          "path": "visibility.show_graph_nodes",
+          "label": "Nos"
+        },
+        {
+          "id": "display_control_show_population_legend",
+          "type": "checkbox",
+          "path": "visibility.show_population_legend",
+          "label": "Legenda"
+        }
+      ]
+    },
+    {
+      "id": "map_display_section_cities",
+      "title": "Cidades",
+      "controls": [
+        {
+          "id": "display_control_city_color_mode",
+          "type": "select",
+          "path": "city_render.color_mode",
+          "label": "Cor das cidades",
+          "options": [
+            {
+              "id": "display_option_city_color_commodity",
+              "value": "commodity",
+              "label": "Commodity"
+            },
+            {
+              "id": "display_option_city_color_population_band",
+              "value": "population_band",
+              "label": "Faixa populacional"
+            },
+            {
+              "id": "display_option_city_color_uniform",
+              "value": "uniform",
+              "label": "Cor uniforme"
+            }
+          ]
+        },
+        {
+          "id": "display_control_city_uniform_fill_color",
+          "type": "color",
+          "path": "city_render.uniform_fill_color",
+          "label": "Cor uniforme",
+          "enabled_when": {
+            "path": "city_render.color_mode",
+            "equals": "uniform"
+          }
+        },
+        {
+          "id": "display_control_city_selected_fill_color",
+          "type": "color",
+          "path": "city_render.selected_fill_color",
+          "label": "Cidade selecionada"
+        },
+        {
+          "id": "display_control_city_opacity",
+          "type": "range",
+          "path": "city_render.opacity",
+          "label": "Opacidade",
+          "min": 0.2,
+          "max": 1,
+          "step": 0.05
+        }
+      ]
+    },
+    {
+      "id": "map_display_section_routes",
+      "title": "Rotas",
+      "controls": [
+        {
+          "id": "display_control_route_selected_color",
+          "type": "color",
+          "path": "route_render.selected_color",
+          "label": "Rota selecionada"
+        },
+        {
+          "id": "display_control_route_highlight_color",
+          "type": "color",
+          "path": "route_render.highlight_color",
+          "label": "Rota em destaque"
+        },
+        {
+          "id": "display_control_route_opacity_scale",
+          "type": "range",
+          "path": "route_render.opacity_scale",
+          "label": "Opacidade",
+          "min": 0.25,
+          "max": 1.4,
+          "step": 0.05
+        }
+      ]
+    },
+    {
+      "id": "map_display_section_nodes",
+      "title": "Nos",
+      "controls": [
+        {
+          "id": "display_control_graph_node_use_style_colors",
+          "type": "checkbox",
+          "path": "graph_node_render.use_style_colors",
+          "label": "Usar cores proprias"
+        },
+        {
+          "id": "display_control_graph_node_override_fill_color",
+          "type": "color",
+          "path": "graph_node_render.override_fill_color",
+          "label": "Cor do no",
+          "enabled_when": {
+            "path": "graph_node_render.use_style_colors",
+            "equals": false
+          }
+        },
+        {
+          "id": "display_control_graph_node_override_stroke_color",
+          "type": "color",
+          "path": "graph_node_render.override_stroke_color",
+          "label": "Borda do no",
+          "enabled_when": {
+            "path": "graph_node_render.use_style_colors",
+            "equals": false
+          }
+        },
+        {
+          "id": "display_control_graph_node_opacity",
+          "type": "range",
+          "path": "graph_node_render.opacity",
+          "label": "Opacidade",
+          "min": 0.2,
+          "max": 1,
+          "step": 0.05
+        }
+      ]
+    }
+  ]
+}

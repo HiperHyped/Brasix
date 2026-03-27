@@ -1,0 +1,45 @@
+{
+  "id": "map_leaflet_settings_v1",
+  "base_tile_layer_id": "tile_layer_carto_positron_nolabels",
+  "label_tile_layer_id": "tile_layer_carto_positron_only_labels",
+  "visual": {
+    "base_opacity": 1.0,
+    "labels_enabled": true,
+    "label_opacity": 0.55,
+    "brightness": 0.9,
+    "contrast": 1.05,
+    "saturate": 1.05,
+    "blur_px": 0.9
+  },
+  "zoom": {
+    "min_zoom": 4,
+    "max_zoom": 17,
+    "zoom_snap": 1.2,
+    "zoom_delta": 1.3
+  },
+  "interaction": {
+    "dragging_enabled": true,
+    "scroll_wheel_zoom_enabled": true,
+    "double_click_zoom_enabled": true,
+    "keyboard_enabled": true,
+    "keyboard_pan_delta_px": 160,
+    "wheel_px_per_zoom_level": 120,
+    "wheel_debounce_time_ms": 60
+  },
+  "motion": {
+    "inertia_enabled": true,
+    "inertia_deceleration": 3000,
+    "max_bounds_viscosity": 0.15,
+    "zoom_animation_enabled": true,
+    "fade_animation_enabled": true,
+    "marker_zoom_animation_enabled": true
+  },
+  "tile_render": {
+    "update_when_idle": true,
+    "update_interval_ms": 50,
+    "keep_buffer": 5,
+    "detect_retina": false,
+    "min_native_zoom": null,
+    "max_native_zoom": null
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "id": "ui_layout_desktop_main_v1",
+  "viewport": {
+    "id": "viewport_desktop_1440x900",
+    "width_px": 1440,
+    "height_px": 900,
+    "scroll_mode": "none"
+  },
+  "css_variables": {
+    "--header-h": "64px",
+    "--rail-w": "80px",
+    "--layout-left-col": "22%",
+    "--layout-center-col": "50%",
+    "--layout-right-col": "28%",
+    "--layout-panel-gap": "16px",
+    "--layout-section-padding": "18px",
+    "--layout-map-inset-top": "86px",
+    "--layout-map-inset-side": "14px",
+    "--layout-map-inset-bottom": "14px"
+  },
+  "regions": [
+    {
+      "id": "region_topbar_main",
+      "dom_target_id": "topbar",
+      "kind": "topbar"
+    },
+    {
+      "id": "region_side_rail",
+      "dom_target_id": "icon-rail",
+      "kind": "navigation-rail"
+    },
+    {
+      "id": "region_left_command_panel",
+      "dom_target_id": "command-panel",
+      "kind": "command-panel"
+    },
+    {
+      "id": "region_center_map_panel",
+      "dom_target_id": "map-panel",
+      "kind": "map-panel"
+    },
+    {
+      "id": "region_right_detail_panel",
+      "dom_target_id": "detail-column",
+      "kind": "detail-panel"
+    }
+  ]
+}

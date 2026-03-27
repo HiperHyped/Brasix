@@ -1,0 +1,12 @@
+{
+  "id": "route_geometry_types_v1",
+  "types": [
+    {
+      "id": "route_geometry_polycurve",
+      "code": "polycurve",
+      "label": "Polilinha",
+      "shortcut_key": "",
+      "allow_waypoints": true
+    }
+  ]
+}

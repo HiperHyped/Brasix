@@ -1,0 +1,74 @@
+{
+  "id": "ui_design_tokens_brasix_atlas_v1",
+  "css_variables": {
+    "--bg": "#fef9eb",
+    "--surface": "#f8f3e5",
+    "--surface-soft": "#f3eee0",
+    "--surface-lift": "#ffffff",
+    "--surface-deep": "#e7e2d4",
+    "--text": "#1d1c13",
+    "--muted": "#5f6558",
+    "--green": "#2d5a27",
+    "--green-soft": "#bcf0ae",
+    "--copper": "#8c4f10",
+    "--blue": "#4f8593",
+    "--border": "rgba(114, 121, 110, 0.18)",
+    "--shadow-soft": "0 18px 45px rgba(63, 52, 30, 0.08)",
+    "--shadow-card": "0 12px 24px rgba(63, 52, 30, 0.06)",
+    "--radius": "18px",
+    "--radius-lg": "24px",
+    "--font-head": "Lexend, sans-serif",
+    "--font-body": "Work Sans, sans-serif"
+  },
+  "tokens": {
+    "fonts": [
+      {
+        "id": "font_head_lexend",
+        "family": "Lexend",
+        "role": "headline"
+      },
+      {
+        "id": "font_body_work_sans",
+        "family": "Work Sans",
+        "role": "body"
+      }
+    ],
+    "colors": [
+      {
+        "id": "color_primary_agriculture_green",
+        "value": "#2d5a27"
+      },
+      {
+        "id": "color_secondary_earth_copper",
+        "value": "#8c4f10"
+      },
+      {
+        "id": "color_tertiary_hydro_blue",
+        "value": "#4f8593"
+      },
+      {
+        "id": "color_surface_parchment",
+        "value": "#fef9eb"
+      },
+      {
+        "id": "color_surface_panel",
+        "value": "#f8f3e5"
+      }
+    ],
+    "buttons": [
+      {
+        "id": "button_style_primary_route_cta",
+        "radius": "14px",
+        "gradient": [
+          "#2d5a27",
+          "#35692f"
+        ]
+      },
+      {
+        "id": "button_style_map_control",
+        "radius": "12px",
+        "surface": "#ffffff"
+      }
+    ]
+  }
+}

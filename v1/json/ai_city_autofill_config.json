@@ -1,0 +1,34 @@
+{
+  "id": "city_autofill_config_v3",
+  "enabled": true,
+  "provider": "deterministic_geocoder",
+  "provider_label": "Nominatim + IBGE",
+  "reverse_geocoder": {
+    "provider": "nominatim",
+    "provider_label": "Nominatim",
+    "api_base_url": "https://nominatim.openstreetmap.org/reverse",
+    "format": "jsonv2",
+    "zoom": 10,
+    "addressdetails": 1,
+    "layer": "address",
+    "accept_language": "pt-BR,pt,en",
+    "request_timeout_seconds": 10,
+    "user_agent": "Brasix/0.1"
+  },
+  "municipality_lookup": {
+    "provider": "ibge_localidades",
+    "provider_label": "IBGE Localidades",
+    "path_template": "https://servicodados.ibge.gov.br/api/v1/localidades/estados/{state_code}/municipios",
+    "request_timeout_seconds": 10,
+    "user_agent": "Brasix/0.1"
+  },
+  "population_lookup": {
+    "provider": "ibge_sidra",
+    "provider_label": "SIDRA IBGE",
+    "path_template": "https://apisidra.ibge.gov.br/values/t/{table_id}/n6/{municipality_id}/v/all/p/{period}?formato=json",
+    "table_id": "4714",
+    "period": "2022",
+    "request_timeout_seconds": 10,
+    "user_agent": "Brasix/0.1"
+  }
+}

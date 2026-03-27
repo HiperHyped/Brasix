@@ -1,0 +1,89 @@
+{
+  "id": "ui_component_registry_brasix_v1",
+  "components": [
+    {
+      "id": "component_brand_title",
+      "dom_target_id": "brand-title",
+      "type": "text",
+      "text": "Brasix"
+    },
+    {
+      "id": "component_brand_subtitle",
+      "dom_target_id": "brand-subtitle",
+      "type": "text",
+      "text": "Cidades, commodities e rotas"
+    },
+    {
+      "id": "component_rail_brand_copy",
+      "dom_target_id": "rail-brand-copy",
+      "type": "html",
+      "text": "Comando<br />Tatico"
+    },
+    {
+      "id": "component_filter_product_label",
+      "dom_target_id": "filter-product-label",
+      "type": "text",
+      "text": "Commodity"
+    },
+    {
+      "id": "component_filter_state_label",
+      "dom_target_id": "filter-state-label",
+      "type": "text",
+      "text": "Estado"
+    },
+    {
+      "id": "component_ranking_eyebrow",
+      "dom_target_id": "ranking-eyebrow",
+      "type": "text",
+      "text": "Leitura rapida"
+    },
+    {
+      "id": "component_ranking_title",
+      "dom_target_id": "ranking-title",
+      "type": "text",
+      "text": "Top Produtores"
+    },
+    {
+      "id": "component_map_badge",
+      "dom_target_id": "map-badge-text",
+      "type": "text",
+      "text": "Projecao cartografica Brasix v2.4"
+    },
+    {
+      "id": "component_map_eyebrow",
+      "dom_target_id": "map-eyebrow",
+      "type": "text",
+      "text": "Mapa-base evolutivo"
+    },
+    {
+      "id": "component_route_eyebrow",
+      "dom_target_id": "route-eyebrow",
+      "type": "text",
+      "text": "Planejamento"
+    },
+    {
+      "id": "component_route_title",
+      "dom_target_id": "route-title",
+      "type": "text",
+      "text": "Planejador"
+    },
+    {
+      "id": "component_route_origin_label",
+      "dom_target_id": "route-origin-label",
+      "type": "text",
+      "text": "Origem"
+    },
+    {
+      "id": "component_route_destination_label",
+      "dom_target_id": "route-destination-label",
+      "type": "text",
+      "text": "Destino"
+    },
+    {
+      "id": "component_route_button_label",
+      "dom_target_id": "route-button",
+      "type": "text",
+      "text": "Tracar rota"
+    }
+  ]
+}

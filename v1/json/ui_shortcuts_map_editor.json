@@ -1,0 +1,60 @@
+{
+  "id": "ui_shortcuts_map_editor_v1",
+  "shortcuts": [
+    {
+      "id": "shortcut_editor_route_double",
+      "key": "1",
+      "label": "Entra em modo rota com pista dupla"
+    },
+    {
+      "id": "shortcut_editor_route_single",
+      "key": "2",
+      "label": "Entra em modo rota com pista simples"
+    },
+    {
+      "id": "shortcut_editor_route_dirt",
+      "key": "3",
+      "label": "Entra em modo rota com pista de terra"
+    },
+    {
+      "id": "shortcut_editor_route_waterway",
+      "key": "4",
+      "label": "Entra em modo rota com hidrovia"
+    },
+    {
+      "id": "shortcut_editor_node_mode",
+      "key": "N",
+      "label": "Entra em modo no de ligacao livre ou com snap em rota"
+    },
+    {
+      "id": "shortcut_editor_city_mode",
+      "key": "C",
+      "label": "Entra em modo cidade manual"
+    },
+    {
+      "id": "shortcut_editor_mouse_left",
+      "key": "Clique esquerdo",
+      "label": "Com C, cria cidade manual; com N, cria no livre ou com snap em rota; com 1, 2, 3 e 4, escolhe origem, vertices e destino da rota"
+    },
+    {
+      "id": "shortcut_editor_node_force_free",
+      "key": "Alt + clique esquerdo",
+      "label": "Com N, ignora o snap e cria no livre mesmo perto de uma rota"
+    },
+    {
+      "id": "shortcut_editor_mouse_right",
+      "key": "Clique direito",
+      "label": "Apaga cidade manual, no ou rota clicados; sem alvo, remove o ultimo passo do rascunho"
+    },
+    {
+      "id": "shortcut_editor_drag",
+      "key": "Arrastar",
+      "label": "Move o mapa"
+    },
+    {
+      "id": "shortcut_editor_wheel",
+      "key": "Wheel",
+      "label": "Da zoom"
+    }
+  ]
+}

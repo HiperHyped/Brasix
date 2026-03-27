@@ -1,0 +1,30 @@
+{
+  "id": "map_editor_tool_modes_v1",
+  "default_tool_id": "tool_map_pan",
+  "default_surface_type_id": "route_surface_single_road",
+  "default_geometry_type_id": "route_geometry_polycurve",
+  "node_snap_tolerance_px": 8,
+  "node_force_free_modifier_key": "Alt",
+  "tools": [
+    {
+      "id": "tool_map_pan",
+      "label": "Mover mapa",
+      "shortcut_key": "V"
+    },
+    {
+      "id": "tool_graph_node_draw",
+      "label": "Criar no livre ou espetado",
+      "shortcut_key": "N"
+    },
+    {
+      "id": "tool_city_draw",
+      "label": "Criar cidade manual",
+      "shortcut_key": "C"
+    },
+    {
+      "id": "tool_route_draw",
+      "label": "Desenhar rota",
+      "shortcut_key": "1/2/3/4"
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "id": "ui_map_editor_screen_v2",
+  "page_title": "Brasix | Editor de mapa",
+  "components": [
+    {
+      "id": "map_editor_component_brand_title",
+      "dom_target_id": "editor-brand-title",
+      "type": "text",
+      "text": "Brasix"
+    },
+    {
+      "id": "map_editor_component_brand_subtitle",
+      "dom_target_id": "editor-brand-subtitle",
+      "type": "text",
+      "text": "Editor de mapa"
+    },
+    {
+      "id": "map_editor_component_bands_eyebrow",
+      "dom_target_id": "editor-bands-eyebrow",
+      "type": "text",
+      "text": "Pins"
+    },
+    {
+      "id": "map_editor_component_bands_title",
+      "dom_target_id": "editor-bands-title",
+      "type": "text",
+      "text": "Faixas de populacao"
+    },
+    {
+      "id": "map_editor_component_routes_eyebrow",
+      "dom_target_id": "editor-routes-eyebrow",
+      "type": "text",
+      "text": "Grafo"
+    },
+    {
+      "id": "map_editor_component_routes_title",
+      "dom_target_id": "editor-routes-title",
+      "type": "text",
+      "text": "Ferramentas do grafo"
+    },
+    {
+      "id": "map_editor_component_display_eyebrow",
+      "dom_target_id": "editor-display-eyebrow",
+      "type": "text",
+      "text": "Camadas"
+    },
+    {
+      "id": "map_editor_component_display_title",
+      "dom_target_id": "editor-display-title",
+      "type": "text",
+      "text": "Camadas desenhadas"
+    },
+    {
+      "id": "map_editor_component_leaflet_eyebrow",
+      "dom_target_id": "editor-leaflet-eyebrow",
+      "type": "text",
+      "text": "Mapa"
+    },
+    {
+      "id": "map_editor_component_leaflet_title",
+      "dom_target_id": "editor-leaflet-title",
+      "type": "text",
+      "text": "Mapa Leaflet"
+    },
+    {
+      "id": "map_editor_component_shortcuts_eyebrow",
+      "dom_target_id": "editor-shortcuts-eyebrow",
+      "type": "text",
+      "text": "Atalhos"
+    },
+    {
+      "id": "map_editor_component_shortcuts_title",
+      "dom_target_id": "editor-shortcuts-title",
+      "type": "text",
+      "text": "Janela de atalhos"
+    },
+    {
+      "id": "map_editor_component_add_band",
+      "dom_target_id": "editor-add-band-button",
+      "type": "text",
+      "text": "Nova faixa"
+    },
+    {
+      "id": "map_editor_component_node_style_label",
+      "dom_target_id": "editor-node-style-label",
+      "type": "text",
+      "text": "Formato do no"
+    },
+    {
+      "id": "map_editor_component_node_size_label",
+      "dom_target_id": "editor-node-size-label",
+      "type": "text",
+      "text": "Tamanho"
+    },
+    {
+      "id": "map_editor_component_city_eyebrow",
+      "dom_target_id": "editor-city-eyebrow",
+      "type": "text",
+      "text": "Cidades"
+    },
+    {
+      "id": "map_editor_component_city_title",
+      "dom_target_id": "editor-city-title",
+      "type": "text",
+      "text": "Cidade manual"
+    },
+    {
+      "id": "map_editor_component_node_style_hint",
+      "dom_target_id": "editor-node-style-hint",
+      "type": "text",
+      "text": "Sem no selecionado: o formato e tamanho escolhidos valem para o proximo no."
+    }
+  ],
+  "header_badges": [],
+  "header_actions": [
+    {
+      "id": "map_editor_action_back_to_app",
+      "label": "Voltar ao app",
+      "icon": "arrow_back",
+      "href": "/"
+    },
+    {
+      "id": "map_editor_action_toggle_theme",
+      "label": "Modo noturno",
+      "icon": "dark_mode",
+      "action": "toggle-theme"
+    },
+    {
+      "id": "map_editor_action_open_shortcuts",
+      "label": "Atalhos",
+      "icon": "keyboard_command_key",
+      "action": "open-shortcuts"
+    },
+    {
+      "id": "map_editor_action_refit_map",
+      "label": "Reenquadrar",
+      "icon": "center_focus_strong",
+      "action": "refit-map"
+    }
+  ],
+  "sidebar_tabs": [
+    {
+      "id": "map_editor_tab_legends",
+      "label": "Legendas"
+    },
+    {
+      "id": "map_editor_tab_layers",
+      "label": "Camadas"
+    },
+    {
+      "id": "map_editor_tab_leaflet",
+      "label": "Mapa"
+    }
+  ],
+  "status_messages": {
+    "idle": "Clique em uma cidade, selecione um no de ligacao ou pressione C, N, 1, 2, 3 ou 4 para editar o grafo.",
+    "city_mode": "Modo cidade: clique esquerdo no mapa cria uma cidade manual.",
+    "route_mode_double_road": "Modo rota: pista dupla. Clique na cidade ou no de origem.",
+    "route_mode_single_road": "Modo rota: pista simples. Clique na cidade ou no de origem.",
+    "route_mode_dirt_road": "Modo rota: pista de terra. Clique na cidade ou no de origem.",
+    "route_mode_waterway": "Modo rota: hidrovia. Clique na cidade ou no de origem.",
+    "node_mode": "Modo no: clique esquerdo cria no livre; sobre rota, faz snap e divide a rota. Use Alt para ignorar o snap.",
+    "node_mode_invalid_target": "Clique cria no livre. Se cair perto de rota, o editor faz snap automaticamente.",
+    "draft_start": "Origem escolhida. Clique esquerdo no mapa para vertices ou em outro no para fechar a rota.",
+    "draft_ready": "Destino escolhido. Salvando rota no grafo oficial.",
+    "draft_same_city": "Escolha um destino diferente da origem.",
+    "draft_need_origin": "Primeiro clique em uma cidade ou no para definir a origem da rota.",
+    "draft_point_added": "Vertice adicionado a polilinha.",
+    "draft_point_removed": "Ultimo vertice removido do rascunho.",
+    "draft_cleared": "Rascunho limpo. Se quiser continuar, clique de novo na cidade de origem.",
+    "route_mode_off": "Modo rota encerrado. Clique em uma cidade para inspecionar.",
+    "city_selected": "Cidade destacada no mapa.",
+    "custom_city_selected": "Cidade manual destacada. Edite os dados no popup.",
+    "custom_city_created": "Cidade manual criada e salva no catalogo do v1.",
+    "custom_city_autofill_started": "Autofill geografico consultando Nominatim e IBGE para preencher a cidade.",
+    "custom_city_autofill_completed": "Cidade manual preenchida automaticamente com Nominatim e IBGE e salva no v1.",
+    "custom_city_autofill_failed": "A cidade foi criada, mas o autofill geografico nao conseguiu preencher os dados.",
+    "custom_city_updated": "Cidade manual atualizada no catalogo do v1.",
+    "custom_city_deleted": "Cidade manual removida do catalogo do v1.",
+    "custom_city_deleted_with_routes": "Cidade manual removida e as rotas conectadas foram apagadas.",
+    "node_selected": "No de ligacao destacado no mapa.",
+    "node_created": "No de ligacao salvo no grafo oficial do v1.",
+    "node_created_free": "No de ligacao livre salvo no grafo oficial do v1.",
+    "node_created_snapped": "No de ligacao espetado na rota e salvo no grafo oficial do v1.",
+    "node_deleted": "No de ligacao removido do grafo oficial do v1.",
+    "node_deleted_merged": "No de ligacao removido e as duas rotas foram recompostas em uma so.",
+    "node_updated": "Formato e tamanho do no de ligacao atualizados.",
+    "node_delete_blocked": "Apague as rotas conectadas antes de remover este no.",
+    "node_delete_merge_blocked": "Este no conecta rotas incompativeis. Apague as rotas antes de remover o no.",
+    "node_server_restart": "Reinicie o servidor do v1 para habilitar nos de ligacao e rotas com nos.",
+    "bands_saved": "Faixas populacionais salvas no JSON oficial do v1.",
+    "route_saved": "Rota salva no route_network.json e disponivel imediatamente no v1.",
+    "route_selected": "Rota destacada. Clique direito sobre ela para apagar.",
+    "route_deleted": "Rota removida do grafo oficial do v1."
+  },
+  "labels": {
+    "band_label": "Faixa",
+    "band_min_label": "Min",
+    "band_max_label": "Max",
+    "band_pin_label": "Pin",
+    "band_size_label": "Tamanho",
+    "remove_label": "Remover",
+    "surface_label": "Superficie",
+    "geometry_label": "Geometria",
+    "distance_label": "Distancia",
+    "vertices_label": "Vertices",
+    "population_label": "Populacao",
+    "region_label": "Regiao",
+    "highlight_label": "Destaque",
+    "node_type_label": "Tipo",
+    "coordinates_label": "Coordenadas",
+    "junction_label": "No de ligacao",
+    "junction_short_label": "Ligacao",
+    "node_style_label": "Formato do no",
+    "node_size_label": "Tamanho",
+    "city_name_label": "Nome",
+    "city_state_code_label": "UF",
+    "city_state_name_label": "Estado",
+    "city_region_name_label": "Regiao",
+    "city_manual_title_label": "Cidade manual",
+    "city_manual_hint_label": "Pressione C e clique no mapa para criar uma cidade manual. Selecione uma cidade criada para editar os dados.",
+    "city_created_badge_label": "Criada no editor",
+    "city_autofill_badge_label": "Autofill",
+    "city_autofill_loading_label": "Preenchendo automaticamente...",
+    "city_autofill_ready_label": "Autofill concluido",
+    "city_autofill_failed_label": "Autofill indisponivel",
+    "city_autofill_summary_label": "Resumo",
+    "origin_label": "Origem",
+    "destination_label": "Destino",
+    "pending_label": "Pendente",
+    "draft_title": "Rascunho de rota",
+    "no_notes_label": "Sem observacoes.",
+    "no_data_label": "Sem dado"
+  },
+  "errors": {
+    "save_bands": "Nao foi possivel salvar as faixas.",
+    "save_display_settings": "Nao foi possivel salvar a visualizacao do mapa.",
+    "save_leaflet_settings": "Nao foi possivel salvar os parametros do mapa Leaflet.",
+    "save_custom_cities": "Nao foi possivel salvar as cidades criadas no editor.",
+    "city_autofill_failed": "Nao foi possivel preencher a cidade com Nominatim e IBGE.",
+    "save_graph": "Nao foi possivel salvar o grafo.",
+    "route_incomplete": "Defina origem e destino com clique esquerdo.",
+    "minimum_bands": "O editor precisa de pelo menos uma faixa populacional."
+  }
+}

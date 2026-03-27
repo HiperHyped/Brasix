@@ -1,0 +1,30 @@
+Soja: 🫘
+Milho: 🌽
+Cana-de-Açúcar: 🎋
+Algodão: ☁️
+Café: ☕
+Arroz: 🍚
+Trigo: 🌾
+Laranja: 🍊
+Feijão: 🫘
+Mandioca: 🍠
+Bovinos: 🐄
+Suínos: 🐖
+Aves: 🐔
+Leite: 🥛
+Ovinos: 🐑
+Papel/Celulose: 📄
+Madeira: 🪵
+Pesca: 🐟
+Ferro: 🔘
+Ouro: 🟡
+Bauxita: ⚪
+Manganês: 🟣
+Nióbio: 🔵
+Cobre: 🟠
+Fosfato: 🟢
+Carvão: ⚫
+Sal Marinho: 🧂
+Petróleo: 🛢️
+Gás Natural: 🔥
+Etanol: ⛽

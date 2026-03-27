@@ -1,0 +1,83 @@
+{
+  "id": "ui_navigation_items_brasix_v1",
+  "top_nav_items": [
+    {
+      "id": "nav_top_map_base",
+      "label": "Mapa-base do jogo",
+      "active": true,
+      "href": "/"
+    },
+    {
+      "id": "nav_top_desktop_only",
+      "label": "Desktop only",
+      "active": false,
+      "href": "#"
+    },
+    {
+      "id": "nav_top_routes_evolving",
+      "label": "Rotas em evolucao",
+      "active": false,
+      "href": "#"
+    }
+  ],
+  "top_action_items": [
+    {
+      "id": "action_top_settings",
+      "icon": "settings",
+      "label": "Configuracoes"
+    },
+    {
+      "id": "action_top_help",
+      "icon": "help",
+      "label": "Ajuda"
+    },
+    {
+      "id": "action_top_profile",
+      "icon": "account_circle",
+      "label": "Perfil"
+    }
+  ],
+  "rail_nav_items": [
+    {
+      "id": "nav_rail_routes",
+      "icon": "map",
+      "label": "Rotas",
+      "active": true,
+      "href": "/"
+    },
+    {
+      "id": "nav_rail_logistics",
+      "icon": "local_shipping",
+      "label": "Logistica",
+      "active": false,
+      "href": "#"
+    },
+    {
+      "id": "nav_rail_products",
+      "icon": "agriculture",
+      "label": "Commodities",
+      "active": false,
+      "href": "#"
+    },
+    {
+      "id": "nav_rail_ranking",
+      "icon": "leaderboard",
+      "label": "Ranking",
+      "active": false,
+      "href": "#"
+    },
+    {
+      "id": "nav_rail_analytics",
+      "icon": "analytics",
+      "label": "Estatisticas",
+      "active": false,
+      "href": "#"
+    }
+  ],
+  "rail_cta": {
+    "id": "cta_rail_map_editor",
+    "icon": "edit_square",
+    "label": "Editor",
+    "href": "/editor/map"
+  }
+}

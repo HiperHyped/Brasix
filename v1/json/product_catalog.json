@@ -1,0 +1,302 @@
+[
+  {
+    "id": "soja",
+    "name": "Soja",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "🫘",
+    "color": "#5b8f4d",
+    "source_column": "Soja\n(mil t)"
+  },
+  {
+    "id": "milho",
+    "name": "Milho",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "🌽",
+    "color": "#5b8f4d",
+    "source_column": "Milho\n(mil t)"
+  },
+  {
+    "id": "cana-de-acucar",
+    "name": "Cana-de-Açúcar",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "🎋",
+    "color": "#5b8f4d",
+    "source_column": "Cana-de-Açúcar\n(mil t)"
+  },
+  {
+    "id": "algodao",
+    "name": "Algodão",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "☁️",
+    "color": "#5b8f4d",
+    "source_column": "Algodão\n(mil t)"
+  },
+  {
+    "id": "cafe",
+    "name": "Café",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil sacas 60kg",
+    "icon": "☕",
+    "color": "#5b8f4d",
+    "source_column": "Café\n(mil sacas 60kg)"
+  },
+  {
+    "id": "arroz",
+    "name": "Arroz",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "🍚",
+    "color": "#5b8f4d",
+    "source_column": "Arroz\n(mil t)"
+  },
+  {
+    "id": "trigo",
+    "name": "Trigo",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "🌾",
+    "color": "#5b8f4d",
+    "source_column": "Trigo\n(mil t)"
+  },
+  {
+    "id": "laranja",
+    "name": "Laranja",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "🍊",
+    "color": "#5b8f4d",
+    "source_column": "Laranja\n(mil t)"
+  },
+  {
+    "id": "feijao",
+    "name": "Feijão",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "🫘",
+    "color": "#5b8f4d",
+    "source_column": "Feijão\n(mil t)"
+  },
+  {
+    "id": "mandioca",
+    "name": "Mandioca",
+    "category": "agro",
+    "category_label": "Agro",
+    "unit": "mil t",
+    "icon": "🍠",
+    "color": "#5b8f4d",
+    "source_column": "Mandioca\n(mil t)"
+  },
+  {
+    "id": "bovinos",
+    "name": "Bovinos",
+    "category": "pecuaria",
+    "category_label": "Pecuaria",
+    "unit": "mil cab.",
+    "icon": "🐄",
+    "color": "#8a5b34",
+    "source_column": "Bovinos\n(mil cab.)"
+  },
+  {
+    "id": "suinos",
+    "name": "Suínos",
+    "category": "pecuaria",
+    "category_label": "Pecuaria",
+    "unit": "mil cab.",
+    "icon": "🐖",
+    "color": "#8a5b34",
+    "source_column": "Suínos\n(mil cab.)"
+  },
+  {
+    "id": "aves",
+    "name": "Aves",
+    "category": "pecuaria",
+    "category_label": "Pecuaria",
+    "unit": "mil cab.",
+    "icon": "🐔",
+    "color": "#8a5b34",
+    "source_column": "Aves\n(mil cab.)"
+  },
+  {
+    "id": "leite",
+    "name": "Leite",
+    "category": "pecuaria",
+    "category_label": "Pecuaria",
+    "unit": "mi litros",
+    "icon": "🥛",
+    "color": "#8a5b34",
+    "source_column": "Leite\n(mi litros)"
+  },
+  {
+    "id": "ovinos",
+    "name": "Ovinos",
+    "category": "pecuaria",
+    "category_label": "Pecuaria",
+    "unit": "mil cab.",
+    "icon": "🐑",
+    "color": "#8a5b34",
+    "source_column": "Ovinos\n(mil cab.)"
+  },
+  {
+    "id": "papel-celulose",
+    "name": "Papel/Celulose",
+    "category": "florestal",
+    "category_label": "Florestal",
+    "unit": "mil t",
+    "icon": "📄",
+    "color": "#2d7a63",
+    "source_column": "Papel/Celulose\n(mil t)"
+  },
+  {
+    "id": "madeira",
+    "name": "Madeira",
+    "category": "florestal",
+    "category_label": "Florestal",
+    "unit": "mil m³",
+    "icon": "🪵",
+    "color": "#2d7a63",
+    "source_column": "Madeira\n(mil m³)"
+  },
+  {
+    "id": "pesca",
+    "name": "Pesca",
+    "category": "florestal",
+    "category_label": "Florestal",
+    "unit": "mil t",
+    "icon": "🐟",
+    "color": "#2d7a63",
+    "source_column": "Pesca/Aquic.\n(mil t)"
+  },
+  {
+    "id": "ferro",
+    "name": "Ferro",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "mil t",
+    "icon": "🔘",
+    "color": "#b46a2b",
+    "source_column": "Min. Ferro\n(mil t)"
+  },
+  {
+    "id": "ouro",
+    "name": "Ouro",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "kg",
+    "icon": "🟡",
+    "color": "#b46a2b",
+    "source_column": "Ouro\n(kg)"
+  },
+  {
+    "id": "bauxita",
+    "name": "Bauxita",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "mil t",
+    "icon": "⚪",
+    "color": "#b46a2b",
+    "source_column": "Bauxita\n(mil t)"
+  },
+  {
+    "id": "manganes",
+    "name": "Manganês",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "mil t",
+    "icon": "🟣",
+    "color": "#b46a2b",
+    "source_column": "Manganês\n(mil t)"
+  },
+  {
+    "id": "niobio",
+    "name": "Nióbio",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "t",
+    "icon": "🔵",
+    "color": "#b46a2b",
+    "source_column": "Nióbio\n(t)"
+  },
+  {
+    "id": "cobre",
+    "name": "Cobre",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "mil t",
+    "icon": "🟠",
+    "color": "#b46a2b",
+    "source_column": "Cobre\n(mil t)"
+  },
+  {
+    "id": "fosfato",
+    "name": "Fosfato",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "mil t",
+    "icon": "🟢",
+    "color": "#b46a2b",
+    "source_column": "Fosfato\n(mil t)"
+  },
+  {
+    "id": "carvao",
+    "name": "Carvão",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "mil t",
+    "icon": "⚫",
+    "color": "#b46a2b",
+    "source_column": "Carvão Min.\n(mil t)"
+  },
+  {
+    "id": "sal-marinho",
+    "name": "Sal Marinho",
+    "category": "mineral",
+    "category_label": "Mineral",
+    "unit": "mil t",
+    "icon": "🧂",
+    "color": "#b46a2b",
+    "source_column": "Sal Marinho\n(mil t)"
+  },
+  {
+    "id": "petroleo",
+    "name": "Petróleo",
+    "category": "energia",
+    "category_label": "Energia",
+    "unit": "mil bbl/d",
+    "icon": "🛢️",
+    "color": "#c8501e",
+    "source_column": "Petróleo\n(mil bbl/d)"
+  },
+  {
+    "id": "gas-natural",
+    "name": "Gás Natural",
+    "category": "energia",
+    "category_label": "Energia",
+    "unit": "mil m³/d",
+    "icon": "🔥",
+    "color": "#c8501e",
+    "source_column": "Gás Natural\n(mil m³/d)"
+  },
+  {
+    "id": "etanol",
+    "name": "Etanol",
+    "category": "energia",
+    "category_label": "Energia",
+    "unit": "mil m³",
+    "icon": "⛽",
+    "color": "#c8501e",
+    "source_column": "Etanol\n(mil m³)"
+  }
+]

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="atlas-shell">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <h1 id="brand-title">Brasix</h1>
+      <span class="brand-divider"></span>
+      <p id="brand-subtitle">Cidades, commodities e rotas</p>
+    </div>
+
+    <nav id="top-nav" class="top-nav" aria-label="Navegacao de contexto"></nav>
+
+    <div id="top-actions" class="top-actions" aria-label="Acoes de topo"></div>
+  </header>
+
+  <div class="shell-body">
+    <aside class="icon-rail" aria-label="Ferramentas">
+      <div class="rail-brand">
+        <span class="material-symbols-outlined">shield</span>
+        <span id="rail-brand-copy">Comando<br />Tatico</span>
+      </div>
+
+      <nav id="rail-nav" class="rail-nav"></nav>
+
+      <div id="rail-cta-container"></div>
+    </aside>
+
+    <section class="atlas-grid">
+      <aside class="command-panel">
+        <div class="filter-stack">
+          <label class="field">
+            <span id="filter-product-label">Commodity</span>
+            <div class="select-shell">
+              <select id="commodity-select"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="filter-state-label">Estado</span>
+            <div class="select-shell">
+              <select id="state-select"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+        </div>
+
+        <div id="summary-metrics" class="metric-grid"></div>
+
+        <section class="ranking-panel">
+          <div class="section-head">
+            <div>
+              <p id="ranking-eyebrow" class="eyebrow">Leitura rapida</p>
+              <h2 id="ranking-title">Top Produtores</h2>
+            </div>
+            <span id="ranking-chip" class="section-chip">Soja</span>
+          </div>
+          <ol id="ranking-list" class="ranking-list"></ol>
+        </section>
+      </aside>
+
+      <section class="map-panel">
+        <div class="map-frame">
+          <div class="map-overlay map-badge">
+            <span class="material-symbols-outlined">explore</span>
+            <span id="map-badge-text">Projecao cartografica Brasix v2.4</span>
+          </div>
+
+          <div class="map-head">
+            <div>
+              <p id="map-eyebrow" class="eyebrow">Mapa-base evolutivo</p>
+              <h2 id="map-title">Cidades representativas</h2>
+            </div>
+            <p id="map-subtitle" class="map-copy"></p>
+          </div>
+
+          <div id="map-stage" class="map-stage" aria-label="Mapa interativo do Brasil"></div>
+
+          <div class="map-controls">
+            <button id="map-zoom-in" type="button" aria-label="Aproximar mapa">
+              <span class="material-symbols-outlined">add</span>
+            </button>
+            <button id="map-zoom-out" type="button" aria-label="Afastar mapa">
+              <span class="material-symbols-outlined">remove</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="detail-column">
+        <section class="city-card">
+          <div id="city-detail" class="detail-stack"></div>
+        </section>
+
+        <section class="route-card">
+          <div class="section-head route-head">
+            <div>
+              <p id="route-eyebrow" class="eyebrow">Planejamento</p>
+              <h2 id="route-title">Planejador</h2>
+            </div>
+          </div>
+
+          <label class="field">
+            <span id="route-origin-label">Origem</span>
+            <div class="select-shell">
+              <select id="route-origin"></select>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="route-destination-label">Destino</span>
+            <div class="select-shell">
+              <select id="route-destination"></select>
+            </div>
+          </label>
+
+          <button id="route-button" class="primary-button" type="button">Tracar rota</button>
+          <div id="route-status" class="route-status"></div>
+        </section>
+      </aside>
+    </section>
+  </div>
+</main>
+
+<script type="module" src="{{ request.url_for('static', path='js/main.js') }}"></script>
+{% endblock %}

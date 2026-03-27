@@ -1,0 +1,190 @@
+Crie o layout de uma aplicação web desktop chamada “Brasix”.
+
+Objetivo:
+Uma tela única, sem scroll, que funcione como mapa-base de um futuro jogo de logística e commodities do Brasil. O app mostra cidades brasileiras como pontos clicáveis em um mapa real do Brasil, com foco em leitura rápida, planejamento de rotas e sensação de “central de operações”. A interface deve parecer um produto real, não um dashboard genérico.
+
+Restrições obrigatórias:
+- Desktop only
+- Tela única
+- Sem scroll vertical
+- Sem scroll horizontal
+- Tudo deve caber em 100vh
+- Não criar versão mobile
+- Não criar páginas extras
+- Não usar modais
+- Não usar rodapé
+- Pensar em viewport de 1440x900
+- O layout também precisa funcionar em 1366x768 sem scroll
+- O mapa central deve ser interativo, não apenas ilustrativo
+
+Contexto do produto:
+O app representa cidades brasileiras ligadas à produção de commodities. Cada cidade é um ponto jogável no mapa. Depois esse mapa vai evoluir para um jogo com rotas, contratos, deslocamento, economia e eventos. Então a tela já precisa nascer com cara de sistema jogável: mapa central, painéis de apoio, leitura de estado, cidade selecionada e área de planejamento de rota.
+
+Estrutura geral:
+- Header horizontal compacto no topo
+- Corpo principal dividido em 3 colunas
+- Coluna esquerda: filtros, métricas e ranking
+- Coluna central: mapa grande e interativo do Brasil
+- Coluna direita: detalhe da cidade selecionada e planejador de rota
+- Tudo fixo, sem necessidade de scroll
+- O mapa deve ser a área dominante da tela
+
+Header:
+- Nome do produto: Brasix
+- Subtítulo curto: “Cidades, commodities e rotas”
+- Pequenos badges:
+  - “Mapa-base do jogo”
+  - “Desktop only”
+  - “Rotas em evolução”
+- Header premium, compacto e elegante
+- Sem menu complexo
+
+Coluna esquerda:
+Bloco 1: filtros
+- Select de commodity
+- Select de UF
+- Aparência clara, objetiva e refinada
+
+Bloco 2: leitura rápida
+- 4 cards compactos com métricas:
+  - cidades visíveis
+  - commodities mapeadas
+  - rotas salvas
+  - líder atual
+
+Bloco 3: ranking
+- Lista das 8 a 10 cidades mais relevantes para a commodity selecionada
+- Cada item com nome da cidade e valor resumido
+- Aparência executiva, leve e legível
+
+Coluna central:
+- Grande card de mapa ocupando a maior parte da tela
+- Título interno do mapa
+- Subtítulo contextual
+- Mostrar o mapa do Brasil de verdade, não apenas um fundo abstrato
+- O mapa deve parecer interativo e utilizável
+- Exibir pontos das cidades distribuídos geograficamente
+- Cada ponto deve parecer clicável
+- Diferenciar tamanho e destaque dos pontos conforme relevância
+- Mostrar pelo menos uma rota visível entre cidades
+- Uma cidade selecionada deve estar com destaque forte
+
+Interação obrigatória no mapa:
+- Hover sobre cidade mostrando tooltip rico
+- Clique em cidade selecionando o ponto e atualizando o painel da direita
+- Zoom in e zoom out claramente previstos no layout
+- Pan/drag no mapa claramente previsto
+- Estados visuais de hover, active e selected
+- Tooltip com:
+  - nome da cidade
+  - UF
+  - commodity dominante
+  - valor resumido
+- O mapa não pode parecer estático; ele deve comunicar claramente cliques, zoom, onhover e exploração
+- Incluir controles visuais discretos de zoom no canto do mapa
+- Incluir indicação de que o usuário pode clicar e explorar
+
+Coluna direita:
+Bloco 1: cidade selecionada
+- Nome da cidade em destaque
+- UF
+- Nome da região de origem do dado em texto secundário
+- Badges com:
+  - população
+  - número de commodities
+  - commodity dominante
+- Lista compacta das principais commodities da cidade
+- Cada commodity com emoji, nome e valor
+- Esse bloco deve parecer uma ficha jogável
+
+Bloco 2: planejador de rota
+- Select de origem
+- Select de destino
+- Botão principal: “Traçar caminho”
+- Área de status abaixo com:
+  - distância
+  - quantidade de trechos
+  - sequência resumida das cidades
+- O visual deve sugerir claramente a futura mecânica de jogo
+
+Tom visual:
+- Sofisticado, original e com personalidade
+- Mistura de atlas econômico, sala de comando, mapa tático e jogo de estratégia moderno
+- Evitar aparência corporativa genérica
+- Evitar aparência de dashboard BI padrão
+- Evitar visual sci-fi exagerado
+- Evitar roxo
+- Não usar dark mode
+- Preferir paleta inspirada em:
+  - papel cartográfico
+  - verde agrícola
+  - terra/cobre
+  - areia clara
+  - azul suave de hidrografia
+- Fundo com textura ou padrão muito sutil
+- Cards com profundidade delicada
+- Bordas suaves
+- Hierarquia visual forte
+
+Tipografia:
+- Títulos com personalidade
+- Corpo muito legível
+- Evitar fontes padrão demais
+- Não usar Inter como protagonista
+- Combinar uma fonte com presença para títulos e outra limpa para leitura
+
+Detalhes visuais desejados:
+- Chips arredondados
+- Cards bem organizados
+- Ícones e emojis de commodities integrados com bom gosto
+- Contraste suficiente para leitura
+- Espaçamento preciso
+- Nada pode parecer apertado
+- O conjunto deve passar sensação de produto maduro
+
+Commodities de exemplo:
+- Soja
+- Milho
+- Cana-de-açúcar
+- Café
+- Arroz
+- Bovinos
+- Leite
+- Ferro
+- Ouro
+- Petróleo
+- Gás natural
+
+Estados e cidades de exemplo:
+- Rio Verde, GO
+- Sorriso, MT
+- Uberlândia, MG
+- Ribeirão Preto, SP
+- Barreiras, BA
+- Dourados, MS
+- Cascavel, PR
+- Rio Branco, AC
+- Manaus, AM
+- Maceió, AL
+
+Direção de layout:
+- Header fino no topo
+- Três colunas principais abaixo
+- Proporção sugerida:
+  - esquerda: 22%
+  - centro: 50%
+  - direita: 28%
+- Altura total travada na viewport
+- Nenhuma área deve exigir scroll
+- Se faltar espaço, reduzir densidade e quantidade de itens visíveis, nunca criar scroll
+
+Estado visual desejado:
+- Commodity selecionada: Soja
+- Cidade selecionada: Sorriso, MT
+- Tooltip visível em uma segunda cidade no hover
+- Uma rota simulada visível entre cidades do Centro-Oeste e Sudeste
+- Ranking e métricas coerentes com esse contexto
+- O layout deve parecer pronto para virar aplicação real
+
+Resultado esperado:
+Entregar uma única tela desktop, refinada, completa, sem scroll, com mapa do Brasil realmente interativo no centro, preparado para cliques, hover, zoom e exploração, com painéis laterais funcionais e identidade visual forte, elegante e jogável.

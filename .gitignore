@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+v1/.env
+v1/dados/
+tmp_*.html
+tmp_chrome/

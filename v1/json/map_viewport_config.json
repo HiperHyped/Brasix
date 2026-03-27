@@ -1,0 +1,73 @@
+{
+  "id": "map_viewport_brasix_main_v1",
+  "center_lat": -14.9376,
+  "center_lon": -47.0261,
+  "lat_min": -34.7649,
+  "lat_max": 6.8407,
+  "lon_min": -75.6756,
+  "lon_max": -31.8641,
+  "default_tile_layer_id": "tile_layer_carto_positron_nolabels",
+  "tile_layers": [
+    {
+      "id": "tile_layer_carto_positron_nolabels",
+      "label": "Carto Positron",
+      "layer_kind": "base",
+      "url_template": "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
+      "attribution": "&copy; OpenStreetMap contributors &copy; CARTO",
+      "subdomains": "abcd",
+      "min_zoom": 3,
+      "max_zoom": 18
+    },
+    {
+      "id": "tile_layer_carto_positron_only_labels",
+      "label": "Labels Positron",
+      "layer_kind": "labels",
+      "url_template": "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
+      "attribution": "&copy; OpenStreetMap contributors &copy; CARTO",
+      "subdomains": "abcd",
+      "min_zoom": 3,
+      "max_zoom": 18
+    },
+    {
+      "id": "tile_layer_carto_voyager_nolabels",
+      "label": "Carto Voyager",
+      "layer_kind": "base",
+      "url_template": "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
+      "attribution": "&copy; OpenStreetMap contributors &copy; CARTO",
+      "subdomains": "abcd",
+      "min_zoom": 3,
+      "max_zoom": 18
+    },
+    {
+      "id": "tile_layer_carto_voyager_only_labels",
+      "label": "Labels Voyager",
+      "layer_kind": "labels",
+      "url_template": "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png",
+      "attribution": "&copy; OpenStreetMap contributors &copy; CARTO",
+      "subdomains": "abcd",
+      "min_zoom": 3,
+      "max_zoom": 18
+    }
+  ],
+  "defaults": {
+    "selected_product_id": "soja",
+    "selected_state_code": "all",
+    "selected_city_id": "go-rio-verde",
+    "route_origin_id": "go-rio-verde",
+    "route_destination_id": "sp-santos"
+  },
+  "controls": [
+    {
+      "id": "map_control_zoom_in",
+      "icon": "add",
+      "label": "Aproximar",
+      "factor": 0.8
+    },
+    {
+      "id": "map_control_zoom_out",
+      "icon": "remove",
+      "label": "Afastar",
+      "factor": 1.25
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "map_editor_graph_node_styles_v1",
+  "default_style_id": "graph_node_style_junction_diamond",
+  "styles": [
+    {
+      "id": "graph_node_style_junction_circle",
+      "label": "Ponto/circulo tecnico",
+      "shape": "solid_circle",
+      "size_px": 14,
+      "fill_color": "#8c4f10",
+      "stroke_color": "#fff9ea",
+      "stroke_width_px": 2,
+      "inner_scale": 0.0
+    },
+    {
+      "id": "graph_node_style_junction_diamond",
+      "label": "Losango de ligacao",
+      "shape": "solid_diamond",
+      "size_px": 16,
+      "fill_color": "#8c4f10",
+      "stroke_color": "#fff9ea",
+      "stroke_width_px": 2,
+      "inner_scale": 0.0
+    },
+    {
+      "id": "graph_node_style_junction_square",
+      "label": "Quadrado tecnico",
+      "shape": "solid_square",
+      "size_px": 16,
+      "fill_color": "#4f8593",
+      "stroke_color": "#fff9ea",
+      "stroke_width_px": 2,
+      "inner_scale": 0.0
+    },
+    {
+      "id": "graph_node_style_junction_triangle",
+      "label": "Triangulo tecnico",
+      "shape": "solid_triangle",
+      "size_px": 17,
+      "fill_color": "#2d5a27",
+      "stroke_color": "#fff9ea",
+      "stroke_width_px": 2,
+      "inner_scale": 0.0
+    }
+  ]
+}

@@ -1,0 +1,316 @@
+{
+  "id": "ui_map_leaflet_controls_v1",
+  "sections": [
+    {
+      "id": "map_leaflet_section_basemap",
+      "title": "Mapa-base",
+      "controls": [
+        {
+          "id": "leaflet_control_base_tile_layer",
+          "type": "select",
+          "path": "base_tile_layer_id",
+          "label": "Estilo cartografico",
+          "options": [
+            {
+              "id": "leaflet_option_base_positron",
+              "value": "tile_layer_carto_positron_nolabels",
+              "label": "Positron"
+            },
+            {
+              "id": "leaflet_option_base_voyager",
+              "value": "tile_layer_carto_voyager_nolabels",
+              "label": "Voyager"
+            }
+          ]
+        },
+        {
+          "id": "leaflet_control_label_tile_layer",
+          "type": "select",
+          "path": "label_tile_layer_id",
+          "label": "Familia dos labels",
+          "options": [
+            {
+              "id": "leaflet_option_label_positron",
+              "value": "tile_layer_carto_positron_only_labels",
+              "label": "Positron"
+            },
+            {
+              "id": "leaflet_option_label_voyager",
+              "value": "tile_layer_carto_voyager_only_labels",
+              "label": "Voyager"
+            }
+          ]
+        },
+        {
+          "id": "leaflet_control_labels_enabled",
+          "type": "checkbox",
+          "path": "visual.labels_enabled",
+          "label": "Mostrar labels"
+        }
+      ]
+    },
+    {
+      "id": "map_leaflet_section_visual",
+      "title": "Leitura do mapa",
+      "controls": [
+        {
+          "id": "leaflet_control_base_opacity",
+          "type": "range",
+          "path": "visual.base_opacity",
+          "label": "Opacidade base",
+          "min": 0.15,
+          "max": 1,
+          "step": 0.05
+        },
+        {
+          "id": "leaflet_control_label_opacity",
+          "type": "range",
+          "path": "visual.label_opacity",
+          "label": "Opacidade labels",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "enabled_when": {
+            "path": "visual.labels_enabled",
+            "equals": true
+          }
+        },
+        {
+          "id": "leaflet_control_brightness",
+          "type": "range",
+          "path": "visual.brightness",
+          "label": "Brilho",
+          "min": 0.4,
+          "max": 1.6,
+          "step": 0.05
+        },
+        {
+          "id": "leaflet_control_contrast",
+          "type": "range",
+          "path": "visual.contrast",
+          "label": "Contraste",
+          "min": 0.4,
+          "max": 1.6,
+          "step": 0.05
+        },
+        {
+          "id": "leaflet_control_saturate",
+          "type": "range",
+          "path": "visual.saturate",
+          "label": "Saturacao",
+          "min": 0,
+          "max": 1.8,
+          "step": 0.05
+        },
+        {
+          "id": "leaflet_control_blur",
+          "type": "range",
+          "path": "visual.blur_px",
+          "label": "Suavizacao",
+          "min": 0,
+          "max": 3,
+          "step": 0.1
+        }
+      ]
+    },
+    {
+      "id": "map_leaflet_section_zoom",
+      "title": "Zoom",
+      "controls": [
+        {
+          "id": "leaflet_control_min_zoom",
+          "type": "range",
+          "path": "zoom.min_zoom",
+          "label": "Zoom minimo",
+          "min": 0,
+          "max": 10,
+          "step": 1
+        },
+        {
+          "id": "leaflet_control_max_zoom",
+          "type": "range",
+          "path": "zoom.max_zoom",
+          "label": "Zoom maximo",
+          "min": 4,
+          "max": 18,
+          "step": 1
+        },
+        {
+          "id": "leaflet_control_zoom_snap",
+          "type": "range",
+          "path": "zoom.zoom_snap",
+          "label": "Snap do zoom",
+          "min": 0,
+          "max": 2,
+          "step": 0.1
+        },
+        {
+          "id": "leaflet_control_zoom_delta",
+          "type": "range",
+          "path": "zoom.zoom_delta",
+          "label": "Delta do zoom",
+          "min": 0.1,
+          "max": 2,
+          "step": 0.1
+        }
+      ]
+    },
+    {
+      "id": "map_leaflet_section_interaction",
+      "title": "Interacao",
+      "controls": [
+        {
+          "id": "leaflet_control_dragging_enabled",
+          "type": "checkbox",
+          "path": "interaction.dragging_enabled",
+          "label": "Pan por arraste"
+        },
+        {
+          "id": "leaflet_control_scroll_wheel_zoom_enabled",
+          "type": "checkbox",
+          "path": "interaction.scroll_wheel_zoom_enabled",
+          "label": "Zoom no wheel"
+        },
+        {
+          "id": "leaflet_control_double_click_zoom_enabled",
+          "type": "checkbox",
+          "path": "interaction.double_click_zoom_enabled",
+          "label": "Zoom no duplo clique"
+        },
+        {
+          "id": "leaflet_control_keyboard_enabled",
+          "type": "checkbox",
+          "path": "interaction.keyboard_enabled",
+          "label": "Navegacao por teclado"
+        },
+        {
+          "id": "leaflet_control_keyboard_pan_delta_px",
+          "type": "range",
+          "path": "interaction.keyboard_pan_delta_px",
+          "label": "Passo do teclado",
+          "min": 20,
+          "max": 240,
+          "step": 10,
+          "enabled_when": {
+            "path": "interaction.keyboard_enabled",
+            "equals": true
+          }
+        },
+        {
+          "id": "leaflet_control_wheel_px_per_zoom_level",
+          "type": "range",
+          "path": "interaction.wheel_px_per_zoom_level",
+          "label": "Velocidade do wheel",
+          "min": 20,
+          "max": 240,
+          "step": 10,
+          "enabled_when": {
+            "path": "interaction.scroll_wheel_zoom_enabled",
+            "equals": true
+          }
+        },
+        {
+          "id": "leaflet_control_wheel_debounce_time_ms",
+          "type": "range",
+          "path": "interaction.wheel_debounce_time_ms",
+          "label": "Debounce do wheel",
+          "min": 0,
+          "max": 200,
+          "step": 10,
+          "enabled_when": {
+            "path": "interaction.scroll_wheel_zoom_enabled",
+            "equals": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "map_leaflet_section_motion",
+      "title": "Movimento",
+      "controls": [
+        {
+          "id": "leaflet_control_inertia_enabled",
+          "type": "checkbox",
+          "path": "motion.inertia_enabled",
+          "label": "Inercia"
+        },
+        {
+          "id": "leaflet_control_inertia_deceleration",
+          "type": "range",
+          "path": "motion.inertia_deceleration",
+          "label": "Desaceleracao",
+          "min": 500,
+          "max": 8000,
+          "step": 100,
+          "enabled_when": {
+            "path": "motion.inertia_enabled",
+            "equals": true
+          }
+        },
+        {
+          "id": "leaflet_control_max_bounds_viscosity",
+          "type": "range",
+          "path": "motion.max_bounds_viscosity",
+          "label": "Viscosidade do limite",
+          "min": 0,
+          "max": 1,
+          "step": 0.05
+        },
+        {
+          "id": "leaflet_control_zoom_animation_enabled",
+          "type": "checkbox",
+          "path": "motion.zoom_animation_enabled",
+          "label": "Animacao de zoom"
+        },
+        {
+          "id": "leaflet_control_fade_animation_enabled",
+          "type": "checkbox",
+          "path": "motion.fade_animation_enabled",
+          "label": "Fade dos tiles"
+        },
+        {
+          "id": "leaflet_control_marker_zoom_animation_enabled",
+          "type": "checkbox",
+          "path": "motion.marker_zoom_animation_enabled",
+          "label": "Animacao dos marcadores"
+        }
+      ]
+    },
+    {
+      "id": "map_leaflet_section_tiles",
+      "title": "Tiles",
+      "controls": [
+        {
+          "id": "leaflet_control_update_when_idle",
+          "type": "checkbox",
+          "path": "tile_render.update_when_idle",
+          "label": "Atualizar so no fim do pan"
+        },
+        {
+          "id": "leaflet_control_update_interval_ms",
+          "type": "range",
+          "path": "tile_render.update_interval_ms",
+          "label": "Intervalo de atualizacao",
+          "min": 50,
+          "max": 1000,
+          "step": 50
+        },
+        {
+          "id": "leaflet_control_keep_buffer",
+          "type": "range",
+          "path": "tile_render.keep_buffer",
+          "label": "Buffer de tiles",
+          "min": 0,
+          "max": 12,
+          "step": 1
+        },
+        {
+          "id": "leaflet_control_detect_retina",
+          "type": "checkbox",
+          "path": "tile_render.detect_retina",
+          "label": "Detectar retina"
+        }
+      ]
+    }
+  ]
+}

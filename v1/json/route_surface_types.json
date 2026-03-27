@@ -1,0 +1,65 @@
+{
+  "id": "route_surface_types_v1",
+  "types": [
+    {
+      "id": "route_surface_double_road",
+      "code": "double_road",
+      "label": "Estrada dupla",
+      "shortcut_key": "1",
+      "style": {
+        "base_color": "#2f5a28",
+        "base_weight": 8,
+        "base_opacity": 0.82,
+        "overlay_color": "#f8f3e5",
+        "overlay_weight": 2.8,
+        "overlay_opacity": 0.96,
+        "dash_array": ""
+      }
+    },
+    {
+      "id": "route_surface_single_road",
+      "code": "single_road",
+      "label": "Estrada simples",
+      "shortcut_key": "2",
+      "style": {
+        "base_color": "#4f6f45",
+        "base_weight": 5,
+        "base_opacity": 0.78,
+        "overlay_color": null,
+        "overlay_weight": 0,
+        "overlay_opacity": 0,
+        "dash_array": ""
+      }
+    },
+    {
+      "id": "route_surface_dirt_road",
+      "code": "dirt_road",
+      "label": "Estrada de terra",
+      "shortcut_key": "3",
+      "style": {
+        "base_color": "#8c4f10",
+        "base_weight": 4,
+        "base_opacity": 0.8,
+        "overlay_color": null,
+        "overlay_weight": 0,
+        "overlay_opacity": 0,
+        "dash_array": "8 7"
+      }
+    },
+    {
+      "id": "route_surface_waterway",
+      "code": "waterway",
+      "label": "Hidrovia",
+      "shortcut_key": "4",
+      "style": {
+        "base_color": "#2b6f8f",
+        "base_weight": 6,
+        "base_opacity": 0.82,
+        "overlay_color": "#d8f0f8",
+        "overlay_weight": 1.8,
+        "overlay_opacity": 0.92,
+        "dash_array": "14 8"
+      }
+    }
+  ]
+}
