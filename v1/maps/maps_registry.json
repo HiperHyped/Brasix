@@ -80,10 +80,10 @@
       "slug": "mapa-6-2",
       "description": "",
       "created_at": "2026-03-27T21:53:03-03:00",
-      "updated_at": "2026-03-28T11:12:53-03:00",
+      "updated_at": "2026-03-28T11:23:02-03:00",
       "path": "maps/map_mapa-6-2/map_bundle.json",
       "city_count": 245,
-      "route_count": 352,
+      "route_count": 353,
       "graph_node_count": 28
     }
   ]
