@@ -18,15 +18,18 @@ from app.config import (
     MAP_LEAFLET_SETTINGS_PATH,
     PRODUCT_CATALOG_PATH,
     ROUTE_GEOMETRY_TYPES_PATH,
+    ROUTE_AUTO_ENGINE_CONFIG_PATH,
     ROUTE_SURFACE_TYPES_PATH,
     UI_COMPONENT_REGISTRY_PATH,
     UI_MAP_DISPLAY_CONTROLS_PATH,
     UI_MAP_LEAFLET_CONTROLS_PATH,
     UI_MAP_EDITOR_THEMES_PATH,
+    UI_MAP_EDITOR_V2_SCREEN_PATH,
     UI_MAP_SHORTCUTS_PANEL_PATH,
     UI_DESIGN_TOKENS_PATH,
     UI_LAYOUT_DESKTOP_MAIN_PATH,
     UI_LAYOUT_DESKTOP_MAP_EDITOR_PATH,
+    UI_LAYOUT_DESKTOP_MAP_EDITOR_V2_PATH,
     UI_MAP_EDITOR_SCREEN_PATH,
     UI_NAVIGATION_ITEMS_PATH,
     UI_MAP_REPOSITORY_CONTROLS_PATH,
@@ -165,6 +168,16 @@ def load_map_editor_payload(user_city_catalog: dict[str, Any] | None = None) -> 
         "shortcuts_panel": load_json(UI_MAP_SHORTCUTS_PANEL_PATH),
         "city_autofill": load_json(AI_CITY_AUTOFILL_CONFIG_PATH),
         "user_city_catalog": user_city_catalog or load_user_city_catalog_payload(),
+        "route_surface_types": load_json(ROUTE_SURFACE_TYPES_PATH),
+        "route_geometry_types": load_json(ROUTE_GEOMETRY_TYPES_PATH),
+    }
+
+
+def load_map_editor_v2_payload() -> dict[str, Any]:
+    return {
+        "screen": load_json(UI_MAP_EDITOR_V2_SCREEN_PATH),
+        "layout_desktop": load_json(UI_LAYOUT_DESKTOP_MAP_EDITOR_V2_PATH),
+        "route_auto_engine": load_json(ROUTE_AUTO_ENGINE_CONFIG_PATH),
         "route_surface_types": load_json(ROUTE_SURFACE_TYPES_PATH),
         "route_geometry_types": load_json(ROUTE_GEOMETRY_TYPES_PATH),
     }

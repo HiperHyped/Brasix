@@ -4,9 +4,9 @@ import math
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.maptools.models import RouteWorkspaceSnapshot
+from app.maptools.models import RouteEdgeRecord, RouteWorkspaceSnapshot
 
 
 class PopulationBandRecord(BaseModel):
@@ -183,6 +183,38 @@ class MapSaveRequest(BaseModel):
 
 class MapActivateRequest(BaseModel):
     map_id: str = Field(min_length=1)
+
+
+class AutoRoutePreviewRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    from_node_id: str = Field(min_length=1, alias="from_city_id")
+    to_node_id: str = Field(min_length=1, alias="to_city_id")
+    surface_type_id: str = Field(min_length=1)
+    resolution_km: int = Field(default=20, ge=1, le=50)
+
+    @model_validator(mode="after")
+    def validate_distinct_endpoints(self) -> "AutoRoutePreviewRequest":
+        if self.from_node_id == self.to_node_id:
+            raise ValueError("A rota automatica precisa ligar dois pontos diferentes.")
+        return self
+
+
+class AutoRoutePreviewResponse(BaseModel):
+    engine: str = "osrm"
+    profile_id: str = "driving"
+    surface_type_id: str
+    resolution_km: int = Field(ge=1, le=50)
+    raw_point_count: int = Field(ge=2)
+    simplified_point_count: int = Field(ge=2)
+    distance_km: float = Field(ge=0)
+    edge: RouteEdgeRecord
+
+
+class AutoRouteSaveRequest(BaseModel):
+    edge: RouteEdgeRecord
+    engine: str = "osrm"
+    resolution_km: int = Field(default=20, ge=1, le=50)
 
 
 class MapDisplayVisibilityRecord(BaseModel):

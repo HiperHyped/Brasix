@@ -1,6 +1,6 @@
 {
   "id": "map_leaflet_settings_v1",
-  "base_tile_layer_id": "tile_layer_carto_positron_nolabels",
+  "base_tile_layer_id": "tile_layer_carto_voyager_nolabels",
   "label_tile_layer_id": "tile_layer_carto_positron_only_labels",
   "visual": {
     "base_opacity": 1.0,

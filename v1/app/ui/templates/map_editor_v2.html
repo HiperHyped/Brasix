@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="editor-v2-shell">
+  <header class="topbar editor-topbar editor-v2-topbar">
+    <div class="editor-topbar-left">
+      <div class="brand-lockup">
+        <h1 id="editor-v2-brand-title">Brasix</h1>
+        <span class="brand-divider"></span>
+        <p id="editor-v2-brand-subtitle">Editor de mapa v2</p>
+      </div>
+    </div>
+    <div id="editor-v2-header-badges" class="editor-header-badges" aria-label="Estado do editor v2"></div>
+    <div id="editor-v2-header-actions" class="editor-header-actions" aria-label="Acoes do editor v2"></div>
+  </header>
+
+  <section class="editor-v2-grid">
+    <aside class="editor-v2-sidebar">
+      <section class="editor-card editor-v2-card">
+        <div class="section-head">
+          <div>
+            <p id="editor-v2-active-map-eyebrow" class="eyebrow">Mapa ativo</p>
+            <h2 id="editor-v2-active-map-title">Mapa</h2>
+          </div>
+          <span id="editor-v2-active-map-badge" class="editor-v2-map-badge"></span>
+        </div>
+        <p id="editor-v2-active-map-copy" class="editor-v2-copy"></p>
+      </section>
+
+      <section class="editor-card editor-v2-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Auto route</p>
+            <h2 id="editor-v2-routing-title">Roteamento automatico</h2>
+          </div>
+        </div>
+        <p id="editor-v2-routing-copy" class="editor-v2-copy"></p>
+        <div class="editor-v2-control-group">
+          <span id="editor-v2-surface-label" class="eyebrow editor-v2-inline-label">Tipo de rodovia</span>
+          <div id="editor-v2-surface-buttons" class="editor-v2-surface-buttons"></div>
+          <p id="editor-v2-surface-hint" class="editor-v2-hint"></p>
+        </div>
+        <div class="editor-v2-field-grid">
+          <label class="field">
+            <span id="editor-v2-origin-label">Cidade de origem</span>
+            <select id="editor-v2-origin-select" class="editor-input"></select>
+          </label>
+          <button id="editor-v2-pick-origin-button" class="secondary-button editor-v2-pick-button" type="button">Escolher origem no mapa</button>
+          <label class="field">
+            <span id="editor-v2-destination-label">Cidade de destino</span>
+            <select id="editor-v2-destination-select" class="editor-input"></select>
+          </label>
+          <button id="editor-v2-pick-destination-button" class="secondary-button editor-v2-pick-button" type="button">Escolher destino no mapa</button>
+        </div>
+        <div class="editor-v2-control-group">
+          <div class="editor-v2-resolution-head">
+            <span id="editor-v2-resolution-label" class="eyebrow editor-v2-inline-label">Resolucao da geometria</span>
+            <strong id="editor-v2-resolution-value" class="editor-v2-resolution-value">20 km</strong>
+          </div>
+          <input id="editor-v2-resolution-slider" class="editor-v2-resolution-slider" type="range" min="0" max="7" step="1" value="4" />
+          <div id="editor-v2-resolution-ticks" class="editor-v2-resolution-ticks"></div>
+          <p id="editor-v2-resolution-hint" class="editor-v2-hint"></p>
+        </div>
+        <div class="editor-v2-action-row">
+          <button id="editor-v2-preview-button" class="editor-header-action" type="button">Gerar preview automatico</button>
+          <button id="editor-v2-save-button" class="secondary-button" type="button" disabled>Salvar preview no mapa</button>
+          <button id="editor-v2-clear-button" class="ghost-button" type="button">Limpar preview</button>
+        </div>
+      </section>
+
+      <section class="editor-card editor-v2-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Preview</p>
+            <h2 id="editor-v2-preview-title">Preview da rota</h2>
+          </div>
+        </div>
+        <div id="editor-v2-preview-meta" class="editor-v2-preview-meta"></div>
+      </section>
+
+      <section class="editor-card editor-v2-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Legenda</p>
+            <h2 id="editor-v2-legend-title">Superficies automaticas</h2>
+          </div>
+        </div>
+        <div id="editor-v2-auto-surface-list" class="editor-v2-surface-list"></div>
+        <h3 id="editor-v2-manual-title" class="editor-v2-subtitle">Superficies manuais</h3>
+        <div id="editor-v2-manual-surface-list" class="editor-v2-surface-list"></div>
+      </section>
+    </aside>
+
+    <div class="editor-v2-map-panel">
+      <div class="map-frame editor-v2-map-frame">
+        <div id="editor-v2-map-stage" class="map-stage editor-v2-map-stage" aria-label="Editor de mapa v2"></div>
+        <div id="editor-v2-legend" class="editor-population-legend" aria-label="Legenda do editor v2"></div>
+        <div id="editor-v2-status" class="editor-status-box editor-status-strip"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  const editorModuleUrl = new URL("{{ request.url_for('static', path='js/editors/map-editor-v2.js') }}", window.location.href);
+  editorModuleUrl.searchParams.set("v", "20260327-v2-1");
+  import(editorModuleUrl.href).then((module) => module.initMapEditorV2()).catch((error) => {
+    const statusBox = document.getElementById("editor-v2-status");
+    if (statusBox) {
+      statusBox.innerHTML = `
+        <div class="editor-status-copy">Falha ao carregar o editor de mapa v2.</div>
+        <div class="editor-status-meta"><div><span>Erro</span><strong>${String(error?.message || error)}</strong></div></div>
+      `;
+    }
+    console.error("Brasix map editor v2 load failure:", error);
+  });
+</script>
+{% endblock %}

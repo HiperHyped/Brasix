@@ -1,0 +1,74 @@
+{
+  "id": "ui_map_editor_v2_screen_v1",
+  "page_title": "Brasix | Editor de mapa v2",
+  "brand_title": "Brasix",
+  "brand_subtitle": "Editor de mapa v2",
+  "header_badges": [
+    {
+      "id": "editor_v2_badge_engine",
+      "label": "OSRM"
+    },
+    {
+      "id": "editor_v2_badge_mode",
+      "label": "Rotas automaticas"
+    }
+  ],
+  "header_actions": [
+    {
+      "id": "editor_v2_action_back_v1",
+      "label": "Voltar ao editor v1",
+      "href": "/editor/map",
+      "icon": "arrow_back"
+    },
+    {
+      "id": "editor_v2_action_back_app",
+      "label": "Voltar ao app",
+      "href": "/",
+      "icon": "arrow_back"
+    }
+  ],
+  "labels": {
+    "active_map": "Mapa ativo",
+    "routing_title": "Roteamento automatico",
+    "routing_copy": "Escolha duas cidades-base ou cidades criadas do mapa ativo. O v2 usa OSRM para desenhar rodovias 1, 2 e 3 seguindo a malha real.",
+    "surface_label": "Tipo de rodovia",
+    "surface_hint": "Hidrovia e ferrovia continuam manuais por enquanto.",
+    "origin_label": "Cidade de origem",
+    "destination_label": "Cidade de destino",
+    "pick_origin_button": "Escolher origem no mapa",
+    "pick_destination_button": "Escolher destino no mapa",
+    "resolution_label": "Resolucao da geometria",
+    "resolution_hint": "Quanto menor o valor, mais fiel e mais pesada fica a rota salva.",
+    "preview_button": "Gerar preview automatico",
+    "save_button": "Salvar preview no mapa",
+    "clear_button": "Limpar preview",
+    "preview_title": "Preview da rota",
+    "preview_empty": "Ainda nao ha preview. Gere uma rota entre duas cidades para ver a geometria do OSRM.",
+    "preview_engine": "Engine",
+    "preview_distance": "Distancia",
+    "preview_points_raw": "Pontos brutos",
+    "preview_points_saved": "Pontos salvos",
+    "network_title": "Mapa ativo",
+    "network_copy": "As rotas automaticas salvas no v2 entram no mesmo bundle de mapa usado pelo v1.",
+    "legend_title": "Superficies automaticas",
+    "legend_manual_title": "Superficies manuais",
+    "city_picker_title": "Clique no mapa",
+    "city_picker_copy": "Clique em uma cidade para preencher origem ou destino mais rapido."
+  },
+  "status_messages": {
+    "idle": "Escolha o tipo de rodovia, a origem, o destino e a resolucao para gerar o preview automatico.",
+    "pick_origin": "Selecione a cidade de origem.",
+    "pick_destination": "Selecione a cidade de destino.",
+    "preview_loading": "Consultando o OSRM e simplificando a geometria da rota...",
+    "preview_ready": "Preview automatico pronto. Revise a rota e salve se estiver boa.",
+    "preview_saved": "Rota automatica salva no mapa ativo.",
+    "preview_cleared": "Preview limpo.",
+    "preview_error": "Nao foi possivel gerar a rota automatica no momento.",
+    "save_error": "Nao foi possivel salvar a rota automatica no mapa ativo.",
+    "select_both_cities": "Selecione origem e destino antes de gerar o preview.",
+    "same_city": "Origem e destino precisam ser cidades diferentes.",
+    "manual_surface": "Esta superficie continua manual no v2 por enquanto.",
+    "city_selected_origin": "Cidade de origem selecionada no mapa.",
+    "city_selected_destination": "Cidade de destino selecionada no mapa."
+  }
+}

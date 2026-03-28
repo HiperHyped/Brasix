@@ -4,7 +4,7 @@
   "slug": "mapa-4",
   "description": "",
   "created_at": "2026-03-27T12:06:32-03:00",
-  "updated_at": "2026-03-27T12:43:30-03:00",
+  "updated_at": "2026-03-27T13:05:44-03:00",
   "source_options": {
     "include_base_cities": true,
     "include_created_cities": true,
@@ -328,6 +328,26 @@
       }
     },
     {
+      "id": "custom-city-1774626966199",
+      "name": "Bento Gonçalves",
+      "label": "Bento Gonçalves, RS",
+      "state_code": "RS",
+      "state_name": "Rio Grande do Sul",
+      "source_region_name": "Região Geográfica Intermediária de Caxias do Sul",
+      "population_thousands": 123.151,
+      "latitude": -29.15752,
+      "longitude": -51.5231,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Bento Gonçalves, Região Geográfica Imediata de Bento Gonçalves, Região Geográfica Intermediária de Caxias do Sul, Rio Grande do Sul, Região Sul, Brasil. Populacao consultada no IBGE: 123151.",
+        "last_error": null
+      }
+    },
+    {
       "id": "sc-blumenau",
       "name": "Blumenau",
       "label": "Blumenau, SC",
@@ -504,6 +524,26 @@
       "autofill": null
     },
     {
+      "id": "custom-city-1774627206443",
+      "name": "Canoas",
+      "label": "Canoas, RS",
+      "state_code": "RS",
+      "state_name": "Rio Grande do Sul",
+      "source_region_name": "Região Geográfica Intermediária de Porto Alegre",
+      "population_thousands": 347.657,
+      "latitude": -29.88443,
+      "longitude": -51.16896,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Canoas, Região Geográfica Imediata de Porto Alegre, Região Metropolitana de Porto Alegre, Região Geográfica Intermediária de Porto Alegre, Rio Grande do Sul, Região Sul, Brasil. Populacao consultada no IBGE: 347657.",
+        "last_error": null
+      }
+    },
+    {
       "id": "pe-caruaru-parte-vitoria-de-s-antao",
       "name": "Caruaru (parte)/Vitória de S.Antão",
       "label": "Caruaru (parte)/Vitória de S.Antão, PE",
@@ -621,19 +661,6 @@
       "autofill": null
     },
     {
-      "id": "pr-cornelio-procopio",
-      "name": "Cornélio Procópio",
-      "label": "Cornélio Procópio, PR",
-      "state_code": "PR",
-      "state_name": "Paraná",
-      "source_region_name": "Norte Pioneiro Paranaense",
-      "population_thousands": 44.599,
-      "latitude": -23.1829,
-      "longitude": -50.6498,
-      "is_user_created": false,
-      "autofill": null
-    },
-    {
       "id": "ms-corumba",
       "name": "Corumbá",
       "label": "Corumbá, MS",
@@ -698,6 +725,26 @@
       "longitude": -39.4103,
       "is_user_created": false,
       "autofill": null
+    },
+    {
+      "id": "custom-city-1774626713831",
+      "name": "Criciúma",
+      "label": "Criciúma, SC",
+      "state_code": "SC",
+      "state_name": "Santa Catarina",
+      "source_region_name": "Criciúma",
+      "population_thousands": 214.493,
+      "latitude": -28.68452,
+      "longitude": -49.37049,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Criciúma, Região Geográfica Imediata de Criciúma, Região Geográfica Intermediária de Criciúma, Santa Catarina, Região Sul, Brasil. Populacao consultada no IBGE: 214493.",
+        "last_error": null
+      }
     },
     {
       "id": "go-crixas",
@@ -1382,6 +1429,26 @@
       "autofill": null
     },
     {
+      "id": "custom-city-1774626690900",
+      "name": "Jundiaí",
+      "label": "Jundiaí, SP",
+      "state_code": "SP",
+      "state_name": "São Paulo",
+      "source_region_name": "Região Geográfica Intermediária de Campinas",
+      "population_thousands": 443.221,
+      "latitude": -23.19299,
+      "longitude": -46.9051,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Jundiaí, Região Imediata de Jundiaí, Região Geográfica Intermediária de Campinas, São Paulo, Brasil. Populacao consultada no IBGE: 443221.",
+        "last_error": null
+      }
+    },
+    {
       "id": "sc-lages",
       "name": "Lages",
       "label": "Lages, SC",
@@ -1393,6 +1460,26 @@
       "longitude": -50.3259,
       "is_user_created": false,
       "autofill": null
+    },
+    {
+      "id": "custom-city-1774626724165",
+      "name": "Laguna",
+      "label": "Laguna, SC",
+      "state_code": "SC",
+      "state_name": "Santa Catarina",
+      "source_region_name": "Laguna",
+      "population_thousands": 42.785,
+      "latitude": -28.48654,
+      "longitude": -48.77984,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Laguna, Região Geográfica Imediata de Tubarão, Região Geográfica Intermediária de Criciúma, Santa Catarina, Região Sul, Brasil. Populacao consultada no IBGE: 42785.",
+        "last_error": null
+      }
     },
     {
       "id": "custom-city-1774616597293",
@@ -1589,6 +1676,26 @@
       "longitude": -35.1986,
       "is_user_created": false,
       "autofill": null
+    },
+    {
+      "id": "custom-city-1774627036873",
+      "name": "Navegantes",
+      "label": "Navegantes, SC",
+      "state_code": "SC",
+      "state_name": "Santa Catarina",
+      "source_region_name": "Navegantes",
+      "population_thousands": 86.401,
+      "latitude": -26.86112,
+      "longitude": -48.68351,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Navegantes, Região Geográfica Imediata de Itajaí, Região Geográfica Intermediária de Blumenau, Santa Catarina, Região Sul, Brasil. Populacao consultada no IBGE: 86401.",
+        "last_error": null
+      }
     },
     {
       "id": "custom-city-1774625029679",
@@ -2641,6 +2748,26 @@
       }
     },
     {
+      "id": "custom-city-1774626531302",
+      "name": "Umuarama",
+      "label": "Umuarama, PR",
+      "state_code": "PR",
+      "state_name": "Paraná",
+      "source_region_name": "Região Geográfica Intermediária de Maringá",
+      "population_thousands": 117.095,
+      "latitude": -23.768,
+      "longitude": -53.31321,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Umuarama, Região Geográfica Imediata de Umuarama, Região Metropolitana de Umuarama, Região Geográfica Intermediária de Maringá, Paraná, Região Sul, Brasil. Populacao consultada no IBGE: 117095.",
+        "last_error": null
+      }
+    },
+    {
       "id": "mg-unai",
       "name": "Unaí",
       "label": "Unaí, MG",
@@ -2683,6 +2810,26 @@
         "status": "completed",
         "confidence": "high",
         "summary": "Municipio identificado por Nominatim: Uruguaiana, Região Geográfica Imediata de Uruguaiana, Região Geográfica Intermediária de Uruguaiana, Rio Grande do Sul, Região Sul, Brasil. Populacao consultada no IBGE: 117210.",
+        "last_error": null
+      }
+    },
+    {
+      "id": "custom-city-1774626991736",
+      "name": "Vacaria",
+      "label": "Vacaria, RS",
+      "state_code": "RS",
+      "state_name": "Rio Grande do Sul",
+      "source_region_name": "Região Geográfica Intermediária de Caxias do Sul",
+      "population_thousands": 64.197,
+      "latitude": -28.50655,
+      "longitude": -50.93706,
+      "is_user_created": true,
+      "autofill": {
+        "provider": "Nominatim + IBGE",
+        "model": null,
+        "status": "completed",
+        "confidence": "high",
+        "summary": "Municipio identificado por Nominatim: Vacaria, Região Geográfica Imediata de Vacaria, Região Geográfica Intermediária de Caxias do Sul, Rio Grande do Sul, Região Sul, Brasil. Populacao consultada no IBGE: 64197.",
         "last_error": null
       }
     },
@@ -2761,6 +2908,66 @@
         "size_px": 12,
         "snapped_from_edge_id": null,
         "notes": "Criado livre no editor de mapa"
+      },
+      {
+        "id": "graph_node_1774626414859",
+        "label": "Ligacao 02",
+        "node_kind": "junction",
+        "placement_mode": "snapped_route",
+        "latitude": -23.4366,
+        "longitude": -46.7464,
+        "style_id": "graph_node_style_junction_circle",
+        "size_px": 12,
+        "snapped_from_edge_id": "edge-custom-city-1774625074741-custom-city-1774625051739-1774626009357",
+        "notes": "Criado com snap em rota no editor de mapa"
+      },
+      {
+        "id": "graph_node_1774626634974",
+        "label": "Ligacao 03",
+        "node_kind": "junction",
+        "placement_mode": "free",
+        "latitude": -22.7333,
+        "longitude": -49.4621,
+        "style_id": "graph_node_style_junction_circle",
+        "size_px": 12,
+        "snapped_from_edge_id": null,
+        "notes": "Criado livre no editor de mapa"
+      },
+      {
+        "id": "graph_node_1774626669679",
+        "label": "Ligacao 04",
+        "node_kind": "junction",
+        "placement_mode": "snapped_route",
+        "latitude": -23.40195,
+        "longitude": -47.33761,
+        "style_id": "graph_node_style_junction_circle",
+        "size_px": 12,
+        "snapped_from_edge_id": "edge-custom-city-1774625074741-graph_node_1774626634974-1774626661945",
+        "notes": "Criado com snap em rota no editor de mapa"
+      },
+      {
+        "id": "graph_node_1774626719033",
+        "label": "Ligacao 05",
+        "node_kind": "junction",
+        "placement_mode": "free",
+        "latitude": -28.75164,
+        "longitude": -49.27437,
+        "style_id": "graph_node_style_junction_circle",
+        "size_px": 12,
+        "snapped_from_edge_id": null,
+        "notes": "Criado livre no editor de mapa"
+      },
+      {
+        "id": "graph_node_1774627312081",
+        "label": "Ligacao 06",
+        "node_kind": "junction",
+        "placement_mode": "snapped_route",
+        "latitude": -29.66558,
+        "longitude": -52.16692,
+        "style_id": "graph_node_style_junction_circle",
+        "size_px": 12,
+        "snapped_from_edge_id": "edge-custom-city-1774627206443-rs-santa-maria-1774627223575",
+        "notes": "Criado com snap em rota no editor de mapa"
       }
     ],
     "edges": [
@@ -2981,35 +3188,6 @@
             "id": "route_point_1774626004511_1",
             "latitude": -23.54914,
             "longitude": -46.91524
-          }
-        ]
-      },
-      {
-        "id": "edge-custom-city-1774625074741-custom-city-1774625051739-1774626009357",
-        "from_node_id": "custom-city-1774625074741",
-        "to_node_id": "custom-city-1774625051739",
-        "from_city_id": "custom-city-1774625074741",
-        "to_city_id": "custom-city-1774625051739",
-        "mode": "road",
-        "surface_type_id": "route_surface_double_road",
-        "surface_code": "double_road",
-        "geometry_type_id": "route_geometry_polycurve",
-        "geometry_code": "polycurve",
-        "render_smoothing_enabled": true,
-        "status": "active",
-        "bidirectional": true,
-        "distance_km": 37.9,
-        "notes": "Criada no editor de mapa",
-        "waypoints": [
-          {
-            "id": "route_point_1774626009357_1",
-            "latitude": -23.4414,
-            "longitude": -46.7638
-          },
-          {
-            "id": "route_point_1774626009357_2",
-            "latitude": -23.43272,
-            "longitude": -46.65022
           }
         ]
       },
@@ -3651,6 +3829,2315 @@
             "id": "route_point_1774626172677_2",
             "latitude": -26.67732,
             "longitude": -48.7393
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774625074741-graph_node_1774626414859-1774626414859a",
+        "from_node_id": "custom-city-1774625074741",
+        "to_node_id": "graph_node_1774626414859",
+        "from_city_id": "custom-city-1774625074741",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 15.5,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626414859a_1",
+            "latitude": -23.50337,
+            "longitude": -46.87228
+          },
+          {
+            "id": "route_point_1774626414859a_2",
+            "latitude": -23.49941,
+            "longitude": -46.86608
+          },
+          {
+            "id": "route_point_1774626414859a_3",
+            "latitude": -23.49468,
+            "longitude": -46.85885
+          },
+          {
+            "id": "route_point_1774626414859a_4",
+            "latitude": -23.48934,
+            "longitude": -46.85074
+          },
+          {
+            "id": "route_point_1774626414859a_5",
+            "latitude": -23.48356,
+            "longitude": -46.84191
+          },
+          {
+            "id": "route_point_1774626414859a_6",
+            "latitude": -23.47751,
+            "longitude": -46.83251
+          },
+          {
+            "id": "route_point_1774626414859a_7",
+            "latitude": -23.47135,
+            "longitude": -46.82269
+          },
+          {
+            "id": "route_point_1774626414859a_8",
+            "latitude": -23.46525,
+            "longitude": -46.81262
+          },
+          {
+            "id": "route_point_1774626414859a_9",
+            "latitude": -23.45937,
+            "longitude": -46.80245
+          },
+          {
+            "id": "route_point_1774626414859a_10",
+            "latitude": -23.45388,
+            "longitude": -46.79232
+          },
+          {
+            "id": "route_point_1774626414859a_11",
+            "latitude": -23.44895,
+            "longitude": -46.7824
+          },
+          {
+            "id": "route_point_1774626414859a_12",
+            "latitude": -23.44473,
+            "longitude": -46.77284
+          },
+          {
+            "id": "route_point_1774626414859a_13",
+            "latitude": -23.4414,
+            "longitude": -46.7638
+          },
+          {
+            "id": "route_point_1774626414859a_14",
+            "latitude": -23.43879,
+            "longitude": -46.75508
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1774626414859-custom-city-1774625051739-1774626414859b",
+        "from_node_id": "graph_node_1774626414859",
+        "to_node_id": "custom-city-1774625051739",
+        "from_city_id": null,
+        "to_city_id": "custom-city-1774625051739",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 22.5,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626414859b_1",
+            "latitude": -23.43481,
+            "longitude": -46.73773
+          },
+          {
+            "id": "route_point_1774626414859b_2",
+            "latitude": -23.43338,
+            "longitude": -46.72908
+          },
+          {
+            "id": "route_point_1774626414859b_3",
+            "latitude": -23.4323,
+            "longitude": -46.72043
+          },
+          {
+            "id": "route_point_1774626414859b_4",
+            "latitude": -23.43154,
+            "longitude": -46.71177
+          },
+          {
+            "id": "route_point_1774626414859b_5",
+            "latitude": -23.43106,
+            "longitude": -46.7031
+          },
+          {
+            "id": "route_point_1774626414859b_6",
+            "latitude": -23.43085,
+            "longitude": -46.6944
+          },
+          {
+            "id": "route_point_1774626414859b_7",
+            "latitude": -23.43086,
+            "longitude": -46.68567
+          },
+          {
+            "id": "route_point_1774626414859b_8",
+            "latitude": -23.43109,
+            "longitude": -46.6769
+          },
+          {
+            "id": "route_point_1774626414859b_9",
+            "latitude": -23.43149,
+            "longitude": -46.66807
+          },
+          {
+            "id": "route_point_1774626414859b_10",
+            "latitude": -23.43204,
+            "longitude": -46.65918
+          },
+          {
+            "id": "route_point_1774626414859b_11",
+            "latitude": -23.43272,
+            "longitude": -46.65022
+          },
+          {
+            "id": "route_point_1774626414859b_12",
+            "latitude": -23.43373,
+            "longitude": -46.64085
+          },
+          {
+            "id": "route_point_1774626414859b_13",
+            "latitude": -23.43526,
+            "longitude": -46.63087
+          },
+          {
+            "id": "route_point_1774626414859b_14",
+            "latitude": -23.4372,
+            "longitude": -46.62044
+          },
+          {
+            "id": "route_point_1774626414859b_15",
+            "latitude": -23.43947,
+            "longitude": -46.60974
+          },
+          {
+            "id": "route_point_1774626414859b_16",
+            "latitude": -23.44199,
+            "longitude": -46.59894
+          },
+          {
+            "id": "route_point_1774626414859b_17",
+            "latitude": -23.44466,
+            "longitude": -46.58822
+          },
+          {
+            "id": "route_point_1774626414859b_18",
+            "latitude": -23.44741,
+            "longitude": -46.57774
+          },
+          {
+            "id": "route_point_1774626414859b_19",
+            "latitude": -23.45013,
+            "longitude": -46.56769
+          },
+          {
+            "id": "route_point_1774626414859b_20",
+            "latitude": -23.45275,
+            "longitude": -46.55823
+          },
+          {
+            "id": "route_point_1774626414859b_21",
+            "latitude": -23.45518,
+            "longitude": -46.54955
+          },
+          {
+            "id": "route_point_1774626414859b_22",
+            "latitude": -23.45733,
+            "longitude": -46.54181
+          },
+          {
+            "id": "route_point_1774626414859b_23",
+            "latitude": -23.45911,
+            "longitude": -46.53518
+          },
+          {
+            "id": "route_point_1774626414859b_24",
+            "latitude": -23.46043,
+            "longitude": -46.52985
+          }
+        ]
+      },
+      {
+        "id": "edge-sp-sao-paulo-graph_node_1774626414859-1774626421547",
+        "from_node_id": "sp-sao-paulo",
+        "to_node_id": "graph_node_1774626414859",
+        "from_city_id": "sp-sao-paulo",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 15.6,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626421547_1",
+            "latitude": -23.50631,
+            "longitude": -46.6658
+          },
+          {
+            "id": "route_point_1774626421547_2",
+            "latitude": -23.48271,
+            "longitude": -46.71112
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1774626414859-sp-campinas-1774626429083",
+        "from_node_id": "graph_node_1774626414859",
+        "to_node_id": "sp-campinas",
+        "from_city_id": null,
+        "to_city_id": "sp-campinas",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 67.7,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626429083_1",
+            "latitude": -23.09512,
+            "longitude": -46.97045
+          },
+          {
+            "id": "route_point_1774626429083_2",
+            "latitude": -23.01532,
+            "longitude": -47.02014
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774625062095-sp-santos-1774626435978",
+        "from_node_id": "custom-city-1774625062095",
+        "to_node_id": "sp-santos",
+        "from_city_id": "custom-city-1774625062095",
+        "to_city_id": "sp-santos",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 36.8,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626435978_1",
+            "latitude": -23.80259,
+            "longitude": -46.49326
+          },
+          {
+            "id": "route_point_1774626435978_2",
+            "latitude": -23.89129,
+            "longitude": -46.4065
+          }
+        ]
+      },
+      {
+        "id": "edge-sp-sao-jose-dos-campos-custom-city-1774611926079-1774626448180",
+        "from_node_id": "sp-sao-jose-dos-campos",
+        "to_node_id": "custom-city-1774611926079",
+        "from_city_id": "sp-sao-jose-dos-campos",
+        "to_city_id": "custom-city-1774611926079",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 67.9,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626448180_1",
+            "latitude": -23.27334,
+            "longitude": -45.80231
+          },
+          {
+            "id": "route_point_1774626448180_2",
+            "latitude": -23.38773,
+            "longitude": -45.66665
+          },
+          {
+            "id": "route_point_1774626448180_3",
+            "latitude": -23.4673,
+            "longitude": -45.61223
+          },
+          {
+            "id": "route_point_1774626448180_4",
+            "latitude": -23.57863,
+            "longitude": -45.47578
+          }
+        ]
+      },
+      {
+        "id": "edge-pr-curitiba-custom-city-1774626154180-1774626463384",
+        "from_node_id": "pr-curitiba",
+        "to_node_id": "custom-city-1774626154180",
+        "from_city_id": "pr-curitiba",
+        "to_city_id": "custom-city-1774626154180",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 76.3,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626463384_1",
+            "latitude": -25.4474,
+            "longitude": -49.14108
+          },
+          {
+            "id": "route_point_1774626463384_2",
+            "latitude": -25.47659,
+            "longitude": -49.00305
+          },
+          {
+            "id": "route_point_1774626463384_3",
+            "latitude": -25.47943,
+            "longitude": -48.83741
+          },
+          {
+            "id": "route_point_1774626463384_4",
+            "latitude": -25.50861,
+            "longitude": -48.73882
+          },
+          {
+            "id": "route_point_1774626463384_5",
+            "latitude": -25.53067,
+            "longitude": -48.63707
+          }
+        ]
+      },
+      {
+        "id": "edge-pr-curitiba-pr-ponta-grossa-1774626474297",
+        "from_node_id": "pr-curitiba",
+        "to_node_id": "pr-ponta-grossa",
+        "from_city_id": "pr-curitiba",
+        "to_city_id": "pr-ponta-grossa",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 104.5,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626474297_1",
+            "latitude": -25.44341,
+            "longitude": -49.44046
+          },
+          {
+            "id": "route_point_1774626474297_2",
+            "latitude": -25.42869,
+            "longitude": -49.71408
+          },
+          {
+            "id": "route_point_1774626474297_3",
+            "latitude": -25.2699,
+            "longitude": -49.95508
+          }
+        ]
+      },
+      {
+        "id": "edge-pr-ponta-grossa-custom-city-1774624422271-1774626485673",
+        "from_node_id": "pr-ponta-grossa",
+        "to_node_id": "custom-city-1774624422271",
+        "from_city_id": "pr-ponta-grossa",
+        "to_city_id": "custom-city-1774624422271",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 215.8,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626485673_1",
+            "latitude": -24.77734,
+            "longitude": -50.50413
+          },
+          {
+            "id": "route_point_1774626485673_2",
+            "latitude": -24.49415,
+            "longitude": -50.72158
+          },
+          {
+            "id": "route_point_1774626485673_3",
+            "latitude": -24.17231,
+            "longitude": -50.97527
+          },
+          {
+            "id": "route_point_1774626485673_4",
+            "latitude": -23.97882,
+            "longitude": -51.13654
+          },
+          {
+            "id": "route_point_1774626485673_5",
+            "latitude": -23.76514,
+            "longitude": -51.296
+          }
+        ]
+      },
+      {
+        "id": "edge-pr-maringa-custom-city-1774624422271-1774626492878",
+        "from_node_id": "pr-maringa",
+        "to_node_id": "custom-city-1774624422271",
+        "from_city_id": "pr-maringa",
+        "to_city_id": "custom-city-1774624422271",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 53.3,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626492878_1",
+            "latitude": -23.48136,
+            "longitude": -51.78163
+          },
+          {
+            "id": "route_point_1774626492878_2",
+            "latitude": -23.55942,
+            "longitude": -51.66384
+          },
+          {
+            "id": "route_point_1774626492878_3",
+            "latitude": -23.5893,
+            "longitude": -51.55875
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774624422271-pr-londrina-1774626499539",
+        "from_node_id": "custom-city-1774624422271",
+        "to_node_id": "pr-londrina",
+        "from_city_id": "custom-city-1774624422271",
+        "to_city_id": "pr-londrina",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 44.2,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626499539_1",
+            "latitude": -23.44647,
+            "longitude": -51.42647
+          },
+          {
+            "id": "route_point_1774626499539_2",
+            "latitude": -23.33841,
+            "longitude": -51.29237
+          }
+        ]
+      },
+      {
+        "id": "edge-pr-maringa-custom-city-1774626531302-1774626570030",
+        "from_node_id": "pr-maringa",
+        "to_node_id": "custom-city-1774626531302",
+        "from_city_id": "pr-maringa",
+        "to_city_id": "custom-city-1774626531302",
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 147.7,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626570030_1",
+            "latitude": -23.52075,
+            "longitude": -52.18762
+          },
+          {
+            "id": "route_point_1774626570030_2",
+            "latitude": -23.60875,
+            "longitude": -52.38695
+          },
+          {
+            "id": "route_point_1774626570030_3",
+            "latitude": -23.69005,
+            "longitude": -52.61889
+          },
+          {
+            "id": "route_point_1774626570030_4",
+            "latitude": -23.72985,
+            "longitude": -52.78922
+          },
+          {
+            "id": "route_point_1774626570030_5",
+            "latitude": -23.76964,
+            "longitude": -53.01391
+          }
+        ]
+      },
+      {
+        "id": "edge-pr-londrina-custom-city-1774616875938-1774626596533",
+        "from_node_id": "pr-londrina",
+        "to_node_id": "custom-city-1774616875938",
+        "from_city_id": "pr-londrina",
+        "to_city_id": "custom-city-1774616875938",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 138.7,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626596533_1",
+            "latitude": -23.28343,
+            "longitude": -50.92132
+          },
+          {
+            "id": "route_point_1774626596533_2",
+            "latitude": -23.20946,
+            "longitude": -50.6295
+          },
+          {
+            "id": "route_point_1774626596533_3",
+            "latitude": -23.0717,
+            "longitude": -50.28814
+          },
+          {
+            "id": "route_point_1774626596533_4",
+            "latitude": -23.01426,
+            "longitude": -50.02587
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774616875938-graph_node_1774626634974-1774626644660",
+        "from_node_id": "custom-city-1774616875938",
+        "to_node_id": "graph_node_1774626634974",
+        "from_city_id": "custom-city-1774616875938",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 50.5,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626644660_1",
+            "latitude": -22.8881,
+            "longitude": -49.6372
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1774626634974-sp-bauru-1774626650449",
+        "from_node_id": "graph_node_1774626634974",
+        "to_node_id": "sp-bauru",
+        "from_city_id": null,
+        "to_city_id": "sp-bauru",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 59.7,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626650449_1",
+            "latitude": -22.50889,
+            "longitude": -49.27917
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774625074741-graph_node_1774626669679-1774626669679a",
+        "from_node_id": "custom-city-1774625074741",
+        "to_node_id": "graph_node_1774626669679",
+        "from_city_id": "custom-city-1774625074741",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 48.4,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626669679a_1",
+            "latitude": -23.50246,
+            "longitude": -46.89512
+          },
+          {
+            "id": "route_point_1774626669679a_2",
+            "latitude": -23.4979,
+            "longitude": -46.9163
+          },
+          {
+            "id": "route_point_1774626669679a_3",
+            "latitude": -23.49273,
+            "longitude": -46.94058
+          },
+          {
+            "id": "route_point_1774626669679a_4",
+            "latitude": -23.48697,
+            "longitude": -46.96767
+          },
+          {
+            "id": "route_point_1774626669679a_5",
+            "latitude": -23.48065,
+            "longitude": -46.99733
+          },
+          {
+            "id": "route_point_1774626669679a_6",
+            "latitude": -23.47379,
+            "longitude": -47.02928
+          },
+          {
+            "id": "route_point_1774626669679a_7",
+            "latitude": -23.46641,
+            "longitude": -47.06327
+          },
+          {
+            "id": "route_point_1774626669679a_8",
+            "latitude": -23.45855,
+            "longitude": -47.09902
+          },
+          {
+            "id": "route_point_1774626669679a_9",
+            "latitude": -23.45022,
+            "longitude": -47.13626
+          },
+          {
+            "id": "route_point_1774626669679a_10",
+            "latitude": -23.44145,
+            "longitude": -47.17475
+          },
+          {
+            "id": "route_point_1774626669679a_11",
+            "latitude": -23.43226,
+            "longitude": -47.2142
+          },
+          {
+            "id": "route_point_1774626669679a_12",
+            "latitude": -23.42268,
+            "longitude": -47.25437
+          },
+          {
+            "id": "route_point_1774626669679a_13",
+            "latitude": -23.41273,
+            "longitude": -47.29497
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1774626669679-graph_node_1774626634974-1774626669679b",
+        "from_node_id": "graph_node_1774626669679",
+        "to_node_id": "graph_node_1774626634974",
+        "from_city_id": null,
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 230.3,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626669679b_1",
+            "latitude": -23.39002,
+            "longitude": -47.38365
+          },
+          {
+            "id": "route_point_1774626669679b_2",
+            "latitude": -23.37713,
+            "longitude": -47.43247
+          },
+          {
+            "id": "route_point_1774626669679b_3",
+            "latitude": -23.36352,
+            "longitude": -47.48344
+          },
+          {
+            "id": "route_point_1774626669679b_4",
+            "latitude": -23.34938,
+            "longitude": -47.53594
+          },
+          {
+            "id": "route_point_1774626669679b_5",
+            "latitude": -23.33494,
+            "longitude": -47.58936
+          },
+          {
+            "id": "route_point_1774626669679b_6",
+            "latitude": -23.3204,
+            "longitude": -47.64306
+          },
+          {
+            "id": "route_point_1774626669679b_7",
+            "latitude": -23.30597,
+            "longitude": -47.69642
+          },
+          {
+            "id": "route_point_1774626669679b_8",
+            "latitude": -23.29188,
+            "longitude": -47.74883
+          },
+          {
+            "id": "route_point_1774626669679b_9",
+            "latitude": -23.27833,
+            "longitude": -47.79965
+          },
+          {
+            "id": "route_point_1774626669679b_10",
+            "latitude": -23.26554,
+            "longitude": -47.84828
+          },
+          {
+            "id": "route_point_1774626669679b_11",
+            "latitude": -23.25371,
+            "longitude": -47.89408
+          },
+          {
+            "id": "route_point_1774626669679b_12",
+            "latitude": -23.24307,
+            "longitude": -47.93643
+          },
+          {
+            "id": "route_point_1774626669679b_13",
+            "latitude": -23.23368,
+            "longitude": -47.97563
+          },
+          {
+            "id": "route_point_1774626669679b_14",
+            "latitude": -23.22535,
+            "longitude": -48.01255
+          },
+          {
+            "id": "route_point_1774626669679b_15",
+            "latitude": -23.2179,
+            "longitude": -48.04748
+          },
+          {
+            "id": "route_point_1774626669679b_16",
+            "latitude": -23.21117,
+            "longitude": -48.08067
+          },
+          {
+            "id": "route_point_1774626669679b_17",
+            "latitude": -23.20496,
+            "longitude": -48.1124
+          },
+          {
+            "id": "route_point_1774626669679b_18",
+            "latitude": -23.19911,
+            "longitude": -48.14294
+          },
+          {
+            "id": "route_point_1774626669679b_19",
+            "latitude": -23.19344,
+            "longitude": -48.17255
+          },
+          {
+            "id": "route_point_1774626669679b_20",
+            "latitude": -23.18776,
+            "longitude": -48.20151
+          },
+          {
+            "id": "route_point_1774626669679b_21",
+            "latitude": -23.18191,
+            "longitude": -48.23009
+          },
+          {
+            "id": "route_point_1774626669679b_22",
+            "latitude": -23.1757,
+            "longitude": -48.25855
+          },
+          {
+            "id": "route_point_1774626669679b_23",
+            "latitude": -23.16896,
+            "longitude": -48.28717
+          },
+          {
+            "id": "route_point_1774626669679b_24",
+            "latitude": -23.16151,
+            "longitude": -48.31622
+          },
+          {
+            "id": "route_point_1774626669679b_25",
+            "latitude": -23.15317,
+            "longitude": -48.34596
+          },
+          {
+            "id": "route_point_1774626669679b_26",
+            "latitude": -23.1441,
+            "longitude": -48.37567
+          },
+          {
+            "id": "route_point_1774626669679b_27",
+            "latitude": -23.13461,
+            "longitude": -48.40456
+          },
+          {
+            "id": "route_point_1774626669679b_28",
+            "latitude": -23.12474,
+            "longitude": -48.43283
+          },
+          {
+            "id": "route_point_1774626669679b_29",
+            "latitude": -23.11451,
+            "longitude": -48.46065
+          },
+          {
+            "id": "route_point_1774626669679b_30",
+            "latitude": -23.10398,
+            "longitude": -48.4882
+          },
+          {
+            "id": "route_point_1774626669679b_31",
+            "latitude": -23.09317,
+            "longitude": -48.51567
+          },
+          {
+            "id": "route_point_1774626669679b_32",
+            "latitude": -23.08214,
+            "longitude": -48.54324
+          },
+          {
+            "id": "route_point_1774626669679b_33",
+            "latitude": -23.0709,
+            "longitude": -48.57109
+          },
+          {
+            "id": "route_point_1774626669679b_34",
+            "latitude": -23.05952,
+            "longitude": -48.59942
+          },
+          {
+            "id": "route_point_1774626669679b_35",
+            "latitude": -23.04802,
+            "longitude": -48.62839
+          },
+          {
+            "id": "route_point_1774626669679b_36",
+            "latitude": -23.03644,
+            "longitude": -48.6582
+          },
+          {
+            "id": "route_point_1774626669679b_37",
+            "latitude": -23.02482,
+            "longitude": -48.68902
+          },
+          {
+            "id": "route_point_1774626669679b_38",
+            "latitude": -23.0132,
+            "longitude": -48.72105
+          },
+          {
+            "id": "route_point_1774626669679b_39",
+            "latitude": -23.00135,
+            "longitude": -48.75487
+          },
+          {
+            "id": "route_point_1774626669679b_40",
+            "latitude": -22.98907,
+            "longitude": -48.79069
+          },
+          {
+            "id": "route_point_1774626669679b_41",
+            "latitude": -22.97645,
+            "longitude": -48.82808
+          },
+          {
+            "id": "route_point_1774626669679b_42",
+            "latitude": -22.96359,
+            "longitude": -48.86661
+          },
+          {
+            "id": "route_point_1774626669679b_43",
+            "latitude": -22.95056,
+            "longitude": -48.90588
+          },
+          {
+            "id": "route_point_1774626669679b_44",
+            "latitude": -22.93747,
+            "longitude": -48.94546
+          },
+          {
+            "id": "route_point_1774626669679b_45",
+            "latitude": -22.92439,
+            "longitude": -48.98492
+          },
+          {
+            "id": "route_point_1774626669679b_46",
+            "latitude": -22.91143,
+            "longitude": -49.02386
+          },
+          {
+            "id": "route_point_1774626669679b_47",
+            "latitude": -22.89866,
+            "longitude": -49.06184
+          },
+          {
+            "id": "route_point_1774626669679b_48",
+            "latitude": -22.88618,
+            "longitude": -49.09844
+          },
+          {
+            "id": "route_point_1774626669679b_49",
+            "latitude": -22.87409,
+            "longitude": -49.13325
+          },
+          {
+            "id": "route_point_1774626669679b_50",
+            "latitude": -22.86245,
+            "longitude": -49.16585
+          },
+          {
+            "id": "route_point_1774626669679b_51",
+            "latitude": -22.85138,
+            "longitude": -49.19581
+          },
+          {
+            "id": "route_point_1774626669679b_52",
+            "latitude": -22.84054,
+            "longitude": -49.22385
+          },
+          {
+            "id": "route_point_1774626669679b_53",
+            "latitude": -22.82962,
+            "longitude": -49.25093
+          },
+          {
+            "id": "route_point_1774626669679b_54",
+            "latitude": -22.81873,
+            "longitude": -49.27695
+          },
+          {
+            "id": "route_point_1774626669679b_55",
+            "latitude": -22.80795,
+            "longitude": -49.30184
+          },
+          {
+            "id": "route_point_1774626669679b_56",
+            "latitude": -22.7974,
+            "longitude": -49.32553
+          },
+          {
+            "id": "route_point_1774626669679b_57",
+            "latitude": -22.78718,
+            "longitude": -49.34793
+          },
+          {
+            "id": "route_point_1774626669679b_58",
+            "latitude": -22.77739,
+            "longitude": -49.36897
+          },
+          {
+            "id": "route_point_1774626669679b_59",
+            "latitude": -22.76813,
+            "longitude": -49.38856
+          },
+          {
+            "id": "route_point_1774626669679b_60",
+            "latitude": -22.75949,
+            "longitude": -49.40663
+          },
+          {
+            "id": "route_point_1774626669679b_61",
+            "latitude": -22.75159,
+            "longitude": -49.4231
+          },
+          {
+            "id": "route_point_1774626669679b_62",
+            "latitude": -22.74452,
+            "longitude": -49.43789
+          },
+          {
+            "id": "route_point_1774626669679b_63",
+            "latitude": -22.73839,
+            "longitude": -49.45091
+          },
+          {
+            "id": "route_point_1774626669679b_64",
+            "latitude": -22.7333,
+            "longitude": -49.4621
+          }
+        ]
+      },
+      {
+        "id": "edge-sp-sorocaba-graph_node_1774626669679-1774626676189",
+        "from_node_id": "sp-sorocaba",
+        "to_node_id": "graph_node_1774626669679",
+        "from_city_id": "sp-sorocaba",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 15.2,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626676189_1",
+            "latitude": -23.45503,
+            "longitude": -47.39501
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1774626669679-sp-campinas-1774626685331",
+        "from_node_id": "graph_node_1774626669679",
+        "to_node_id": "sp-campinas",
+        "from_city_id": null,
+        "to_city_id": "sp-campinas",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 63.1,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626685331_1",
+            "latitude": -23.26906,
+            "longitude": -47.31276
+          },
+          {
+            "id": "route_point_1774626685331_2",
+            "latitude": -23.14732,
+            "longitude": -47.24256
+          },
+          {
+            "id": "route_point_1774626685331_3",
+            "latitude": -23.00935,
+            "longitude": -47.11558
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774626724165-custom-city-1774620893762-1774626744263",
+        "from_node_id": "custom-city-1774626724165",
+        "to_node_id": "custom-city-1774620893762",
+        "from_city_id": "custom-city-1774626724165",
+        "to_city_id": "custom-city-1774620893762",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 176.6,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626744263_1",
+            "latitude": -28.34716,
+            "longitude": -48.73015
+          },
+          {
+            "id": "route_point_1774626744263_2",
+            "latitude": -28.23885,
+            "longitude": -48.69623
+          },
+          {
+            "id": "route_point_1774626744263_3",
+            "latitude": -28.04628,
+            "longitude": -48.68755
+          },
+          {
+            "id": "route_point_1774626744263_4",
+            "latitude": -27.80633,
+            "longitude": -48.6702
+          },
+          {
+            "id": "route_point_1774626744263_5",
+            "latitude": -27.67445,
+            "longitude": -48.66704
+          },
+          {
+            "id": "route_point_1774626744263_6",
+            "latitude": -27.5403,
+            "longitude": -48.6702
+          },
+          {
+            "id": "route_point_1774626744263_7",
+            "latitude": -27.29034,
+            "longitude": -48.63392
+          },
+          {
+            "id": "route_point_1774626744263_8",
+            "latitude": -27.1031,
+            "longitude": -48.62288
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1774626719033-custom-city-1774626724165-1774626754939",
+        "from_node_id": "graph_node_1774626719033",
+        "to_node_id": "custom-city-1774626724165",
+        "from_city_id": null,
+        "to_city_id": "custom-city-1774626724165",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 57.3,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626754939_1",
+            "latitude": -28.69019,
+            "longitude": -49.175
+          },
+          {
+            "id": "route_point_1774626754939_2",
+            "latitude": -28.61616,
+            "longitude": -49.03145
+          },
+          {
+            "id": "route_point_1774626754939_3",
+            "latitude": -28.5497,
+            "longitude": -48.90052
+          },
+          {
+            "id": "route_point_1774626754939_4",
+            "latitude": -28.53654,
+            "longitude": -48.83111
+          }
+        ]
+      },
+      {
+        "id": "edge-rs-porto-alegre-graph_node_1774626719033-1774626827028",
+        "from_node_id": "rs-porto-alegre",
+        "to_node_id": "graph_node_1774626719033",
+        "from_city_id": "rs-porto-alegre",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 253.5,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626827028_1",
+            "latitude": -29.98627,
+            "longitude": -51.15949
+          },
+          {
+            "id": "route_point_1774626827028_2",
+            "latitude": -29.95553,
+            "longitude": -51.03171
+          },
+          {
+            "id": "route_point_1774626827028_3",
+            "latitude": -29.94665,
+            "longitude": -50.95284
+          },
+          {
+            "id": "route_point_1774626827028_4",
+            "latitude": -29.88378,
+            "longitude": -50.67994
+          },
+          {
+            "id": "route_point_1774626827028_5",
+            "latitude": -29.87489,
+            "longitude": -50.52613
+          },
+          {
+            "id": "route_point_1774626827028_6",
+            "latitude": -29.86464,
+            "longitude": -50.41019
+          },
+          {
+            "id": "route_point_1774626827028_7",
+            "latitude": -29.87694,
+            "longitude": -50.33604
+          },
+          {
+            "id": "route_point_1774626827028_8",
+            "latitude": -29.8195,
+            "longitude": -50.24849
+          },
+          {
+            "id": "route_point_1774626827028_9",
+            "latitude": -29.69965,
+            "longitude": -50.17277
+          },
+          {
+            "id": "route_point_1774626827028_10",
+            "latitude": -29.60578,
+            "longitude": -50.08601
+          },
+          {
+            "id": "route_point_1774626827028_11",
+            "latitude": -29.4163,
+            "longitude": -49.9046
+          },
+          {
+            "id": "route_point_1774626827028_12",
+            "latitude": -29.34484,
+            "longitude": -49.80206
+          },
+          {
+            "id": "route_point_1774626827028_13",
+            "latitude": -29.1839,
+            "longitude": -49.7571
+          },
+          {
+            "id": "route_point_1774626827028_14",
+            "latitude": -28.98942,
+            "longitude": -49.54335
+          },
+          {
+            "id": "route_point_1774626827028_15",
+            "latitude": -28.84366,
+            "longitude": -49.43292
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774626713831-graph_node_1774626719033-1774626833402",
+        "from_node_id": "custom-city-1774626713831",
+        "to_node_id": "graph_node_1774626719033",
+        "from_city_id": "custom-city-1774626713831",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 12.0,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626833402_1",
+            "latitude": -28.71343,
+            "longitude": -49.32106
+          },
+          {
+            "id": "route_point_1774626833402_2",
+            "latitude": -28.73179,
+            "longitude": -49.29943
+          }
+        ]
+      },
+      {
+        "id": "edge-rs-porto-alegre-rs-caxias-do-sul-1774626953433",
+        "from_node_id": "rs-porto-alegre",
+        "to_node_id": "rs-caxias-do-sul",
+        "from_city_id": "rs-porto-alegre",
+        "to_city_id": "rs-caxias-do-sul",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 98.6,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626953433_1",
+            "latitude": -29.94316,
+            "longitude": -51.17763
+          },
+          {
+            "id": "route_point_1774626953433_2",
+            "latitude": -29.8591,
+            "longitude": -51.16422
+          },
+          {
+            "id": "route_point_1774626953433_3",
+            "latitude": -29.68047,
+            "longitude": -51.15476
+          },
+          {
+            "id": "route_point_1774626953433_4",
+            "latitude": -29.58246,
+            "longitude": -51.11118
+          },
+          {
+            "id": "route_point_1774626953433_5",
+            "latitude": -29.42954,
+            "longitude": -51.12024
+          },
+          {
+            "id": "route_point_1774626953433_6",
+            "latitude": -29.31431,
+            "longitude": -51.1583
+          }
+        ]
+      },
+      {
+        "id": "edge-rs-caxias-do-sul-custom-city-1774626966199-1774626985612",
+        "from_node_id": "rs-caxias-do-sul",
+        "to_node_id": "custom-city-1774626966199",
+        "from_city_id": "rs-caxias-do-sul",
+        "to_city_id": "custom-city-1774626966199",
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 37.7,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774626985612_1",
+            "latitude": -29.2125,
+            "longitude": -51.2942
+          },
+          {
+            "id": "route_point_1774626985612_2",
+            "latitude": -29.22357,
+            "longitude": -51.4446
+          }
+        ]
+      },
+      {
+        "id": "edge-rs-caxias-do-sul-custom-city-1774626991736-1774627013375",
+        "from_node_id": "rs-caxias-do-sul",
+        "to_node_id": "custom-city-1774626991736",
+        "from_city_id": "rs-caxias-do-sul",
+        "to_city_id": "custom-city-1774626991736",
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 79.4,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774627013375_1",
+            "latitude": -29.0652,
+            "longitude": -51.19498
+          },
+          {
+            "id": "route_point_1774627013375_2",
+            "latitude": -28.95971,
+            "longitude": -51.17053
+          },
+          {
+            "id": "route_point_1774627013375_3",
+            "latitude": -28.86585,
+            "longitude": -51.12794
+          },
+          {
+            "id": "route_point_1774627013375_4",
+            "latitude": -28.77674,
+            "longitude": -51.10428
+          },
+          {
+            "id": "route_point_1774627013375_5",
+            "latitude": -28.68617,
+            "longitude": -51.06563
+          },
+          {
+            "id": "route_point_1774627013375_6",
+            "latitude": -28.59539,
+            "longitude": -51.03566
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774626991736-sc-lages-1774627022524",
+        "from_node_id": "custom-city-1774626991736",
+        "to_node_id": "sc-lages",
+        "from_city_id": "custom-city-1774626991736",
+        "to_city_id": "sc-lages",
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 98.3,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774627022524_1",
+            "latitude": -28.42836,
+            "longitude": -50.8738
+          },
+          {
+            "id": "route_point_1774627022524_2",
+            "latitude": -28.28331,
+            "longitude": -50.77957
+          },
+          {
+            "id": "route_point_1774627022524_3",
+            "latitude": -28.1684,
+            "longitude": -50.6636
+          },
+          {
+            "id": "route_point_1774627022524_4",
+            "latitude": -27.9974,
+            "longitude": -50.54944
+          },
+          {
+            "id": "route_point_1774627022524_5",
+            "latitude": -27.9062,
+            "longitude": -50.44253
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774627036873-sc-blumenau-1774627049990",
+        "from_node_id": "custom-city-1774627036873",
+        "to_node_id": "sc-blumenau",
+        "from_city_id": "custom-city-1774627036873",
+        "to_city_id": "sc-blumenau",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 42.0,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774627049990_1",
+            "latitude": -26.83509,
+            "longitude": -48.72368
+          },
+          {
+            "id": "route_point_1774627049990_2",
+            "latitude": -26.83662,
+            "longitude": -48.76659
+          },
+          {
+            "id": "route_point_1774627049990_3",
+            "latitude": -26.85377,
+            "longitude": -48.80813
+          },
+          {
+            "id": "route_point_1774627049990_4",
+            "latitude": -26.88285,
+            "longitude": -48.85414
+          },
+          {
+            "id": "route_point_1774627049990_5",
+            "latitude": -26.89479,
+            "longitude": -48.91696
+          },
+          {
+            "id": "route_point_1774627049990_6",
+            "latitude": -26.88714,
+            "longitude": -48.99215
+          },
+          {
+            "id": "route_point_1774627049990_7",
+            "latitude": -26.89265,
+            "longitude": -49.04365
+          }
+        ]
+      },
+      {
+        "id": "edge-rs-porto-alegre-rs-pelotas-1774627187878",
+        "from_node_id": "rs-porto-alegre",
+        "to_node_id": "rs-pelotas",
+        "from_city_id": "rs-porto-alegre",
+        "to_city_id": "rs-pelotas",
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 245.1,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774627187878_1",
+            "latitude": -30.00928,
+            "longitude": -51.21105
+          },
+          {
+            "id": "route_point_1774627187878_2",
+            "latitude": -29.99531,
+            "longitude": -51.21174
+          },
+          {
+            "id": "route_point_1774627187878_3",
+            "latitude": -29.98996,
+            "longitude": -51.23062
+          },
+          {
+            "id": "route_point_1774627187878_4",
+            "latitude": -29.98967,
+            "longitude": -51.26255
+          },
+          {
+            "id": "route_point_1774627187878_5",
+            "latitude": -30.01404,
+            "longitude": -51.32263
+          },
+          {
+            "id": "route_point_1774627187878_6",
+            "latitude": -30.06662,
+            "longitude": -51.34151
+          },
+          {
+            "id": "route_point_1774627187878_7",
+            "latitude": -30.31288,
+            "longitude": -51.4182
+          },
+          {
+            "id": "route_point_1774627187878_8",
+            "latitude": -30.43396,
+            "longitude": -51.4742
+          },
+          {
+            "id": "route_point_1774627187878_9",
+            "latitude": -30.74074,
+            "longitude": -51.62091
+          },
+          {
+            "id": "route_point_1774627187878_10",
+            "latitude": -30.90392,
+            "longitude": -51.8528
+          },
+          {
+            "id": "route_point_1774627187878_11",
+            "latitude": -30.9952,
+            "longitude": -52.03894
+          },
+          {
+            "id": "route_point_1774627187878_12",
+            "latitude": -31.23146,
+            "longitude": -52.01212
+          },
+          {
+            "id": "route_point_1774627187878_13",
+            "latitude": -31.35677,
+            "longitude": -52.0839
+          },
+          {
+            "id": "route_point_1774627187878_14",
+            "latitude": -31.62973,
+            "longitude": -52.31815
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774627206443-graph_node_1774627312081-1774627312081a",
+        "from_node_id": "custom-city-1774627206443",
+        "to_node_id": "graph_node_1774627312081",
+        "from_city_id": "custom-city-1774627206443",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 100.6,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774627312081a_1",
+            "latitude": -29.88164,
+            "longitude": -51.1793
+          },
+          {
+            "id": "route_point_1774627312081a_2",
+            "latitude": -29.87842,
+            "longitude": -51.19162
+          },
+          {
+            "id": "route_point_1774627312081a_3",
+            "latitude": -29.87479,
+            "longitude": -51.20578
+          },
+          {
+            "id": "route_point_1774627312081a_4",
+            "latitude": -29.87075,
+            "longitude": -51.22158
+          },
+          {
+            "id": "route_point_1774627312081a_5",
+            "latitude": -29.86631,
+            "longitude": -51.23887
+          },
+          {
+            "id": "route_point_1774627312081a_6",
+            "latitude": -29.86148,
+            "longitude": -51.25748
+          },
+          {
+            "id": "route_point_1774627312081a_7",
+            "latitude": -29.85626,
+            "longitude": -51.27723
+          },
+          {
+            "id": "route_point_1774627312081a_8",
+            "latitude": -29.85067,
+            "longitude": -51.29796
+          },
+          {
+            "id": "route_point_1774627312081a_9",
+            "latitude": -29.84472,
+            "longitude": -51.3195
+          },
+          {
+            "id": "route_point_1774627312081a_10",
+            "latitude": -29.83841,
+            "longitude": -51.34167
+          },
+          {
+            "id": "route_point_1774627312081a_11",
+            "latitude": -29.83175,
+            "longitude": -51.36431
+          },
+          {
+            "id": "route_point_1774627312081a_12",
+            "latitude": -29.82474,
+            "longitude": -51.38725
+          },
+          {
+            "id": "route_point_1774627312081a_13",
+            "latitude": -29.81741,
+            "longitude": -51.41032
+          },
+          {
+            "id": "route_point_1774627312081a_14",
+            "latitude": -29.80928,
+            "longitude": -51.43391
+          },
+          {
+            "id": "route_point_1774627312081a_15",
+            "latitude": -29.80004,
+            "longitude": -51.45846
+          },
+          {
+            "id": "route_point_1774627312081a_16",
+            "latitude": -29.78991,
+            "longitude": -51.48389
+          },
+          {
+            "id": "route_point_1774627312081a_17",
+            "latitude": -29.77912,
+            "longitude": -51.51012
+          },
+          {
+            "id": "route_point_1774627312081a_18",
+            "latitude": -29.76789,
+            "longitude": -51.53708
+          },
+          {
+            "id": "route_point_1774627312081a_19",
+            "latitude": -29.75645,
+            "longitude": -51.56467
+          },
+          {
+            "id": "route_point_1774627312081a_20",
+            "latitude": -29.74503,
+            "longitude": -51.59282
+          },
+          {
+            "id": "route_point_1774627312081a_21",
+            "latitude": -29.73385,
+            "longitude": -51.62146
+          },
+          {
+            "id": "route_point_1774627312081a_22",
+            "latitude": -29.72314,
+            "longitude": -51.65049
+          },
+          {
+            "id": "route_point_1774627312081a_23",
+            "latitude": -29.71312,
+            "longitude": -51.67983
+          },
+          {
+            "id": "route_point_1774627312081a_24",
+            "latitude": -29.70402,
+            "longitude": -51.70942
+          },
+          {
+            "id": "route_point_1774627312081a_25",
+            "latitude": -29.69606,
+            "longitude": -51.73916
+          },
+          {
+            "id": "route_point_1774627312081a_26",
+            "latitude": -29.68947,
+            "longitude": -51.76897
+          },
+          {
+            "id": "route_point_1774627312081a_27",
+            "latitude": -29.68406,
+            "longitude": -51.7995
+          },
+          {
+            "id": "route_point_1774627312081a_28",
+            "latitude": -29.67945,
+            "longitude": -51.83127
+          },
+          {
+            "id": "route_point_1774627312081a_29",
+            "latitude": -29.67558,
+            "longitude": -51.864
+          },
+          {
+            "id": "route_point_1774627312081a_30",
+            "latitude": -29.6724,
+            "longitude": -51.89743
+          },
+          {
+            "id": "route_point_1774627312081a_31",
+            "latitude": -29.66986,
+            "longitude": -51.9313
+          },
+          {
+            "id": "route_point_1774627312081a_32",
+            "latitude": -29.6679,
+            "longitude": -51.96533
+          },
+          {
+            "id": "route_point_1774627312081a_33",
+            "latitude": -29.66646,
+            "longitude": -51.99927
+          },
+          {
+            "id": "route_point_1774627312081a_34",
+            "latitude": -29.6655,
+            "longitude": -52.03283
+          },
+          {
+            "id": "route_point_1774627312081a_35",
+            "latitude": -29.66496,
+            "longitude": -52.06575
+          },
+          {
+            "id": "route_point_1774627312081a_36",
+            "latitude": -29.66477,
+            "longitude": -52.09777
+          },
+          {
+            "id": "route_point_1774627312081a_37",
+            "latitude": -29.6649,
+            "longitude": -52.12862
+          },
+          {
+            "id": "route_point_1774627312081a_38",
+            "latitude": -29.66529,
+            "longitude": -52.15804
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1774627312081-rs-santa-maria-1774627312081b",
+        "from_node_id": "graph_node_1774627312081",
+        "to_node_id": "rs-santa-maria",
+        "from_city_id": null,
+        "to_city_id": "rs-santa-maria",
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 162.4,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1774627312081b_1",
+            "latitude": -29.66587,
+            "longitude": -52.18574
+          },
+          {
+            "id": "route_point_1774627312081b_2",
+            "latitude": -29.66707,
+            "longitude": -52.2115
+          },
+          {
+            "id": "route_point_1774627312081b_3",
+            "latitude": -29.66924,
+            "longitude": -52.23546
+          },
+          {
+            "id": "route_point_1774627312081b_4",
+            "latitude": -29.6722,
+            "longitude": -52.25791
+          },
+          {
+            "id": "route_point_1774627312081b_5",
+            "latitude": -29.67576,
+            "longitude": -52.27914
+          },
+          {
+            "id": "route_point_1774627312081b_6",
+            "latitude": -29.67977,
+            "longitude": -52.29947
+          },
+          {
+            "id": "route_point_1774627312081b_7",
+            "latitude": -29.68404,
+            "longitude": -52.31917
+          },
+          {
+            "id": "route_point_1774627312081b_8",
+            "latitude": -29.68841,
+            "longitude": -52.33856
+          },
+          {
+            "id": "route_point_1774627312081b_9",
+            "latitude": -29.69269,
+            "longitude": -52.35792
+          },
+          {
+            "id": "route_point_1774627312081b_10",
+            "latitude": -29.69672,
+            "longitude": -52.37756
+          },
+          {
+            "id": "route_point_1774627312081b_11",
+            "latitude": -29.70032,
+            "longitude": -52.39777
+          },
+          {
+            "id": "route_point_1774627312081b_12",
+            "latitude": -29.70331,
+            "longitude": -52.41885
+          },
+          {
+            "id": "route_point_1774627312081b_13",
+            "latitude": -29.70552,
+            "longitude": -52.44109
+          },
+          {
+            "id": "route_point_1774627312081b_14",
+            "latitude": -29.70678,
+            "longitude": -52.46479
+          },
+          {
+            "id": "route_point_1774627312081b_15",
+            "latitude": -29.70688,
+            "longitude": -52.48998
+          },
+          {
+            "id": "route_point_1774627312081b_16",
+            "latitude": -29.70588,
+            "longitude": -52.51636
+          },
+          {
+            "id": "route_point_1774627312081b_17",
+            "latitude": -29.704,
+            "longitude": -52.5437
+          },
+          {
+            "id": "route_point_1774627312081b_18",
+            "latitude": -29.70145,
+            "longitude": -52.5718
+          },
+          {
+            "id": "route_point_1774627312081b_19",
+            "latitude": -29.69845,
+            "longitude": -52.60044
+          },
+          {
+            "id": "route_point_1774627312081b_20",
+            "latitude": -29.69523,
+            "longitude": -52.62942
+          },
+          {
+            "id": "route_point_1774627312081b_21",
+            "latitude": -29.692,
+            "longitude": -52.6585
+          },
+          {
+            "id": "route_point_1774627312081b_22",
+            "latitude": -29.68898,
+            "longitude": -52.6875
+          },
+          {
+            "id": "route_point_1774627312081b_23",
+            "latitude": -29.6864,
+            "longitude": -52.71618
+          },
+          {
+            "id": "route_point_1774627312081b_24",
+            "latitude": -29.68446,
+            "longitude": -52.74435
+          },
+          {
+            "id": "route_point_1774627312081b_25",
+            "latitude": -29.6834,
+            "longitude": -52.77177
+          },
+          {
+            "id": "route_point_1774627312081b_26",
+            "latitude": -29.68342,
+            "longitude": -52.79826
+          },
+          {
+            "id": "route_point_1774627312081b_27",
+            "latitude": -29.68475,
+            "longitude": -52.82358
+          },
+          {
+            "id": "route_point_1774627312081b_28",
+            "latitude": -29.68768,
+            "longitude": -52.848
+          },
+          {
+            "id": "route_point_1774627312081b_29",
+            "latitude": -29.69218,
+            "longitude": -52.87191
+          },
+          {
+            "id": "route_point_1774627312081b_30",
+            "latitude": -29.69793,
+            "longitude": -52.89535
+          },
+          {
+            "id": "route_point_1774627312081b_31",
+            "latitude": -29.70466,
+            "longitude": -52.91831
+          },
+          {
+            "id": "route_point_1774627312081b_32",
+            "latitude": -29.71206,
+            "longitude": -52.94081
+          },
+          {
+            "id": "route_point_1774627312081b_33",
+            "latitude": -29.71984,
+            "longitude": -52.96288
+          },
+          {
+            "id": "route_point_1774627312081b_34",
+            "latitude": -29.72771,
+            "longitude": -52.98452
+          },
+          {
+            "id": "route_point_1774627312081b_35",
+            "latitude": -29.73537,
+            "longitude": -53.00575
+          },
+          {
+            "id": "route_point_1774627312081b_36",
+            "latitude": -29.74253,
+            "longitude": -53.02659
+          },
+          {
+            "id": "route_point_1774627312081b_37",
+            "latitude": -29.74889,
+            "longitude": -53.04704
+          },
+          {
+            "id": "route_point_1774627312081b_38",
+            "latitude": -29.75416,
+            "longitude": -53.06713
+          },
+          {
+            "id": "route_point_1774627312081b_39",
+            "latitude": -29.75805,
+            "longitude": -53.08686
+          },
+          {
+            "id": "route_point_1774627312081b_40",
+            "latitude": -29.76026,
+            "longitude": -53.10626
+          },
+          {
+            "id": "route_point_1774627312081b_41",
+            "latitude": -29.76071,
+            "longitude": -53.12498
+          },
+          {
+            "id": "route_point_1774627312081b_42",
+            "latitude": -29.75967,
+            "longitude": -53.14278
+          },
+          {
+            "id": "route_point_1774627312081b_43",
+            "latitude": -29.75739,
+            "longitude": -53.15982
+          },
+          {
+            "id": "route_point_1774627312081b_44",
+            "latitude": -29.75409,
+            "longitude": -53.17626
+          },
+          {
+            "id": "route_point_1774627312081b_45",
+            "latitude": -29.75001,
+            "longitude": -53.19225
+          },
+          {
+            "id": "route_point_1774627312081b_46",
+            "latitude": -29.74539,
+            "longitude": -53.20797
+          },
+          {
+            "id": "route_point_1774627312081b_47",
+            "latitude": -29.74047,
+            "longitude": -53.22357
+          },
+          {
+            "id": "route_point_1774627312081b_48",
+            "latitude": -29.73548,
+            "longitude": -53.23922
+          },
+          {
+            "id": "route_point_1774627312081b_49",
+            "latitude": -29.73066,
+            "longitude": -53.25507
+          },
+          {
+            "id": "route_point_1774627312081b_50",
+            "latitude": -29.72625,
+            "longitude": -53.27128
+          },
+          {
+            "id": "route_point_1774627312081b_51",
+            "latitude": -29.72247,
+            "longitude": -53.28802
+          },
+          {
+            "id": "route_point_1774627312081b_52",
+            "latitude": -29.71957,
+            "longitude": -53.30544
+          },
+          {
+            "id": "route_point_1774627312081b_53",
+            "latitude": -29.71779,
+            "longitude": -53.32371
+          },
+          {
+            "id": "route_point_1774627312081b_54",
+            "latitude": -29.71711,
+            "longitude": -53.34289
+          },
+          {
+            "id": "route_point_1774627312081b_55",
+            "latitude": -29.71726,
+            "longitude": -53.36284
+          },
+          {
+            "id": "route_point_1774627312081b_56",
+            "latitude": -29.71809,
+            "longitude": -53.38343
+          },
+          {
+            "id": "route_point_1774627312081b_57",
+            "latitude": -29.71944,
+            "longitude": -53.40451
+          },
+          {
+            "id": "route_point_1774627312081b_58",
+            "latitude": -29.72118,
+            "longitude": -53.42595
+          },
+          {
+            "id": "route_point_1774627312081b_59",
+            "latitude": -29.72314,
+            "longitude": -53.4476
+          },
+          {
+            "id": "route_point_1774627312081b_60",
+            "latitude": -29.72517,
+            "longitude": -53.46934
+          },
+          {
+            "id": "route_point_1774627312081b_61",
+            "latitude": -29.72712,
+            "longitude": -53.49102
+          },
+          {
+            "id": "route_point_1774627312081b_62",
+            "latitude": -29.72884,
+            "longitude": -53.5125
+          },
+          {
+            "id": "route_point_1774627312081b_63",
+            "latitude": -29.73018,
+            "longitude": -53.53365
+          },
+          {
+            "id": "route_point_1774627312081b_64",
+            "latitude": -29.73099,
+            "longitude": -53.55432
+          },
+          {
+            "id": "route_point_1774627312081b_65",
+            "latitude": -29.7311,
+            "longitude": -53.57439
+          },
+          {
+            "id": "route_point_1774627312081b_66",
+            "latitude": -29.73038,
+            "longitude": -53.5937
+          },
+          {
+            "id": "route_point_1774627312081b_67",
+            "latitude": -29.72875,
+            "longitude": -53.61292
+          },
+          {
+            "id": "route_point_1774627312081b_68",
+            "latitude": -29.72633,
+            "longitude": -53.63263
+          },
+          {
+            "id": "route_point_1774627312081b_69",
+            "latitude": -29.72327,
+            "longitude": -53.65261
+          },
+          {
+            "id": "route_point_1774627312081b_70",
+            "latitude": -29.71968,
+            "longitude": -53.67261
+          },
+          {
+            "id": "route_point_1774627312081b_71",
+            "latitude": -29.71573,
+            "longitude": -53.6924
+          },
+          {
+            "id": "route_point_1774627312081b_72",
+            "latitude": -29.71153,
+            "longitude": -53.71174
+          },
+          {
+            "id": "route_point_1774627312081b_73",
+            "latitude": -29.70722,
+            "longitude": -53.73041
+          },
+          {
+            "id": "route_point_1774627312081b_74",
+            "latitude": -29.70294,
+            "longitude": -53.74815
+          },
+          {
+            "id": "route_point_1774627312081b_75",
+            "latitude": -29.69884,
+            "longitude": -53.76475
+          },
+          {
+            "id": "route_point_1774627312081b_76",
+            "latitude": -29.69503,
+            "longitude": -53.77996
+          },
+          {
+            "id": "route_point_1774627312081b_77",
+            "latitude": -29.69167,
+            "longitude": -53.79354
+          },
+          {
+            "id": "route_point_1774627312081b_78",
+            "latitude": -29.68888,
+            "longitude": -53.80527
+          },
+          {
+            "id": "route_point_1774627312081b_79",
+            "latitude": -29.6868,
+            "longitude": -53.8149
           }
         ]
       }

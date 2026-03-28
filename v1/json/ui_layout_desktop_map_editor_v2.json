@@ -1,0 +1,10 @@
+{
+  "id": "ui_layout_desktop_map_editor_v2_v1",
+  "css_variables": {
+    "--editor-v2-left-col": "376px",
+    "--editor-v2-panel-gap": "14px",
+    "--editor-v2-card-radius": "22px",
+    "--editor-v2-map-radius": "24px",
+    "--editor-v2-resizer-width": "10px"
+  }
+}

@@ -11,14 +11,17 @@ from fastapi.templating import Jinja2Templates
 from app.config import MAP_DISPLAY_SETTINGS_PATH, MAP_EDITOR_POPULATION_BANDS_PATH, MAP_LEAFLET_SETTINGS_PATH, STATIC_DIR, TEMPLATE_DIR
 from app.maptools import RouteGraph, RouteWorkspaceSnapshot
 from app.services import (
+    AutoRouteError,
     build_reference_data_from_city_catalog_payload,
     build_user_city_catalog_payload,
     create_map_bundle,
     delete_map_bundle,
+    generate_auto_route_preview,
     load_city_catalog_payload,
     load_city_product_matrix_payload,
     load_active_map_bundle,
     load_map_editor_payload,
+    load_map_editor_v2_payload,
     load_map_viewport_payload,
     load_maps_registry,
     load_product_catalog_payload,
@@ -36,6 +39,9 @@ from app.ui.editor_models import (
     CityAutofillRequest,
     CityAutofillResponse,
     CustomCityCatalogDocument,
+    AutoRoutePreviewRequest,
+    AutoRoutePreviewResponse,
+    AutoRouteSaveRequest,
     MapCityCatalogDocument,
     MapActivateRequest,
     MapCreateRequest,
@@ -97,6 +103,7 @@ def _build_bootstrap_payload() -> dict[str, Any]:
         "map_editor": load_map_editor_payload(
             user_city_catalog=build_user_city_catalog_payload(city_catalog),
         ),
+        "map_editor_v2": load_map_editor_v2_payload(),
         "map_repository": map_repository_payload(),
         "cities": city_catalog,
         "products": products,
@@ -117,6 +124,52 @@ def _build_bootstrap_payload() -> dict[str, Any]:
             "map_config": asdict(reference_data.map_config),
         },
     }
+
+
+def _build_v2_bootstrap_payload() -> dict[str, Any]:
+    payload = _build_bootstrap_payload()
+    return {
+        "ui": payload["ui"],
+        "map_editor": payload["map_editor"],
+        "map_editor_v2": payload["map_editor_v2"],
+        "map_repository": payload["map_repository"],
+        "cities": payload["cities"],
+        "routes": payload["routes"],
+        "route_network": payload["route_network"],
+        "map_viewport": payload["map_viewport"],
+        "summary": payload["summary"],
+    }
+
+
+def _auto_route_preview_response(document: AutoRoutePreviewRequest) -> AutoRoutePreviewResponse:
+    active_map = load_active_map_bundle()
+    cities_by_id = {city.id: city.model_dump(mode="json") for city in active_map.cities}
+    graph_nodes_by_id = {node.id: node.model_dump(mode="json") for node in active_map.route_network.nodes}
+    nodes_by_id = {**cities_by_id, **graph_nodes_by_id}
+    route_surface_types = load_map_editor_v2_payload()["route_surface_types"].get("types", [])
+    try:
+        preview = generate_auto_route_preview(
+            nodes_by_id,
+            route_surface_types,
+            from_node_id=document.from_node_id,
+            to_node_id=document.to_node_id,
+            surface_type_id=document.surface_type_id,
+            resolution_km=document.resolution_km,
+            city_ids=set(cities_by_id),
+        )
+    except AutoRouteError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    return AutoRoutePreviewResponse(
+        engine=preview.engine,
+        profile_id=preview.profile_id,
+        surface_type_id=preview.surface_type_id,
+        resolution_km=preview.resolution_km,
+        raw_point_count=preview.raw_point_count,
+        simplified_point_count=preview.simplified_point_count,
+        distance_km=preview.distance_km,
+        edge=preview.edge,
+    )
 
 
 def create_app() -> FastAPI:
@@ -146,6 +199,23 @@ def create_app() -> FastAPI:
             context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de mapa")},
         )
 
+    @app.get("/editor/map_v1_1", response_class=HTMLResponse, include_in_schema=False)
+    async def map_editor_v1_1(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="map_editor_v1_1.html",
+            context={"page_title": "Brasix | Editor de mapa v1.1"},
+        )
+
+    @app.get("/editor/map-v2", response_class=HTMLResponse, include_in_schema=False)
+    async def map_editor_v2(request: Request) -> HTMLResponse:
+        editor_ui = load_map_editor_v2_payload()
+        return templates.TemplateResponse(
+            request=request,
+            name="map_editor_v2.html",
+            context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de mapa v2")},
+        )
+
     @app.get("/api/health")
     async def healthcheck() -> dict[str, Any]:
         payload = _build_bootstrap_payload()
@@ -164,6 +234,14 @@ def create_app() -> FastAPI:
     @app.get("/api/editor/map/bootstrap")
     async def map_editor_bootstrap() -> dict[str, Any]:
         return _build_bootstrap_payload()
+
+    @app.get("/api/editor/map_v1_1/bootstrap")
+    async def map_editor_v1_1_bootstrap() -> dict[str, Any]:
+        return _build_bootstrap_payload()
+
+    @app.get("/api/editor/map-v2/bootstrap")
+    async def map_editor_v2_bootstrap() -> dict[str, Any]:
+        return _build_v2_bootstrap_payload()
 
     @app.put("/api/editor/map/population-bands")
     async def save_population_bands(document: PopulationBandDocument) -> dict[str, Any]:
@@ -244,6 +322,14 @@ def create_app() -> FastAPI:
 
         return CityAutofillResponse(city=autofilled_city)
 
+    @app.post("/api/editor/map-v2/route-preview", response_model=AutoRoutePreviewResponse)
+    async def preview_auto_route(document: AutoRoutePreviewRequest) -> AutoRoutePreviewResponse:
+        return _auto_route_preview_response(document)
+
+    @app.post("/api/editor/map_v1_1/route-preview", response_model=AutoRoutePreviewResponse)
+    async def preview_auto_route_v1_1(document: AutoRoutePreviewRequest) -> AutoRoutePreviewResponse:
+        return _auto_route_preview_response(document)
+
     @app.put("/api/editor/map/leaflet-settings")
     async def save_leaflet_settings(document: MapLeafletSettingsDocument) -> dict[str, Any]:
         viewport_payload = load_map_viewport_payload()
@@ -290,6 +376,28 @@ def create_app() -> FastAPI:
         active_map.route_network = snapshot
         save_map_bundle(active_map)
         return snapshot.model_dump(mode="json")
+
+    @app.post("/api/editor/map-v2/route-save")
+    async def save_auto_route(document: AutoRouteSaveRequest) -> dict[str, Any]:
+        active_map = load_active_map_bundle()
+        city_ids = {city.id for city in active_map.cities}
+        graph_node_ids = {node.id for node in active_map.route_network.nodes}
+        allowed_node_ids = city_ids | graph_node_ids
+
+        edge = document.edge
+        if edge.from_node_id not in allowed_node_ids or edge.to_node_id not in allowed_node_ids:
+            raise HTTPException(status_code=400, detail="A rota automatica precisa ligar duas cidades do mapa ativo.")
+
+        if any(existing_edge.id == edge.id for existing_edge in active_map.route_network.edges):
+            raise HTTPException(status_code=400, detail="O id da rota automatica ja existe no mapa ativo.")
+
+        active_map.route_network.edges.append(edge)
+        save_map_bundle(active_map)
+        return {
+            "edge": edge.model_dump(mode="json"),
+            "route_count": len(active_map.route_network.edges),
+            "map_id": active_map.id,
+        }
 
     @app.get("/api/editor/maps")
     async def editor_maps() -> dict[str, Any]:

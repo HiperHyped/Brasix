@@ -7,6 +7,7 @@ from app.services.data_loader import (
     load_city_catalog_payload,
     load_city_product_matrix_payload,
     load_map_editor_payload,
+    load_map_editor_v2_payload,
     load_map_viewport_payload,
     load_product_catalog_payload,
     load_reference_data,
@@ -28,6 +29,7 @@ from app.services.map_repository import (
     save_maps_registry,
     set_active_map,
 )
+from app.services.route_auto_osrm import AutoRouteError, generate_auto_route_preview, load_route_auto_engine_config
 
 __all__ = [
     "build_reference_data_from_city_catalog_payload",
@@ -36,6 +38,7 @@ __all__ = [
     "load_city_catalog_payload",
     "load_city_product_matrix_payload",
     "load_map_editor_payload",
+    "load_map_editor_v2_payload",
     "load_map_viewport_payload",
     "load_product_catalog_payload",
     "load_reference_data",
@@ -54,4 +57,7 @@ __all__ = [
     "save_maps_registry",
     "save_json",
     "set_active_map",
+    "AutoRouteError",
+    "generate_auto_route_preview",
+    "load_route_auto_engine_config",
 ]

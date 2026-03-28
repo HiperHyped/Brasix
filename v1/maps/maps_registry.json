@@ -1,6 +1,6 @@
 {
   "id": "maps_registry_v1",
-  "active_map_id": "map_mapa-5",
+  "active_map_id": "map_mapa-6-2",
   "maps": [
     {
       "id": "map_brasix_default",
@@ -32,11 +32,11 @@
       "slug": "mapa-3",
       "description": "",
       "created_at": "2026-03-27T12:06:03-03:00",
-      "updated_at": "2026-03-27T12:06:03-03:00",
+      "updated_at": "2026-03-27T14:48:46-03:00",
       "path": "maps/map_mapa-3/map_bundle.json",
-      "city_count": 162,
-      "route_count": 198,
-      "graph_node_count": 17
+      "city_count": 170,
+      "route_count": 213,
+      "graph_node_count": 13
     },
     {
       "id": "map_mapa-4",
@@ -44,11 +44,11 @@
       "slug": "mapa-4",
       "description": "",
       "created_at": "2026-03-27T12:06:32-03:00",
-      "updated_at": "2026-03-27T12:43:30-03:00",
+      "updated_at": "2026-03-27T13:05:44-03:00",
       "path": "maps/map_mapa-4/map_bundle.json",
-      "city_count": 186,
-      "route_count": 29,
-      "graph_node_count": 1
+      "city_count": 193,
+      "route_count": 59,
+      "graph_node_count": 6
     },
     {
       "id": "map_mapa-5",
@@ -61,6 +61,30 @@
       "city_count": 162,
       "route_count": 198,
       "graph_node_count": 17
+    },
+    {
+      "id": "map_mapa-6",
+      "name": "Mapa 6",
+      "slug": "mapa-6",
+      "description": "",
+      "created_at": "2026-03-27T19:12:48-03:00",
+      "updated_at": "2026-03-27T21:52:56-03:00",
+      "path": "maps/map_mapa-6/map_bundle.json",
+      "city_count": 224,
+      "route_count": 304,
+      "graph_node_count": 24
+    },
+    {
+      "id": "map_mapa-6-2",
+      "name": "Mapa 6",
+      "slug": "mapa-6-2",
+      "description": "",
+      "created_at": "2026-03-27T21:53:03-03:00",
+      "updated_at": "2026-03-28T11:12:53-03:00",
+      "path": "maps/map_mapa-6-2/map_bundle.json",
+      "city_count": 245,
+      "route_count": 352,
+      "graph_node_count": 28
     }
   ]
 }

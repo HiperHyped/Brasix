@@ -91,6 +91,8 @@ const editorState = {
   activeThemeId: null,
   cityPopupAnchor: null,
   activeSidebarTabId: "map_editor_tab_legends",
+  autoRouteResolutionOptionsKm: [],
+  selectedAutoRouteResolutionIndex: 0,
 };
 
 function reportEditorError(error) {
@@ -111,7 +113,7 @@ function reportEditorError(error) {
 }
 
 function loadBootstrap() {
-  return fetch("/api/editor/map/bootstrap").then((response) => response.json());
+  return fetch("/api/editor/map_v1_1/bootstrap").then((response) => response.json());
 }
 
 function waitForLeaflet(timeoutMs = 4000) {
@@ -150,6 +152,32 @@ function cityAutofillConfig() {
 
 function cityAutofillProviderLabel() {
   return cityAutofillConfig().provider_label || "Nominatim + IBGE";
+}
+
+function autoRouteConfig() {
+  return editorState.bootstrap?.map_editor_v2?.route_auto_engine || {};
+}
+
+function autoRouteUi() {
+  return autoRouteConfig().ui || {};
+}
+
+function autoRouteResolutionOptionsKm() {
+  return editorState.autoRouteResolutionOptionsKm?.length
+    ? editorState.autoRouteResolutionOptionsKm
+    : [...(autoRouteConfig().simplification_options_km || [1, 2, 5, 10, 20, 30, 40, 50])];
+}
+
+function selectedAutoRouteResolutionKm() {
+  return Number(
+    autoRouteResolutionOptionsKm()[editorState.selectedAutoRouteResolutionIndex]
+    || autoRouteConfig().default_resolution_km
+    || 20,
+  );
+}
+
+function autoRouteSupportedSurfaceCodes() {
+  return new Set(autoRouteConfig().supported_surface_codes || ["double_road", "single_road", "dirt_road"]);
 }
 
 function mapRepositoryControls() {
@@ -443,6 +471,11 @@ function rebuildCityCatalogsFromBootstrap() {
 }
 
 function renderHeader() {
+  const brandSubtitleNode = document.getElementById("editor-brand-subtitle");
+  if (brandSubtitleNode) {
+    brandSubtitleNode.textContent = autoRouteUi().brand_subtitle || editorState.screen.brand_subtitle || "Editor de mapa v1.1";
+  }
+
   const badgeContainer = document.getElementById("editor-header-badges");
   const activeMap = activeMapEntry();
   const badges = [
@@ -520,6 +553,11 @@ function buildDerivedData() {
     (editorState.bootstrap.map_editor.leaflet_controls?.sections || [])
       .flatMap((section) => section.controls || [])
       .map((control) => [control.id, control]),
+  );
+  editorState.autoRouteResolutionOptionsKm = autoRouteResolutionOptionsKm();
+  editorState.selectedAutoRouteResolutionIndex = Math.max(
+    0,
+    editorState.autoRouteResolutionOptionsKm.indexOf(Number(autoRouteConfig().default_resolution_km || 20)),
   );
   editorState.activeSidebarTabId = editorState.screen.sidebar_tabs?.[0]?.id || "map_editor_tab_legends";
   editorState.routeNetwork.nodes = editorState.routeNetwork.nodes || [];
@@ -1503,6 +1541,52 @@ function renderLeafletControls() {
     source: leafletSettings(),
     dataAttribute: "leaflet-control",
   });
+}
+
+function renderAutoRouteControls() {
+  const container = document.getElementById("editor-v1-1-auto-route-controls");
+  if (!container) {
+    return;
+  }
+
+  const ui = autoRouteUi();
+  const resolutionOptions = autoRouteResolutionOptionsKm();
+  const selectedResolution = selectedAutoRouteResolutionKm();
+  container.innerHTML = `
+    <h4 class="display-section-title">${escapeHtml(ui.section_title || "Roteamento automatico")}</h4>
+    <p class="editor-inline-copy">${escapeHtml(
+      ui.section_copy
+      || "Para rodovias 1, 2 e 3, o editor consulta o OSRM automaticamente quando voce liga duas cidades sem vertices manuais.",
+    )}</p>
+    <label class="field display-field">
+      <span>${escapeHtml(ui.resolution_label || "Resolucao da rota")}</span>
+      <div class="display-range-row">
+        <input
+          id="editor-v1-1-auto-route-resolution"
+          class="editor-input editor-range-input"
+          type="range"
+          min="0"
+          max="${Math.max(0, resolutionOptions.length - 1)}"
+          step="1"
+          value="${editorState.selectedAutoRouteResolutionIndex}"
+        />
+        <strong id="editor-v1-1-auto-route-resolution-value" class="display-range-value">${escapeHtml(`${selectedResolution} km`)}</strong>
+      </div>
+    </label>
+    <div class="editor-v1-1-auto-route-ticks">
+      ${resolutionOptions.map((value, index) => `
+        <span class="editor-v1-1-auto-route-tick${index === editorState.selectedAutoRouteResolutionIndex ? " is-active" : ""}">${escapeHtml(String(value))}</span>
+      `).join("")}
+    </div>
+    <p class="editor-inline-copy">${escapeHtml(
+      ui.resolution_hint
+      || "20 km e o padrao. Valores menores deixam a rota mais fiel; valores maiores deixam o JSON mais leve.",
+    )}</p>
+    <p class="editor-inline-copy is-muted">${escapeHtml(
+      ui.manual_only_hint
+      || "Hidrovia e ferrovia continuam manuais nesta versao.",
+    )}</p>
+  `;
 }
 
 function populationBandFillColor(band) {
@@ -3054,6 +3138,39 @@ async function saveRouteNetwork(message) {
   return true;
 }
 
+function draftUsesAutoRoute() {
+  const surfaceType = currentSurfaceType();
+  return (
+    routeReady()
+    && Boolean(surfaceType)
+    && autoRouteSupportedSurfaceCodes().has(surfaceType.code)
+    && (editorState.draft.waypoints?.length || 0) === 0
+  );
+}
+
+async function requestAutoRoutePreviewForDraft() {
+  const ui = autoRouteUi();
+  const response = await fetch("/api/editor/map_v1_1/route-preview", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from_node_id: editorState.draft.fromCityId,
+      to_node_id: editorState.draft.toCityId,
+      surface_type_id: editorState.draft.surfaceTypeId,
+      resolution_km: selectedAutoRouteResolutionKm(),
+    }),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(
+      data.detail
+      || ui.route_error
+      || "Nao foi possivel gerar a rota automatica pelo OSRM.",
+    );
+  }
+  return data.edge;
+}
+
 async function confirmDraftRoute() {
   if (!routeReady()) {
     setDraftStatus(screenErrors().route_incomplete || "Defina origem e destino antes de confirmar.");
@@ -3067,6 +3184,44 @@ async function confirmDraftRoute() {
       || "Reinicie o servidor do v1 para habilitar nos de ligacao e rotas com nos.",
     );
     return;
+  }
+
+  if (draftUsesAutoRoute()) {
+    try {
+      setDraftStatus(
+        autoRouteUi().route_loading
+        || "Consultando o OSRM para gerar a rota automatica...",
+      );
+      const edge = await requestAutoRoutePreviewForDraft();
+      editorState.routeNetwork.edges.push(edge);
+      const saved = await saveRouteNetwork(
+        autoRouteUi().route_saved
+        || editorState.screen.status_messages.route_saved,
+      );
+      if (!saved) {
+        editorState.routeNetwork.edges = editorState.routeNetwork.edges.filter((item) => item.id !== edge.id);
+        return;
+      }
+
+      editorState.selectedEdgeId = edge.id;
+      editorState.selectedCityId = null;
+      editorState.selectedNodeId = null;
+      resetDraft(editorState.draft);
+      editorState.draft.activeToolId = "tool_route_draw";
+      setDraftStatus(autoRouteUi().route_saved || editorState.screen.status_messages.route_saved);
+      renderSelectionPanel();
+      renderMap();
+      return;
+    } catch (error) {
+      editorState.draft.toCityId = null;
+      setDraftStatus(
+        error?.message
+        || autoRouteUi().route_error
+        || "Nao foi possivel gerar a rota automatica. Continue desenhando manualmente.",
+      );
+      renderMap();
+      return;
+    }
   }
 
   const surfaceType = currentSurfaceType();
@@ -3436,10 +3591,20 @@ function bindUi() {
     scheduleLeafletSettingsSave(control.type === "checkbox" ? 0 : 140);
   };
 
+  const syncAutoRouteResolutionDraft = (event) => {
+    if (event.target.id !== "editor-v1-1-auto-route-resolution") {
+      return;
+    }
+    editorState.selectedAutoRouteResolutionIndex = Number(event.target.value || 0);
+    renderAutoRouteControls();
+  };
+
   document.getElementById("editor-overlay-controls").addEventListener("input", syncDisplayControlDraft);
   document.getElementById("editor-overlay-controls").addEventListener("change", syncDisplayControlDraft);
   document.getElementById("editor-leaflet-controls").addEventListener("input", syncLeafletControlDraft);
   document.getElementById("editor-leaflet-controls").addEventListener("change", syncLeafletControlDraft);
+  document.getElementById("editor-v1-1-auto-route-controls")?.addEventListener("input", syncAutoRouteResolutionDraft);
+  document.getElementById("editor-v1-1-auto-route-controls")?.addEventListener("change", syncAutoRouteResolutionDraft);
 
   document.getElementById("editor-header-actions").addEventListener("click", (event) => {
     const button = event.target.closest("[data-action-id]");
@@ -3618,6 +3783,7 @@ async function initializeEditor() {
   renderCustomCityControls();
   renderDisplayControls();
   renderLeafletControls();
+  renderAutoRouteControls();
   renderSelectionPanel();
   setDraftStatus(
     editorState.draft.activeToolId === "tool_route_draw"

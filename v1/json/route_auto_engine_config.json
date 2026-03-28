@@ -1,0 +1,45 @@
+{
+  "id": "route_auto_engine_config_v1",
+  "provider": "osrm",
+  "provider_label": "OSRM",
+  "base_url_env": "BRASIX_OSRM_BASE_URL",
+  "default_base_url": "https://router.project-osrm.org",
+  "default_profile_id": "driving",
+  "supported_surface_codes": [
+    "double_road",
+    "single_road",
+    "dirt_road"
+  ],
+  "manual_only_surface_codes": [
+    "waterway",
+    "railway"
+  ],
+  "default_resolution_km": 20,
+  "simplification_options_km": [
+    1,
+    2,
+    5,
+    10,
+    20,
+    30,
+    40,
+    50
+  ],
+  "request_options": {
+    "overview": "full",
+    "geometries": "geojson",
+    "steps": false,
+    "annotations": false
+  },
+  "ui": {
+    "brand_subtitle": "Editor de mapa v1.1",
+    "section_title": "Roteamento automatico",
+    "section_copy": "Para rodovias 1, 2 e 3, quando voce liga duas cidades sem vertices manuais, o editor consulta o OSRM e salva a geometria real no mesmo grafo do mapa.",
+    "resolution_label": "Resolucao da rota",
+    "resolution_hint": "20 km e o padrao. Valores menores preservam mais pontos; valores maiores deixam a rota mais leve.",
+    "manual_only_hint": "Hidrovia e ferrovia continuam manuais por enquanto.",
+    "route_loading": "Consultando o OSRM para gerar a rota automatica...",
+    "route_saved": "Rota automatica gerada e salva no mapa.",
+    "route_error": "Nao foi possivel gerar a rota automatica. Continue desenhando manualmente."
+  }
+}

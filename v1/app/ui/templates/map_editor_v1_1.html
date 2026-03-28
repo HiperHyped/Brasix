@@ -72,6 +72,7 @@
             </div>
           </div>
           <div id="editor-leaflet-controls" class="editor-display-controls"></div>
+          <section id="editor-v1-1-auto-route-controls" class="display-section editor-v1-1-auto-route-controls" aria-label="Controles da rota automatica"></section>
         </div>
       </section>
     </aside>
@@ -187,8 +188,8 @@
 </main>
 
   <script type="module">
-  const editorModuleUrl = new URL("{{ request.url_for('static', path='js/editors/map-editor.js') }}", window.location.href);
-  editorModuleUrl.searchParams.set("v", "20260327-19");
+  const editorModuleUrl = new URL("{{ request.url_for('static', path='js/editors/map-editor-v1-1.js') }}", window.location.href);
+  editorModuleUrl.searchParams.set("v", "20260327-21");
 
   function showEditorLoadError(error) {
     const statusBox = document.getElementById("editor-draft-status");

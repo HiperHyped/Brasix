@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.env
 v1/.env
 v1/dados/
 tmp_*.html
