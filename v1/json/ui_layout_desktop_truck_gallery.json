@@ -1,0 +1,19 @@
+{
+  "id": "ui_layout_desktop_truck_gallery_v1",
+  "screen_id": "ui_truck_gallery_screen_v1",
+  "viewport_reference": "1440x900_desktop",
+  "css_variables": {
+    "--truck-left-col": "320px",
+    "--truck-right-col": "380px",
+    "--truck-side-min-col": "280px",
+    "--truck-center-min-col": "640px",
+    "--truck-panel-gap": "12px",
+    "--truck-section-padding": "12px",
+    "--truck-card-padding": "12px",
+    "--truck-card-gap": "10px",
+    "--truck-resizer-width": "10px",
+    "--truck-card-preview-height": "124px",
+    "--truck-detail-preview-height": "228px",
+    "--truck-filter-control-height": "36px"
+  }
+}

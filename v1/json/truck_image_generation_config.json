@@ -1,0 +1,78 @@
+{
+  "id": "truck_image_generation_config_v1",
+  "enabled": true,
+  "provider": "openai_gpt_image",
+  "generation_mode": "single_item_reviewed",
+  "output_directory": "trucks/generated",
+  "image_api": {
+    "api_base_url": "https://api.openai.com/v1/images/generations",
+    "edit_api_base_url": "https://api.openai.com/v1/images/edits",
+    "primary_model": "gpt-image-1.5",
+    "fallback_model": "gpt-image-1",
+    "request_timeout_seconds": 180,
+    "size": "1024x1024",
+    "quality": "high",
+    "background": "transparent",
+    "output_format": "png",
+    "reference_input_fidelity": "high",
+    "moderation": "auto",
+    "output_compression": 100,
+    "retries": {
+      "max_attempts": 2,
+      "retryable_status_codes": [408, 429, 500, 502, 503, 504]
+    }
+  },
+  "postprocess": {
+    "enabled": false,
+    "alpha_threshold": 4,
+    "canvas_width_px": 1024,
+    "canvas_height_px": 1024,
+    "content_max_width_px": 920,
+    "content_max_height_px": 460,
+    "baseline_y_px": 820
+  },
+  "prompt_builder": {
+    "style_label": "technical_black_silhouette",
+    "language": "pt-BR",
+    "base_instructions": [
+      "perfil lateral puro do caminhão",
+      "fundo transparente",
+      "veículo inteiro em preto sólido",
+      "desenho técnico simples",
+      "sem cenário, sem texto e sem sombra"
+    ],
+    "reference_defaults": {
+      "default_aspects": ["cabine"]
+    },
+    "body_kind_hints": {
+      "box_closed": "bau reto fechado",
+      "curtain_side": "sider reto fechado",
+      "flatbed": "plataforma aberta",
+      "grain": "graneleiro com laterais altas",
+      "refrigerated_box": "bau frigorifico",
+      "tank": "tanque cilindrico",
+      "tipper": "cacamba basculante",
+      "container_chassis": "chassi com um conteiner",
+      "lowboy": "prancha rebaixada",
+      "mixer": "betoneira",
+      "crane_flatbed": "plataforma com munck compacto",
+      "garbage_compactor": "compactador de lixo",
+      "livestock": "boiadeiro",
+      "sugarcane": "canavieiro com fueiros",
+      "logs": "madeireiro com toras",
+      "vehicle_carrier": "cegonheiro com dois niveis"
+    },
+    "combination_kind_hints": {
+      "single_unit": "um caminhao rigido unico",
+      "semi_trailer": "um cavalo mecanico e um semirreboque",
+      "drawbar_trailer": "um caminhao rigido puxando um reboque separado",
+      "multi_trailer": "combinacao rodoviaria com multiplos implementos articulados"
+    },
+    "final_constraints": [
+      "usar poucos detalhes",
+      "não usar carroceria branca ou cinza",
+      "não usar contorno preto com miolo branco",
+      "não usar perspectiva"
+    ]
+  }
+}

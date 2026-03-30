@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="truck-gallery-shell">
+  <header class="topbar truck-gallery-topbar">
+    <div class="truck-gallery-topbar-left">
+      <div class="brand-lockup">
+        <h1 id="truck-gallery-brand-title">Brasix</h1>
+        <span class="brand-divider"></span>
+        <p id="truck-gallery-brand-subtitle">Biblioteca de caminhoes</p>
+      </div>
+    </div>
+
+    <div id="truck-gallery-header-badges" class="editor-header-badges" aria-label="Estado da biblioteca"></div>
+    <div id="truck-gallery-header-actions" class="editor-header-actions" aria-label="Acoes da biblioteca"></div>
+  </header>
+
+  <section id="truck-gallery-grid" class="truck-gallery-grid">
+    <aside class="truck-gallery-sidebar truck-gallery-sidebar-left">
+      <section class="editor-card truck-gallery-card truck-gallery-sidebar-card">
+        <div class="section-head">
+          <div>
+            <p id="truck-gallery-filters-eyebrow" class="eyebrow">Filtros</p>
+            <h2 id="truck-gallery-filters-title">Catalogo do menor ao maior</h2>
+          </div>
+        </div>
+
+        <div class="truck-gallery-create-row">
+          <button id="truck-gallery-create-button" class="editor-header-action truck-gallery-create-button" type="button">
+            <span class="material-symbols-outlined">add</span>
+            <span id="truck-gallery-create-label">Criar Caminhao</span>
+          </button>
+        </div>
+
+        <div class="truck-gallery-filter-form">
+          <label class="field">
+            <span id="truck-gallery-search-label">Buscar modelo</span>
+            <input id="truck-gallery-search-input" class="editor-input truck-gallery-text-input" type="search" />
+          </label>
+
+          <label class="field">
+            <span id="truck-gallery-size-filter-label">Porte</span>
+            <div class="select-shell">
+              <select id="truck-gallery-size-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="truck-gallery-vehicle-kind-filter-label">Estrutura</span>
+            <div class="select-shell">
+              <select id="truck-gallery-vehicle-kind-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="truck-gallery-axle-filter-label">Eixos</span>
+            <div class="select-shell">
+              <select id="truck-gallery-axle-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="truck-gallery-combination-filter-label">Composicao</span>
+            <div class="select-shell">
+              <select id="truck-gallery-combination-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="truck-gallery-cargo-scope-filter-label">Missao</span>
+            <div class="select-shell">
+              <select id="truck-gallery-cargo-scope-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="truck-gallery-body-filter-label">Implemento</span>
+            <div class="select-shell">
+              <select id="truck-gallery-body-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="truck-gallery-brand-filter-label">Familia de marca</span>
+            <div class="select-shell">
+              <select id="truck-gallery-brand-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+        </div>
+      </section>
+    </aside>
+
+    <div class="truck-gallery-resizer" data-resizer="left" aria-hidden="true"></div>
+
+    <section class="truck-gallery-center-panel">
+      <section class="editor-card truck-gallery-card truck-gallery-center-card">
+        <div class="section-head">
+          <div>
+            <p id="truck-gallery-grid-eyebrow" class="eyebrow">Galeria</p>
+            <h2 id="truck-gallery-grid-title">Imagens geradas</h2>
+          </div>
+          <div id="truck-gallery-summary" class="truck-gallery-summary"></div>
+        </div>
+        <div id="truck-gallery-list" class="truck-gallery-list"></div>
+      </section>
+    </section>
+
+    <div class="truck-gallery-resizer" data-resizer="right" aria-hidden="true"></div>
+
+    <aside class="truck-gallery-sidebar truck-gallery-sidebar-right">
+      <section class="editor-card truck-gallery-card truck-gallery-detail-card">
+        <div class="section-head">
+          <div>
+            <p id="truck-gallery-detail-eyebrow" class="eyebrow">Revisao</p>
+            <h2 id="truck-gallery-detail-title">Imagem canonica</h2>
+          </div>
+        </div>
+
+        <div id="truck-gallery-detail" class="truck-gallery-detail"></div>
+      </section>
+    </aside>
+  </section>
+</main>
+
+<script type="module">
+  const galleryModuleUrl = new URL("{{ request.url_for('static', path='js/truck-gallery.js') }}", window.location.href);
+  galleryModuleUrl.searchParams.set("v", "20260330-7");
+
+  function showTruckGalleryLoadError(error) {
+    const target = document.getElementById("truck-gallery-list");
+    if (!target) {
+      return;
+    }
+    target.innerHTML = `<div class="truck-gallery-empty">${String(error?.message || error || "Falha ao carregar a biblioteca.")}</div>`;
+    console.error("Brasix truck gallery load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showTruckGalleryLoadError(event.reason);
+  });
+
+  import(galleryModuleUrl.href).catch(showTruckGalleryLoadError);
+</script>
+{% endblock %}

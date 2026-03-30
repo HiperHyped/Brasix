@@ -446,7 +446,17 @@ function polygonMarkup(points, fill, stroke, strokeWidth) {
   return `<polygon points="${pointsMarkup}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linejoin="round" />`;
 }
 
-function svgMarkerMarkup({ pin, size, fillColor, strokeColor, selected, opacity }) {
+function svgMarkerMarkup({
+  pin,
+  size,
+  fillColor,
+  strokeColor,
+  contrastFillColor = "#ffffff",
+  selectedHaloFillColor = "#fff8ec",
+  selectedHaloStrokeColor = "#2d5a27",
+  selected,
+  opacity,
+}) {
   const strokeWidth = Number(pin.stroke_width_px || 2);
   const radius = size / 2;
   const center = radius + 6;
@@ -456,21 +466,21 @@ function svgMarkerMarkup({ pin, size, fillColor, strokeColor, selected, opacity 
 
   let body = "";
   if (pin.shape === "ring_circle") {
-    body = `<circle cx="${center}" cy="${center}" r="${radius - strokeWidth / 2}" fill="#ffffff" stroke="${fillColor}" stroke-width="${strokeWidth + 1}" />`;
+    body = `<circle cx="${center}" cy="${center}" r="${radius - strokeWidth / 2}" fill="${contrastFillColor}" stroke="${fillColor}" stroke-width="${strokeWidth + 1}" />`;
   } else if (pin.shape === "bullseye_circle") {
     body = `
-      <circle cx="${center}" cy="${center}" r="${radius - strokeWidth / 2}" fill="#ffffff" stroke="${fillColor}" stroke-width="${strokeWidth}" />
+      <circle cx="${center}" cy="${center}" r="${radius - strokeWidth / 2}" fill="${contrastFillColor}" stroke="${fillColor}" stroke-width="${strokeWidth}" />
       <circle cx="${center}" cy="${center}" r="${innerRadius}" fill="${fillColor}" />
     `;
   } else if (pin.shape === "orbit_circle") {
     body = `
-      <circle cx="${center}" cy="${center}" r="${radius - strokeWidth / 2}" fill="rgba(255,255,255,0.84)" stroke="${fillColor}" stroke-width="${strokeWidth}" stroke-dasharray="4 3" />
+      <circle cx="${center}" cy="${center}" r="${radius - strokeWidth / 2}" fill="${contrastFillColor}" fill-opacity="0.84" stroke="${fillColor}" stroke-width="${strokeWidth}" stroke-dasharray="4 3" />
       <circle cx="${center}" cy="${center}" r="${Math.max(innerRadius, radius * 0.44)}" fill="${fillColor}" />
     `;
   } else if (pin.shape === "solid_square") {
     body = `<rect x="${center - radius}" y="${center - radius}" width="${radius * 2}" height="${radius * 2}" rx="${Math.max(radius * 0.16, 2)}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}" />`;
   } else if (pin.shape === "ring_square") {
-    body = `<rect x="${center - radius}" y="${center - radius}" width="${radius * 2}" height="${radius * 2}" rx="${Math.max(radius * 0.16, 2)}" fill="#ffffff" stroke="${fillColor}" stroke-width="${strokeWidth + 1}" />`;
+    body = `<rect x="${center - radius}" y="${center - radius}" width="${radius * 2}" height="${radius * 2}" rx="${Math.max(radius * 0.16, 2)}" fill="${contrastFillColor}" stroke="${fillColor}" stroke-width="${strokeWidth + 1}" />`;
   } else if (pin.shape === "solid_triangle" || pin.shape === "solid_diamond") {
     body = polygonMarkup(polygonPoints(pin.shape, center, radius), fillColor, strokeColor, strokeWidth);
   } else {
@@ -478,7 +488,7 @@ function svgMarkerMarkup({ pin, size, fillColor, strokeColor, selected, opacity 
   }
 
   const halo = selected
-    ? `<circle cx="${center}" cy="${center}" r="${haloRadius}" fill="rgba(255,255,255,0.92)" stroke="rgba(45,90,39,0.2)" stroke-width="1.4" />`
+    ? `<circle cx="${center}" cy="${center}" r="${haloRadius}" fill="${selectedHaloFillColor}" fill-opacity="0.92" stroke="${selectedHaloStrokeColor}" stroke-opacity="0.2" stroke-width="1.4" />`
     : "";
 
   return `
@@ -497,6 +507,9 @@ function createMarker({
   pin,
   fillColor = "#2d5a27",
   strokeColor = "#ffffff",
+  contrastFillColor = "#ffffff",
+  selectedHaloFillColor = "#fff8ec",
+  selectedHaloStrokeColor = "#2d5a27",
   selected = false,
   opacity = 1,
   className = "brasix-city-icon",
@@ -507,7 +520,17 @@ function createMarker({
   return L.marker([latitude, longitude], {
     icon: L.divIcon({
       className,
-      html: svgMarkerMarkup({ pin: pin || { shape: "solid_circle", stroke_width_px: 2 }, size, fillColor, strokeColor, selected, opacity }),
+      html: svgMarkerMarkup({
+        pin: pin || { shape: "solid_circle", stroke_width_px: 2 },
+        size,
+        fillColor,
+        strokeColor,
+        contrastFillColor,
+        selectedHaloFillColor,
+        selectedHaloStrokeColor,
+        selected,
+        opacity,
+      }),
       iconSize: [canvas, canvas],
       iconAnchor: [canvas / 2, canvas / 2],
     }),
@@ -525,6 +548,9 @@ export function createCityMarker({
   pin,
   fillColor = "#2d5a27",
   strokeColor = "#ffffff",
+  contrastFillColor = "#ffffff",
+  selectedHaloFillColor = "#fff8ec",
+  selectedHaloStrokeColor = "#2d5a27",
   selected = false,
   opacity = 1,
 }) {
@@ -537,6 +563,9 @@ export function createCityMarker({
     pin,
     fillColor,
     strokeColor,
+    contrastFillColor,
+    selectedHaloFillColor,
+    selectedHaloStrokeColor,
     selected,
     opacity,
     className: "brasix-city-icon",
@@ -546,6 +575,9 @@ export function createCityMarker({
 export function createGraphNodeMarker({
   node,
   style,
+  contrastFillColor = "#ffffff",
+  selectedHaloFillColor = "#fff8ec",
+  selectedHaloStrokeColor = "#2d5a27",
   selected = false,
   opacity = 1,
 }) {
@@ -562,6 +594,9 @@ export function createGraphNodeMarker({
     pin,
     fillColor: style?.fill_color || "#8c4f10",
     strokeColor: style?.stroke_color || "#fff9ea",
+    contrastFillColor,
+    selectedHaloFillColor,
+    selectedHaloStrokeColor,
     selected,
     opacity,
     className: "brasix-city-icon brasix-graph-node-icon",
@@ -689,7 +724,7 @@ function resolveRouteRoleStyle(surfaceType, role, styleOverrides = {}) {
       baseColor: styleOverrides.highlightColor || "#2d5a27",
       baseWeight: base.baseWeight + 2,
       baseOpacity: 1,
-      overlayColor: base.overlayColor ? "#fff9ea" : null,
+      overlayColor: base.overlayColor ? (styleOverrides.highlightOverlayColor || "#fff9ea") : null,
       overlayWeight: base.overlayColor ? Math.max(base.overlayWeight + 0.8, 2.2) : 0,
       overlayOpacity: 1,
       basePane: "brasix-highlight",
@@ -703,7 +738,7 @@ function resolveRouteRoleStyle(surfaceType, role, styleOverrides = {}) {
       baseColor: styleOverrides.selectedColor || "#8c4f10",
       baseWeight: base.baseWeight + 2,
       baseOpacity: 1,
-      overlayColor: base.overlayColor ? "#fff4dd" : null,
+      overlayColor: base.overlayColor ? (styleOverrides.selectedOverlayColor || "#fff4dd") : null,
       overlayWeight: base.overlayColor ? Math.max(base.overlayWeight + 0.8, 2.2) : 0,
       overlayOpacity: 1,
       basePane: "brasix-highlight",
@@ -714,7 +749,7 @@ function resolveRouteRoleStyle(surfaceType, role, styleOverrides = {}) {
   if (role === "draft") {
     return {
       ...base,
-      baseColor: "#2d5a27",
+      baseColor: styleOverrides.draftColor || "#2d5a27",
       baseWeight: Math.max(base.baseWeight, 4),
       baseOpacity: 0.94,
       overlayColor: null,
@@ -847,7 +882,16 @@ export function createRouteLayer({
 
 export function renderPopulationLegend(
   target,
-  { cities, bands, pinsById, fillColor = "#2d5a27", fillColorResolver = null, routeSurfaceTypes = [] },
+  {
+    cities,
+    bands,
+    pinsById,
+    fillColor = "#2d5a27",
+    strokeColor = "#ffffff",
+    contrastFillColor = "#ffffff",
+    fillColorResolver = null,
+    routeSurfaceTypes = [],
+  },
 ) {
   const items = countCitiesByPopulationBands(cities, bands)
     .map((band) => {
@@ -858,7 +902,8 @@ export function renderPopulationLegend(
         pin,
         size,
         fillColor: bandFillColor,
-        strokeColor: "#ffffff",
+        strokeColor,
+        contrastFillColor,
         selected: false,
         opacity: 1,
       });

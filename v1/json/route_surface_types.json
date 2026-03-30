@@ -7,6 +7,7 @@
       "label": "Rodovia dupla",
       "shortcut_key": "1",
       "mode": "road",
+      "average_speed_kmh": 100,
       "style": {
         "base_color": "#2f5a28",
         "base_weight": 8,
@@ -23,6 +24,7 @@
       "label": "Rodovia simples",
       "shortcut_key": "2",
       "mode": "road",
+      "average_speed_kmh": 70,
       "style": {
         "base_color": "#4f6f45",
         "base_weight": 5,
@@ -39,6 +41,7 @@
       "label": "Rodovia de terra",
       "shortcut_key": "3",
       "mode": "road",
+      "average_speed_kmh": 40,
       "style": {
         "base_color": "#8c4f10",
         "base_weight": 4,
@@ -55,6 +58,7 @@
       "label": "Hidrovia",
       "shortcut_key": "4",
       "mode": "river",
+      "average_speed_kmh": 20,
       "style": {
         "base_color": "#2b6f8f",
         "base_weight": 6,
@@ -71,6 +75,7 @@
       "label": "Ferrovia",
       "shortcut_key": "5",
       "mode": "rail",
+      "average_speed_kmh": 50,
       "style": {
         "base_color": "#5b6167",
         "base_weight": 5,

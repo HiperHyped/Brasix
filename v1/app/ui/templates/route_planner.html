@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="planner-shell">
+  <header class="topbar planner-topbar">
+    <div class="planner-topbar-left">
+      <div class="brand-lockup">
+        <h1 id="planner-brand-title">Brasix</h1>
+        <span class="brand-divider"></span>
+        <p id="planner-brand-subtitle">Planejador de rota</p>
+      </div>
+    </div>
+
+    <div id="planner-header-badges" class="editor-header-badges" aria-label="Estado do planejador"></div>
+    <div id="planner-header-actions" class="editor-header-actions" aria-label="Acoes do planejador"></div>
+  </header>
+
+  <section id="planner-grid" class="planner-grid">
+    <aside class="planner-sidebar planner-sidebar-left">
+      <section class="editor-card planner-card planner-sidebar-card">
+        <div class="section-head">
+          <div>
+            <p id="planner-map-eyebrow" class="eyebrow">Mapas</p>
+            <h2 id="planner-map-title">Mapa de trabalho</h2>
+          </div>
+        </div>
+
+        <div class="planner-map-picker">
+          <label class="field">
+            <span id="planner-map-select-label">Mapa</span>
+            <div class="select-shell">
+              <select id="planner-map-select" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <p id="planner-route-eyebrow" class="eyebrow">Percurso</p>
+            <h2 id="planner-route-title">Planejamento de rota</h2>
+          </div>
+        </div>
+
+        <div class="planner-route-form">
+          <section class="planner-route-mode-section">
+            <div id="planner-route-mode-toggle" class="segmented-control planner-route-mode-toggle" role="group" aria-label="Modo de calculo da rota"></div>
+          </section>
+
+          <label class="field">
+            <span id="planner-origin-label">Origem</span>
+            <div class="select-shell">
+              <select id="planner-origin-select" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <section class="planner-stops-section">
+            <div class="planner-stop-head">
+              <span id="planner-stops-label" class="eyebrow">Paradas intermediarias</span>
+              <button id="planner-add-stop-button" class="secondary-button" type="button">Adicionar parada</button>
+            </div>
+            <div id="planner-stop-list" class="planner-stop-list"></div>
+          </section>
+
+          <label class="field">
+            <span id="planner-destination-label">Destino</span>
+            <div class="select-shell">
+              <select id="planner-destination-select" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+        </div>
+      </section>
+    </aside>
+
+    <div class="planner-resizer" data-resizer="left" aria-hidden="true"></div>
+
+    <section class="planner-map-panel">
+      <div class="map-frame planner-map-frame">
+        <div id="planner-map-stage" class="map-stage planner-map-stage" aria-label="Planejador de rota do Brasil"></div>
+        <div id="planner-route-legend" class="editor-population-legend" aria-label="Legenda do planejador"></div>
+        <div id="planner-status" class="editor-status-box editor-status-strip"></div>
+      </div>
+    </section>
+
+    <div class="planner-resizer" data-resizer="right" aria-hidden="true"></div>
+
+    <aside class="planner-sidebar planner-sidebar-right">
+      <section class="editor-card planner-card planner-sidebar-card">
+        <div class="section-head">
+          <div>
+            <p id="planner-details-eyebrow" class="eyebrow">Detalhes</p>
+            <h2 id="planner-details-title">Detalhes da rota</h2>
+          </div>
+        </div>
+
+        <div id="planner-route-summary" class="planner-route-summary"></div>
+        <div id="planner-route-legs" class="planner-route-legs"></div>
+      </section>
+    </aside>
+  </section>
+
+  <dialog id="planner-shortcuts-dialog" class="editor-shortcuts-dialog" aria-labelledby="planner-shortcuts-title">
+    <form method="dialog" class="editor-shortcuts-dialog-card">
+      <div class="editor-shortcuts-dialog-head">
+        <div class="editor-shortcuts-dialog-copy">
+          <p id="planner-shortcuts-eyebrow" class="eyebrow">Atalhos</p>
+          <h2 id="planner-shortcuts-title">Janela de atalhos</h2>
+          <p id="planner-shortcuts-copy" class="editor-dialog-copy"></p>
+        </div>
+        <button id="planner-shortcuts-close-button" class="secondary-button" type="submit">Fechar</button>
+      </div>
+      <div id="planner-shortcuts-list" class="editor-shortcuts-list editor-shortcuts-dialog-list"></div>
+    </form>
+  </dialog>
+</main>
+
+<script type="module">
+  const plannerModuleUrl = new URL("{{ request.url_for('static', path='js/route-planner.js') }}", window.location.href);
+  plannerModuleUrl.searchParams.set("v", "20260328-9");
+
+  function showPlannerLoadError(error) {
+    const statusBox = document.getElementById("planner-status");
+    if (!statusBox) {
+      return;
+    }
+
+    const message = error?.message || String(error);
+    statusBox.innerHTML = "";
+
+    const copy = document.createElement("div");
+    copy.className = "editor-status-copy";
+    copy.textContent = "Falha ao carregar o planejador de rota.";
+
+    const meta = document.createElement("div");
+    meta.className = "editor-status-meta";
+
+    const item = document.createElement("div");
+    const label = document.createElement("span");
+    label.textContent = "Erro";
+    const value = document.createElement("strong");
+    value.textContent = message;
+
+    item.append(label, value);
+    meta.append(item);
+    statusBox.append(copy, meta);
+    console.error("Brasix route planner load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showPlannerLoadError(event.reason);
+  });
+
+  import(plannerModuleUrl.href).catch(showPlannerLoadError);
+</script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{
+  "id": "truck_catalog_edits_v1",
+  "items": [
+    {
+      "truck_type_id": "truck_type_vuc_4x2",
+      "label": "VUC",
+      "size_tier": "smallest",
+      "base_vehicle_kind": "rigid",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "urban_last_mile",
+      "canonical_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-30T14:31:36-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_toco_leve_4x2",
+      "label": "Toco leve aberto",
+      "size_tier": "small",
+      "base_vehicle_kind": "rigid",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "urban_and_regional",
+      "canonical_body_type_id": "truck_body_carga_seca",
+      "notes": "",
+      "updated_at": "2026-03-30T14:45:47-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_toco_leve_eletrico_4x2",
+      "label": "Toco leve bau",
+      "size_tier": "small",
+      "base_vehicle_kind": "tractor_unit",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "urban_and_regional",
+      "canonical_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-30T14:52:51-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_toco_medio_4x2",
+      "label": "Toco medio",
+      "size_tier": "medium",
+      "base_vehicle_kind": "rigid",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "regional_general_cargo",
+      "canonical_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-30T14:50:28-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_toco_semipesado_4x2",
+      "label": "Toco semipesado 4x2",
+      "size_tier": "medium_plus",
+      "base_vehicle_kind": "rigid",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "regional_general_cargo",
+      "canonical_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-30T14:50:40-03:00"
+    }
+  ]
+}

@@ -8,19 +8,40 @@
   },
   "city_render": {
     "color_mode": "uniform",
-    "uniform_fill_color": "#2d5a27",
+    "uniform_fill_color": "#306029",
+    "created_fill_color": "#4f8593",
+    "stroke_color": "#ffffff",
+    "contrast_fill_color": "#ffffff",
     "selected_fill_color": "#fb8a18",
+    "selected_halo_fill_color": "#fff8ec",
+    "selected_halo_stroke_color": "#2d5a27",
+    "population_band_fill_colors": {},
     "opacity": 1.0
   },
   "route_render": {
     "opacity_scale": 1.4,
-    "highlight_color": "#41c63f",
-    "selected_color": "#bc7329"
+    "highlight_color": "#17ba99",
+    "selected_color": "#bc7329",
+    "draft_color": "#164710",
+    "highlight_overlay_color": "#fff9ea",
+    "selected_overlay_color": "#fff4dd",
+    "surface_style_overrides": {
+      "route_surface_single_road": {
+        "base_color": "#46a928",
+        "overlay_color": null
+      },
+      "route_surface_double_road": {
+        "base_color": "#529447",
+        "overlay_color": null
+      }
+    }
   },
   "graph_node_render": {
     "opacity": 0.95,
     "use_style_colors": false,
-    "override_fill_color": "#e44444",
-    "override_stroke_color": "#141414"
+    "override_fill_color": "#ff0000",
+    "override_stroke_color": "#141414",
+    "selected_halo_fill_color": "#fff8ec",
+    "selected_halo_stroke_color": "#2d5a27"
   }
 }

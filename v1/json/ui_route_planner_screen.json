@@ -1,0 +1,169 @@
+{
+  "id": "ui_route_planner_screen_v1",
+  "page_title": "Brasix | Planejador de rota",
+  "components": [
+    {
+      "id": "route_planner_component_brand_title",
+      "dom_target_id": "planner-brand-title",
+      "type": "text",
+      "text": "Brasix"
+    },
+    {
+      "id": "route_planner_component_brand_subtitle",
+      "dom_target_id": "planner-brand-subtitle",
+      "type": "text",
+      "text": "Planejador de rota"
+    },
+    {
+      "id": "route_planner_component_map_eyebrow",
+      "dom_target_id": "planner-map-eyebrow",
+      "type": "text",
+      "text": "Mapas"
+    },
+    {
+      "id": "route_planner_component_map_title",
+      "dom_target_id": "planner-map-title",
+      "type": "text",
+      "text": "Mapa de trabalho"
+    },
+    {
+      "id": "route_planner_component_route_eyebrow",
+      "dom_target_id": "planner-route-eyebrow",
+      "type": "text",
+      "text": "Percurso"
+    },
+    {
+      "id": "route_planner_component_route_title",
+      "dom_target_id": "planner-route-title",
+      "type": "text",
+      "text": "Planejamento de rota"
+    },
+    {
+      "id": "route_planner_component_details_eyebrow",
+      "dom_target_id": "planner-details-eyebrow",
+      "type": "text",
+      "text": "Detalhes"
+    },
+    {
+      "id": "route_planner_component_details_title",
+      "dom_target_id": "planner-details-title",
+      "type": "text",
+      "text": "Detalhes da rota"
+    },
+    {
+      "id": "route_planner_component_shortcuts_eyebrow",
+      "dom_target_id": "planner-shortcuts-eyebrow",
+      "type": "text",
+      "text": "Atalhos"
+    },
+    {
+      "id": "route_planner_component_shortcuts_title",
+      "dom_target_id": "planner-shortcuts-title",
+      "type": "text",
+      "text": "Janela de atalhos"
+    }
+  ],
+  "header_badges": [],
+  "header_actions": [
+    {
+      "id": "route_planner_action_back_to_app",
+      "label": "Voltar ao app",
+      "icon": "arrow_back",
+      "href": "/"
+    },
+    {
+      "id": "route_planner_action_back_to_editor",
+      "label": "Editor de mapa",
+      "icon": "map",
+      "href": "/editor/map"
+    },
+    {
+      "id": "route_planner_action_toggle_theme",
+      "label": "Modo noturno",
+      "icon": "dark_mode",
+      "action": "toggle-theme"
+    },
+    {
+      "id": "route_planner_action_open_shortcuts",
+      "label": "Atalhos",
+      "icon": "keyboard_command_key",
+      "action": "open-shortcuts"
+    },
+    {
+      "id": "route_planner_action_refit_map",
+      "label": "Reenquadrar",
+      "icon": "center_focus_strong",
+      "action": "refit-map"
+    }
+  ],
+  "labels": {
+    "map_select_label": "Mapa",
+    "active_map_label": "Mapa ativo",
+    "route_mode_label": "",
+    "route_mode_shortest_label": "Rota mais curta",
+    "route_mode_fastest_label": "Rota mais rapida",
+    "origin_label": "Origem",
+    "destination_label": "Destino",
+    "stops_label": "Paradas intermediarias",
+    "sequence_label": "Sequencia da rota",
+    "stop_label": "Parada",
+    "add_stop_label": "Adicionar parada",
+    "remove_stop_label": "Remover",
+    "remove_point_label": "Remover",
+    "move_point_up_label": "Subir",
+    "move_point_down_label": "Descer",
+    "sequence_empty_label": "A rota vai aparecer aqui conforme voce escolher origem, paradas e destino.",
+    "sequence_role_origin_label": "Origem",
+    "sequence_role_stop_label": "Parada",
+    "sequence_role_destination_label": "Destino",
+    "empty_stop_label": "Escolha uma parada",
+    "empty_city_label": "Escolha uma cidade",
+    "route_total_distance_label": "Distancia total",
+    "route_total_time_label": "Tempo total",
+    "route_total_steps_label": "Trechos",
+    "route_total_legs_label": "Pernas",
+    "route_leg_distance_label": "Distancia",
+    "route_leg_duration_label": "Tempo",
+    "route_leg_steps_label": "Trechos",
+    "route_step_distance_label": "km",
+    "route_step_duration_label": "Tempo",
+    "route_step_surface_label": "Tipo de rota",
+    "route_empty_label": "Defina origem, destino e paradas para calcular a rota.",
+    "route_map_badge_label": "Malha ativa",
+    "route_active_map_badge_label": "Mapa ativo",
+    "map_meta_cities_label": "cidades",
+    "map_meta_routes_label": "rotas",
+    "map_meta_nodes_label": "nos"
+  },
+  "status_messages": {
+    "idle": "Escolha uma cidade de origem, uma cidade final e, se quiser, adicione paradas intermediarias. Use A, X e Z para selecionar direto no mapa.",
+    "pick_origin": "Modo A: clique em uma cidade no mapa para definir a origem.",
+    "pick_stop": "Modo X: clique em uma cidade no mapa para adicionar uma parada intermediaria.",
+    "pick_destination": "Modo Z: clique em uma cidade no mapa para definir o destino.",
+    "pick_invalid_target": "Os atalhos do planejador aceitam apenas cidades.",
+    "planning": "Calculando a melhor rota na malha atual...",
+    "planned": "Rota atualizada com sucesso.",
+    "map_loaded": "Mapa carregado no planejador.",
+    "map_load_failed": "Nao foi possivel carregar o mapa selecionado.",
+    "point_set_origin": "Origem atualizada no planejamento.",
+    "point_set_stop": "Parada intermediaria adicionada ao planejamento.",
+    "point_set_destination": "Destino atualizado no planejamento.",
+    "point_removed": "Ponto removido da rota.",
+    "point_reordered": "Ordem da rota atualizada.",
+    "stop_removed": "Parada removida do planejamento.",
+    "route_cleared": "Defina origem e destino para montar a rota.",
+    "route_mode_shortest": "Modo de rota: mais curta.",
+    "route_mode_fastest": "Modo de rota: mais rapida."
+  },
+  "errors": {
+    "plan_failed": "Nao foi possivel calcular a rota nesse mapa.",
+    "map_required": "Escolha um mapa do repositorio.",
+    "origin_required": "Escolha uma cidade de origem.",
+    "destination_required": "Escolha uma cidade de destino.",
+    "origin_destination_same": "Origem e destino precisam ser diferentes."
+  },
+  "dialog": {
+    "shortcuts_copy": "Use os atalhos para selecionar cidades direto no mapa; o planejamento recalcula automaticamente a cada mudanca.",
+    "close_button_label": "Fechar"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ui_shortcuts_route_planner_v1",
+  "items": [
+    {
+      "id": "route_planner_shortcut_origin",
+      "key": "A",
+      "description": "Entra em modo de selecao da cidade de inicio no mapa."
+    },
+    {
+      "id": "route_planner_shortcut_stop",
+      "key": "X",
+      "description": "Adiciona uma parada intermediaria ao clicar em uma cidade no mapa."
+    },
+    {
+      "id": "route_planner_shortcut_destination",
+      "key": "Z",
+      "description": "Entra em modo de selecao da cidade final no mapa."
+    }
+  ]
+}

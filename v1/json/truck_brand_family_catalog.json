@@ -1,0 +1,201 @@
+{
+  "id": "truck_brand_family_catalog_v1",
+  "scope": "brazil_current_market_families",
+  "sources": [
+    {
+      "id": "source_vwco",
+      "label": "VW Caminhoes e Onibus",
+      "url": "https://www.vwco.com.br/"
+    },
+    {
+      "id": "source_mercedes_benz_trucks",
+      "label": "Mercedes-Benz Caminhoes",
+      "url": "https://www.mercedes-benz-trucks.com.br/"
+    },
+    {
+      "id": "source_volvo_trucks",
+      "label": "Volvo Caminhoes",
+      "url": "https://www.volvotrucks.com.br/"
+    },
+    {
+      "id": "source_daf_brasil",
+      "label": "DAF Caminhoes Brasil",
+      "url": "https://www.dafcaminhoes.com.br/pt-br"
+    },
+    {
+      "id": "source_iveco_brasil",
+      "label": "Iveco Brasil",
+      "url": "https://www.iveco.com/brasil"
+    },
+    {
+      "id": "source_scania_brasil",
+      "label": "Scania Brasil",
+      "url": "https://www.scania.com/br/pt/"
+    }
+  ],
+  "families": [
+    {
+      "id": "truck_family_vwco_e_delivery",
+      "manufacturer_label": "VWCO",
+      "family_label": "e-Delivery",
+      "segment_label": "eletrico_urbano",
+      "canonical_type_ids": ["truck_type_vuc_4x2", "truck_type_toco_leve_eletrico_4x2"]
+    },
+    {
+      "id": "truck_family_vwco_delivery",
+      "manufacturer_label": "VWCO",
+      "family_label": "Delivery",
+      "segment_label": "leve_e_medio",
+      "canonical_type_ids": ["truck_type_vuc_4x2", "truck_type_toco_leve_4x2", "truck_type_toco_medio_4x2"]
+    },
+    {
+      "id": "truck_family_vwco_constellation",
+      "manufacturer_label": "VWCO",
+      "family_label": "Constellation",
+      "segment_label": "semipesado_e_pesado",
+      "canonical_type_ids": [
+        "truck_type_toco_semipesado_4x2",
+        "truck_type_truck_semipesado_6x2",
+        "truck_type_truck_pesado_6x2",
+        "truck_type_truck_pesado_6x4",
+        "truck_type_bitruck_8x2",
+        "truck_type_cavalo_4x2",
+        "truck_type_cavalo_6x2",
+        "truck_type_cavalo_6x4"
+      ]
+    },
+    {
+      "id": "truck_family_vwco_meteor",
+      "manufacturer_label": "VWCO",
+      "family_label": "Meteor",
+      "segment_label": "extrapesado_rodoviario",
+      "canonical_type_ids": ["truck_type_cavalo_6x2", "truck_type_cavalo_6x4", "truck_type_carreta_ls", "truck_type_bitrem", "truck_type_rodotrem"]
+    },
+    {
+      "id": "truck_family_vwco_vocacionais",
+      "manufacturer_label": "VWCO",
+      "family_label": "Vocacionais",
+      "segment_label": "construcao_e_offroad",
+      "canonical_type_ids": ["truck_type_bitruck_vocacional_8x4", "truck_type_offroad_6x6"]
+    },
+    {
+      "id": "truck_family_mercedes_accelo",
+      "manufacturer_label": "Mercedes-Benz",
+      "family_label": "Accelo",
+      "segment_label": "leve",
+      "canonical_type_ids": ["truck_type_vuc_4x2", "truck_type_toco_leve_4x2", "truck_type_toco_medio_4x2"]
+    },
+    {
+      "id": "truck_family_mercedes_atego",
+      "manufacturer_label": "Mercedes-Benz",
+      "family_label": "Atego",
+      "segment_label": "medio_e_semipesado",
+      "canonical_type_ids": ["truck_type_toco_medio_4x2", "truck_type_toco_semipesado_4x2", "truck_type_truck_semipesado_6x2"]
+    },
+    {
+      "id": "truck_family_mercedes_axor",
+      "manufacturer_label": "Mercedes-Benz",
+      "family_label": "Axor",
+      "segment_label": "pesado",
+      "canonical_type_ids": ["truck_type_truck_pesado_6x2", "truck_type_truck_pesado_6x4", "truck_type_cavalo_4x2", "truck_type_cavalo_6x2"]
+    },
+    {
+      "id": "truck_family_mercedes_actros",
+      "manufacturer_label": "Mercedes-Benz",
+      "family_label": "Actros",
+      "segment_label": "extrapesado",
+      "canonical_type_ids": ["truck_type_cavalo_6x2", "truck_type_cavalo_6x4", "truck_type_carreta_ls", "truck_type_bitrem", "truck_type_rodotrem"]
+    },
+    {
+      "id": "truck_family_mercedes_arocs",
+      "manufacturer_label": "Mercedes-Benz",
+      "family_label": "Arocs",
+      "segment_label": "vocacional",
+      "canonical_type_ids": ["truck_type_bitruck_vocacional_8x4", "truck_type_offroad_6x6"]
+    },
+    {
+      "id": "truck_family_volvo_vm_city",
+      "manufacturer_label": "Volvo",
+      "family_label": "VM City",
+      "segment_label": "urbano",
+      "canonical_type_ids": ["truck_type_vuc_4x2", "truck_type_toco_leve_4x2", "truck_type_toco_medio_4x2"]
+    },
+    {
+      "id": "truck_family_volvo_vm",
+      "manufacturer_label": "Volvo",
+      "family_label": "VM",
+      "segment_label": "medio_e_pesado",
+      "canonical_type_ids": ["truck_type_toco_medio_4x2", "truck_type_toco_semipesado_4x2", "truck_type_truck_semipesado_6x2", "truck_type_truck_pesado_6x2"]
+    },
+    {
+      "id": "truck_family_volvo_fh",
+      "manufacturer_label": "Volvo",
+      "family_label": "FH",
+      "segment_label": "extrapesado_rodoviario",
+      "canonical_type_ids": ["truck_type_cavalo_6x2", "truck_type_cavalo_6x4", "truck_type_carreta_ls", "truck_type_bitrem", "truck_type_rodotrem"]
+    },
+    {
+      "id": "truck_family_volvo_fmx",
+      "manufacturer_label": "Volvo",
+      "family_label": "FMX",
+      "segment_label": "vocacional",
+      "canonical_type_ids": ["truck_type_truck_pesado_6x4", "truck_type_bitruck_vocacional_8x4", "truck_type_offroad_6x6", "truck_type_cavalo_6x4"]
+    },
+    {
+      "id": "truck_family_daf_cf",
+      "manufacturer_label": "DAF",
+      "family_label": "CF",
+      "segment_label": "pesado",
+      "canonical_type_ids": ["truck_type_truck_pesado_6x2", "truck_type_truck_pesado_6x4", "truck_type_cavalo_4x2", "truck_type_cavalo_6x2"]
+    },
+    {
+      "id": "truck_family_daf_xf_xg",
+      "manufacturer_label": "DAF",
+      "family_label": "XF / XG",
+      "segment_label": "extrapesado",
+      "canonical_type_ids": ["truck_type_cavalo_6x2", "truck_type_cavalo_6x4", "truck_type_carreta_ls", "truck_type_bitrem", "truck_type_rodotrem"]
+    },
+    {
+      "id": "truck_family_iveco_daily",
+      "manufacturer_label": "Iveco",
+      "family_label": "Daily",
+      "segment_label": "leve",
+      "canonical_type_ids": ["truck_type_vuc_4x2", "truck_type_toco_leve_4x2"]
+    },
+    {
+      "id": "truck_family_iveco_tector",
+      "manufacturer_label": "Iveco",
+      "family_label": "Tector",
+      "segment_label": "medio_e_semipesado",
+      "canonical_type_ids": ["truck_type_toco_medio_4x2", "truck_type_toco_semipesado_4x2", "truck_type_truck_semipesado_6x2"]
+    },
+    {
+      "id": "truck_family_iveco_s_way",
+      "manufacturer_label": "Iveco",
+      "family_label": "S-Way",
+      "segment_label": "extrapesado",
+      "canonical_type_ids": ["truck_type_cavalo_6x2", "truck_type_cavalo_6x4", "truck_type_carreta_ls", "truck_type_bitrem", "truck_type_rodotrem"]
+    },
+    {
+      "id": "truck_family_scania_p",
+      "manufacturer_label": "Scania",
+      "family_label": "P",
+      "segment_label": "semipesado_e_pesado",
+      "canonical_type_ids": ["truck_type_truck_semipesado_6x2", "truck_type_truck_pesado_6x2", "truck_type_truck_pesado_6x4"]
+    },
+    {
+      "id": "truck_family_scania_g",
+      "manufacturer_label": "Scania",
+      "family_label": "G",
+      "segment_label": "pesado_e_vocacional",
+      "canonical_type_ids": ["truck_type_truck_pesado_6x4", "truck_type_bitruck_vocacional_8x4", "truck_type_cavalo_6x4"]
+    },
+    {
+      "id": "truck_family_scania_r_s",
+      "manufacturer_label": "Scania",
+      "family_label": "R / S",
+      "segment_label": "extrapesado_rodoviario",
+      "canonical_type_ids": ["truck_type_cavalo_6x2", "truck_type_cavalo_6x4", "truck_type_carreta_ls", "truck_type_bitrem", "truck_type_rodotrem"]
+    }
+  ]
+}

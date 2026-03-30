@@ -1,0 +1,21 @@
+{
+  "id": "truck_category_catalog_v1",
+  "size_tiers": [
+    {
+      "id": "van",
+      "label": "Van"
+    },
+    {
+      "id": "camionete",
+      "label": "camionete"
+    },
+    {
+      "id": "mini_pick_up",
+      "label": "Mini Pick-up"
+    }
+  ],
+  "base_vehicle_kinds": [],
+  "axle_configs": [],
+  "combination_kinds": [],
+  "cargo_scopes": []
+}

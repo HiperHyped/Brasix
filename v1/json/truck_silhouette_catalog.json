@@ -1,0 +1,372 @@
+{
+  "id": "truck_silhouette_catalog_v1",
+  "style": "technical_legislation_side_profile",
+  "specs": [
+    {
+      "id": "truck_silhouette_vuc_4x2",
+      "type_id": "truck_type_vuc_4x2",
+      "layout_kind": "rigid",
+      "total_length_units": 56,
+      "cab_style": "cabover_compact",
+      "cab_length_units": 12,
+      "cab_height_units": 19,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 32, "height_units": 13, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 8, "group": "single" },
+        { "position_units": 39, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_toco_leve_4x2",
+      "type_id": "truck_type_toco_leve_4x2",
+      "layout_kind": "rigid",
+      "total_length_units": 62,
+      "cab_style": "cabover_medium",
+      "cab_length_units": 13,
+      "cab_height_units": 20,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 37, "height_units": 14, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 44, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_toco_leve_eletrico_4x2",
+      "type_id": "truck_type_toco_leve_eletrico_4x2",
+      "layout_kind": "rigid",
+      "total_length_units": 62,
+      "cab_style": "cabover_medium",
+      "cab_length_units": 13,
+      "cab_height_units": 20,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 37, "height_units": 14, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 44, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_toco_medio_4x2",
+      "type_id": "truck_type_toco_medio_4x2",
+      "layout_kind": "rigid",
+      "total_length_units": 68,
+      "cab_style": "cabover_medium",
+      "cab_length_units": 13,
+      "cab_height_units": 21,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 43, "height_units": 14, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 49, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_toco_semipesado_4x2",
+      "type_id": "truck_type_toco_semipesado_4x2",
+      "layout_kind": "rigid",
+      "total_length_units": 72,
+      "cab_style": "cabover_medium",
+      "cab_length_units": 13,
+      "cab_height_units": 21,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 47, "height_units": 15, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 53, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_truck_semipesado_6x2",
+      "type_id": "truck_type_truck_semipesado_6x2",
+      "layout_kind": "rigid",
+      "total_length_units": 78,
+      "cab_style": "cabover_medium",
+      "cab_length_units": 13,
+      "cab_height_units": 22,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 51, "height_units": 15, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 53, "group": "single" },
+        { "position_units": 60, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_truck_pesado_6x2",
+      "type_id": "truck_type_truck_pesado_6x2",
+      "layout_kind": "rigid",
+      "total_length_units": 82,
+      "cab_style": "cabover_medium",
+      "cab_length_units": 13,
+      "cab_height_units": 22,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 55, "height_units": 15, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 57, "group": "single" },
+        { "position_units": 64, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_truck_pesado_6x4",
+      "type_id": "truck_type_truck_pesado_6x4",
+      "layout_kind": "rigid",
+      "total_length_units": 82,
+      "cab_style": "cabover_high",
+      "cab_length_units": 13,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 54, "height_units": 15, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 57, "group": "single" },
+        { "position_units": 63, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_bitruck_8x2",
+      "type_id": "truck_type_bitruck_8x2",
+      "layout_kind": "rigid",
+      "total_length_units": 90,
+      "cab_style": "cabover_high",
+      "cab_length_units": 13,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 61, "height_units": 15, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 57, "group": "single" },
+        { "position_units": 64, "group": "single" },
+        { "position_units": 71, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_bitruck_vocacional_8x4",
+      "type_id": "truck_type_bitruck_vocacional_8x4",
+      "layout_kind": "rigid",
+      "total_length_units": 92,
+      "cab_style": "cabover_high",
+      "cab_length_units": 13,
+      "cab_height_units": 24,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "main", "length_units": 60, "height_units": 16, "offset_y_units": -1 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 58, "group": "single" },
+        { "position_units": 65, "group": "single" },
+        { "position_units": 72, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_offroad_6x6",
+      "type_id": "truck_type_offroad_6x6",
+      "layout_kind": "rigid",
+      "total_length_units": 84,
+      "cab_style": "cabover_offroad",
+      "cab_length_units": 13,
+      "cab_height_units": 24,
+      "deck_height_units": 8,
+      "module_specs": [{ "id": "main", "length_units": 52, "height_units": 15, "offset_y_units": -2 }],
+      "axle_specs": [
+        { "position_units": 10, "group": "single" },
+        { "position_units": 47, "group": "single" },
+        { "position_units": 55, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_cavalo_4x2",
+      "type_id": "truck_type_cavalo_4x2",
+      "layout_kind": "tractor",
+      "total_length_units": 38,
+      "cab_style": "cabover_high",
+      "cab_length_units": 14,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 23, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_cavalo_6x2",
+      "type_id": "truck_type_cavalo_6x2",
+      "layout_kind": "tractor",
+      "total_length_units": 44,
+      "cab_style": "cabover_high",
+      "cab_length_units": 14,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 25, "group": "single" },
+        { "position_units": 31, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_cavalo_6x4",
+      "type_id": "truck_type_cavalo_6x4",
+      "layout_kind": "tractor",
+      "total_length_units": 46,
+      "cab_style": "cabover_high",
+      "cab_length_units": 14,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 26, "group": "single" },
+        { "position_units": 32, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_carreta_ls",
+      "type_id": "truck_type_carreta_ls",
+      "layout_kind": "semi_trailer",
+      "total_length_units": 120,
+      "cab_style": "cabover_high",
+      "cab_length_units": 14,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [{ "id": "semi_1", "length_units": 76, "height_units": 15, "offset_y_units": 0 }],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 26, "group": "single" },
+        { "position_units": 96, "group": "single" },
+        { "position_units": 102, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_romeu_julieta",
+      "type_id": "truck_type_romeu_julieta",
+      "layout_kind": "drawbar",
+      "total_length_units": 124,
+      "cab_style": "cabover_high",
+      "cab_length_units": 13,
+      "cab_height_units": 22,
+      "deck_height_units": 6,
+      "module_specs": [
+        { "id": "front_1", "length_units": 45, "height_units": 15, "offset_y_units": 0 },
+        { "id": "rear_1", "length_units": 44, "height_units": 15, "offset_y_units": 0 }
+      ],
+      "gap_units": 8,
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 50, "group": "single" },
+        { "position_units": 90, "group": "single" },
+        { "position_units": 98, "group": "single" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_bitrem",
+      "type_id": "truck_type_bitrem",
+      "layout_kind": "multi_trailer",
+      "total_length_units": 138,
+      "cab_style": "cabover_high",
+      "cab_length_units": 14,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [
+        { "id": "semi_1", "length_units": 42, "height_units": 15, "offset_y_units": 0 },
+        { "id": "semi_2", "length_units": 42, "height_units": 15, "offset_y_units": 0 }
+      ],
+      "gap_units": 6,
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 26, "group": "single" },
+        { "position_units": 68, "group": "tandem" },
+        { "position_units": 115, "group": "tandem" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_rodotrem",
+      "type_id": "truck_type_rodotrem",
+      "layout_kind": "multi_trailer_dolly",
+      "total_length_units": 148,
+      "cab_style": "cabover_high",
+      "cab_length_units": 14,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [
+        { "id": "semi_1", "length_units": 40, "height_units": 15, "offset_y_units": 0 },
+        { "id": "semi_2", "length_units": 40, "height_units": 15, "offset_y_units": 0 }
+      ],
+      "gap_units": 7,
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 26, "group": "single" },
+        { "position_units": 63, "group": "tridem" },
+        { "position_units": 82, "group": "single" },
+        { "position_units": 123, "group": "tridem" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_tritrem",
+      "type_id": "truck_type_tritrem",
+      "layout_kind": "multi_trailer",
+      "total_length_units": 164,
+      "cab_style": "cabover_high",
+      "cab_length_units": 14,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [
+        { "id": "semi_1", "length_units": 32, "height_units": 15, "offset_y_units": 0 },
+        { "id": "semi_2", "length_units": 32, "height_units": 15, "offset_y_units": 0 },
+        { "id": "semi_3", "length_units": 32, "height_units": 15, "offset_y_units": 0 }
+      ],
+      "gap_units": 6,
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 26, "group": "single" },
+        { "position_units": 59, "group": "tridem" },
+        { "position_units": 98, "group": "tridem" },
+        { "position_units": 137, "group": "tridem" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_treminhao",
+      "type_id": "truck_type_treminhao",
+      "layout_kind": "drawbar_double",
+      "total_length_units": 168,
+      "cab_style": "cabover_high",
+      "cab_length_units": 13,
+      "cab_height_units": 22,
+      "deck_height_units": 6,
+      "module_specs": [
+        { "id": "front_1", "length_units": 40, "height_units": 15, "offset_y_units": 0 },
+        { "id": "rear_1", "length_units": 34, "height_units": 15, "offset_y_units": 0 },
+        { "id": "rear_2", "length_units": 34, "height_units": 15, "offset_y_units": 0 }
+      ],
+      "gap_units": 7,
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 46, "group": "tandem" },
+        { "position_units": 92, "group": "tandem" },
+        { "position_units": 136, "group": "tandem" }
+      ]
+    },
+    {
+      "id": "truck_silhouette_cegonheiro",
+      "type_id": "truck_type_cegonheiro",
+      "layout_kind": "vehicle_carrier",
+      "total_length_units": 144,
+      "cab_style": "cabover_high",
+      "cab_length_units": 14,
+      "cab_height_units": 23,
+      "deck_height_units": 6,
+      "module_specs": [
+        { "id": "carrier_1", "length_units": 78, "height_units": 18, "offset_y_units": -1 }
+      ],
+      "axle_specs": [
+        { "position_units": 9, "group": "single" },
+        { "position_units": 26, "group": "single" },
+        { "position_units": 98, "group": "single" },
+        { "position_units": 106, "group": "single" },
+        { "position_units": 114, "group": "single" }
+      ]
+    }
+  ]
+}

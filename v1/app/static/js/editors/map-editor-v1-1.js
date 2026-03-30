@@ -13,7 +13,7 @@ import {
   fitBrasixBounds,
   renderPopulationLegend,
   sortPopulationBands,
-} from "../shared/leaflet-map.js?v=20260327-route-legend-1";
+} from "../shared/leaflet-map.js?v=20260329-map-colors-1";
 import { escapeHtml, numberFormatter } from "../shared/formatters.js";
 import { addDraftWaypoint, buildEdgeFromDraft, createDraftState, removeDraftWaypoint, resetDraft } from "./map-editor-geometry.js";
 
@@ -632,6 +632,10 @@ function currentSurfaceType() {
   return editorState.surfaceTypesById[editorState.draft.surfaceTypeId];
 }
 
+function currentDisplaySurfaceType() {
+  return surfaceTypeForDisplay(currentSurfaceType()) || currentSurfaceType();
+}
+
 function currentGeometryType() {
   return editorState.geometryTypesById[editorState.draft.geometryTypeId] || polycurveGeometryType();
 }
@@ -721,7 +725,7 @@ function compactPopulationLabel(value) {
 }
 
 function customCityFillColor() {
-  return "#4f8593";
+  return displayCityRender().created_fill_color || "#4f8593";
 }
 
 function buildManualCityId() {
@@ -1375,6 +1379,80 @@ function displayGraphNodeRender() {
   return displaySettings().graph_node_render || {};
 }
 
+function populationBandFillPalette() {
+  return displayCityRender().population_band_fill_colors || {};
+}
+
+function populationBandConfiguredColor(band) {
+  const configured = band?.id ? populationBandFillPalette()[band.id] : null;
+  if (configured) {
+    return configured;
+  }
+  const ordered = sortPopulationBands(editorState.populationBands);
+  const bandIndex = Math.max(0, ordered.findIndex((item) => item.id === band?.id));
+  return POPULATION_BAND_FILL_PALETTE[bandIndex % POPULATION_BAND_FILL_PALETTE.length];
+}
+
+function cityMarkerStrokeColor() {
+  return displayCityRender().stroke_color || "#ffffff";
+}
+
+function cityMarkerContrastFillColor() {
+  return displayCityRender().contrast_fill_color || "#ffffff";
+}
+
+function citySelectedHaloFillColor() {
+  return displayCityRender().selected_halo_fill_color || "#fff8ec";
+}
+
+function citySelectedHaloStrokeColor() {
+  return displayCityRender().selected_halo_stroke_color || "#2d5a27";
+}
+
+function graphNodeSelectedHaloFillColor() {
+  return displayGraphNodeRender().selected_halo_fill_color || "#fff8ec";
+}
+
+function graphNodeSelectedHaloStrokeColor() {
+  return displayGraphNodeRender().selected_halo_stroke_color || "#2d5a27";
+}
+
+function surfaceStyleOverrideForDisplay(surfaceTypeId) {
+  return displayRouteRender().surface_style_overrides?.[surfaceTypeId] || {};
+}
+
+function surfaceTypeForDisplay(surfaceTypeOrId) {
+  const surfaceType = typeof surfaceTypeOrId === "string"
+    ? editorState.surfaceTypesById[surfaceTypeOrId]
+    : surfaceTypeOrId;
+  if (!surfaceType) {
+    return null;
+  }
+  const styleOverride = surfaceStyleOverrideForDisplay(surfaceType.id);
+  return {
+    ...surfaceType,
+    style: {
+      ...(surfaceType.style || {}),
+      ...(styleOverride.base_color ? { base_color: styleOverride.base_color } : {}),
+      ...(styleOverride.overlay_color ? { overlay_color: styleOverride.overlay_color } : {}),
+    },
+  };
+}
+
+function routeSurfaceTypesForDisplay() {
+  return Object.values(editorState.surfaceTypesById || {})
+    .map((surfaceType) => surfaceTypeForDisplay(surfaceType))
+    .filter(Boolean)
+    .sort((left, right) => {
+      const leftShortcut = Number(left.shortcut_key || 0);
+      const rightShortcut = Number(right.shortcut_key || 0);
+      if (Number.isFinite(leftShortcut) && Number.isFinite(rightShortcut) && leftShortcut !== rightShortcut) {
+        return leftShortcut - rightShortcut;
+      }
+      return String(left.label || "").localeCompare(String(right.label || ""));
+    });
+}
+
 function leafletSettings() {
   return editorState.leafletSettings || {};
 }
@@ -1447,6 +1525,93 @@ function rangeDisplayValue(control, value) {
 function controlMarkup({ control, source, dataAttribute }) {
   const value = getValueAtPath(source, control.path);
   const enabled = controlIsEnabled(control, source);
+  if (control.type === "population_band_palette") {
+    return `
+      <div class="display-field ${enabled ? "" : "is-disabled"}">
+        <span>${escapeHtml(control.label)}</span>
+        <div class="display-palette-group">
+          ${sortPopulationBands(editorState.populationBands)
+            .map((band, index) => `
+              <div class="display-palette-row">
+                <div class="display-palette-row-head">
+                  <strong class="display-palette-label">${escapeHtml(band.label)}</strong>
+                  <span class="display-palette-meta">${numberFormatter(0).format(index + 1)}</span>
+                </div>
+                <label class="field display-field">
+                  <span>${escapeHtml(control.color_label || "Cor da faixa")}</span>
+                  <input
+                    class="editor-input editor-color-input"
+                    type="color"
+                    value="${escapeHtml(populationBandConfiguredColor(band))}"
+                    data-${dataAttribute}-custom="${control.id}"
+                    data-custom-kind="population_band_palette"
+                    data-custom-key="${band.id}"
+                    ${enabled ? "" : "disabled"}
+                  />
+                </label>
+              </div>
+            `)
+            .join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if (control.type === "route_surface_palette") {
+    return `
+      <div class="display-field ${enabled ? "" : "is-disabled"}">
+        <span>${escapeHtml(control.label)}</span>
+        <div class="display-palette-group">
+          ${routeSurfaceTypesForDisplay()
+            .map((surfaceType) => {
+              const hasOverlay = Number(surfaceType.style?.overlay_weight || 0) > 0;
+              const baseColor = surfaceType.style?.base_color || "#4f6f45";
+              const overlayColor = surfaceType.style?.overlay_color || "#fff4dd";
+              return `
+                <div class="display-palette-row">
+                  <div class="display-palette-row-head">
+                    <strong class="display-palette-label">${escapeHtml(surfaceType.label || "Rota")}</strong>
+                    <span class="display-palette-meta">${escapeHtml(surfaceType.shortcut_key || "")}</span>
+                  </div>
+                  <div class="display-palette-grid">
+                    <label class="field display-field">
+                      <span>${escapeHtml(control.base_color_label || "Traço base")}</span>
+                      <input
+                        class="editor-input editor-color-input"
+                        type="color"
+                        value="${escapeHtml(baseColor)}"
+                        data-${dataAttribute}-custom="${control.id}"
+                        data-custom-kind="route_surface_palette"
+                        data-custom-key="${surfaceType.id}"
+                        data-custom-part="base_color"
+                        ${enabled ? "" : "disabled"}
+                      />
+                    </label>
+                    ${hasOverlay ? `
+                      <label class="field display-field">
+                        <span>${escapeHtml(control.overlay_color_label || "Overlay")}</span>
+                        <input
+                          class="editor-input editor-color-input"
+                          type="color"
+                          value="${escapeHtml(overlayColor)}"
+                          data-${dataAttribute}-custom="${control.id}"
+                          data-custom-kind="route_surface_palette"
+                          data-custom-key="${surfaceType.id}"
+                          data-custom-part="overlay_color"
+                          ${enabled ? "" : "disabled"}
+                        />
+                      </label>
+                    ` : ""}
+                  </div>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      </div>
+    `;
+  }
+
   if (control.type === "checkbox") {
     return `
       <label class="display-checkbox ${enabled ? "" : "is-disabled"}">
@@ -1590,9 +1755,7 @@ function renderAutoRouteControls() {
 }
 
 function populationBandFillColor(band) {
-  const ordered = sortPopulationBands(editorState.populationBands);
-  const bandIndex = Math.max(0, ordered.findIndex((item) => item.id === band?.id));
-  return POPULATION_BAND_FILL_PALETTE[bandIndex % POPULATION_BAND_FILL_PALETTE.length];
+  return populationBandConfiguredColor(band);
 }
 
 function editorCityFillColor(city, band) {
@@ -1631,6 +1794,9 @@ function editorRouteStyleOverrides() {
     opacityScale: Number(displayRouteRender().opacity_scale || 1),
     highlightColor: displayRouteRender().highlight_color || "#2d5a27",
     selectedColor: displayRouteRender().selected_color || "#8c4f10",
+    draftColor: displayRouteRender().draft_color || "#2d5a27",
+    highlightOverlayColor: displayRouteRender().highlight_overlay_color || "#fff9ea",
+    selectedOverlayColor: displayRouteRender().selected_overlay_color || "#fff4dd",
   };
 }
 
@@ -1642,14 +1808,15 @@ function renderLegend() {
     return;
   }
   legend.style.display = "";
-  const mode = displayCityRender().color_mode || "commodity";
   renderPopulationLegend(legend, {
     cities: Object.values(editorState.citiesById),
     bands: editorState.populationBands,
     pinsById: editorState.pinsById,
     fillColor: displayCityRender().uniform_fill_color || "#2d5a27",
-    fillColorResolver: mode === "population_band" ? populationBandFillColor : null,
-    routeSurfaceTypes: Object.values(editorState.surfaceTypesById || {}),
+    strokeColor: cityMarkerStrokeColor(),
+    contrastFillColor: cityMarkerContrastFillColor(),
+    fillColorResolver: populationBandFillColor,
+    routeSurfaceTypes: routeSurfaceTypesForDisplay(),
   });
 }
 
@@ -2632,7 +2799,7 @@ function renderMap() {
       const layer = createRouteLayer({
         edge,
         citiesById: editorState.nodesById,
-        surfaceType: editorState.surfaceTypesById[edge.surface_type_id],
+        surfaceType: surfaceTypeForDisplay(edge.surface_type_id),
         role: "network",
         interactive: true,
         styleOverrides: routeStyleOverrides,
@@ -2677,7 +2844,7 @@ function renderMap() {
       const selectedLayer = createRouteLayer({
         edge,
         citiesById: editorState.nodesById,
-        surfaceType: editorState.surfaceTypesById[edge.surface_type_id],
+        surfaceType: surfaceTypeForDisplay(edge.surface_type_id),
         role: "selected",
         styleOverrides: routeStyleOverrides,
       });
@@ -2689,7 +2856,7 @@ function renderMap() {
 
   if (editorState.draft.fromCityId) {
     const geometryType = polycurveGeometryType();
-    const draftSurface = currentSurfaceType();
+    const draftSurface = currentDisplaySurfaceType();
     const draftEdge = {
       id: "draft-edge",
       from_node_id: editorState.draft.fromCityId,
@@ -2718,14 +2885,13 @@ function renderMap() {
         ...draftEdge.waypoints,
       ];
       if (trailPoints.length > 1) {
-        const draftStyle = draftSurface?.style || {};
         const polyline = window.L.polyline(
           buildBezierLikeLatLngs(trailPoints.map((point) => [point.latitude, point.longitude])),
           {
-            color: draftStyle.base_color || "#2d5a27",
-            weight: Math.max(4, Number(draftStyle.base_weight || 4)),
-            opacity: Number(draftStyle.base_opacity ?? 0.9),
-            dashArray: draftStyle.dash_array || "10 8",
+            color: routeStyleOverrides.draftColor || "#2d5a27",
+            weight: Math.max(4, Number(draftSurface?.style?.base_weight || 4)),
+            opacity: 0.94,
+            dashArray: draftSurface?.style?.dash_array || "10 8",
             pane: "brasix-draft",
             bubblingMouseEvents: false,
           },
@@ -2754,6 +2920,10 @@ function renderMap() {
         band,
         pin,
         fillColor: editorCityFillColor(city, band),
+        strokeColor: cityMarkerStrokeColor(),
+        contrastFillColor: cityMarkerContrastFillColor(),
+        selectedHaloFillColor: citySelectedHaloFillColor(),
+        selectedHaloStrokeColor: citySelectedHaloStrokeColor(),
         selected: city.id === editorState.selectedCityId || city.id === editorState.draft.fromCityId || city.id === editorState.draft.toCityId,
         opacity: Number(displayCityRender().opacity || 0.96),
       });
@@ -2783,6 +2953,8 @@ function renderMap() {
       const marker = createGraphNodeMarker({
         node,
         style: editorGraphNodeStyle(node),
+        selectedHaloFillColor: graphNodeSelectedHaloFillColor(),
+        selectedHaloStrokeColor: graphNodeSelectedHaloStrokeColor(),
         selected: node.id === editorState.selectedNodeId || node.id === editorState.draft.fromCityId || node.id === editorState.draft.toCityId,
         opacity: Number(displayGraphNodeRender().opacity || 0.98),
       });
@@ -3440,6 +3612,7 @@ function bindUi() {
       legend_order: nextIndex,
     });
     renderBandList();
+    renderDisplayControls();
     renderMap();
     schedulePopulationBandsSave(0);
   });
@@ -3466,6 +3639,7 @@ function bindUi() {
         labelInput.value = band.label;
       }
     }
+    renderDisplayControls();
     renderMap();
     schedulePopulationBandsSave();
   };
@@ -3484,6 +3658,7 @@ function bindUi() {
     }
     editorState.populationBands = editorState.populationBands.filter((item) => item.id !== row.dataset.bandId);
     renderBandList();
+    renderDisplayControls();
     renderMap();
     schedulePopulationBandsSave(0);
   });
@@ -3532,6 +3707,39 @@ function bindUi() {
   });
 
   const syncDisplayControlDraft = (event) => {
+    const customControlId = event.target.dataset.overlayControlCustom;
+    if (customControlId) {
+      const control = editorState.displayControlsById[customControlId];
+      if (!control) {
+        return;
+      }
+      const customKind = event.target.dataset.customKind;
+      const customKey = event.target.dataset.customKey;
+      const customPart = event.target.dataset.customPart;
+
+      if (customKind === "population_band_palette" && customKey) {
+        if (!displayCityRender().population_band_fill_colors || typeof displayCityRender().population_band_fill_colors !== "object") {
+          displayCityRender().population_band_fill_colors = {};
+        }
+        displayCityRender().population_band_fill_colors[customKey] = event.target.value;
+      }
+
+      if (customKind === "route_surface_palette" && customKey && customPart) {
+        if (!displayRouteRender().surface_style_overrides || typeof displayRouteRender().surface_style_overrides !== "object") {
+          displayRouteRender().surface_style_overrides = {};
+        }
+        const currentOverride = displayRouteRender().surface_style_overrides[customKey] || {};
+        displayRouteRender().surface_style_overrides[customKey] = {
+          ...currentOverride,
+          [customPart]: event.target.value,
+        };
+      }
+
+      renderMap();
+      scheduleDisplaySettingsSave(140);
+      return;
+    }
+
     const controlId = event.target.dataset.overlayControl;
     if (!controlId) {
       return;

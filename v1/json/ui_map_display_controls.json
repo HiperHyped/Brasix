@@ -69,10 +69,47 @@
           }
         },
         {
+          "id": "display_control_city_population_band_palette",
+          "type": "population_band_palette",
+          "path": "city_render.population_band_fill_colors",
+          "label": "Paleta por faixa",
+          "color_label": "Cor da faixa"
+        },
+        {
+          "id": "display_control_city_created_fill_color",
+          "type": "color",
+          "path": "city_render.created_fill_color",
+          "label": "Cidade criada"
+        },
+        {
+          "id": "display_control_city_stroke_color",
+          "type": "color",
+          "path": "city_render.stroke_color",
+          "label": "Borda do pin"
+        },
+        {
+          "id": "display_control_city_contrast_fill_color",
+          "type": "color",
+          "path": "city_render.contrast_fill_color",
+          "label": "Contraste interno"
+        },
+        {
           "id": "display_control_city_selected_fill_color",
           "type": "color",
           "path": "city_render.selected_fill_color",
           "label": "Cidade selecionada"
+        },
+        {
+          "id": "display_control_city_selected_halo_fill_color",
+          "type": "color",
+          "path": "city_render.selected_halo_fill_color",
+          "label": "Halo da cidade"
+        },
+        {
+          "id": "display_control_city_selected_halo_stroke_color",
+          "type": "color",
+          "path": "city_render.selected_halo_stroke_color",
+          "label": "Borda do halo"
         },
         {
           "id": "display_control_city_opacity",
@@ -90,16 +127,42 @@
       "title": "Rotas",
       "controls": [
         {
+          "id": "display_control_route_surface_palette",
+          "type": "route_surface_palette",
+          "path": "route_render.surface_style_overrides",
+          "label": "Cores por tipo de rota",
+          "base_color_label": "Traço base",
+          "overlay_color_label": "Overlay"
+        },
+        {
+          "id": "display_control_route_draft_color",
+          "type": "color",
+          "path": "route_render.draft_color",
+          "label": "Rota em rascunho"
+        },
+        {
           "id": "display_control_route_selected_color",
           "type": "color",
           "path": "route_render.selected_color",
           "label": "Rota selecionada"
         },
         {
+          "id": "display_control_route_selected_overlay_color",
+          "type": "color",
+          "path": "route_render.selected_overlay_color",
+          "label": "Overlay selecionado"
+        },
+        {
           "id": "display_control_route_highlight_color",
           "type": "color",
           "path": "route_render.highlight_color",
           "label": "Rota em destaque"
+        },
+        {
+          "id": "display_control_route_highlight_overlay_color",
+          "type": "color",
+          "path": "route_render.highlight_overlay_color",
+          "label": "Overlay em destaque"
         },
         {
           "id": "display_control_route_opacity_scale",
@@ -141,6 +204,18 @@
             "path": "graph_node_render.use_style_colors",
             "equals": false
           }
+        },
+        {
+          "id": "display_control_graph_node_selected_halo_fill_color",
+          "type": "color",
+          "path": "graph_node_render.selected_halo_fill_color",
+          "label": "Halo do no"
+        },
+        {
+          "id": "display_control_graph_node_selected_halo_stroke_color",
+          "type": "color",
+          "path": "graph_node_render.selected_halo_stroke_color",
+          "label": "Borda do halo"
         },
         {
           "id": "display_control_graph_node_opacity",

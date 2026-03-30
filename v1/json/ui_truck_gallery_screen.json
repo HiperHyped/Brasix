@@ -1,0 +1,161 @@
+{
+  "id": "ui_truck_gallery_screen_v1",
+  "page_title": "Brasix | Biblioteca de caminhoes",
+  "components": [
+    {
+      "id": "truck_gallery_component_brand_title",
+      "dom_target_id": "truck-gallery-brand-title",
+      "type": "text",
+      "text": "Brasix"
+    },
+    {
+      "id": "truck_gallery_component_brand_subtitle",
+      "dom_target_id": "truck-gallery-brand-subtitle",
+      "type": "text",
+      "text": "Biblioteca de caminhoes"
+    },
+    {
+      "id": "truck_gallery_component_filters_eyebrow",
+      "dom_target_id": "truck-gallery-filters-eyebrow",
+      "type": "text",
+      "text": "Filtros"
+    },
+    {
+      "id": "truck_gallery_component_filters_title",
+      "dom_target_id": "truck-gallery-filters-title",
+      "type": "text",
+      "text": "Catalogo do menor ao maior"
+    },
+    {
+      "id": "truck_gallery_component_create_button",
+      "dom_target_id": "truck-gallery-create-label",
+      "type": "text",
+      "text": "Criar Caminhão"
+    },
+    {
+      "id": "truck_gallery_component_grid_eyebrow",
+      "dom_target_id": "truck-gallery-grid-eyebrow",
+      "type": "text",
+      "text": "Galeria"
+    },
+    {
+      "id": "truck_gallery_component_grid_title",
+      "dom_target_id": "truck-gallery-grid-title",
+      "type": "text",
+      "text": "Imagens geradas"
+    },
+    {
+      "id": "truck_gallery_component_detail_eyebrow",
+      "dom_target_id": "truck-gallery-detail-eyebrow",
+      "type": "text",
+      "text": "Revisao"
+    },
+    {
+      "id": "truck_gallery_component_detail_title",
+      "dom_target_id": "truck-gallery-detail-title",
+      "type": "text",
+      "text": "Imagem canonica"
+    }
+  ],
+  "header_badges": [],
+  "header_actions": [
+    {
+      "id": "truck_gallery_action_back_to_app",
+      "label": "Voltar ao app",
+      "icon": "arrow_back",
+      "href": "/"
+    },
+    {
+      "id": "truck_gallery_action_back_to_editor",
+      "label": "Editor de mapa",
+      "icon": "map",
+      "href": "/editor/map"
+    },
+    {
+      "id": "truck_gallery_action_toggle_theme",
+      "label": "Modo noturno",
+      "icon": "dark_mode",
+      "action": "toggle-theme"
+    }
+  ],
+  "labels": {
+    "search_label": "Buscar modelo",
+    "search_placeholder": "Ex.: bitrem, cavalo, basculante",
+    "size_filter_label": "Porte",
+    "vehicle_kind_filter_label": "Estrutura",
+    "axle_filter_label": "Eixos",
+    "combination_filter_label": "Composição",
+    "cargo_scope_filter_label": "Missão",
+    "body_filter_label": "Implemento",
+    "brand_filter_label": "Familia de marca",
+    "all_option_label": "Todos",
+    "count_summary_label": "modelos visiveis",
+    "order_label": "Ordem",
+    "size_tier_label": "Porte",
+    "name_label": "Nome",
+    "vehicle_kind_label": "Estrutura",
+    "axle_config_label": "Eixos",
+    "combination_label": "Composicao",
+    "cargo_scope_label": "Missao",
+    "body_selector_label": "Implemento",
+    "classification_section_label": "Classificacao do caminhao",
+    "brand_families_label": "Familias compativeis",
+    "notes_label": "Observações",
+    "notes_placeholder": "Ex.: van urbana curta, utilitario leve com teto alto, cabine mais arredondada...",
+    "create_prompt_button_label": "Criar prompt",
+    "create_button_label": "Criar Caminhão",
+    "generation_section_label": "Geracao por IA",
+    "generation_status_label": "Status",
+    "generation_model_label": "Modelo",
+    "generation_updated_label": "Atualizado",
+    "prompt_label": "Prompt em itens",
+    "prompt_help_label": "Edite os itens abaixo antes de gerar ou refazer.",
+    "prompt_add_item_label": "Adicionar item",
+    "prompt_reset_label": "Usar padrao",
+    "prompt_item_placeholder": "Ex.: silhueta lateral simples",
+    "prompt_reference_items_label": "Itens adicionados automaticamente pela imagem de referencia",
+    "reference_section_label": "Imagem de referencia",
+    "reference_help_label": "Use uma imagem existente para puxar a mesma cabine, o mesmo estilo, ou os dois.",
+    "reference_select_label": "Imagem base",
+    "reference_none_label": "Sem imagem de referencia",
+    "reference_aspects_label": "Aspectos herdados",
+    "reference_cabin_label": "Cabine",
+    "reference_style_label": "Estilo",
+    "create_category_prefix_label": "Criar novo",
+    "create_category_prompt_title": "Nome do novo item",
+    "asset_label": "Asset atual",
+    "approved_asset_label": "Imagem aprovada",
+    "candidate_asset_label": "Imagem candidata",
+    "approved_status_label": "Aprovado",
+    "generated_status_label": "Aguardando revisao",
+    "rejected_status_label": "Rejeitado",
+    "failed_status_label": "Falhou",
+    "skipped_status_label": "Dry-run",
+    "missing_asset_label": "Sem imagem aprovada ainda.",
+    "empty_results_label": "Nenhum caminhao encontrado com os filtros atuais.",
+    "queue_pending_label": "pendentes",
+    "queue_approved_label": "aprovados",
+    "generate_button_label": "Gerar imagem",
+    "dry_run_button_label": "Dry-run",
+    "approve_button_label": "Aprovar",
+    "reject_button_label": "Rejeitar",
+    "regenerate_button_label": "Refazer",
+    "delete_button_label": "Excluir",
+    "status_idle_help": "Selecione um tipo e gere a imagem canonica, um por vez."
+  },
+  "status_messages": {
+    "idle": "Selecione um tipo para gerar e revisar a imagem canonica.",
+    "theme_day": "Modo diurno ativado.",
+    "theme_night": "Modo noturno ativado.",
+    "generate_started": "Gerando imagem do caminhao selecionado.",
+    "generate_success": "Imagem gerada com sucesso. Revise e aprove ou rejeite.",
+    "generate_dry_run": "Prompt gerado em dry-run sem chamar a OpenAI.",
+    "review_approved": "Imagem aprovada e promovida para asset principal.",
+    "review_rejected": "Imagem rejeitada. Voce pode refazer quando quiser.",
+    "delete_confirm": "Tem certeza?",
+    "delete_success": "Item excluido da galeria.",
+    "classification_saved": "Classificacao salva automaticamente.",
+    "custom_created": "Novo caminhão criado na galeria.",
+    "prompt_created": "Prompt criado a partir das categorias e observações."
+  }
+}

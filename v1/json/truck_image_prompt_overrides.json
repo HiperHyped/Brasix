@@ -1,0 +1,741 @@
+{
+  "id": "truck_image_prompt_overrides_v1",
+  "overrides": [
+    {
+      "truck_type_id": "truck_type_toco_leve_4x2",
+      "preferred_body_type_id": "truck_body_carga_seca",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao rigido leve do tipo toco",
+        "cabine cabover media e um unico modulo de carga",
+        "apenas dois eixos simples no mesmo chassi",
+        "mais comprido que um vuc, mas ainda compacto",
+        "sem articulacao e sem reboque",
+        "implemento: carroceria aberta",
+        "usar poucos detalhes",
+        "não usar perspectiva",
+        "carroceria mais curta que a imagem"
+      ],
+      "reference_truck_type_id": "truck_type_toco_medio_4x2",
+      "reference_aspects": [
+        "cabine"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_vuc_4x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao rigido urbano bem compacto",
+        "cabine curta de vuc com frente cabover",
+        "um unico bau curto no mesmo chassi",
+        "apenas dois eixos simples no mesmo veiculo",
+        "entre eixos curto e proporcao de entrega urbana",
+        "nao desenhar como carreta ou conjunto articulado",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "é um veiculo urbano de carga,  o menor tipo dos caminhoes",
+        "eu quero o bau mais curto que a imagem original",
+        "ATENÇÂO: cabine menor e mais arredondada, como um VUC deve ser"
+      ],
+      "reference_truck_type_id": "truck_type_toco_leve_4x2",
+      "reference_aspects": [
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_toco_leve_eletrico_4x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao rigido leve eletrico do tipo toco",
+        "mesma silhueta basica de um toco 4x2 urbano",
+        "cabine limpa e moderna, sem visual agressivo",
+        "apenas dois eixos simples no mesmo chassi",
+        "sem articulacao e sem reboque",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_toco_leve_4x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_toco_medio_4x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao rigido medio do tipo toco",
+        "cabine cabover media com modulo de carga mais longo",
+        "apenas dois eixos simples no mesmo chassi",
+        "proporcao claramente maior que o toco leve",
+        "sem articulacao e sem reboque",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_toco_leve_4x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_toco_semipesado_4x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao rigido semipesado do tipo toco",
+        "cabine media para pesada e modulo de carga longo",
+        "apenas dois eixos simples no mesmo chassi",
+        "visual robusto de carga regional",
+        "sem articulacao e sem reboque",
+        "implemento: carroceria aberta",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_toco_medio_4x2",
+      "reference_aspects": [
+        "cabine"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_truck_semipesado_6x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao rigido truck 6x2",
+        "um eixo dianteiro e dois eixos traseiros no mesmo chassi",
+        "os dois eixos traseiros devem ficar proximos entre si",
+        "um unico modulo de carga sobre o chassi rigido",
+        "nao desenhar como cavalo mecanico",
+        "implemento: carroceria aberta",
+        "usar poucos detalhes",
+        "não usar perspectiva",
+        "IMPORTANTE: respeite o mesmo estilo da imagem anexa (rodas, poucos detalhes)"
+      ],
+      "reference_truck_type_id": "truck_type_toco_medio_4x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_truck_pesado_6x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao rigido pesado truck 6x2",
+        "um eixo dianteiro e dois eixos traseiros proximos",
+        "chassi rigido longo com um unico modulo de carga",
+        "porte nacional pesado, maior que o truck semipesado",
+        "nao desenhar como carreta articulada",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_toco_medio_4x2",
+      "reference_aspects": [
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_truck_pesado_6x4",
+      "preferred_body_type_id": "truck_body_basculante",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao rigido pesado 6x4",
+        "um eixo dianteiro e dois eixos traseiros trativos proximos",
+        "visual mais robusto e vocacional",
+        "um unico modulo de carga no mesmo chassi",
+        "nao desenhar como cavalo mecanico ou semirreboque",
+        "implemento: cacamba basculante",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_truck_semipesado_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_bitruck_8x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "bitruck 8x2 rigido, nao articulado: 2 eixos dianteiros e 2 eixos traseiros",
+        "quatro eixos no mesmo chassi rigido",
+        "ATENÇÂO: 2 eixos dianteiros (na cabine)  e dois eixos traseiros no veiculo (no baú)",
+        "um unico modulo de carga longo sobre o mesmo chassi",
+        "nao desenhar como cavalo mecanico com semirreboque",
+        "nao desenhar duas carrocerias separadas",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_truck_pesado_6x2",
+      "reference_aspects": [
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_bitruck_vocacional_8x4",
+      "preferred_body_type_id": "truck_body_basculante",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "bitruck 8x2 rigido, nao articulado",
+        "ATENçÂO: 2 eixos dianteiro e 2 eixos traseiros",
+        "implemento: carroceria aberta",
+        "usar poucos detalhes",
+        "não usar perspectiva",
+        "atenção: nao quero um bitcuk bascuknate: quero um bitrcuk com carroceria aberta!!!!"
+      ],
+      "reference_truck_type_id": "truck_type_bitruck_8x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_offroad_6x6",
+      "preferred_body_type_id": "truck_body_basculante",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "caminhao vocacional fora de estrada 6x6",
+        "tres eixos no mesmo chassi, todos com aparencia de uso pesado",
+        "altura do solo mais alta e postura off-road",
+        "um unico modulo de carga robusto",
+        "nao desenhar como carreta rodoviaria",
+        "implemento: cacamba basculante",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_bitruck_vocacional_8x4",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_cavalo_4x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "cavalo mecanico 4x2 com um semirreboque",
+        "cabine tratora curta com quinta roda puxando uma unica unidade traseira",
+        "dois eixos no cavalo mecanico",
+        "conjunto articulado simples",
+        "ATENÇÃO: desenhar cavalo puxando um reboque",
+        "implemento: bau reto fechado maior do que bau de truck",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "A cabine do cavalo mecanico possui um aerofolio que o truck nao possui"
+      ],
+      "reference_truck_type_id": "truck_type_truck_pesado_6x2",
+      "reference_aspects": [
+        "estilo",
+        "cabine"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_cavalo_6x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "cavalo mecanico 6x2 com um semirreboque",
+        "o cavalo tem um eixo dianteiro e dois intermediarios. O reboque possui tres eixos trasieors",
+        "uma unica unidade traseira articulada",
+        "conjunto articulado rodoviario nacional",
+        "nao desenhar como caminhao rigido",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "cavalo mecanico 6x2 com um semirreboque",
+        "tres eixos no cavalo mecanico, sendo dois traseiros proximos",
+        "uma unica unidade traseira articulada",
+        "conjunto articulado rodoviario nacional",
+        "nao desenhar como caminhao rigido"
+      ],
+      "reference_truck_type_id": "truck_type_cavalo_4x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_cavalo_6x4",
+      "preferred_body_type_id": "truck_body_prancha",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "cavalo mecanico 6x4 com um semirreboque",
+        "o cavalo tem um eixo dianteiro e dois intermediarios. O reboque possui tres eixos trasieors",
+        "visual pesado e robusto",
+        "uma unica unidade traseira articulada",
+        "nao desenhar como caminhao rigido",
+        "implemento: carroceria aberta",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "cavalo mecanico 6x4 com um semirreboque",
+        "tres eixos no cavalo mecanico, com dois traseiros trativos",
+        "visual pesado e robusto",
+        "uma unica unidade traseira articulada",
+        "nao desenhar como caminhao rigido"
+      ],
+      "reference_truck_type_id": "truck_type_cavalo_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_romeu_julieta",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "romeu e julieta com caminhao rigido na frente e um reboque atras",
+        "duas carrocerias separadas: uma no caminhao e outra no reboque",
+        "engate por barra entre o caminhao da frente e o reboque de tras",
+        "o primeiro modulo deve estar sobre chassi rigido",
+        "nao desenhar como cavalo mecanico com semirreboque",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "romeu e julieta com caminhao rigido na frente e um reboque atras",
+        "duas carrocerias separadas: uma no caminhao e outra no reboque",
+        "engate por barra entre o caminhao da frente e o reboque de tras",
+        "o primeiro modulo deve estar sobre chassi rigido",
+        "nao desenhar como cavalo mecanico com semirreboque",
+        "colocar aerofolio na cabine,. No mais, a cabine deve ser extamanete igual a imagem anexa",
+        "nao deixe os dois reboques muito afastados"
+      ],
+      "reference_truck_type_id": "truck_type_truck_pesado_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_carreta_ls",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "carreta ls com um cavalo mecanico e um semirreboque longo",
+        "apenas um semirreboque na parte traseira",
+        "uma unica articulacao principal entre cavalo e semirreboque",
+        "conjunto longo de estrada, mas com apenas uma unidade rebocada",
+        "nao desenhar segundo reboque ou dolly",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "carreta ls com um cavalo mecanico e um semirreboque longo",
+        "apenas um semirreboque na parte traseira",
+        "uma unica articulacao principal entre cavalo e semirreboque",
+        "conjunto longo de estrada, mas com apenas uma unidade rebocada",
+        "nao desenhar segundo reboque ou dolly"
+      ],
+      "reference_truck_type_id": "truck_type_cavalo_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_bitrem",
+      "preferred_body_type_id": "truck_body_graneleiro",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "bitrem com cavalo mecanico na frente e dois semirreboques em serie",
+        "duas unidades longas de carga separadas uma da outra",
+        "ATENçÃO: cavalo: 1 eixo dianteiro e 2 eixos intermediarios",
+        "ATENÇÂO: primeiro reboque: 2 eixos traseiros",
+        "ATENÇÃO: segundo reboque: 1 eixo dianteiro e 2 eixos traseiros",
+        "nao desenhar dolly destacado entre os modulos",
+        "implemento: dois baus fechados de comprimento imedio",
+        "usar poucos detalhes",
+        "não usar perspectiva",
+        "bitrem com cavalo mecanico na frente e dois semirreboques em serie",
+        "duas unidades longas de carga separadas uma da outra",
+        "a segunda unidade deve vir articulada atras da primeira",
+        "nao usar caminhao rigido na frente",
+        "nao desenhar como carreta simples de um semirreboque so",
+        "nao desenhar dolly destacado entre os modulos",
+        "Atenção para fazer na mesma escala da imagem em anexo!"
+      ],
+      "reference_truck_type_id": "truck_type_cavalo_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_rodotrem",
+      "preferred_body_type_id": "truck_body_graneleiro",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "rodotrem com cavalo mecanico e dois semirreboques",
+        "mostrar um dolly visivel entre o primeiro e o segundo semirreboque",
+        "duas unidades longas de carga separadas por esse dolly",
+        "conjunto maior e mais longo que um bitrem comum",
+        "nao desenhar como carreta simples",
+        "nao desenhar como caminhao rigido com reboque",
+        "implemento: grade de graneleiro com laterais altas",
+        "usar poucos detalhes",
+        "não usar perspectiva",
+        "rodotrem com cavalo mecanico e dois semirreboques",
+        "mostrar um dolly visivel entre o primeiro e o segundo semirreboque",
+        "duas unidades longas de carga separadas por esse dolly",
+        "conjunto maior e mais complexo que um bitrem comum",
+        "nao desenhar como carreta simples",
+        "nao desenhar como caminhao rigido com reboque"
+      ],
+      "reference_truck_type_id": "truck_type_bitrem",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_tritrem",
+      "preferred_body_type_id": "truck_body_canavieiro",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "tritrem com cavalo mecanico e tres modulos de carga em serie",
+        "tres unidades traseiras claramente separadas",
+        "conjunto muito longo, agricola ou florestal",
+        "visual de multiplas articulacoes ao longo do conjunto",
+        "nao desenhar como bitrem de dois modulos",
+        "implemento: canavieiro com fueiros",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "tritrem com cavalo mecanico e tres modulos de carga em serie",
+        "tres unidades traseiras claramente separadas",
+        "conjunto muito longo, agricola ou florestal",
+        "visual de multiplas articulacoes ao longo do conjunto",
+        "nao desenhar como bitrem de dois modulos"
+      ],
+      "reference_truck_type_id": "truck_type_bitrem",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_treminhao",
+      "preferred_body_type_id": "truck_body_canavieiro",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "treminhao com caminhao rigido na frente e dois reboques atras",
+        "o primeiro modulo deve estar sobre um caminhao rigido",
+        "depois dele devem vir dois reboques separados",
+        "nao usar cavalo mecanico na frente",
+        "nao desenhar como bitrem ou rodotrem",
+        "implemento: carrocerias abertas, sem fueiros",
+        "usar poucos detalhes",
+        "não usar perspectiva",
+        "treminhao com caminhao rigido na frente e dois reboques atras",
+        "o primeiro modulo deve estar sobre um caminhao rigido",
+        "depois dele devem vir dois reboques separados",
+        "nao usar cavalo mecanico na frente",
+        "nao desenhar como bitrem ou rodotrem",
+        "ATENÇÃO respeitar mesma cabine e tamanhos da imagem em anexo"
+      ],
+      "reference_truck_type_id": "truck_type_tritrem",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_cegonheiro",
+      "preferred_body_type_id": "truck_body_cegonheiro",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "cegonheiro de transporte de veiculos",
+        "estrutura aberta de dois niveis para levar carros",
+        "perfil longo com plataforma superior e inferior",
+        "nao desenhar bau, sider, tanque ou graneleiro",
+        "o conjunto deve parecer especifico para carregar automoveis",
+        "implemento: cegonheiro com dois niveis",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "cegonheiro de transporte de veiculos",
+        "estrutura simples aberta de dois niveis para levar carros",
+        "perfil longo com plataforma superior e inferior",
+        "o conjunto deve parecer especifico para carregar automoveis",
+        "respeite o estilo e cabine da imagem anexa",
+        "A cegonha é bem mais comprida que o bau da imagem"
+      ],
+      "reference_truck_type_id": "truck_type_cavalo_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_22",
+      "preferred_body_type_id": "truck_body_carga_seca",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo vuc carroceria aberta",
+        "porte menor",
+        "estrutura rigido",
+        "eixos 4x2",
+        "composicao um caminhao rigido unico",
+        "missao urbano e regional",
+        "implemento: plataforma aberta",
+        "usar poucos detalhes",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_vuc_4x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_24",
+      "preferred_body_type_id": "truck_body_custom_van",
+      "prompt_items": [
+        "perfil lateral puro do veículo",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo van",
+        "porte Van",
+        "eixos 4x2",
+        "missao urbano e regional",
+        "implemento: van",
+        "usar poucos detalhes",
+        "observacoes importantes: Atenção! Nao é um caminhão, e sim uma van!!!",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_vuc_4x2",
+      "reference_aspects": [
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_25",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro da camionete (pick-up)",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo camionete",
+        "porte camionete",
+        "estrutura rigido",
+        "eixos 4x2",
+        "missao urbano e regional",
+        "implemento: caçamba aberta",
+        "usar poucos detalhes",
+        "observacoes importantes: é uma camionete",
+        "usar poucos detalhes",
+        "não usar perspectiva",
+        "respeite a escala e a formatação da imagem anexa"
+      ],
+      "reference_truck_type_id": "truck_type_vuc_4x2",
+      "reference_aspects": [
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_26",
+      "preferred_body_type_id": "truck_body_bau",
+      "prompt_items": [
+        "perfil lateral puro da mini pick-up",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo mini pick-up (fiorino, saveiro, etc)",
+        "porte Mini Pick-up",
+        "estrutura rigido",
+        "eixos 4x2",
+        "composicao um caminhao rigido unico",
+        "missao urbano ultima milha",
+        "implemento: bau reto fechado",
+        "usar poucos detalhes",
+        "observacoes importantes: janela e rodas internas brancas.",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": null,
+      "reference_aspects": [],
+      "extra_instructions": "",
+      "enabled": true
+    }
+  ]
+}

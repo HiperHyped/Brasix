@@ -64,3 +64,49 @@ def test_route_graph_can_cross_junction_nodes() -> None:
     assert path.node_ids == ["a", "junction-1", "c"]
     assert path.edge_ids == ["edge-a-j1", "edge-j1-c"]
     assert path.distance_km == 20.0
+
+
+def test_route_graph_can_optimize_for_fastest_time() -> None:
+    cities = [
+        _city("a", -10.0, -50.0),
+        _city("b", -11.0, -51.0),
+        _city("c", -12.0, -52.0),
+    ]
+    edges = [
+        RouteEdgeRecord(
+            id="edge-ab",
+            from_city_id="a",
+            to_city_id="b",
+            surface_type_id="route_surface_dirt_road",
+            surface_code="dirt_road",
+            distance_km=40.0,
+        ),
+        RouteEdgeRecord(
+            id="edge-bc",
+            from_city_id="b",
+            to_city_id="c",
+            surface_type_id="route_surface_dirt_road",
+            surface_code="dirt_road",
+            distance_km=40.0,
+        ),
+        RouteEdgeRecord(
+            id="edge-ac",
+            from_city_id="a",
+            to_city_id="c",
+            surface_type_id="route_surface_double_road",
+            surface_code="double_road",
+            distance_km=90.0,
+        ),
+    ]
+    surface_types = [
+        {"id": "route_surface_double_road", "average_speed_kmh": 100},
+        {"id": "route_surface_dirt_road", "average_speed_kmh": 40},
+    ]
+
+    graph = RouteGraph(cities, edges, surface_types=surface_types)
+    path = graph.shortest_path("a", "c", route_mode="fastest")
+
+    assert path.node_ids == ["a", "c"]
+    assert path.edge_ids == ["edge-ac"]
+    assert path.distance_km == 90.0
+    assert path.duration_hours == 0.9

@@ -1,0 +1,81 @@
+{
+  "id": "truck_custom_catalog_v1",
+  "items": [
+    {
+      "id": "truck_type_custom_novo_caminhao_22",
+      "order": 22,
+      "label": "VUC carroceria aberta",
+      "short_label": "VUC carroceria aberta",
+      "size_tier": "smallest",
+      "base_vehicle_kind": "rigid",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "urban_and_regional",
+      "canonical_body_type_id": "truck_body_carga_seca",
+      "canonical_body_type_ids": [
+        "truck_body_carga_seca"
+      ],
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_24",
+      "order": 24,
+      "label": "Van",
+      "short_label": "Van",
+      "size_tier": "van",
+      "base_vehicle_kind": "rigid",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "urban_and_regional",
+      "canonical_body_type_id": "truck_body_custom_van",
+      "canonical_body_type_ids": [
+        "truck_body_custom_van"
+      ],
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Atenção! Nao é um caminhão, e sim uma camionete!!",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_25",
+      "order": 25,
+      "label": "Camionete",
+      "short_label": "Camionete",
+      "size_tier": "camionete",
+      "base_vehicle_kind": "rigid",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "urban_and_regional",
+      "canonical_body_type_id": "truck_body_bau",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "é uma camionete",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_26",
+      "order": 26,
+      "label": "Novo caminhao",
+      "short_label": "Novo caminhao",
+      "size_tier": "mini_pick_up",
+      "base_vehicle_kind": "rigid",
+      "axle_config": "4x2",
+      "combination_kind": "single_unit",
+      "cargo_scope": "urban_last_mile",
+      "canonical_body_type_id": "truck_body_bau",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "janela e rodas internas brancas. o resto é igual",
+      "is_custom": true
+    }
+  ]
+}

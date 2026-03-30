@@ -1,8 +1,8 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import math
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -217,6 +217,63 @@ class AutoRouteSaveRequest(BaseModel):
     resolution_km: int = Field(default=20, ge=1, le=50)
 
 
+class RoutePlannerPlanRequest(BaseModel):
+    route_mode: Literal["shortest", "fastest"] = "shortest"
+    origin_node_id: str = Field(min_length=1)
+    destination_node_id: str = Field(min_length=1)
+    stop_node_ids: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_route_points(self) -> "RoutePlannerPlanRequest":
+        itinerary = [self.origin_node_id, *self.stop_node_ids, self.destination_node_id]
+        for left, right in zip(itinerary, itinerary[1:], strict=False):
+            if left == right:
+                raise ValueError("Dois pontos consecutivos da rota nao podem ser iguais.")
+        return self
+
+
+class RoutePlannerStepResponse(BaseModel):
+    sequence: int = Field(ge=1)
+    edge_id: str
+    from_node_id: str
+    to_node_id: str
+    from_label: str
+    to_label: str
+    distance_km: float = Field(ge=0)
+    duration_hours: float = Field(ge=0)
+    surface_type_id: str
+    surface_code: str
+    surface_label: str
+    surface_shortcut_key: str = ""
+
+
+class RoutePlannerLegResponse(BaseModel):
+    index: int = Field(ge=1)
+    start_node_id: str
+    end_node_id: str
+    start_label: str
+    end_label: str
+    distance_km: float = Field(ge=0)
+    duration_hours: float = Field(ge=0)
+    node_ids: list[str] = Field(default_factory=list)
+    edge_ids: list[str] = Field(default_factory=list)
+    steps: list[RoutePlannerStepResponse] = Field(default_factory=list)
+
+
+class RoutePlannerPlanResponse(BaseModel):
+    map_id: str
+    map_name: str
+    route_mode: Literal["shortest", "fastest"] = "shortest"
+    node_ids: list[str] = Field(default_factory=list)
+    edge_ids: list[str] = Field(default_factory=list)
+    total_distance_km: float = Field(ge=0)
+    total_duration_hours: float = Field(ge=0)
+    total_steps: int = Field(ge=0)
+    leg_count: int = Field(ge=1)
+    stop_count: int = Field(ge=0)
+    legs: list[RoutePlannerLegResponse] = Field(default_factory=list)
+
+
 class MapDisplayVisibilityRecord(BaseModel):
     show_cities: bool = True
     show_routes: bool = True
@@ -227,14 +284,29 @@ class MapDisplayVisibilityRecord(BaseModel):
 class MapDisplayCityRenderRecord(BaseModel):
     color_mode: str = "commodity"
     uniform_fill_color: str = "#2d5a27"
+    created_fill_color: str = "#4f8593"
+    stroke_color: str = "#ffffff"
+    contrast_fill_color: str = "#ffffff"
     selected_fill_color: str = "#8c4f10"
+    selected_halo_fill_color: str = "#fff8ec"
+    selected_halo_stroke_color: str = "#2d5a27"
+    population_band_fill_colors: dict[str, str] = Field(default_factory=dict)
     opacity: float = Field(default=0.96, ge=0.2, le=1.0)
+
+
+class MapDisplayRouteSurfaceStyleOverrideRecord(BaseModel):
+    base_color: str | None = None
+    overlay_color: str | None = None
 
 
 class MapDisplayRouteRenderRecord(BaseModel):
     opacity_scale: float = Field(default=1.0, ge=0.25, le=1.4)
     highlight_color: str = "#2d5a27"
     selected_color: str = "#8c4f10"
+    draft_color: str = "#2d5a27"
+    highlight_overlay_color: str = "#fff9ea"
+    selected_overlay_color: str = "#fff4dd"
+    surface_style_overrides: dict[str, MapDisplayRouteSurfaceStyleOverrideRecord] = Field(default_factory=dict)
 
 
 class MapDisplayGraphNodeRenderRecord(BaseModel):
@@ -242,6 +314,8 @@ class MapDisplayGraphNodeRenderRecord(BaseModel):
     use_style_colors: bool = True
     override_fill_color: str = "#8c4f10"
     override_stroke_color: str = "#fff9ea"
+    selected_halo_fill_color: str = "#fff8ec"
+    selected_halo_stroke_color: str = "#2d5a27"
 
 
 class MapDisplaySettingsDocument(BaseModel):
@@ -322,3 +396,250 @@ class MapLeafletSettingsDocument(BaseModel):
     interaction: MapLeafletInteractionRecord = Field(default_factory=MapLeafletInteractionRecord)
     motion: MapLeafletMotionRecord = Field(default_factory=MapLeafletMotionRecord)
     tile_render: MapLeafletTileRecord = Field(default_factory=MapLeafletTileRecord)
+
+
+TruckImageStatus = Literal["generated", "failed", "skipped", "approved", "rejected"]
+TruckImageReferenceAspect = Literal["cabine", "estilo"]
+
+
+class TruckImagePromptOverrideRecord(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    preferred_body_type_id: str | None = None
+    prompt_items: list[str] = Field(default_factory=list)
+    reference_truck_type_id: str | None = None
+    reference_aspects: list[TruckImageReferenceAspect] = Field(default_factory=list)
+    extra_instructions: str = ""
+    enabled: bool = True
+
+
+class TruckImagePromptOverridesDocument(BaseModel):
+    id: str = "truck_image_prompt_overrides_v1"
+    overrides: list[TruckImagePromptOverrideRecord] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_overrides(self) -> "TruckImagePromptOverridesDocument":
+        ids = [item.truck_type_id for item in self.overrides]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Cada override de prompt precisa de um truck_type_id unico.")
+        return self
+
+
+class TruckImageAssetRecord(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    canonical_body_type_id: str = Field(min_length=1)
+    status: TruckImageStatus = "skipped"
+    prompt_items: list[str] = Field(default_factory=list)
+    reference_truck_type_id: str | None = None
+    reference_aspects: list[TruckImageReferenceAspect] = Field(default_factory=list)
+    reference_image_rel_path: str | None = None
+    reference_image_url_path: str | None = None
+    prompt: str = Field(min_length=1)
+    prompt_summary: str = Field(min_length=1)
+    provider: str = "openai_gpt_image"
+    requested_model: str | None = None
+    used_model: str | None = None
+    dry_run: bool = False
+    approved_image_rel_path: str | None = None
+    approved_image_url_path: str | None = None
+    candidate_image_rel_path: str | None = None
+    candidate_image_url_path: str | None = None
+    manifest_rel_path: str | None = None
+    output_format: str = "png"
+    background: str = "transparent"
+    width_px: int | None = Field(default=None, ge=1)
+    height_px: int | None = Field(default=None, ge=1)
+    generated_at: str | None = None
+    reviewed_at: str | None = None
+    approved_at: str | None = None
+    updated_at: str = Field(default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds"))
+    error_message: str | None = None
+
+
+class TruckImageAssetRegistryDocument(BaseModel):
+    id: str = "truck_image_asset_registry_v1"
+    items: list[TruckImageAssetRecord] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_assets(self) -> "TruckImageAssetRegistryDocument":
+        ids = [item.truck_type_id for item in self.items]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Cada truck_type_id precisa aparecer uma vez no registry de imagens.")
+        return self
+
+
+class TruckImageReviewQueueDocument(BaseModel):
+    id: str = "truck_image_review_queue_v1"
+    pending_type_ids: list[str] = Field(default_factory=list)
+    last_reviewed_type_id: str | None = None
+    updated_at: str | None = None
+
+
+class TruckImageGenerateRequest(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    prompt_items: list[str] = Field(default_factory=list)
+    reference_truck_type_id: str | None = None
+    reference_aspects: list[TruckImageReferenceAspect] = Field(default_factory=list)
+    dry_run: bool = False
+    force_regenerate: bool = False
+
+
+class TruckImageGenerateResponse(BaseModel):
+    asset: TruckImageAssetRecord
+    review_queue: TruckImageReviewQueueDocument
+
+
+class TruckImageReviewRequest(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    decision: Literal["approved", "rejected"]
+
+
+class TruckImageReviewResponse(BaseModel):
+    asset: TruckImageAssetRecord
+    review_queue: TruckImageReviewQueueDocument
+
+
+class TruckCatalogEditRecord(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    size_tier: str = Field(min_length=1)
+    base_vehicle_kind: str = Field(min_length=1)
+    axle_config: str = Field(min_length=1)
+    combination_kind: str = Field(min_length=1)
+    cargo_scope: str = Field(min_length=1)
+    canonical_body_type_id: str = Field(min_length=1)
+    notes: str = ""
+    updated_at: str = Field(default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds"))
+
+
+class TruckCatalogEditsDocument(BaseModel):
+    id: str = "truck_catalog_edits_v1"
+    items: list[TruckCatalogEditRecord] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_items(self) -> "TruckCatalogEditsDocument":
+        ids = [item.truck_type_id for item in self.items]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Cada edicao de catalogo precisa de um truck_type_id unico.")
+        return self
+
+
+class TruckCatalogClassificationRequest(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    size_tier: str = Field(min_length=1)
+    base_vehicle_kind: str = Field(min_length=1)
+    axle_config: str = Field(min_length=1)
+    combination_kind: str = Field(min_length=1)
+    cargo_scope: str = Field(min_length=1)
+    canonical_body_type_id: str = Field(min_length=1)
+    notes: str = ""
+
+
+class TruckCatalogClassificationResponse(BaseModel):
+    type_record: dict[str, Any]
+
+
+class TruckCustomTypeRecord(BaseModel):
+    id: str = Field(min_length=1)
+    order: int = Field(ge=1)
+    label: str = Field(min_length=1)
+    short_label: str = Field(min_length=1)
+    size_tier: str = Field(min_length=1)
+    base_vehicle_kind: str = Field(min_length=1)
+    axle_config: str = Field(min_length=1)
+    combination_kind: str = Field(min_length=1)
+    cargo_scope: str = Field(min_length=1)
+    canonical_body_type_id: str = Field(min_length=1)
+    canonical_body_type_ids: list[str] = Field(default_factory=list)
+    canonical_sprite_profile_id: str = "truck_sprite_custom"
+    source_basis: str = "custom_manual"
+    notes: str = ""
+    is_custom: bool = True
+
+    @model_validator(mode="after")
+    def normalize_bodies(self) -> "TruckCustomTypeRecord":
+        if not self.canonical_body_type_ids:
+            self.canonical_body_type_ids = [self.canonical_body_type_id]
+        return self
+
+
+class TruckCustomCatalogDocument(BaseModel):
+    id: str = "truck_custom_catalog_v1"
+    items: list[TruckCustomTypeRecord] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_items(self) -> "TruckCustomCatalogDocument":
+        ids = [item.id for item in self.items]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Cada caminhao customizado precisa de um id unico.")
+        return self
+
+
+class TruckCustomCreateRequest(BaseModel):
+    label: str = "Novo caminhÃ£o"
+
+
+class TruckCustomCreateResponse(BaseModel):
+    type_record: dict[str, Any]
+
+
+class TruckCategoryOptionRecord(BaseModel):
+    id: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+
+
+class TruckCategoryCatalogDocument(BaseModel):
+    id: str = "truck_category_catalog_v1"
+    size_tiers: list[TruckCategoryOptionRecord] = Field(default_factory=list)
+    base_vehicle_kinds: list[TruckCategoryOptionRecord] = Field(default_factory=list)
+    axle_configs: list[TruckCategoryOptionRecord] = Field(default_factory=list)
+    combination_kinds: list[TruckCategoryOptionRecord] = Field(default_factory=list)
+    cargo_scopes: list[TruckCategoryOptionRecord] = Field(default_factory=list)
+
+
+class TruckCategoryCreateRequest(BaseModel):
+    group: Literal[
+        "size_tier",
+        "base_vehicle_kind",
+        "axle_config",
+        "combination_kind",
+        "cargo_scope",
+        "canonical_body_type_id",
+    ]
+    label: str = Field(min_length=1)
+
+
+class TruckCategoryCreateResponse(BaseModel):
+    group: str
+    option: dict[str, Any]
+
+
+class TruckCatalogHiddenDocument(BaseModel):
+    id: str = "truck_catalog_hidden_v1"
+    hidden_type_ids: list[str] = Field(default_factory=list)
+
+
+class TruckDeleteRequest(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+
+
+class TruckDeleteResponse(BaseModel):
+    truck_type_id: str
+
+
+class TruckPromptBuildRequest(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    size_tier: str = Field(min_length=1)
+    base_vehicle_kind: str = Field(min_length=1)
+    axle_config: str = Field(min_length=1)
+    combination_kind: str = Field(min_length=1)
+    cargo_scope: str = Field(min_length=1)
+    canonical_body_type_id: str = Field(min_length=1)
+    notes: str = ""
+
+
+class TruckPromptBuildResponse(BaseModel):
+    prompt_items: list[str] = Field(default_factory=list)
+    prompt_summary: str = ""
+

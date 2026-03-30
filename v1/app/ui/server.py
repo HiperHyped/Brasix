@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import asdict
 from typing import Any
@@ -8,26 +8,46 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.config import MAP_DISPLAY_SETTINGS_PATH, MAP_EDITOR_POPULATION_BANDS_PATH, MAP_LEAFLET_SETTINGS_PATH, STATIC_DIR, TEMPLATE_DIR
+from app.config import ASSETS_DIR, MAP_DISPLAY_SETTINGS_PATH, MAP_EDITOR_POPULATION_BANDS_PATH, MAP_LEAFLET_SETTINGS_PATH, STATIC_DIR, TEMPLATE_DIR, TRUCK_BODY_CATALOG_PATH, TRUCK_CATEGORY_CATALOG_PATH, TRUCK_CATALOG_EDITS_PATH, TRUCK_CATALOG_HIDDEN_PATH, TRUCK_CUSTOM_CATALOG_PATH, TRUCK_IMAGE_ASSET_REGISTRY_PATH, TRUCK_IMAGE_PROMPT_OVERRIDES_PATH, TRUCK_IMAGE_REVIEW_QUEUE_PATH
 from app.maptools import RouteGraph, RouteWorkspaceSnapshot
 from app.services import (
     AutoRouteError,
+    RoutePlannerError,
     build_reference_data_from_city_catalog_payload,
     build_user_city_catalog_payload,
+    build_route_plan,
     create_map_bundle,
     delete_map_bundle,
     generate_auto_route_preview,
+    generate_truck_image_asset,
     load_city_catalog_payload,
     load_city_product_matrix_payload,
     load_active_map_bundle,
     load_map_editor_payload,
     load_map_editor_v2_payload,
+    load_route_planner_payload,
+    load_truck_gallery_payload,
     load_map_viewport_payload,
     load_maps_registry,
     load_product_catalog_payload,
     load_reference_data,
+    load_truck_body_catalog_payload,
+    load_truck_brand_family_catalog_payload,
+    load_truck_category_catalog_payload,
+    load_truck_catalog_edits_payload,
+    load_truck_catalog_hidden_payload,
+    load_truck_custom_catalog_payload,
+    load_effective_truck_type_catalog_payload,
+    load_truck_image_asset_registry_payload,
+    load_truck_image_generation_config_payload,
+    load_truck_image_prompt_overrides_payload,
+    load_truck_image_review_queue_payload,
+    load_truck_silhouette_catalog_payload,
+    load_truck_sprite_2d_catalog_payload,
+    load_truck_type_catalog_payload,
     load_ui_payload,
     map_repository_payload,
+    review_truck_image_asset,
     save_active_map,
     save_active_map_as,
     save_map_bundle,
@@ -49,7 +69,33 @@ from app.ui.editor_models import (
     MapLeafletSettingsDocument,
     MapSaveRequest,
     PopulationBandDocument,
+    RoutePlannerLegResponse,
+    RoutePlannerPlanRequest,
+    RoutePlannerPlanResponse,
+    RoutePlannerStepResponse,
+    TruckCatalogClassificationRequest,
+    TruckCatalogClassificationResponse,
+    TruckCategoryCatalogDocument,
+    TruckCategoryCreateRequest,
+    TruckCategoryCreateResponse,
+    TruckCategoryOptionRecord,
+    TruckCatalogHiddenDocument,
+    TruckCustomCatalogDocument,
+    TruckCustomCreateRequest,
+    TruckCustomCreateResponse,
+    TruckDeleteRequest,
+    TruckDeleteResponse,
+    TruckCatalogEditRecord,
+    TruckCatalogEditsDocument,
+    TruckCustomTypeRecord,
+    TruckPromptBuildRequest,
+    TruckPromptBuildResponse,
+    TruckImageGenerateRequest,
+    TruckImageGenerateResponse,
+    TruckImageReviewRequest,
+    TruckImageReviewResponse,
 )
+from app.services.truck_image_generation import TruckImageGenerationError, build_truck_image_prompt_defaults_payload, build_truck_prompt_items_from_classification
 
 
 def _city_payload(city: Any, reference_data: Any) -> dict[str, Any]:
@@ -141,6 +187,109 @@ def _build_v2_bootstrap_payload() -> dict[str, Any]:
     }
 
 
+def _build_route_planner_bootstrap_payload() -> dict[str, Any]:
+    active_map = load_active_map_bundle()
+    city_catalog = [city.model_dump(mode="json") for city in active_map.cities]
+    city_catalog.sort(key=lambda item: item["label"])
+    route_snapshot = active_map.route_network
+
+    return {
+        "ui": load_ui_payload(),
+        "route_planner": load_route_planner_payload(),
+        "map_repository": map_repository_payload(),
+        "cities": city_catalog,
+        "route_network": route_snapshot.model_dump(mode="json"),
+        "map_viewport": load_map_viewport_payload(),
+        "map_editor": {
+            "themes": load_map_editor_payload()["themes"],
+            "leaflet_settings": load_map_editor_payload()["leaflet_settings"],
+            "display_settings": load_map_editor_payload()["display_settings"],
+            "population_bands": load_map_editor_payload()["population_bands"],
+            "pin_library": load_map_editor_payload()["pin_library"],
+            "graph_node_styles": load_map_editor_payload()["graph_node_styles"],
+            "route_surface_types": load_map_editor_payload()["route_surface_types"],
+        },
+        "summary": {
+            "city_count": len(city_catalog),
+            "route_count": len(route_snapshot.edges),
+            "graph_node_count": len(route_snapshot.nodes),
+        },
+    }
+
+
+def _build_truck_gallery_bootstrap_payload() -> dict[str, Any]:
+    return {
+        "ui": load_ui_payload(),
+        "truck_gallery": load_truck_gallery_payload(),
+        "truck_type_catalog": load_effective_truck_type_catalog_payload(),
+        "truck_category_catalog": load_truck_category_catalog_payload(),
+        "truck_catalog_edits": load_truck_catalog_edits_payload(),
+        "truck_body_catalog": load_truck_body_catalog_payload(),
+        "truck_sprite_catalog": load_truck_sprite_2d_catalog_payload(),
+        "truck_brand_family_catalog": load_truck_brand_family_catalog_payload(),
+        "truck_silhouette_catalog": load_truck_silhouette_catalog_payload(),
+        "truck_image_generation": load_truck_image_generation_config_payload(),
+        "truck_image_prompt_defaults": build_truck_image_prompt_defaults_payload(),
+        "truck_image_prompt_overrides": load_truck_image_prompt_overrides_payload(),
+        "truck_image_asset_registry": load_truck_image_asset_registry_payload(),
+        "truck_image_review_queue": load_truck_image_review_queue_payload(),
+    }
+
+
+def _next_custom_truck_order() -> int:
+    effective = load_effective_truck_type_catalog_payload()
+    orders = [int(item.get("order") or 0) for item in effective.get("types", [])]
+    return (max(orders) if orders else 0) + 1
+
+
+def _slugify_custom_truck(label: str) -> str:
+    source = "".join(char.lower() if char.isalnum() else "_" for char in str(label or "").strip())
+    source = "_".join(part for part in source.split("_") if part)
+    return source or "novo_caminhao"
+
+
+def _default_custom_truck_record(label: str) -> TruckCustomTypeRecord:
+    order = _next_custom_truck_order()
+    slug = _slugify_custom_truck(label)
+    return TruckCustomTypeRecord(
+        id=f"truck_type_custom_{slug}_{order}",
+        order=order,
+        label=label,
+        short_label=label,
+        size_tier="small",
+        base_vehicle_kind="rigid",
+        axle_config="4x2",
+        combination_kind="single_unit",
+        cargo_scope="urban_and_regional",
+        canonical_body_type_id="truck_body_bau",
+        canonical_body_type_ids=["truck_body_bau"],
+        notes="",
+    )
+
+
+def _slugify_category_value(label: str) -> str:
+    slug = "".join(char.lower() if char.isalnum() else "_" for char in str(label or "").strip())
+    slug = "_".join(part for part in slug.split("_") if part)
+    return slug or f"item_{uuid4().hex[:8]}"
+
+
+def _next_body_order() -> int:
+    payload = load_truck_body_catalog_payload()
+    orders = [int(item.get("order") or 0) for item in payload.get("types", [])]
+    return (max(orders) if orders else 0) + 1
+
+
+def _category_group_key(group: str) -> str:
+    mapping = {
+        "size_tier": "size_tiers",
+        "base_vehicle_kind": "base_vehicle_kinds",
+        "axle_config": "axle_configs",
+        "combination_kind": "combination_kinds",
+        "cargo_scope": "cargo_scopes",
+    }
+    return mapping[group]
+
+
 def _auto_route_preview_response(document: AutoRoutePreviewRequest) -> AutoRoutePreviewResponse:
     active_map = load_active_map_bundle()
     cities_by_id = {city.id: city.model_dump(mode="json") for city in active_map.cities}
@@ -172,9 +321,73 @@ def _auto_route_preview_response(document: AutoRoutePreviewRequest) -> AutoRoute
     )
 
 
+def _route_planner_plan_response(document: RoutePlannerPlanRequest) -> RoutePlannerPlanResponse:
+    active_map = load_active_map_bundle()
+    route_surface_types = load_map_editor_payload()["route_surface_types"].get("types", [])
+    try:
+        plan = build_route_plan(
+            active_map.cities,
+            active_map.route_network.nodes,
+            active_map.route_network.edges,
+            route_surface_types,
+            route_mode=document.route_mode,
+            origin_node_id=document.origin_node_id,
+            destination_node_id=document.destination_node_id,
+            stop_node_ids=document.stop_node_ids,
+        )
+    except RoutePlannerError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return RoutePlannerPlanResponse(
+        map_id=active_map.id,
+        map_name=active_map.name,
+        route_mode=plan.route_mode,
+        node_ids=plan.node_ids,
+        edge_ids=plan.edge_ids,
+        total_distance_km=plan.total_distance_km,
+        total_duration_hours=plan.total_duration_hours,
+        total_steps=plan.total_steps,
+        leg_count=len(plan.legs),
+        stop_count=len(document.stop_node_ids),
+        legs=[
+            RoutePlannerLegResponse(
+                index=leg.index,
+                start_node_id=leg.start_node_id,
+                end_node_id=leg.end_node_id,
+                start_label=leg.start_label,
+                end_label=leg.end_label,
+                distance_km=leg.distance_km,
+                duration_hours=leg.duration_hours,
+                node_ids=leg.node_ids,
+                edge_ids=leg.edge_ids,
+                steps=[
+                    RoutePlannerStepResponse(
+                        sequence=step.sequence,
+                        edge_id=step.edge_id,
+                        from_node_id=step.from_node_id,
+                        to_node_id=step.to_node_id,
+                        from_label=step.from_label,
+                        to_label=step.to_label,
+                        distance_km=step.distance_km,
+                        duration_hours=step.duration_hours,
+                        surface_type_id=step.surface_type_id,
+                        surface_code=step.surface_code,
+                        surface_label=step.surface_label,
+                        surface_shortcut_key=step.surface_shortcut_key,
+                    )
+                    for step in leg.steps
+                ],
+            )
+            for leg in plan.legs
+        ],
+    )
+
+
 def create_app() -> FastAPI:
     app = FastAPI(title="Brasix")
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
     templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 
     @app.get("/", response_class=HTMLResponse, include_in_schema=False)
@@ -216,6 +429,24 @@ def create_app() -> FastAPI:
             context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de mapa v2")},
         )
 
+    @app.get("/planner/route", response_class=HTMLResponse, include_in_schema=False)
+    async def route_planner(request: Request) -> HTMLResponse:
+        planner_ui = load_route_planner_payload()
+        return templates.TemplateResponse(
+            request=request,
+            name="route_planner.html",
+            context={"page_title": planner_ui["screen"].get("page_title", "Brasix | Planejador de rota")},
+        )
+
+    @app.get("/viewer/trucks", response_class=HTMLResponse, include_in_schema=False)
+    async def truck_gallery(request: Request) -> HTMLResponse:
+        gallery_ui = load_truck_gallery_payload()
+        return templates.TemplateResponse(
+            request=request,
+            name="truck_gallery.html",
+            context={"page_title": gallery_ui["screen"].get("page_title", "Brasix | Biblioteca de caminhoes")},
+        )
+
     @app.get("/api/health")
     async def healthcheck() -> dict[str, Any]:
         payload = _build_bootstrap_payload()
@@ -242,6 +473,230 @@ def create_app() -> FastAPI:
     @app.get("/api/editor/map-v2/bootstrap")
     async def map_editor_v2_bootstrap() -> dict[str, Any]:
         return _build_v2_bootstrap_payload()
+
+    @app.get("/api/planner/route/bootstrap")
+    async def route_planner_bootstrap() -> dict[str, Any]:
+        return _build_route_planner_bootstrap_payload()
+
+    @app.get("/api/viewer/trucks/bootstrap")
+    async def truck_gallery_bootstrap() -> dict[str, Any]:
+        return _build_truck_gallery_bootstrap_payload()
+
+    @app.post("/api/viewer/trucks/generate", response_model=TruckImageGenerateResponse)
+    async def generate_truck_image(document: TruckImageGenerateRequest) -> TruckImageGenerateResponse:
+        try:
+            asset, review_queue = generate_truck_image_asset(document)
+        except TruckImageGenerationError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        return TruckImageGenerateResponse(asset=asset, review_queue=review_queue)
+
+    @app.post("/api/viewer/trucks/custom-types", response_model=TruckCustomCreateResponse)
+    async def create_custom_truck_type(document: TruckCustomCreateRequest) -> TruckCustomCreateResponse:
+        custom_document = TruckCustomCatalogDocument.model_validate(load_truck_custom_catalog_payload())
+        next_record = _default_custom_truck_record(str(document.label or "Novo caminhao").strip() or "Novo caminhao")
+        custom_document.items.append(next_record)
+        save_json(TRUCK_CUSTOM_CATALOG_PATH, custom_document.model_dump(mode="json"))
+        effective_catalog = load_effective_truck_type_catalog_payload()
+        saved_type = next((item for item in effective_catalog.get("types", []) if item.get("id") == next_record.id), None)
+        if saved_type is None:
+            raise HTTPException(status_code=500, detail="Falha ao criar o novo caminhao.")
+        return TruckCustomCreateResponse(type_record=saved_type)
+
+    @app.put("/api/viewer/trucks/delete", response_model=TruckDeleteResponse)
+    async def delete_truck_type(document: TruckDeleteRequest) -> TruckDeleteResponse:
+        type_id = str(document.truck_type_id or "").strip()
+        effective_catalog = load_effective_truck_type_catalog_payload()
+        current_type = next((item for item in effective_catalog.get("types", []) if item.get("id") == type_id), None)
+        if current_type is None:
+            raise HTTPException(status_code=404, detail="Caminhao nao encontrado na galeria.")
+
+        if current_type.get("is_custom"):
+            custom_catalog = TruckCustomCatalogDocument.model_validate(load_truck_custom_catalog_payload())
+            custom_catalog.items = [item for item in custom_catalog.items if item.id != type_id]
+            save_json(TRUCK_CUSTOM_CATALOG_PATH, custom_catalog.model_dump(mode="json"))
+        else:
+            hidden_catalog = TruckCatalogHiddenDocument.model_validate(load_truck_catalog_hidden_payload())
+            hidden_ids = [item for item in hidden_catalog.hidden_type_ids if item != type_id]
+            hidden_ids.append(type_id)
+            hidden_catalog.hidden_type_ids = hidden_ids
+            save_json(TRUCK_CATALOG_HIDDEN_PATH, hidden_catalog.model_dump(mode="json"))
+
+        edits_document = TruckCatalogEditsDocument.model_validate(load_truck_catalog_edits_payload())
+        edits_document.items = [item for item in edits_document.items if item.truck_type_id != type_id]
+        save_json(TRUCK_CATALOG_EDITS_PATH, edits_document.model_dump(mode="json"))
+
+        prompt_overrides_payload = load_truck_image_prompt_overrides_payload()
+        prompt_overrides_payload["overrides"] = [
+            item for item in prompt_overrides_payload.get("overrides", [])
+            if item.get("truck_type_id") != type_id and item.get("reference_truck_type_id") != type_id
+        ]
+        save_json(TRUCK_IMAGE_PROMPT_OVERRIDES_PATH, prompt_overrides_payload)
+
+        asset_registry_payload = load_truck_image_asset_registry_payload()
+        asset_registry_payload["items"] = [
+            item for item in asset_registry_payload.get("items", [])
+            if item.get("truck_type_id") != type_id and item.get("reference_truck_type_id") != type_id
+        ]
+        save_json(TRUCK_IMAGE_ASSET_REGISTRY_PATH, asset_registry_payload)
+
+        review_queue_payload = load_truck_image_review_queue_payload()
+        review_queue_payload["pending_type_ids"] = [
+            item for item in review_queue_payload.get("pending_type_ids", [])
+            if item != type_id
+        ]
+        if review_queue_payload.get("last_reviewed_type_id") == type_id:
+            review_queue_payload["last_reviewed_type_id"] = None
+        save_json(TRUCK_IMAGE_REVIEW_QUEUE_PATH, review_queue_payload)
+
+        return TruckDeleteResponse(truck_type_id=type_id)
+
+    @app.post("/api/viewer/trucks/category-options", response_model=TruckCategoryCreateResponse)
+    async def create_truck_category_option(document: TruckCategoryCreateRequest) -> TruckCategoryCreateResponse:
+        label = str(document.label or "").strip()
+        if not label:
+            raise HTTPException(status_code=400, detail="O nome da categoria nao pode ficar vazio.")
+
+        if document.group == "canonical_body_type_id":
+            body_catalog = load_truck_body_catalog_payload()
+            slug = _slugify_category_value(label)
+            option_id = f"truck_body_custom_{slug}"
+            existing_ids = {str(item.get("id") or "") for item in body_catalog.get("types", [])}
+            suffix = 1
+            while option_id in existing_ids:
+                suffix += 1
+                option_id = f"truck_body_custom_{slug}_{suffix}"
+            new_body = {
+                "id": option_id,
+                "order": _next_body_order(),
+                "label": label,
+                "category": "custom",
+                "sprite_module_kind": "custom",
+                "cargo_role": "custom",
+                "prompt_hint": label.lower(),
+            }
+            body_catalog.setdefault("types", []).append(new_body)
+            save_json(TRUCK_BODY_CATALOG_PATH, body_catalog)
+            return TruckCategoryCreateResponse(group=document.group, option=new_body)
+
+        category_catalog = TruckCategoryCatalogDocument.model_validate(load_truck_category_catalog_payload())
+        group_key = _category_group_key(document.group)
+        option_list = list(getattr(category_catalog, group_key))
+        slug = _slugify_category_value(label)
+        existing_ids = {item.id for item in option_list}
+        option_id = slug
+        suffix = 1
+        while option_id in existing_ids:
+            suffix += 1
+            option_id = f"{slug}_{suffix}"
+        option = TruckCategoryOptionRecord(id=option_id, label=label)
+        option_list.append(option)
+        setattr(category_catalog, group_key, option_list)
+        save_json(TRUCK_CATEGORY_CATALOG_PATH, category_catalog.model_dump(mode="json"))
+        return TruckCategoryCreateResponse(group=document.group, option=option.model_dump(mode="json"))
+
+    @app.put("/api/viewer/trucks/review", response_model=TruckImageReviewResponse)
+    async def review_truck_image(document: TruckImageReviewRequest) -> TruckImageReviewResponse:
+        try:
+            asset, review_queue = review_truck_image_asset(document)
+        except TruckImageGenerationError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return TruckImageReviewResponse(asset=asset, review_queue=review_queue)
+
+    @app.put("/api/viewer/trucks/classification", response_model=TruckCatalogClassificationResponse)
+    async def save_truck_classification(document: TruckCatalogClassificationRequest) -> TruckCatalogClassificationResponse:
+        base_catalog = load_truck_type_catalog_payload()
+        custom_catalog = TruckCustomCatalogDocument.model_validate(load_truck_custom_catalog_payload())
+        is_base_type = any(item.get("id") == document.truck_type_id for item in base_catalog.get("types", []))
+        is_custom_type = any(item.id == document.truck_type_id for item in custom_catalog.items)
+        if not is_base_type and not is_custom_type:
+            raise HTTPException(status_code=404, detail="Caminhao nao encontrado no catalogo.")
+
+        body_catalog = load_truck_body_catalog_payload()
+        if not any(item.get("id") == document.canonical_body_type_id for item in body_catalog.get("types", [])):
+            raise HTTPException(status_code=400, detail="Implemento canonico nao encontrado no catalogo.")
+
+        if is_custom_type:
+            next_items: list[TruckCustomTypeRecord] = []
+            for item in custom_catalog.items:
+                if item.id == document.truck_type_id:
+                    next_items.append(
+                        item.model_copy(
+                            update={
+                                "label": document.label,
+                                "short_label": document.label,
+                                "size_tier": document.size_tier,
+                                "base_vehicle_kind": document.base_vehicle_kind,
+                                "axle_config": document.axle_config,
+                                "combination_kind": document.combination_kind,
+                                "cargo_scope": document.cargo_scope,
+                                "canonical_body_type_id": document.canonical_body_type_id,
+                                "canonical_body_type_ids": [document.canonical_body_type_id],
+                                "notes": document.notes,
+                            }
+                        )
+                    )
+                else:
+                    next_items.append(item)
+            custom_catalog.items = next_items
+            save_json(TRUCK_CUSTOM_CATALOG_PATH, custom_catalog.model_dump(mode="json"))
+        else:
+            edits_document = TruckCatalogEditsDocument.model_validate(load_truck_catalog_edits_payload())
+            next_record = TruckCatalogEditRecord(**document.model_dump(mode="json"))
+            replaced = False
+            next_items: list[TruckCatalogEditRecord] = []
+            for item in edits_document.items:
+                if item.truck_type_id == document.truck_type_id:
+                    next_items.append(next_record)
+                    replaced = True
+                else:
+                    next_items.append(item)
+            if not replaced:
+                next_items.append(next_record)
+            edits_document.items = next_items
+            save_json(TRUCK_CATALOG_EDITS_PATH, edits_document.model_dump(mode="json"))
+
+        prompt_overrides_payload = load_truck_image_prompt_overrides_payload()
+        override_items = list(prompt_overrides_payload.get("overrides", []))
+        for item in override_items:
+            if item.get("truck_type_id") == document.truck_type_id:
+                item["preferred_body_type_id"] = document.canonical_body_type_id
+        save_json(TRUCK_IMAGE_PROMPT_OVERRIDES_PATH, prompt_overrides_payload)
+
+        asset_registry_payload = load_truck_image_asset_registry_payload()
+        for item in asset_registry_payload.get("items", []):
+            if item.get("truck_type_id") == document.truck_type_id:
+                item["canonical_body_type_id"] = document.canonical_body_type_id
+        save_json(TRUCK_IMAGE_ASSET_REGISTRY_PATH, asset_registry_payload)
+
+        effective_catalog = load_effective_truck_type_catalog_payload()
+        saved_type = next(
+            (item for item in effective_catalog.get("types", []) if item.get("id") == document.truck_type_id),
+            None,
+        )
+        if saved_type is None:
+            raise HTTPException(status_code=500, detail="Falha ao reconstruir o catalogo efetivo do caminhao.")
+        return TruckCatalogClassificationResponse(type_record=saved_type)
+
+    @app.post("/api/viewer/trucks/build-prompt", response_model=TruckPromptBuildResponse)
+    async def build_truck_prompt(document: TruckPromptBuildRequest) -> TruckPromptBuildResponse:
+        try:
+            prompt_items = build_truck_prompt_items_from_classification(
+                truck_type_id=document.truck_type_id,
+                label=document.label,
+                size_tier=document.size_tier,
+                base_vehicle_kind=document.base_vehicle_kind,
+                axle_config=document.axle_config,
+                combination_kind=document.combination_kind,
+                cargo_scope=document.cargo_scope,
+                canonical_body_type_id=document.canonical_body_type_id,
+                notes=document.notes,
+            )
+        except TruckImageGenerationError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return TruckPromptBuildResponse(
+            prompt_items=prompt_items,
+            prompt_summary=f"{document.label} com {len(prompt_items)} item(ns) de prompt.",
+        )
 
     @app.put("/api/editor/map/population-bands")
     async def save_population_bands(document: PopulationBandDocument) -> dict[str, Any]:
@@ -329,6 +784,10 @@ def create_app() -> FastAPI:
     @app.post("/api/editor/map_v1_1/route-preview", response_model=AutoRoutePreviewResponse)
     async def preview_auto_route_v1_1(document: AutoRoutePreviewRequest) -> AutoRoutePreviewResponse:
         return _auto_route_preview_response(document)
+
+    @app.post("/api/planner/route/plan", response_model=RoutePlannerPlanResponse)
+    async def route_planner_plan(document: RoutePlannerPlanRequest) -> RoutePlannerPlanResponse:
+        return _route_planner_plan_response(document)
 
     @app.put("/api/editor/map/leaflet-settings")
     async def save_leaflet_settings(document: MapLeafletSettingsDocument) -> dict[str, Any]:
@@ -514,3 +973,5 @@ def create_app() -> FastAPI:
         }
 
     return app
+
+

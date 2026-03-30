@@ -1,0 +1,23 @@
+{
+  "id": "ui_layout_desktop_route_planner_v1",
+  "css_variables": {
+    "--planner-left-col": "348px",
+    "--planner-right-col": "372px",
+    "--planner-side-min-col": "280px",
+    "--planner-map-min-col": "640px",
+    "--planner-resizer-width": "10px",
+    "--planner-panel-gap": "12px",
+    "--planner-section-padding": "12px",
+    "--planner-card-padding": "12px",
+    "--planner-card-gap": "10px",
+    "--planner-control-height": "34px",
+    "--planner-control-radius": "10px",
+    "--planner-button-height": "34px",
+    "--planner-tab-height": "38px",
+    "--planner-map-inset-top": "12px",
+    "--planner-map-inset-side": "12px",
+    "--planner-map-inset-bottom": "12px",
+    "--planner-legend-width": "208px",
+    "--planner-status-width": "360px"
+  }
+}

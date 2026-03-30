@@ -1,0 +1,182 @@
+{
+  "id": "truck_sprite_2d_catalog_v1",
+  "scope": "brasix_sprite_library",
+  "profiles": [
+    {
+      "id": "truck_sprite_rigid_compact",
+      "label": "Rigido compacto",
+      "silhouette_kind": "rigid",
+      "recommended_canvas_ratio": "2.2:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 1,
+      "articulation_point_count": 0,
+      "wheel_group_count": 2,
+      "sprite_recipe": "cabine curta + baia de carga curta + dois eixos"
+    },
+    {
+      "id": "truck_sprite_rigid_short",
+      "label": "Rigido curto",
+      "silhouette_kind": "rigid",
+      "recommended_canvas_ratio": "2.5:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 1,
+      "articulation_point_count": 0,
+      "wheel_group_count": 2,
+      "sprite_recipe": "cabine media + implemento curto + dois eixos"
+    },
+    {
+      "id": "truck_sprite_rigid_medium",
+      "label": "Rigido medio",
+      "silhouette_kind": "rigid",
+      "recommended_canvas_ratio": "2.8:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 1,
+      "articulation_point_count": 0,
+      "wheel_group_count": 2,
+      "sprite_recipe": "cabine media + implemento medio + dois eixos espacados"
+    },
+    {
+      "id": "truck_sprite_rigid_long",
+      "label": "Rigido longo",
+      "silhouette_kind": "rigid",
+      "recommended_canvas_ratio": "3.2:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 1,
+      "articulation_point_count": 0,
+      "wheel_group_count": 3,
+      "sprite_recipe": "cabine media + implemento longo + eixo traseiro duplo"
+    },
+    {
+      "id": "truck_sprite_rigid_extra_long",
+      "label": "Rigido extra-longo",
+      "silhouette_kind": "rigid",
+      "recommended_canvas_ratio": "3.4:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 1,
+      "articulation_point_count": 0,
+      "wheel_group_count": 4,
+      "sprite_recipe": "cabine media + implemento longo + quatro grupos de roda aparentes"
+    },
+    {
+      "id": "truck_sprite_rigid_vocational",
+      "label": "Rigido vocacional",
+      "silhouette_kind": "rigid_vocational",
+      "recommended_canvas_ratio": "3.0:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 1,
+      "articulation_point_count": 0,
+      "wheel_group_count": 4,
+      "sprite_recipe": "cabine alta + cacamba ou mixer + postura robusta + rodas grandes"
+    },
+    {
+      "id": "truck_sprite_offroad_6x6",
+      "label": "Off-road 6x6",
+      "silhouette_kind": "offroad_rigid",
+      "recommended_canvas_ratio": "3.1:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 1,
+      "articulation_point_count": 0,
+      "wheel_group_count": 3,
+      "sprite_recipe": "cabine alta + vao livre alto + tres eixos tracionados"
+    },
+    {
+      "id": "truck_sprite_tractor_short",
+      "label": "Cavalo curto",
+      "silhouette_kind": "tractor",
+      "recommended_canvas_ratio": "1.8:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 0,
+      "articulation_point_count": 1,
+      "wheel_group_count": 2,
+      "sprite_recipe": "cabine + quinta roda + entre-eixos curto"
+    },
+    {
+      "id": "truck_sprite_tractor_long",
+      "label": "Cavalo longo",
+      "silhouette_kind": "tractor",
+      "recommended_canvas_ratio": "2.1:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 0,
+      "articulation_point_count": 1,
+      "wheel_group_count": 3,
+      "sprite_recipe": "cabine alta + quinta roda + conjunto traseiro duplo"
+    },
+    {
+      "id": "truck_sprite_semitrailer_standard",
+      "label": "Semirreboque padrao",
+      "silhouette_kind": "articulated",
+      "recommended_canvas_ratio": "5.4:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 1,
+      "articulation_point_count": 1,
+      "wheel_group_count": 4,
+      "sprite_recipe": "cavalo + um semirreboque de comprimento padrao"
+    },
+    {
+      "id": "truck_sprite_drawbar_standard",
+      "label": "Drawbar padrao",
+      "silhouette_kind": "drawbar",
+      "recommended_canvas_ratio": "5.8:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 2,
+      "articulation_point_count": 1,
+      "wheel_group_count": 4,
+      "sprite_recipe": "caminhao rigido + reboque com engate traseiro"
+    },
+    {
+      "id": "truck_sprite_bitrem",
+      "label": "Bitrem",
+      "silhouette_kind": "multi_trailer",
+      "recommended_canvas_ratio": "6.2:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 2,
+      "articulation_point_count": 2,
+      "wheel_group_count": 5,
+      "sprite_recipe": "cavalo + dois modulos articulados simetricos"
+    },
+    {
+      "id": "truck_sprite_rodotrem",
+      "label": "Rodotrem",
+      "silhouette_kind": "multi_trailer",
+      "recommended_canvas_ratio": "6.8:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 2,
+      "articulation_point_count": 3,
+      "wheel_group_count": 6,
+      "sprite_recipe": "cavalo + dois semirreboques com dolly intermediario"
+    },
+    {
+      "id": "truck_sprite_tritrem",
+      "label": "Tritrem",
+      "silhouette_kind": "multi_trailer",
+      "recommended_canvas_ratio": "7.6:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 3,
+      "articulation_point_count": 3,
+      "wheel_group_count": 7,
+      "sprite_recipe": "cavalo + tres modulos de carga homogeneos"
+    },
+    {
+      "id": "truck_sprite_treminhao",
+      "label": "Treminhao",
+      "silhouette_kind": "multi_trailer",
+      "recommended_canvas_ratio": "8.0:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 3,
+      "articulation_point_count": 2,
+      "wheel_group_count": 7,
+      "sprite_recipe": "caminhao rigido + dois reboques longos em serie"
+    },
+    {
+      "id": "truck_sprite_cegonheiro",
+      "label": "Cegonheiro",
+      "silhouette_kind": "vehicle_carrier",
+      "recommended_canvas_ratio": "7.2:1",
+      "cab_unit_count": 1,
+      "cargo_module_count": 2,
+      "articulation_point_count": 1,
+      "wheel_group_count": 5,
+      "sprite_recipe": "estrutura vazada em dois andares para transporte de veiculos"
+    }
+  ]
+}

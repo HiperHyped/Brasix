@@ -1,0 +1,143 @@
+{
+  "id": "truck_body_catalog_v1",
+  "scope": "brazil_road_cargo",
+  "types": [
+    {
+      "id": "truck_body_bau",
+      "order": 1,
+      "label": "Bau",
+      "category": "general_cargo",
+      "sprite_module_kind": "box_closed",
+      "cargo_role": "dry_general_cargo"
+    },
+    {
+      "id": "truck_body_sider",
+      "order": 2,
+      "label": "Sider",
+      "category": "general_cargo",
+      "sprite_module_kind": "curtain_side",
+      "cargo_role": "palletized_cargo"
+    },
+    {
+      "id": "truck_body_carga_seca",
+      "order": 3,
+      "label": "Carroceria aberta",
+      "category": "general_cargo",
+      "sprite_module_kind": "flatbed",
+      "cargo_role": "open_general_cargo"
+    },
+    {
+      "id": "truck_body_graneleiro",
+      "order": 4,
+      "label": "Graneleiro",
+      "category": "bulk",
+      "sprite_module_kind": "grain",
+      "cargo_role": "dry_bulk"
+    },
+    {
+      "id": "truck_body_frigorifico",
+      "order": 5,
+      "label": "Frigorifico",
+      "category": "temperature_controlled",
+      "sprite_module_kind": "refrigerated_box",
+      "cargo_role": "cold_chain"
+    },
+    {
+      "id": "truck_body_tanque",
+      "order": 6,
+      "label": "Tanque",
+      "category": "liquid_bulk",
+      "sprite_module_kind": "tank",
+      "cargo_role": "liquid_bulk"
+    },
+    {
+      "id": "truck_body_basculante",
+      "order": 7,
+      "label": "Basculante",
+      "category": "vocational",
+      "sprite_module_kind": "tipper",
+      "cargo_role": "construction_bulk"
+    },
+    {
+      "id": "truck_body_container",
+      "order": 8,
+      "label": "Porta-container",
+      "category": "intermodal",
+      "sprite_module_kind": "container_chassis",
+      "cargo_role": "containerized_cargo"
+    },
+    {
+      "id": "truck_body_prancha",
+      "order": 9,
+      "label": "Prancha / carrega-tudo",
+      "category": "special",
+      "sprite_module_kind": "lowboy",
+      "cargo_role": "oversize_equipment"
+    },
+    {
+      "id": "truck_body_betoneira",
+      "order": 10,
+      "label": "Betoneira",
+      "category": "vocational",
+      "sprite_module_kind": "mixer",
+      "cargo_role": "concrete"
+    },
+    {
+      "id": "truck_body_munck",
+      "order": 11,
+      "label": "Munck / guindauto",
+      "category": "vocational",
+      "sprite_module_kind": "crane_flatbed",
+      "cargo_role": "lift_and_carry"
+    },
+    {
+      "id": "truck_body_compactador_lixo",
+      "order": 12,
+      "label": "Compactador de lixo",
+      "category": "municipal",
+      "sprite_module_kind": "garbage_compactor",
+      "cargo_role": "waste_collection"
+    },
+    {
+      "id": "truck_body_boiadeiro",
+      "order": 13,
+      "label": "Boiadeiro",
+      "category": "agro",
+      "sprite_module_kind": "livestock",
+      "cargo_role": "live_animals"
+    },
+    {
+      "id": "truck_body_canavieiro",
+      "order": 14,
+      "label": "Canavieiro",
+      "category": "agro",
+      "sprite_module_kind": "sugarcane",
+      "cargo_role": "sugarcane"
+    },
+    {
+      "id": "truck_body_madeireiro",
+      "order": 15,
+      "label": "Madeireiro",
+      "category": "forest",
+      "sprite_module_kind": "logs",
+      "cargo_role": "logs"
+    },
+    {
+      "id": "truck_body_cegonheiro",
+      "order": 16,
+      "label": "Cegonheiro",
+      "category": "special",
+      "sprite_module_kind": "vehicle_carrier",
+      "cargo_role": "vehicles"
+    },
+    {
+      "id": "truck_body_custom_van",
+      "order": 17,
+      "label": "Van",
+      "category": "custom",
+      "sprite_module_kind": "custom",
+      "cargo_role": "custom",
+      "prompt_hint": "van"
+    }
+  ]
+}

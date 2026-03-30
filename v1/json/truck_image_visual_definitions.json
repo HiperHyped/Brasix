@@ -1,0 +1,219 @@
+{
+  "id": "truck_image_visual_definitions_v1",
+  "definitions": [
+    {
+      "type_id": "truck_type_vuc_4x2",
+      "prompt_items": [
+        "caminhao rigido urbano bem compacto",
+        "cabine curta de vuc com frente cabover",
+        "um unico bau curto no mesmo chassi",
+        "apenas dois eixos simples no mesmo veiculo",
+        "entre eixos curto e proporcao de entrega urbana",
+        "nao desenhar como carreta ou conjunto articulado"
+      ]
+    },
+    {
+      "type_id": "truck_type_toco_leve_4x2",
+      "prompt_items": [
+        "caminhao rigido leve do tipo toco",
+        "cabine cabover media e um unico modulo de carga",
+        "apenas dois eixos simples no mesmo chassi",
+        "mais comprido que um vuc, mas ainda compacto",
+        "sem articulacao e sem reboque"
+      ]
+    },
+    {
+      "type_id": "truck_type_toco_leve_eletrico_4x2",
+      "prompt_items": [
+        "caminhao rigido leve eletrico do tipo toco",
+        "mesma silhueta basica de um toco 4x2 urbano",
+        "cabine limpa e moderna, sem visual agressivo",
+        "apenas dois eixos simples no mesmo chassi",
+        "sem articulacao e sem reboque"
+      ]
+    },
+    {
+      "type_id": "truck_type_toco_medio_4x2",
+      "prompt_items": [
+        "caminhao rigido medio do tipo toco",
+        "cabine cabover media com modulo de carga mais longo",
+        "apenas dois eixos simples no mesmo chassi",
+        "proporcao claramente maior que o toco leve",
+        "sem articulacao e sem reboque"
+      ]
+    },
+    {
+      "type_id": "truck_type_toco_semipesado_4x2",
+      "prompt_items": [
+        "caminhao rigido semipesado do tipo toco",
+        "cabine media para pesada e modulo de carga longo",
+        "apenas dois eixos simples no mesmo chassi",
+        "visual robusto de carga regional",
+        "sem articulacao e sem reboque"
+      ]
+    },
+    {
+      "type_id": "truck_type_truck_semipesado_6x2",
+      "prompt_items": [
+        "caminhao rigido truck 6x2",
+        "um eixo dianteiro e dois eixos traseiros no mesmo chassi",
+        "os dois eixos traseiros devem ficar proximos entre si",
+        "um unico modulo de carga sobre o chassi rigido",
+        "nao desenhar como cavalo mecanico"
+      ]
+    },
+    {
+      "type_id": "truck_type_truck_pesado_6x2",
+      "prompt_items": [
+        "caminhao rigido pesado truck 6x2",
+        "um eixo dianteiro e dois eixos traseiros proximos",
+        "chassi rigido longo com um unico modulo de carga",
+        "porte nacional pesado, maior que o truck semipesado",
+        "nao desenhar como carreta articulada"
+      ]
+    },
+    {
+      "type_id": "truck_type_truck_pesado_6x4",
+      "prompt_items": [
+        "caminhao rigido pesado 6x4",
+        "um eixo dianteiro e dois eixos traseiros trativos proximos",
+        "visual mais robusto e vocacional",
+        "um unico modulo de carga no mesmo chassi",
+        "nao desenhar como cavalo mecanico ou semirreboque"
+      ]
+    },
+    {
+      "type_id": "truck_type_bitruck_8x2",
+      "prompt_items": [
+        "bitruck 8x2 rigido, nao articulado",
+        "quatro eixos no mesmo chassi rigido",
+        "um eixo dianteiro e tres eixos traseiros distribuidos no veiculo",
+        "um unico modulo de carga longo sobre o mesmo chassi",
+        "nao desenhar como cavalo mecanico com semirreboque",
+        "nao desenhar duas carrocerias separadas"
+      ]
+    },
+    {
+      "type_id": "truck_type_bitruck_vocacional_8x4",
+      "prompt_items": [
+        "bitruck vocacional 8x4 rigido, nao articulado",
+        "quatro eixos no mesmo chassi rigido",
+        "visual pesado de construcao ou mineracao",
+        "um unico modulo de carga robusto no mesmo chassi",
+        "nao desenhar como carreta articulada"
+      ]
+    },
+    {
+      "type_id": "truck_type_offroad_6x6",
+      "prompt_items": [
+        "caminhao vocacional fora de estrada 6x6",
+        "tres eixos no mesmo chassi, todos com aparencia de uso pesado",
+        "altura do solo mais alta e postura off-road",
+        "um unico modulo de carga robusto",
+        "nao desenhar como carreta rodoviaria"
+      ]
+    },
+    {
+      "type_id": "truck_type_cavalo_4x2",
+      "prompt_items": [
+        "cavalo mecanico 4x2 com um semirreboque",
+        "cabine tratora curta com quinta roda puxando uma unica unidade traseira",
+        "dois eixos no cavalo mecanico",
+        "conjunto articulado simples",
+        "nao desenhar como caminhao rigido"
+      ]
+    },
+    {
+      "type_id": "truck_type_cavalo_6x2",
+      "prompt_items": [
+        "cavalo mecanico 6x2 com um semirreboque",
+        "tres eixos no cavalo mecanico, sendo dois traseiros proximos",
+        "uma unica unidade traseira articulada",
+        "conjunto articulado rodoviario nacional",
+        "nao desenhar como caminhao rigido"
+      ]
+    },
+    {
+      "type_id": "truck_type_cavalo_6x4",
+      "prompt_items": [
+        "cavalo mecanico 6x4 com um semirreboque",
+        "tres eixos no cavalo mecanico, com dois traseiros trativos",
+        "visual pesado e robusto",
+        "uma unica unidade traseira articulada",
+        "nao desenhar como caminhao rigido"
+      ]
+    },
+    {
+      "type_id": "truck_type_carreta_ls",
+      "prompt_items": [
+        "carreta ls com um cavalo mecanico e um semirreboque longo",
+        "apenas um semirreboque na parte traseira",
+        "uma unica articulacao principal entre cavalo e semirreboque",
+        "conjunto longo de estrada, mas com apenas uma unidade rebocada",
+        "nao desenhar segundo reboque ou dolly"
+      ]
+    },
+    {
+      "type_id": "truck_type_romeu_julieta",
+      "prompt_items": [
+        "romeu e julieta com caminhao rigido na frente e um reboque atras",
+        "duas carrocerias separadas: uma no caminhao e outra no reboque",
+        "engate por barra entre o caminhao da frente e o reboque de tras",
+        "o primeiro modulo deve estar sobre chassi rigido",
+        "nao desenhar como cavalo mecanico com semirreboque"
+      ]
+    },
+    {
+      "type_id": "truck_type_bitrem",
+      "prompt_items": [
+        "bitrem com cavalo mecanico na frente e dois semirreboques em serie",
+        "duas unidades longas de carga separadas uma da outra",
+        "a segunda unidade deve vir articulada atras da primeira",
+        "nao usar caminhao rigido na frente",
+        "nao desenhar como carreta simples de um semirreboque so",
+        "nao desenhar dolly destacado entre os modulos"
+      ]
+    },
+    {
+      "type_id": "truck_type_rodotrem",
+      "prompt_items": [
+        "rodotrem com cavalo mecanico e dois semirreboques",
+        "mostrar um dolly visivel entre o primeiro e o segundo semirreboque",
+        "duas unidades longas de carga separadas por esse dolly",
+        "conjunto maior e mais complexo que um bitrem comum",
+        "nao desenhar como carreta simples",
+        "nao desenhar como caminhao rigido com reboque"
+      ]
+    },
+    {
+      "type_id": "truck_type_tritrem",
+      "prompt_items": [
+        "tritrem com cavalo mecanico e tres modulos de carga em serie",
+        "tres unidades traseiras claramente separadas",
+        "conjunto muito longo, agricola ou florestal",
+        "visual de multiplas articulacoes ao longo do conjunto",
+        "nao desenhar como bitrem de dois modulos"
+      ]
+    },
+    {
+      "type_id": "truck_type_treminhao",
+      "prompt_items": [
+        "treminhao com caminhao rigido na frente e dois reboques atras",
+        "o primeiro modulo deve estar sobre um caminhao rigido",
+        "depois dele devem vir dois reboques separados",
+        "nao usar cavalo mecanico na frente",
+        "nao desenhar como bitrem ou rodotrem"
+      ]
+    },
+    {
+      "type_id": "truck_type_cegonheiro",
+      "prompt_items": [
+        "cegonheiro de transporte de veiculos",
+        "estrutura aberta de dois niveis para levar carros",
+        "perfil longo com plataforma superior e inferior",
+        "nao desenhar bau, sider, tanque ou graneleiro",
+        "o conjunto deve parecer especifico para carregar automoveis"
+      ]
+    }
+  ]
+}

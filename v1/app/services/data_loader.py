@@ -20,20 +20,39 @@ from app.config import (
     ROUTE_GEOMETRY_TYPES_PATH,
     ROUTE_AUTO_ENGINE_CONFIG_PATH,
     ROUTE_SURFACE_TYPES_PATH,
+    TRUCK_BODY_CATALOG_PATH,
+    TRUCK_BRAND_FAMILY_CATALOG_PATH,
+    TRUCK_CATEGORY_CATALOG_PATH,
+    TRUCK_CATALOG_EDITS_PATH,
+    TRUCK_CATALOG_HIDDEN_PATH,
+    TRUCK_CUSTOM_CATALOG_PATH,
+    TRUCK_IMAGE_ASSET_REGISTRY_PATH,
+    TRUCK_IMAGE_GENERATION_CONFIG_PATH,
+    TRUCK_IMAGE_PROMPT_OVERRIDES_PATH,
+    TRUCK_IMAGE_REVIEW_QUEUE_PATH,
+    TRUCK_IMAGE_VISUAL_DEFINITIONS_PATH,
+    TRUCK_SILHOUETTE_CATALOG_PATH,
+    TRUCK_SPRITE_2D_CATALOG_PATH,
+    TRUCK_TYPE_CATALOG_PATH,
     UI_COMPONENT_REGISTRY_PATH,
     UI_MAP_DISPLAY_CONTROLS_PATH,
     UI_MAP_LEAFLET_CONTROLS_PATH,
     UI_MAP_EDITOR_THEMES_PATH,
     UI_MAP_EDITOR_V2_SCREEN_PATH,
+    UI_ROUTE_PLANNER_SCREEN_PATH,
     UI_MAP_SHORTCUTS_PANEL_PATH,
     UI_DESIGN_TOKENS_PATH,
     UI_LAYOUT_DESKTOP_MAIN_PATH,
     UI_LAYOUT_DESKTOP_MAP_EDITOR_PATH,
     UI_LAYOUT_DESKTOP_MAP_EDITOR_V2_PATH,
+    UI_LAYOUT_DESKTOP_ROUTE_PLANNER_PATH,
+    UI_LAYOUT_DESKTOP_TRUCK_GALLERY_PATH,
     UI_MAP_EDITOR_SCREEN_PATH,
     UI_NAVIGATION_ITEMS_PATH,
     UI_MAP_REPOSITORY_CONTROLS_PATH,
+    UI_SHORTCUTS_ROUTE_PLANNER_PATH,
     UI_SHORTCUTS_MAP_EDITOR_PATH,
+    UI_TRUCK_GALLERY_SCREEN_PATH,
 )
 from app.domain import City, CommodityProfile, MapConfig, ReferenceData
 
@@ -181,6 +200,151 @@ def load_map_editor_v2_payload() -> dict[str, Any]:
         "route_surface_types": load_json(ROUTE_SURFACE_TYPES_PATH),
         "route_geometry_types": load_json(ROUTE_GEOMETRY_TYPES_PATH),
     }
+
+
+def load_route_planner_payload() -> dict[str, Any]:
+    return {
+        "screen": load_json(UI_ROUTE_PLANNER_SCREEN_PATH),
+        "layout_desktop": load_json(UI_LAYOUT_DESKTOP_ROUTE_PLANNER_PATH),
+        "shortcuts": load_json(UI_SHORTCUTS_ROUTE_PLANNER_PATH),
+        "themes": load_json(UI_MAP_EDITOR_THEMES_PATH),
+    }
+
+
+def load_truck_gallery_payload() -> dict[str, Any]:
+    return {
+        "screen": load_json(UI_TRUCK_GALLERY_SCREEN_PATH),
+        "layout_desktop": load_json(UI_LAYOUT_DESKTOP_TRUCK_GALLERY_PATH),
+        "themes": load_json(UI_MAP_EDITOR_THEMES_PATH),
+    }
+
+
+def load_truck_type_catalog_payload() -> dict[str, Any]:
+    return load_json(TRUCK_TYPE_CATALOG_PATH)
+
+
+def load_truck_custom_catalog_payload(path: Path | None = None) -> dict[str, Any]:
+    target = path or TRUCK_CUSTOM_CATALOG_PATH
+    if not target.exists():
+        return {"id": "truck_custom_catalog_v1", "items": []}
+    return load_json(target)
+
+
+def load_truck_catalog_edits_payload(path: Path | None = None) -> dict[str, Any]:
+    target = path or TRUCK_CATALOG_EDITS_PATH
+    if not target.exists():
+        return {"id": "truck_catalog_edits_v1", "items": []}
+    return load_json(target)
+
+
+def load_truck_catalog_hidden_payload(path: Path | None = None) -> dict[str, Any]:
+    target = path or TRUCK_CATALOG_HIDDEN_PATH
+    if not target.exists():
+        return {"id": "truck_catalog_hidden_v1", "hidden_type_ids": []}
+    payload = load_json(target)
+    payload.setdefault("id", "truck_catalog_hidden_v1")
+    payload.setdefault("hidden_type_ids", [])
+    return payload
+
+
+def load_truck_category_catalog_payload(path: Path | None = None) -> dict[str, Any]:
+    target = path or TRUCK_CATEGORY_CATALOG_PATH
+    if not target.exists():
+        return {
+            "id": "truck_category_catalog_v1",
+            "size_tiers": [],
+            "base_vehicle_kinds": [],
+            "axle_configs": [],
+            "combination_kinds": [],
+            "cargo_scopes": [],
+        }
+    payload = load_json(target)
+    payload.setdefault("id", "truck_category_catalog_v1")
+    payload.setdefault("size_tiers", [])
+    payload.setdefault("base_vehicle_kinds", [])
+    payload.setdefault("axle_configs", [])
+    payload.setdefault("combination_kinds", [])
+    payload.setdefault("cargo_scopes", [])
+    return payload
+
+
+def load_effective_truck_type_catalog_payload() -> dict[str, Any]:
+    payload = dict(load_truck_type_catalog_payload())
+    edits_document = load_truck_catalog_edits_payload()
+    hidden_document = load_truck_catalog_hidden_payload()
+    custom_document = load_truck_custom_catalog_payload()
+    hidden_ids = {str(item).strip() for item in hidden_document.get("hidden_type_ids", []) if str(item).strip()}
+    edits_by_id = {
+        str(item.get("truck_type_id") or ""): dict(item)
+        for item in edits_document.get("items", [])
+        if str(item.get("truck_type_id") or "").strip()
+    }
+    types: list[dict[str, Any]] = []
+    for raw_type in payload.get("types", []):
+        item = dict(raw_type)
+        if str(item.get("id") or "") in hidden_ids:
+            continue
+        edit = edits_by_id.get(str(item.get("id") or ""))
+        if edit:
+            item["label"] = str(edit.get("label") or item.get("label") or "").strip() or item.get("label")
+            item["size_tier"] = str(edit.get("size_tier") or item.get("size_tier") or "").strip() or item.get("size_tier")
+            item["base_vehicle_kind"] = str(edit.get("base_vehicle_kind") or item.get("base_vehicle_kind") or "").strip() or item.get("base_vehicle_kind")
+            item["axle_config"] = str(edit.get("axle_config") or item.get("axle_config") or "").strip() or item.get("axle_config")
+            item["combination_kind"] = str(edit.get("combination_kind") or item.get("combination_kind") or "").strip() or item.get("combination_kind")
+            item["cargo_scope"] = str(edit.get("cargo_scope") or item.get("cargo_scope") or "").strip() or item.get("cargo_scope")
+            item["notes"] = str(edit.get("notes") or item.get("notes") or "").strip()
+            canonical_body_type_id = str(edit.get("canonical_body_type_id") or "").strip()
+            if canonical_body_type_id:
+                item["canonical_body_type_ids"] = [canonical_body_type_id]
+        item["is_custom"] = False
+        types.append(item)
+    for raw_item in custom_document.get("items", []):
+        item = dict(raw_item)
+        if str(item.get("id") or "") in hidden_ids:
+            continue
+        item["is_custom"] = True
+        if item.get("canonical_body_type_id") and not item.get("canonical_body_type_ids"):
+            item["canonical_body_type_ids"] = [item["canonical_body_type_id"]]
+        types.append(item)
+    types.sort(key=lambda item: (int(item.get("order") or 9999), str(item.get("label") or "")))
+    payload["types"] = types
+    return payload
+
+
+def load_truck_body_catalog_payload() -> dict[str, Any]:
+    return load_json(TRUCK_BODY_CATALOG_PATH)
+
+
+def load_truck_sprite_2d_catalog_payload() -> dict[str, Any]:
+    return load_json(TRUCK_SPRITE_2D_CATALOG_PATH)
+
+
+def load_truck_brand_family_catalog_payload() -> dict[str, Any]:
+    return load_json(TRUCK_BRAND_FAMILY_CATALOG_PATH)
+
+
+def load_truck_silhouette_catalog_payload() -> dict[str, Any]:
+    return load_json(TRUCK_SILHOUETTE_CATALOG_PATH)
+
+
+def load_truck_image_visual_definitions_payload() -> dict[str, Any]:
+    return load_json(TRUCK_IMAGE_VISUAL_DEFINITIONS_PATH)
+
+
+def load_truck_image_generation_config_payload() -> dict[str, Any]:
+    return load_json(TRUCK_IMAGE_GENERATION_CONFIG_PATH)
+
+
+def load_truck_image_prompt_overrides_payload() -> dict[str, Any]:
+    return load_json(TRUCK_IMAGE_PROMPT_OVERRIDES_PATH)
+
+
+def load_truck_image_asset_registry_payload() -> dict[str, Any]:
+    return load_json(TRUCK_IMAGE_ASSET_REGISTRY_PATH)
+
+
+def load_truck_image_review_queue_payload() -> dict[str, Any]:
+    return load_json(TRUCK_IMAGE_REVIEW_QUEUE_PATH)
 
 
 def _load_commodities(path: Path) -> dict[str, CommodityProfile]:
