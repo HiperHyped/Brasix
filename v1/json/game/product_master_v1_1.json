@@ -1,0 +1,608 @@
+{
+  "id": "product_master_v1_1",
+  "version": "v1.1",
+  "notes": "Mestre conceitual de produtos do Brasix. Mantem visibilidade, cadeias de insumo e emojis sem substituir automaticamente os ids legacy das matrizes atuais.",
+  "products": [
+    {
+      "id": "soja",
+      "name": "Soja",
+      "emoji": "🌱",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "soja",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": [
+        "suinos",
+        "bovinos"
+      ]
+    },
+    {
+      "id": "milho",
+      "name": "Milho",
+      "emoji": "🌽",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "milho",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": [
+        "aves"
+      ]
+    },
+    {
+      "id": "cana-de-acucar",
+      "name": "Cana-de-açúcar",
+      "emoji": "🎋",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "cana-de-acucar",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": [
+        "acucar",
+        "etanol"
+      ]
+    },
+    {
+      "id": "algodao",
+      "name": "Algodão",
+      "emoji": "☁️",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "algodao",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": [
+        "tecido"
+      ]
+    },
+    {
+      "id": "cafe",
+      "name": "Café",
+      "emoji": "☕",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "cafe",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "arroz",
+      "name": "Arroz",
+      "emoji": "🍚",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "arroz",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "trigo",
+      "name": "Trigo",
+      "emoji": "🌾",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "trigo",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": [
+        "pao"
+      ]
+    },
+    {
+      "id": "laranja",
+      "name": "Laranja",
+      "emoji": "🍊",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "laranja",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": [
+        "bebida"
+      ]
+    },
+    {
+      "id": "feijao",
+      "name": "Feijão",
+      "emoji": "🫘",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "feijao",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "mandioca",
+      "name": "Mandioca",
+      "emoji": "🍠",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": "mandioca",
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "bovinos",
+      "name": "Bovinos",
+      "emoji": "🐄",
+      "family_id": "pecuaria",
+      "visible": true,
+      "legacy_source_product_id": "bovinos",
+      "inputs": [
+        "soja"
+      ],
+      "outputs": [
+        "carne",
+        "leite"
+      ]
+    },
+    {
+      "id": "suinos",
+      "name": "Suínos",
+      "emoji": "🐖",
+      "family_id": "pecuaria",
+      "visible": true,
+      "legacy_source_product_id": "suinos",
+      "inputs": [
+        "soja"
+      ],
+      "outputs": [
+        "carne"
+      ]
+    },
+    {
+      "id": "aves",
+      "name": "Aves",
+      "emoji": "🐔",
+      "family_id": "pecuaria",
+      "visible": true,
+      "legacy_source_product_id": "aves",
+      "inputs": [
+        "milho"
+      ],
+      "outputs": [
+        "ovo"
+      ]
+    },
+    {
+      "id": "leite",
+      "name": "Leite",
+      "emoji": "🥛",
+      "family_id": "pecuaria",
+      "visible": true,
+      "legacy_source_product_id": "leite",
+      "inputs": [
+        "bovinos"
+      ],
+      "outputs": [
+        "lacteos"
+      ]
+    },
+    {
+      "id": "celulose",
+      "name": "Celulose",
+      "emoji": "📄",
+      "family_id": "florestal",
+      "visible": true,
+      "legacy_source_product_id": "papel-celulose",
+      "inputs": [
+        "madeira"
+      ],
+      "outputs": [
+        "embalagem"
+      ]
+    },
+    {
+      "id": "madeira",
+      "name": "Madeira",
+      "emoji": "🪵",
+      "family_id": "florestal",
+      "visible": true,
+      "legacy_source_product_id": "madeira",
+      "inputs": [],
+      "outputs": [
+        "celulose",
+        "moveis"
+      ]
+    },
+    {
+      "id": "pesca",
+      "name": "Pesca",
+      "emoji": "🐟",
+      "family_id": "florestal",
+      "visible": true,
+      "legacy_source_product_id": "pesca",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "ferro",
+      "name": "Ferro",
+      "emoji": "🪨",
+      "family_id": "mineral",
+      "visible": true,
+      "legacy_source_product_id": "ferro",
+      "inputs": [],
+      "outputs": [
+        "aco"
+      ]
+    },
+    {
+      "id": "aluminio",
+      "name": "Alumínio",
+      "emoji": "🥫",
+      "family_id": "mineral",
+      "visible": true,
+      "legacy_source_product_id": "bauxita",
+      "inputs": [],
+      "outputs": [
+        "veiculos"
+      ]
+    },
+    {
+      "id": "terras-raras",
+      "name": "Terras Raras",
+      "emoji": "🧲",
+      "family_id": "mineral",
+      "visible": true,
+      "legacy_source_product_id": "niobio",
+      "inputs": [],
+      "outputs": [
+        "veiculos"
+      ]
+    },
+    {
+      "id": "cobre",
+      "name": "Cobre",
+      "emoji": "🟠",
+      "family_id": "mineral",
+      "visible": true,
+      "legacy_source_product_id": "cobre",
+      "inputs": [],
+      "outputs": [
+        "eletronicos"
+      ]
+    },
+    {
+      "id": "fosfato",
+      "name": "Fosfato",
+      "emoji": "🟢",
+      "family_id": "mineral",
+      "visible": true,
+      "legacy_source_product_id": "fosfato",
+      "inputs": [],
+      "outputs": [
+        "fertilizante"
+      ]
+    },
+    {
+      "id": "carvao",
+      "name": "Carvão",
+      "emoji": "⚫",
+      "family_id": "mineral",
+      "visible": true,
+      "legacy_source_product_id": "carvao",
+      "inputs": [],
+      "outputs": [
+        "aco"
+      ]
+    },
+    {
+      "id": "sal-marinho",
+      "name": "Sal Marinho",
+      "emoji": "🧂",
+      "family_id": "mineral",
+      "visible": true,
+      "legacy_source_product_id": "sal-marinho",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "petroleo",
+      "name": "Petróleo",
+      "emoji": "🛢️",
+      "family_id": "energia",
+      "visible": true,
+      "legacy_source_product_id": "petroleo",
+      "inputs": [],
+      "outputs": [
+        "plastico"
+      ]
+    },
+    {
+      "id": "gas-natural",
+      "name": "Gás Natural",
+      "emoji": "🔥",
+      "family_id": "energia",
+      "visible": true,
+      "legacy_source_product_id": "gas-natural",
+      "inputs": [],
+      "outputs": [
+        "fertilizante",
+        "plastico"
+      ]
+    },
+    {
+      "id": "etanol",
+      "name": "Etanol",
+      "emoji": "⛽",
+      "family_id": "energia",
+      "visible": true,
+      "legacy_source_product_id": "etanol",
+      "inputs": [
+        "cana-de-acucar"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "acucar",
+      "name": "Açúcar",
+      "emoji": "🍬",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "cana-de-acucar"
+      ],
+      "outputs": [
+        "bebida"
+      ]
+    },
+    {
+      "id": "tecido",
+      "name": "Tecido",
+      "emoji": "🧵",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "algodao"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "pao",
+      "name": "Pão",
+      "emoji": "🍞",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "trigo"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "bebida",
+      "name": "Bebida",
+      "emoji": "🥤",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "laranja",
+        "acucar"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "lacteos",
+      "name": "Lácteos",
+      "emoji": "🧀",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "leite"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "carne",
+      "name": "Carne",
+      "emoji": "🥩",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "bovinos",
+        "suinos"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "ovo",
+      "name": "Ovo",
+      "emoji": "🥚",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "aves"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "moveis",
+      "name": "Móveis",
+      "emoji": "🛋️",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "madeira"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "aco",
+      "name": "Aço",
+      "emoji": "🏗️",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "ferro",
+        "carvao"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "fertilizante",
+      "name": "Fertilizante",
+      "emoji": "🧪",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "fosfato",
+        "gas-natural"
+      ],
+      "outputs": [
+        "soja",
+        "milho",
+        "cana-de-acucar",
+        "algodao",
+        "cafe",
+        "arroz",
+        "trigo",
+        "laranja",
+        "feijao",
+        "mandioca"
+      ]
+    },
+    {
+      "id": "plastico",
+      "name": "Plástico",
+      "emoji": "🧴",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "petroleo",
+        "gas-natural"
+      ],
+      "outputs": [
+        "embalagem",
+        "eletronicos",
+        "veiculos"
+      ]
+    },
+    {
+      "id": "embalagem",
+      "name": "Embalagem",
+      "emoji": "📦",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "celulose",
+        "plastico"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "eletronicos",
+      "name": "Eletrônicos",
+      "emoji": "📱",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "cobre",
+        "plastico"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "veiculos",
+      "name": "Veículos",
+      "emoji": "🚗",
+      "family_id": "derivado",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "aluminio",
+        "terras-raras",
+        "plastico"
+      ],
+      "outputs": []
+    },
+    {
+      "id": "ouro",
+      "name": "Ouro",
+      "emoji": "🥇",
+      "family_id": "mineral",
+      "visible": false,
+      "legacy_source_product_id": "ouro",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "ovinos",
+      "name": "Ovinos",
+      "emoji": "🐑",
+      "family_id": "pecuaria",
+      "visible": false,
+      "legacy_source_product_id": "ovinos",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "manganes",
+      "name": "Manganês",
+      "emoji": "🟣",
+      "family_id": "mineral",
+      "visible": false,
+      "legacy_source_product_id": "manganes",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "id": "uva",
+      "name": "Uva",
+      "emoji": "🍇",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": [
+        "suinos",
+        "bovinos"
+      ]
+    },
+    {
+      "id": "vinho",
+      "name": "Vinho",
+      "emoji": "🍷",
+      "family_id": "agro",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "uva"
+      ],
+      "outputs": [
+        "suinos",
+        "bovinos"
+      ]
+    }
+  ]
+}

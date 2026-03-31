@@ -653,6 +653,16 @@ class ProductEditorCreateRequest(BaseModel):
     source_product_id: str | None = None
 
 
+class ProductMasterCreateRequest(BaseModel):
+    map_id: str = Field(min_length=1)
+    name: str = Field(min_length=1)
+    emoji: str = "\U0001F4E6"
+    family_id: str = Field(min_length=1)
+    status: Literal["visible", "hidden"] = "visible"
+    inputs: list[str] = Field(default_factory=list)
+    outputs: list[str] = Field(default_factory=list)
+
+
 class ProductEditorUpdateRequest(BaseModel):
     name: str | None = None
     short_name: str | None = None

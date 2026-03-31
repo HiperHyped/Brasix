@@ -6,9 +6,11 @@ from app.services import data_loader
 from app.services import (
     load_city_product_demand_matrix_payload,
     load_effective_truck_type_catalog_payload,
+    load_product_catalog_v2_master_payload,
     load_product_catalog_v2_payload,
     load_product_editor_payload,
     load_product_editor_v1_payload,
+    load_product_editor_v2_payload,
     load_product_family_catalog_payload,
     load_product_field_baked_document,
     load_product_field_edit_document,
@@ -165,9 +167,11 @@ def test_truck_catalog_payloads_load() -> None:
 def test_product_editor_payloads_load() -> None:
     editor_payload = load_product_editor_payload()
     editor_v1_payload = load_product_editor_v1_payload()
+    editor_v2_payload = load_product_editor_v2_payload()
     family_payload = load_product_family_catalog_payload()
     logistics_payload = load_product_logistics_type_catalog_payload()
     product_catalog_payload = load_product_catalog_v2_payload()
+    product_catalog_master_payload = load_product_catalog_v2_master_payload()
     supply_payload = load_city_product_supply_matrix_payload()
     demand_payload = load_city_product_demand_matrix_payload()
     region_supply_payload = load_region_product_supply_matrix_payload()
@@ -180,9 +184,12 @@ def test_product_editor_payloads_load() -> None:
     assert editor_v1_payload["layout_desktop"]["id"] == "ui_layout_desktop_product_editor_v1"
     assert editor_v1_payload["themes"]["default_theme_id"] == "map_editor_theme_day"
     assert any(item["key"] == "Mouse direito" for item in editor_v1_payload["shortcuts"]["items"])
+    assert editor_v2_payload["screen"]["id"] == "ui_product_editor_v2_screen_v1"
+    assert editor_v2_payload["layout_desktop"]["id"] == "ui_layout_desktop_product_editor_v2"
+    assert editor_v2_payload["themes"]["default_theme_id"] == "map_editor_theme_day"
 
     assert family_payload["id"] == "product_family_catalog_v1"
-    assert [item["id"] for item in family_payload["families"]] == ["agro", "pecuaria", "florestal", "mineral", "energia"]
+    assert [item["id"] for item in family_payload["families"]] == ["agro", "pecuaria", "florestal", "mineral", "energia", "derivado"]
 
     assert logistics_payload["id"] == "product_logistics_type_catalog_v1"
     assert any(item["id"] == "granel_seco" for item in logistics_payload["types"])
@@ -193,6 +200,10 @@ def test_product_editor_payloads_load() -> None:
     assert product_catalog_payload["products"][0]["id"] == "soja"
     assert any(item["id"] == "petroleo" and item["hazardous"] is True for item in product_catalog_payload["products"])
     assert any(item["id"] == "pesca" and item["temperature_control_required"] is True for item in product_catalog_payload["products"])
+    assert product_catalog_master_payload["id"] == "product_catalog_v2"
+    assert len(product_catalog_master_payload["products"]) == 44
+    assert any(item["id"] == "veiculos" and item["emoji"] for item in product_catalog_master_payload["products"])
+    assert any(item["id"] == "derivado" for item in family_payload["families"])
 
     assert supply_payload["id"] == "city_product_supply_matrix_v1"
     assert supply_payload["seed_source"]["kind"] == "legacy_city_product_matrix"

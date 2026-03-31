@@ -76,6 +76,25 @@
       "source_basis": "custom_manual",
       "notes": "janela e rodas internas brancas. o resto é igual",
       "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_27",
+      "order": 27,
+      "label": "Cavalo mecanico frigorificado",
+      "short_label": "Cavalo mecanico frigorificado",
+      "size_tier": "tractor_large",
+      "base_vehicle_kind": "tractor_unit",
+      "axle_config": "cavalo_6x2_ou_6x4",
+      "combination_kind": "drawbar_trailer",
+      "cargo_scope": "national_articulated",
+      "canonical_body_type_id": "truck_body_frigorifico",
+      "canonical_body_type_ids": [
+        "truck_body_frigorifico"
+      ],
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "baú refrigerado",
+      "is_custom": true
     }
   ]
 }

@@ -3,7 +3,7 @@
   "map_id": "map_mapa-6-3",
   "product_id": "manganes",
   "layer": "supply",
-  "generated_at": "2026-03-31T12:07:28.856Z",
+  "generated_at": "2026-03-31T17:06:02.087Z",
   "city_values": [
     {
       "city_id": "ba-alagoinhas",
@@ -1539,8 +1539,8 @@
       "city_label": "Marabá, PA",
       "state_code": "PA",
       "base_value": 1750,
-      "manual_delta": 24.380531827122542,
-      "final_value": 1774.3805318271225,
+      "manual_delta": 57.859420137252755,
+      "final_value": 1807.8594201372528,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -1803,8 +1803,8 @@
       "city_label": "Parauapebas, PA",
       "state_code": "PA",
       "base_value": 1073.0738705950375,
-      "manual_delta": 178.9560509539701,
-      "final_value": 1252.0299215490077,
+      "manual_delta": 211.12809352095616,
+      "final_value": 1284.2019641159936,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 113.77458022017042
@@ -2749,8 +2749,8 @@
       "city_label": "Vitória do Xingu, PA",
       "state_code": "PA",
       "base_value": 1018.0430921732893,
-      "manual_delta": 337.6996621328673,
-      "final_value": 1355.7427543061567,
+      "manual_delta": 338.36548530598617,
+      "final_value": 1356.4085774792754,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 56.399276533221865

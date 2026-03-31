@@ -47,14 +47,17 @@ from app.services import (
     load_map_editor_v2_payload,
     load_map_viewport_payload,
     load_maps_registry,
+    load_product_catalog_v2_master_payload,
     load_product_catalog_v2_payload,
     load_product_editor_payload,
     load_product_editor_v1_payload,
+    load_product_editor_v2_payload,
     load_product_family_catalog_payload,
     load_product_field_baked_document,
     load_product_field_edit_document,
     load_product_inference_rules_payload,
     load_product_logistics_type_catalog_payload,
+    load_product_master_v1_1_payload,
     load_product_catalog_payload,
     load_reference_data,
     load_region_product_supply_matrix_payload,
@@ -82,6 +85,7 @@ from app.services import (
     save_map_bundle,
     save_product_field_baked_document,
     save_product_field_edit_document,
+    save_product_master_v1_1_payload,
     save_json,
     set_active_map,
 )
@@ -101,6 +105,7 @@ from app.ui.editor_models import (
     MapSaveRequest,
     PopulationBandDocument,
     ProductEditorCreateRequest,
+    ProductMasterCreateRequest,
     ProductFieldLayerSaveRequest,
     ProductEditorUpdateRequest,
     RoutePlannerLegResponse,
@@ -260,7 +265,7 @@ def _build_product_editor_bootstrap_payload() -> dict[str, Any]:
     reference_cities = load_city_catalog_payload()
     reference_cities.sort(key=lambda item: item["label"])
 
-    product_catalog = load_product_catalog_v2_payload()
+    product_catalog = load_product_catalog_v2_master_payload()
     families = load_product_family_catalog_payload()
     logistics_types = load_product_logistics_type_catalog_payload()
     supply_matrix = load_city_product_supply_matrix_payload()
@@ -319,7 +324,7 @@ def _build_product_editor_v1_bootstrap_payload() -> dict[str, Any]:
     reference_cities = load_city_catalog_payload()
     reference_cities.sort(key=lambda item: item["label"])
 
-    product_catalog = load_product_catalog_v2_payload()
+    product_catalog = load_product_catalog_v2_master_payload()
     families = load_product_family_catalog_payload()
     logistics_types = load_product_logistics_type_catalog_payload()
     supply_matrix = load_city_product_supply_matrix_payload()
@@ -341,6 +346,66 @@ def _build_product_editor_v1_bootstrap_payload() -> dict[str, Any]:
     return {
         "ui": load_ui_payload(),
         "product_editor_v1": product_editor_v1,
+        "map_repository": map_repository_payload(),
+        "cities": city_catalog,
+        "reference_cities": reference_cities,
+        "map_viewport": load_map_viewport_payload(),
+        "map_editor": {
+            "themes": map_editor["themes"],
+            "leaflet_settings": map_editor["leaflet_settings"],
+            "display_settings": map_editor["display_settings"],
+        },
+        "product_family_catalog": families,
+        "product_logistics_type_catalog": logistics_types,
+        "product_catalog": {
+            **product_catalog,
+            "products": products,
+        },
+        "product_supply_matrix": supply_matrix,
+        "product_demand_matrix": demand_matrix,
+        "region_product_supply_matrix": region_supply_matrix,
+        "product_inference_rules": inference_rules,
+        "summary": {
+            "city_count": len(city_catalog),
+            "reference_city_count": len(reference_cities),
+            "product_count": len(products),
+            "family_count": len(families.get("families", [])),
+            "logistics_type_count": len(logistics_types.get("types", [])),
+            "supply_anchor_count": len(supply_matrix.get("items", [])),
+            "selected_product_id": selected_product_id,
+        },
+    }
+
+
+def _build_product_editor_v2_bootstrap_payload() -> dict[str, Any]:
+    active_map = load_active_map_bundle()
+    city_catalog = [city.model_dump(mode="json") for city in active_map.cities]
+    city_catalog.sort(key=lambda item: item["label"])
+    reference_cities = load_city_catalog_payload()
+    reference_cities.sort(key=lambda item: item["label"])
+
+    product_catalog = load_product_catalog_v2_master_payload()
+    families = load_product_family_catalog_payload()
+    logistics_types = load_product_logistics_type_catalog_payload()
+    supply_matrix = load_city_product_supply_matrix_payload()
+    demand_matrix = load_city_product_demand_matrix_payload()
+    region_supply_matrix = load_region_product_supply_matrix_payload()
+    inference_rules = load_product_inference_rules_payload()
+    product_editor_v2 = load_product_editor_v2_payload()
+    map_editor = load_map_editor_payload()
+
+    products = sorted(
+        product_catalog.get("products", []),
+        key=lambda item: (int(item.get("order") or 0), item.get("name", "")),
+    )
+    selected_product_id = next(
+        (item.get("id") for item in products if bool(item.get("is_active", True))),
+        products[0].get("id") if products else None,
+    )
+
+    return {
+        "ui": load_ui_payload(),
+        "product_editor_v2": product_editor_v2,
         "map_repository": map_repository_payload(),
         "cities": city_catalog,
         "reference_cities": reference_cities,
@@ -641,6 +706,15 @@ def create_app() -> FastAPI:
             context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de produtos v1")},
         )
 
+    @app.get("/editor/products_v2", response_class=HTMLResponse, include_in_schema=False)
+    async def product_editor_v2(request: Request) -> HTMLResponse:
+        editor_ui = load_product_editor_v2_payload()
+        return templates.TemplateResponse(
+            request=request,
+            name="product_editor_v2.html",
+            context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de produtos v2")},
+        )
+
     @app.get("/viewer/trucks", response_class=HTMLResponse, include_in_schema=False)
     async def truck_gallery(request: Request) -> HTMLResponse:
         gallery_ui = load_truck_gallery_payload()
@@ -689,8 +763,23 @@ def create_app() -> FastAPI:
     async def product_editor_v1_bootstrap() -> dict[str, Any]:
         return _build_product_editor_v1_bootstrap_payload()
 
+    @app.get("/api/editor/products_v2/bootstrap")
+    async def product_editor_v2_bootstrap() -> dict[str, Any]:
+        return _build_product_editor_v2_bootstrap_payload()
+
     @app.get("/api/editor/products_v1/field")
     async def product_editor_v1_field(
+        map_id: str = Query(min_length=1),
+        product_id: str = Query(min_length=1),
+        layer: str = Query(pattern="^(supply|demand)$"),
+    ) -> dict[str, Any]:
+        return {
+            "field": load_product_field_edit_document(product_id, layer, map_id=map_id),
+            "baked": load_product_field_baked_document(product_id, layer, map_id=map_id),
+        }
+
+    @app.get("/api/editor/products_v2/field")
+    async def product_editor_v2_field(
         map_id: str = Query(min_length=1),
         product_id: str = Query(min_length=1),
         layer: str = Query(pattern="^(supply|demand)$"),
@@ -825,6 +914,103 @@ def create_app() -> FastAPI:
         save_product_field_edit_document(document.product_id, document.layer, field_payload, map_id=document.map_id)
         save_product_field_baked_document(document.product_id, document.layer, baked_payload, map_id=document.map_id)
         return {"field": field_payload, "baked": baked_payload}
+
+    @app.put("/api/editor/products_v2/field")
+    async def save_product_editor_v2_field(document: ProductFieldLayerSaveRequest) -> dict[str, Any]:
+        catalog_document = load_product_catalog_v2_master_payload()
+        _find_product_or_404(list(catalog_document.get("products", [])), document.product_id)
+
+        timestamp = document.updated_at or datetime.now().astimezone().isoformat(timespec="seconds")
+        field_payload = {
+            "id": f"product_field_edit::{document.map_id}::{document.product_id}::{document.layer}",
+            "map_id": document.map_id,
+            "product_id": document.product_id,
+            "layer": document.layer,
+            "version": 1,
+            "updated_at": timestamp,
+            "strokes": document.strokes,
+            "baked_city_values": document.baked_city_values,
+        }
+        baked_payload = {
+            "id": f"product_field_baked::{document.map_id}::{document.product_id}::{document.layer}",
+            "map_id": document.map_id,
+            "product_id": document.product_id,
+            "layer": document.layer,
+            "generated_at": timestamp,
+            "city_values": document.baked_city_values,
+        }
+
+        save_product_field_edit_document(document.product_id, document.layer, field_payload, map_id=document.map_id)
+        save_product_field_baked_document(document.product_id, document.layer, baked_payload, map_id=document.map_id)
+        return {"field": field_payload, "baked": baked_payload}
+
+    @app.post("/api/editor/products_v2/products")
+    async def create_product_v2(document: ProductMasterCreateRequest) -> dict[str, Any]:
+        master_document = load_product_master_v1_1_payload()
+        master_products = list(master_document.get("products", []))
+        family_ids = {item.get("id") for item in load_product_family_catalog_payload().get("families", [])}
+
+        if document.family_id not in family_ids:
+            raise HTTPException(status_code=400, detail="Familia economica invalida para o produto.")
+
+        known_product_ids = {str(item.get("id") or "").strip() for item in master_products}
+        for product_id in [*document.inputs, *document.outputs]:
+            if product_id not in known_product_ids:
+                raise HTTPException(status_code=400, detail=f"Produto relacionado invalido: {product_id}.")
+
+        product_name = str(document.name or "").strip()
+        if not product_name:
+            raise HTTPException(status_code=400, detail="O novo produto precisa de um nome.")
+
+        product_id = _unique_product_id(master_products, product_name)
+        new_master_product = {
+            "id": product_id,
+            "name": product_name,
+            "emoji": str(document.emoji or "\U0001F4E6"),
+            "family_id": document.family_id,
+            "visible": document.status == "visible",
+            "legacy_source_product_id": None,
+            "inputs": list(dict.fromkeys(document.inputs)),
+            "outputs": list(dict.fromkeys(document.outputs)),
+        }
+        master_products.append(new_master_product)
+        master_document["products"] = master_products
+        save_product_master_v1_1_payload(master_document)
+
+        timestamp = datetime.now().astimezone().isoformat(timespec="seconds")
+        for layer in ("supply", "demand"):
+            save_product_field_edit_document(
+                product_id,
+                layer,
+                {
+                    "id": f"product_field_edit::{document.map_id}::{product_id}::{layer}",
+                    "map_id": document.map_id,
+                    "product_id": product_id,
+                    "layer": layer,
+                    "version": 1,
+                    "updated_at": timestamp,
+                    "strokes": [],
+                    "baked_city_values": [],
+                },
+                map_id=document.map_id,
+            )
+            save_product_field_baked_document(
+                product_id,
+                layer,
+                {
+                    "id": f"product_field_baked::{document.map_id}::{product_id}::{layer}",
+                    "map_id": document.map_id,
+                    "product_id": product_id,
+                    "layer": layer,
+                    "generated_at": timestamp,
+                    "city_values": [],
+                },
+                map_id=document.map_id,
+            )
+
+        catalog_document = load_product_catalog_v2_master_payload()
+        product = _find_product_or_404(list(catalog_document.get("products", [])), product_id)
+        return {"product": product}
 
     @app.post("/api/viewer/trucks/generate", response_model=TruckImageGenerateResponse)
     async def generate_truck_image(document: TruckImageGenerateRequest) -> TruckImageGenerateResponse:

@@ -4,7 +4,7 @@
   "product_id": "sal-marinho",
   "layer": "supply",
   "version": 1,
-  "updated_at": "2026-03-31T12:10:50.375Z",
+  "updated_at": "2026-03-31T17:26:57.212Z",
   "strokes": [
     {
       "id": "stroke_1774959023189_31708",
@@ -4623,6 +4623,531 @@
           "lon": -35.98214105681439
         }
       ]
+    },
+    {
+      "id": "stroke_1774977993938_43359",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:33.938Z",
+      "points": [
+        {
+          "lat": -15.0624597964603,
+          "lon": -39.46576773941056
+        },
+        {
+          "lat": -15.0624597964603,
+          "lon": -39.46576773941056
+        },
+        {
+          "lat": -15.0624597964603,
+          "lon": -39.46576773941056
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774977994563_77608",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:34.563Z",
+      "points": [
+        {
+          "lat": -15.986390706141506,
+          "lon": -39.21338474749423
+        },
+        {
+          "lat": -15.986390706141506,
+          "lon": -39.21338474749423
+        },
+        {
+          "lat": -15.986390706141506,
+          "lon": -39.21338474749423
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774977995228_55889",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:35.228Z",
+      "points": [
+        {
+          "lat": -13.15360315676568,
+          "lon": -39.970533723243186
+        },
+        {
+          "lat": -13.15360315676568,
+          "lon": -39.970533723243186
+        },
+        {
+          "lat": -13.15360315676568,
+          "lon": -39.970533723243186
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774977995778_40569",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:35.778Z",
+      "points": [
+        {
+          "lat": -12.760125089584578,
+          "lon": -38.40575917336202
+        },
+        {
+          "lat": -12.710896874694779,
+          "lon": -38.40575917336202
+        },
+        {
+          "lat": -12.710896874694779,
+          "lon": -38.40575917336202
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774977996659_13023",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:36.659Z",
+      "points": [
+        {
+          "lat": -11.229769519886844,
+          "lon": -37.497180402463236
+        },
+        {
+          "lat": -11.229769519886844,
+          "lon": -37.497180402463236
+        },
+        {
+          "lat": -11.229769519886844,
+          "lon": -37.497180402463236
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774977997965_93111",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:37.965Z",
+      "points": [
+        {
+          "lat": -22.88235326542349,
+          "lon": -42.79722323270596
+        },
+        {
+          "lat": -22.88235326542349,
+          "lon": -42.79722323270596
+        },
+        {
+          "lat": -22.88235326542349,
+          "lon": -42.79722323270596
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978002932_52025",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:42.932Z",
+      "points": [
+        {
+          "lat": -32.59267114221026,
+          "lon": -52.208694023897024
+        },
+        {
+          "lat": -32.59267114221026,
+          "lon": -52.208694023897024
+        },
+        {
+          "lat": -32.59267114221026,
+          "lon": -52.208694023897024
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978003530_2009",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:43.530Z",
+      "points": [
+        {
+          "lat": -31.400333457850692,
+          "lon": -52.38446374852032
+        },
+        {
+          "lat": -31.400333457850692,
+          "lon": -52.38446374852032
+        },
+        {
+          "lat": -31.400333457850692,
+          "lon": -52.38446374852032
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978004352_34659",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:44.352Z",
+      "points": [
+        {
+          "lat": -32.59267114221026,
+          "lon": -53.08754264701347
+        },
+        {
+          "lat": -32.81450058474225,
+          "lon": -53.08754264701347
+        },
+        {
+          "lat": -32.81450058474225,
+          "lon": -52.7360031977669
+        },
+        {
+          "lat": -32.81450058474225,
+          "lon": -52.7360031977669
+        },
+        {
+          "lat": -32.81450058474225,
+          "lon": -52.7360031977669
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978005064_28319",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:45.064Z",
+      "points": [
+        {
+          "lat": -32.74061872116111,
+          "lon": -52.911772922390206
+        },
+        {
+          "lat": -32.74061872116111,
+          "lon": -52.911772922390206
+        },
+        {
+          "lat": -32.74061872116111,
+          "lon": -52.911772922390206
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978005572_44376",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:45.572Z",
+      "points": [
+        {
+          "lat": -31.400333457850692,
+          "lon": -52.648118335455266
+        },
+        {
+          "lat": -31.400333457850692,
+          "lon": -52.648118335455266
+        },
+        {
+          "lat": -31.400333457850692,
+          "lon": -52.648118335455266
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978006043_39171",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:46.043Z",
+      "points": [
+        {
+          "lat": -30.79839111297496,
+          "lon": -51.06619081384564
+        },
+        {
+          "lat": -30.79839111297496,
+          "lon": -51.06619081384564
+        },
+        {
+          "lat": -30.79839111297496,
+          "lon": -51.06619081384564
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978006706_85398",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:46.706Z",
+      "points": [
+        {
+          "lat": -30.192655469098046,
+          "lon": -50.802536226910725
+        },
+        {
+          "lat": -30.192655469098046,
+          "lon": -50.802536226910725
+        },
+        {
+          "lat": -30.192655469098046,
+          "lon": -50.802536226910725
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978007326_74134",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:47.326Z",
+      "points": [
+        {
+          "lat": -28.969983131174153,
+          "lon": -49.484263292236015
+        },
+        {
+          "lat": -28.893076696524858,
+          "lon": -49.484263292236015
+        },
+        {
+          "lat": -28.893076696524858,
+          "lon": -49.484263292236015
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978010354_53727",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:50.354Z",
+      "points": [
+        {
+          "lat": -32.09148311512829,
+          "lon": -52.18587053199303
+        },
+        {
+          "lat": -32.09148311512829,
+          "lon": -52.18587053199303
+        },
+        {
+          "lat": -32.09148311512829,
+          "lon": -52.18587053199303
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978010877_67677",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:50.877Z",
+      "points": [
+        {
+          "lat": -32.60313572976504,
+          "lon": -52.539206720675914
+        },
+        {
+          "lat": -32.60313572976504,
+          "lon": -52.539206720675914
+        },
+        {
+          "lat": -32.60313572976504,
+          "lon": -52.539206720675914
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978011404_93440",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:51.404Z",
+      "points": [
+        {
+          "lat": -33.196389542518105,
+          "lon": -52.539206720675914
+        },
+        {
+          "lat": -33.196389542518105,
+          "lon": -52.539206720675914
+        },
+        {
+          "lat": -33.196389542518105,
+          "lon": -52.539206720675914
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978011813_19604",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:51.813Z",
+      "points": [
+        {
+          "lat": -33.32299721187207,
+          "lon": -52.94301950774201
+        },
+        {
+          "lat": -33.32299721187207,
+          "lon": -52.94301950774201
+        },
+        {
+          "lat": -33.32299721187207,
+          "lon": -52.94301950774201
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978012285_78496",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:52.285Z",
+      "points": [
+        {
+          "lat": -33.449421214386646,
+          "lon": -52.99349610612528
+        },
+        {
+          "lat": -33.449421214386646,
+          "lon": -52.99349610612528
+        },
+        {
+          "lat": -33.449421214386646,
+          "lon": -52.99349610612528
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978015122_35392",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:55.122Z",
+      "points": [
+        {
+          "lat": -28.075083574589257,
+          "lon": -49.005844833847426
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774978017056_66166",
+      "product_id": "sal-marinho",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:26:57.056Z",
+      "points": [
+        {
+          "lat": -29.402626248574006,
+          "lon": -49.71251721121311
+        },
+        {
+          "lat": -29.402626248574006,
+          "lon": -49.71251721121311
+        },
+        {
+          "lat": -29.402626248574006,
+          "lon": -49.71251721121311
+        }
+      ]
     }
   ],
   "baked_city_values": [
@@ -4631,8 +5156,8 @@
       "city_label": "Alagoinhas, BA",
       "state_code": "BA",
       "base_value": 1.136664400222151,
-      "manual_delta": 0,
-      "final_value": 1.136664400222151,
+      "manual_delta": 6.901399653002148,
+      "final_value": 8.0380640532243,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 557.523811456588
@@ -4686,8 +5211,8 @@
       "city_label": "Aracaju, SE",
       "state_code": "SE",
       "base_value": 3.5446618243530232,
-      "manual_delta": 0,
-      "final_value": 3.5446618243530232,
+      "manual_delta": 9.094246718691842,
+      "final_value": 12.638908543044865,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 430.45684993385606
@@ -5071,8 +5596,8 @@
       "city_label": "Cabo Frio, RJ",
       "state_code": "RJ",
       "base_value": 45.3510396625103,
-      "manual_delta": 2980.0213718462373,
-      "final_value": 3025.3724115087475,
+      "manual_delta": 2983.8323908288526,
+      "final_value": 3029.1834304913627,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 120.39513572333293
@@ -5258,8 +5783,8 @@
       "city_label": "Chuí, RS",
       "state_code": "RS",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 22.43859217030454,
+      "final_value": 22.43859217030454,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -5324,8 +5849,8 @@
       "city_label": "Criciúma, SC",
       "state_code": "SC",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 24.38387990135298,
+      "final_value": 24.38387990135298,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -5456,8 +5981,8 @@
       "city_label": "Duque de Caxias, RJ",
       "state_code": "RJ",
       "base_value": 50,
-      "manual_delta": 0,
-      "final_value": 50,
+      "manual_delta": 11.128174694390149,
+      "final_value": 61.12817469439015,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -5489,8 +6014,8 @@
       "city_label": "Estância, SE",
       "state_code": "SE",
       "base_value": 2.410438385945807,
-      "manual_delta": 0,
-      "final_value": 2.410438385945807,
+      "manual_delta": 26.509264372278984,
+      "final_value": 28.91970275822479,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 472.7928378477184
@@ -5500,8 +6025,8 @@
       "city_label": "Eunápolis, BA",
       "state_code": "BA",
       "base_value": 0.4765527271133338,
-      "manual_delta": 0,
-      "final_value": 0.4765527271133338,
+      "manual_delta": 9.142007427338406,
+      "final_value": 9.618560154451739,
       "source": "interpolated",
       "anchor_count": 2,
       "nearest_distance_km": 625.9864950027549
@@ -5511,8 +6036,8 @@
       "city_label": "Feira de Santana, BA",
       "state_code": "BA",
       "base_value": 1.0745407349485485,
-      "manual_delta": 0,
-      "final_value": 1.0745407349485485,
+      "manual_delta": 3.8276989232808645,
+      "final_value": 4.902239658229413,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 563.2226185344593
@@ -5533,8 +6058,8 @@
       "city_label": "Florianópolis, SC",
       "state_code": "SC",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 1.9467998223841818,
+      "final_value": 1.9467998223841818,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -5698,8 +6223,8 @@
       "city_label": "Ilhéus, BA",
       "state_code": "BA",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 10.75300274657683,
+      "final_value": 10.75300274657683,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -5742,8 +6267,8 @@
       "city_label": "Itabaiana, SE",
       "state_code": "SE",
       "base_value": 4.324106045295321,
-      "manual_delta": 0,
-      "final_value": 4.324106045295321,
+      "manual_delta": 8.301045059109013,
+      "final_value": 12.625151104404335,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 407.892916500026
@@ -5764,8 +6289,8 @@
       "city_label": "Itaboraí, RJ",
       "state_code": "RJ",
       "base_value": 61.73461210173793,
-      "manual_delta": 381.1025049834984,
-      "final_value": 442.83711708523634,
+      "manual_delta": 405.65876985572595,
+      "final_value": 467.3933819574639,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -5775,8 +6300,8 @@
       "city_label": "Itabuna, BA",
       "state_code": "BA",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 19.085835857728256,
+      "final_value": 19.085835857728256,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -5907,8 +6432,8 @@
       "city_label": "Jequié, BA",
       "state_code": "BA",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 3.622298378367314,
+      "final_value": 3.622298378367314,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -6028,8 +6553,8 @@
       "city_label": "Laguna, SC",
       "state_code": "SC",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 7.681489908660888,
+      "final_value": 7.681489908660888,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -6281,8 +6806,8 @@
       "city_label": "Niterói, RJ",
       "state_code": "RJ",
       "base_value": 60.313526060463026,
-      "manual_delta": 9.800112755749502,
-      "final_value": 70.11363881621253,
+      "manual_delta": 29.252454908751368,
+      "final_value": 89.5659809692144,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -6325,8 +6850,8 @@
       "city_label": "Nova Friburgo, RJ",
       "state_code": "RJ",
       "base_value": 36.47700695222466,
-      "manual_delta": 52.32486000858153,
-      "final_value": 88.8018669608062,
+      "manual_delta": 57.72247431440516,
+      "final_value": 94.19948126662982,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 72.52691221235283
@@ -6512,8 +7037,8 @@
       "city_label": "Pelotas (sul), RS",
       "state_code": "RS",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 48.49222814402691,
+      "final_value": 48.49222814402691,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -6523,8 +7048,8 @@
       "city_label": "Pelotas, RS",
       "state_code": "RS",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 48.49222814402691,
+      "final_value": 48.49222814402691,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -6556,8 +7081,8 @@
       "city_label": "Petrópolis, RJ",
       "state_code": "RJ",
       "base_value": 50,
-      "manual_delta": 0,
-      "final_value": 50,
+      "manual_delta": 9.679546089650795,
+      "final_value": 59.6795460896508,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -6644,8 +7169,8 @@
       "city_label": "Porto Alegre, RS",
       "state_code": "RS",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 17.796622056739917,
+      "final_value": 17.796622056739917,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -6666,8 +7191,8 @@
       "city_label": "Porto Seguro, BA",
       "state_code": "BA",
       "base_value": 0.5608943102291922,
-      "manual_delta": 0,
-      "final_value": 0.5608943102291922,
+      "manual_delta": 11.213256097481162,
+      "final_value": 11.774150407710355,
       "source": "interpolated",
       "anchor_count": 1,
       "nearest_distance_km": 637.0670491980147
@@ -6721,8 +7246,8 @@
       "city_label": "Rafael Jambeiro, BA",
       "state_code": "BA",
       "base_value": 0.7798241395720793,
-      "manual_delta": 0,
-      "final_value": 0.7798241395720793,
+      "manual_delta": 3.6323721611597763,
+      "final_value": 4.412196300731855,
       "source": "interpolated",
       "anchor_count": 2,
       "nearest_distance_km": 597.0827122497299
@@ -6798,8 +7323,8 @@
       "city_label": "Rio Bonito, RJ",
       "state_code": "RJ",
       "base_value": 58.29799585970177,
-      "manual_delta": 1267.031615997481,
-      "final_value": 1325.3296118571827,
+      "manual_delta": 1289.2651488834417,
+      "final_value": 1347.5631447431435,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 60.47426655468314
@@ -6820,8 +7345,8 @@
       "city_label": "Rio de Janeiro, RJ",
       "state_code": "RJ",
       "base_value": 100,
-      "manual_delta": 0,
-      "final_value": 100,
+      "manual_delta": 15.721833154346061,
+      "final_value": 115.72183315434606,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -6864,8 +7389,8 @@
       "city_label": "Salvador, BA",
       "state_code": "BA",
       "base_value": 0.4583830798042539,
-      "manual_delta": 0,
-      "final_value": 0.4583830798042539,
+      "manual_delta": 20.61159347684535,
+      "final_value": 21.069976556649603,
       "source": "interpolated",
       "anchor_count": 2,
       "nearest_distance_km": 647.7790035688458
@@ -6985,8 +7510,8 @@
       "city_label": "São Gonçalo, RJ",
       "state_code": "RJ",
       "base_value": 60.313526060463026,
-      "manual_delta": 33.0417462715724,
-      "final_value": 93.35527233203543,
+      "manual_delta": 54.55472377330121,
+      "final_value": 114.86824983376424,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -7029,8 +7554,8 @@
       "city_label": "São José, SC",
       "state_code": "SC",
       "base_value": 0,
-      "manual_delta": 0,
-      "final_value": 0,
+      "manual_delta": 2.3129238156907803,
+      "final_value": 2.3129238156907803,
       "source": "none",
       "anchor_count": 0,
       "nearest_distance_km": null
@@ -7216,8 +7741,8 @@
       "city_label": "Teresópolis, RJ",
       "state_code": "RJ",
       "base_value": 55.1351746868244,
-      "manual_delta": 0,
-      "final_value": 55.1351746868244,
+      "manual_delta": 10.617389445809707,
+      "final_value": 65.7525641326341,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45

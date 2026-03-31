@@ -30,6 +30,12 @@
       "label": "Energia",
       "color": "#c8501e",
       "order": 5
+    },
+    {
+      "id": "derivado",
+      "label": "Derivado",
+      "color": "#486b88",
+      "order": 6
     }
   ]
 }

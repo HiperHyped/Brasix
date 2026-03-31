@@ -1,0 +1,80 @@
+Você está montando a base econométrica inicial do jogo Brasix, um jogo de logística focado no Brasil.
+
+Objetivo:
+Produzir uma base estruturada para os 30 produtos iniciais já existentes no catálogo do jogo. Não expandir a lista de produtos ainda. Priorizar fontes oficiais e metodologia transparente.
+
+Produtos-alvo:
+Soja, Milho, Cana-de-açúcar, Algodão, Café, Arroz, Trigo, Laranja, Feijão, Mandioca, Bovinos, Suínos, Aves, Leite, Ovinos, Papel/Celulose, Madeira, Pesca/Aquicultura, Ferro, Ouro, Bauxita, Manganês, Nióbio, Cobre, Fosfato, Carvão Mineral, Sal Marinho, Petróleo, Gás Natural, Etanol.
+
+Entregáveis:
+1. `product_metadata_enrichment.csv`
+2. `product_supply_baseline.csv`
+3. `product_demand_baseline.csv`
+4. `product_processing_and_hub_notes.md`
+5. `sources_index.md`
+
+Regras:
+- Priorize fontes oficiais brasileiras ou internacionais primárias.
+- Sempre registrar fonte, ano, granularidade geográfica e nível de confiança.
+- Quando não houver dado direto de demanda, estimar por proxy e marcar explicitamente como proxy.
+- Não inventar precisão falsa.
+- Se houver conflito entre fontes, manter a mais confiável e registrar a divergência.
+- Preferir dados utilizáveis por UF, mesorregião, região intermediária, município ou polos econômicos.
+- Manter metodologia reproduzível.
+
+Fontes prioritárias sugeridas:
+- IBGE SIDRA
+- IBGE PAM, PPM, PEVS
+- CONAB
+- ANP
+- EPE
+- ANM
+- MAPA
+- Comex Stat
+- ANTAQ
+- dados estaduais oficiais quando necessários
+
+Arquivo 1: `product_metadata_enrichment.csv`
+Colunas:
+product_id, product_name, economic_family, logistics_type, default_unit, density_class, value_class, perishable, fragile, hazardous, temperature_control_required, notes
+
+Arquivo 2: `product_supply_baseline.csv`
+Colunas:
+product_id, geography_type, geography_name, geography_code, year, month, metric_name, value, unit, source_name, source_url, methodology, confidence
+Regras:
+- `month` pode ficar vazio quando o dado for anual.
+- `metric_name` pode ser production, extraction, herd_size, stock, landed_volume, refining_output etc.
+- Se não houver município, aceitar UF ou região como baseline.
+- Marcar claramente quando o dado for observação direta e quando for agregação.
+
+Arquivo 3: `product_demand_baseline.csv`
+Colunas:
+product_id, geography_type, geography_name, geography_code, year, month, demand_kind, driver, value, unit, source_name, source_url, methodology, confidence
+Regras:
+- `demand_kind` pode ser consumo_urbano, insumo_industrial, hub_logistico, exportacao, processamento, consumo_rural.
+- Se a demanda for proxy, descrever o cálculo em `methodology`.
+- Procurar polos consumidores e transformadores, não apenas cidades populosas.
+
+Arquivo 4: `product_processing_and_hub_notes.md`
+Para cada produto, listar:
+- principais regiões de oferta
+- principais polos de consumo/processamento
+- sazonalidade relevante
+- observações logísticas importantes
+- sugestão de instalações econômicas associadas
+
+Arquivo 5: `sources_index.md`
+Listar todas as fontes usadas, com:
+- nome
+- URL
+- órgão
+- ano/base temporal
+- cobertura geográfica
+- observações de confiabilidade
+
+Critérios de sucesso:
+- Todos os 30 produtos cobertos
+- Oferta inicial utilizável para mapa de calor
+- Demanda inicial ao menos em nível proxy utilizável
+- Metodologia clara para interpolação posterior no jogo
+- Sem ampliar o catálogo além dos 30 produtos iniciais

@@ -1,0 +1,23 @@
+{
+  "id": "ui_layout_desktop_product_editor_v2",
+  "css_variables": {
+    "--product-left-col": "332px",
+    "--product-right-col": "372px",
+    "--product-side-min-col": "280px",
+    "--product-resizer-width": "10px",
+    "--product-map-min-col": "640px",
+    "--product-panel-gap": "12px",
+    "--product-section-padding": "12px",
+    "--product-card-padding": "12px",
+    "--product-card-gap": "10px",
+    "--product-control-height": "34px",
+    "--product-control-radius": "10px",
+    "--product-button-height": "34px",
+    "--product-list-gap": "8px",
+    "--product-map-inset-top": "12px",
+    "--product-map-inset-side": "12px",
+    "--product-map-inset-bottom": "12px",
+    "--product-legend-width": "224px",
+    "--product-status-width": "380px"
+  }
+}

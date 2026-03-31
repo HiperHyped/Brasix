@@ -3783,6 +3783,10 @@ html[data-editor-theme="night"] .truck-gallery-image-placeholder-mark {
   overflow: hidden;
 }
 
+.product-editor-right-tabs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .product-editor-empty,
 .product-editor-city-metric {
   border: 1px solid var(--border);
@@ -3892,6 +3896,27 @@ html[data-editor-theme="night"] .truck-gallery-image-placeholder-mark {
 
 .product-editor-form-grid .field.is-span-2 {
   grid-column: span 2;
+}
+
+.product-editor-multi-select {
+  min-height: 220px;
+  padding: 8px 10px;
+}
+
+.product-editor-emoji-select {
+  min-height: 220px;
+  padding: 8px 10px;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.product-editor-emoji-select option {
+  font-size: 1.45rem;
+  padding: 6px 8px;
+}
+
+.product-editor-emoji-select optgroup {
+  font-size: 0.84rem;
 }
 
 .product-editor-checkbox-grid {

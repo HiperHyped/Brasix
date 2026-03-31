@@ -4,7 +4,7 @@
   "product_id": "manganes",
   "layer": "supply",
   "version": 1,
-  "updated_at": "2026-03-31T12:07:28.856Z",
+  "updated_at": "2026-03-31T17:06:02.087Z",
   "strokes": [
     {
       "id": "stroke_1774958827822_56223",
@@ -3577,6 +3577,131 @@
           "lon": -46.986039504365905
         }
       ]
+    },
+    {
+      "id": "stroke_1774976759988_64586",
+      "product_id": "manganes",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:05:59.988Z",
+      "points": [
+        {
+          "lat": -4.132057469229918,
+          "lon": -51.529674753010624
+        },
+        {
+          "lat": -4.132057469229918,
+          "lon": -51.529674753010624
+        },
+        {
+          "lat": -4.132057469229918,
+          "lon": -51.529674753010624
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774976760617_98930",
+      "product_id": "manganes",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:06:00.617Z",
+      "points": [
+        {
+          "lat": -5.94187995926627,
+          "lon": -50.92395557241144
+        },
+        {
+          "lat": -5.94187995926627,
+          "lon": -50.92395557241144
+        },
+        {
+          "lat": -5.94187995926627,
+          "lon": -50.92395557241144
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774976761105_32686",
+      "product_id": "manganes",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:06:01.105Z",
+      "points": [
+        {
+          "lat": -6.142637803922428,
+          "lon": -50.065853399895964
+        },
+        {
+          "lat": -6.142637803922428,
+          "lon": -50.065853399895964
+        },
+        {
+          "lat": -6.142637803922428,
+          "lon": -50.065853399895964
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774976761496_15622",
+      "product_id": "manganes",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:06:01.496Z",
+      "points": [
+        {
+          "lat": -5.238666779454767,
+          "lon": -49.10679803061396
+        },
+        {
+          "lat": -5.238666779454767,
+          "lon": -49.10679803061396
+        },
+        {
+          "lat": -5.238666779454767,
+          "lon": -49.10679803061396
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774976761888_1708",
+      "product_id": "manganes",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T17:06:01.888Z",
+      "points": [
+        {
+          "lat": -4.484347749650111,
+          "lon": -48.50107885001478
+        },
+        {
+          "lat": -4.484347749650111,
+          "lon": -48.50107885001478
+        },
+        {
+          "lat": -4.484347749650111,
+          "lon": -48.50107885001478
+        }
+      ]
     }
   ],
   "baked_city_values": [
@@ -5114,8 +5239,8 @@
       "city_label": "Marabá, PA",
       "state_code": "PA",
       "base_value": 1750,
-      "manual_delta": 24.380531827122542,
-      "final_value": 1774.3805318271225,
+      "manual_delta": 57.859420137252755,
+      "final_value": 1807.8594201372528,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -5378,8 +5503,8 @@
       "city_label": "Parauapebas, PA",
       "state_code": "PA",
       "base_value": 1073.0738705950375,
-      "manual_delta": 178.9560509539701,
-      "final_value": 1252.0299215490077,
+      "manual_delta": 211.12809352095616,
+      "final_value": 1284.2019641159936,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 113.77458022017042
@@ -6324,8 +6449,8 @@
       "city_label": "Vitória do Xingu, PA",
       "state_code": "PA",
       "base_value": 1018.0430921732893,
-      "manual_delta": 337.6996621328673,
-      "final_value": 1355.7427543061567,
+      "manual_delta": 338.36548530598617,
+      "final_value": 1356.4085774792754,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 56.399276533221865

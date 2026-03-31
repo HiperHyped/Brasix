@@ -1,0 +1,169 @@
+Considere duas planilhas anexas:
+
+1. uma planilha de oferta
+2. uma planilha de demanda
+
+Seu trabalho é reescrever essas planilhas para o jogo Brasix.
+
+Objetivo:
+- manter a base atual dessas planilhas
+- incluir os novos produtos
+- ajustar oferta e demanda para que a cadeia produtiva faça sentido
+- entregar o resultado em um novo arquivo Excel
+
+Importante:
+Este trabalho é para um jogo.
+Não precisamos de pesquisa intensa nem de dados muito precisos.
+Precisamos de uma base plausível, coerente, completa e boa para gameplay.
+
+O que fazer:
+- use as duas planilhas anexas como ponto de partida
+- não jogue fora o que já existe
+- preserve os valores antigos quando fizer sentido
+- inclua os novos produtos
+- preencha valores faltantes dos produtos novos com lógica simples e plausível
+- não deixe os novos produtos quase todos zerados
+
+Regra principal:
+Se um produto é insumo de outro, a demanda do insumo deve acompanhar a oferta do produto que usa esse insumo.
+
+Ou seja:
+- se houver oferta de um produto derivado, deve haver demanda para seus insumos
+- essa regra deve ser aplicada de forma prática e consistente
+
+Exemplos obrigatórios:
+- oferta de Celulose -> demanda de Madeira
+- oferta de Móveis -> demanda de Madeira
+- oferta de Fertilizante -> demanda de Fosfato e Gás Natural
+- oferta de Plástico -> demanda de Petróleo e Gás Natural
+- oferta de Embalagem -> demanda de Celulose e Plástico
+- oferta de Eletrônicos -> demanda de Cobre e Plástico
+- oferta de Veículos -> demanda de Alumínio, Terras Raras e Plástico
+- oferta de Açúcar -> demanda de Cana-de-açúcar
+- oferta de Etanol -> demanda de Cana-de-açúcar
+- oferta de Tecido -> demanda de Algodão
+- oferta de Pão -> demanda de Trigo
+- oferta de Bebida -> demanda de Laranja e Açúcar
+- oferta de Lácteos -> demanda de Leite
+- oferta de Carne -> demanda de Bovinos e Suínos
+- oferta de Ovo -> demanda de Aves
+- oferta de Aço -> demanda de Ferro e Carvão
+
+Lista de produtos a considerar
+
+Produtos visíveis:
+- Soja
+- Milho
+- Cana-de-açúcar
+- Algodão
+- Café
+- Arroz
+- Trigo
+- Laranja
+- Feijão
+- Mandioca
+- Bovinos
+- Suínos
+- Aves
+- Leite
+- Celulose
+- Madeira
+- Pesca
+- Ferro
+- Alumínio
+- Terras Raras
+- Cobre
+- Fosfato
+- Carvão
+- Sal Marinho
+- Petróleo
+- Gás Natural
+- Etanol
+- Açúcar
+- Tecido
+- Pão
+- Bebida
+- Lácteos
+- Carne
+- Ovo
+- Móveis
+- Aço
+- Fertilizante
+- Plástico
+- Embalagem
+- Eletrônicos
+- Veículos
+
+Produtos ocultos, mas ainda existentes:
+- Ouro
+- Ovinos
+- Manganês
+
+Relações de cadeia que devem ser respeitadas
+
+Agro e pecuária:
+- Soja -> Suínos
+- Soja -> Bovinos
+- Milho -> Aves
+- Bovinos -> Carne
+- Bovinos -> Leite
+- Suínos -> Carne
+- Aves -> Ovo
+- Leite -> Lácteos
+- Cana-de-açúcar -> Açúcar
+- Cana-de-açúcar -> Etanol
+- Algodão -> Tecido
+- Trigo -> Pão
+- Laranja + Açúcar -> Bebida
+
+Florestal:
+- Madeira -> Celulose
+- Madeira -> Móveis
+- Celulose + Plástico -> Embalagem
+
+Mineral, energia e indústria:
+- Ferro + Carvão -> Aço
+- Fosfato + Gás Natural -> Fertilizante
+- Petróleo + Gás Natural -> Plástico
+- Cobre + Plástico -> Eletrônicos
+- Alumínio + Terras Raras + Plástico -> Veículos
+
+Retroalimentação agrícola:
+- Fertilizante -> Soja
+- Fertilizante -> Milho
+- Fertilizante -> Cana-de-açúcar
+- Fertilizante -> Algodão
+- Fertilizante -> Café
+- Fertilizante -> Arroz
+- Fertilizante -> Trigo
+- Fertilizante -> Laranja
+- Fertilizante -> Feijão
+- Fertilizante -> Mandioca
+
+Regras práticas:
+- não precisa inventar precisão alta
+- use lógica regional e produtiva
+- use bom senso
+- se faltar dado direto, infira
+- prefira completar a planilha de forma coerente em vez de deixar vazios ou zeros
+
+O que não fazer:
+- não apagar a base antiga
+- não deixar os novos produtos quase todos zerados
+- não ignorar a relação entre derivados e insumos
+- não transformar isso em pesquisa longa demais
+
+Formato de saída:
+Entregue um novo arquivo Excel com 2 abas:
+
+1. `oferta_reescrita`
+2. `demanda_reescrita`
+
+Cada aba deve manter o mesmo formato estrutural das planilhas anexas, apenas com os dados reescritos e expandidos.
+
+Checklist final:
+- os novos produtos foram incluídos
+- a estrutura das planilhas foi mantida
+- os insumos ganharam demanda a partir da oferta dos derivados
+- a base antiga foi preservada
+- o resultado ficou bom para jogo

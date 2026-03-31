@@ -23,6 +23,7 @@ from app.config import (
     PRODUCT_CATALOG_PATH,
     PRODUCT_CATALOG_V2_PATH,
     PRODUCT_INFERENCE_RULES_PATH,
+    PRODUCT_MASTER_V1_1_PATH,
     PRODUCT_LOGISTICS_TYPE_CATALOG_PATH,
     REGION_PRODUCT_SUPPLY_MATRIX_PATH,
     ROUTE_GEOMETRY_TYPES_PATH,
@@ -55,16 +56,19 @@ from app.config import (
     UI_LAYOUT_DESKTOP_MAP_EDITOR_V2_PATH,
     UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_PATH,
     UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V1_PATH,
+    UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V2_PATH,
     UI_LAYOUT_DESKTOP_ROUTE_PLANNER_PATH,
     UI_LAYOUT_DESKTOP_TRUCK_GALLERY_PATH,
     UI_MAP_EDITOR_SCREEN_PATH,
     UI_NAVIGATION_ITEMS_PATH,
     UI_PRODUCT_EDITOR_SCREEN_PATH,
     UI_PRODUCT_EDITOR_V1_SCREEN_PATH,
+    UI_PRODUCT_EDITOR_V2_SCREEN_PATH,
     UI_MAP_REPOSITORY_CONTROLS_PATH,
     UI_SHORTCUTS_ROUTE_PLANNER_PATH,
     UI_SHORTCUTS_MAP_EDITOR_PATH,
     UI_SHORTCUTS_PRODUCT_EDITOR_V1_PATH,
+    UI_SHORTCUTS_PRODUCT_EDITOR_V2_PATH,
     UI_TRUCK_GALLERY_SCREEN_PATH,
     PRODUCT_FIELD_EDITS_DIR,
     PRODUCT_FIELD_BAKED_DIR,
@@ -80,6 +84,7 @@ DEFAULT_PRODUCT_FAMILY_DOCUMENT = {
         {"id": "florestal", "label": "Florestal", "color": "#2d7a63", "order": 3},
         {"id": "mineral", "label": "Mineral", "color": "#b46a2b", "order": 4},
         {"id": "energia", "label": "Energia", "color": "#c8501e", "order": 5},
+        {"id": "derivado", "label": "Derivado", "color": "#486b88", "order": 6},
     ],
 }
 
@@ -160,6 +165,15 @@ CATEGORY_PRODUCT_DEFAULTS = {
         "hazardous": True,
         "temperature_control_required": False,
     },
+    "derivado": {
+        "family_id": "derivado",
+        "density_class": "medium",
+        "value_class": "medium",
+        "perishable": False,
+        "fragile": False,
+        "hazardous": False,
+        "temperature_control_required": False,
+    },
 }
 
 LEGACY_PRODUCT_LOGISTICS_TYPES = {
@@ -228,6 +242,83 @@ PRODUCT_METADATA_OVERRIDES = {
     "petroleo": {"value_class": "strategic"},
     "gas-natural": {"density_class": "low", "value_class": "strategic"},
     "etanol": {"value_class": "high"},
+}
+
+MASTER_PRODUCT_LOGISTICS_TYPES = {
+    "soja": "granel_seco",
+    "milho": "granel_seco",
+    "cana-de-acucar": "granel_seco",
+    "algodao": "carga_geral_paletizada",
+    "cafe": "granel_seco",
+    "arroz": "granel_seco",
+    "trigo": "granel_seco",
+    "laranja": "carga_geral_perecivel",
+    "feijao": "granel_seco",
+    "mandioca": "granel_seco",
+    "bovinos": "animais_vivos",
+    "suinos": "animais_vivos",
+    "aves": "animais_vivos",
+    "leite": "granel_liquido",
+    "celulose": "carga_geral_paletizada",
+    "madeira": "carga_aberta",
+    "pesca": "frigorificado",
+    "ferro": "granel_mineral",
+    "aluminio": "granel_mineral",
+    "terras-raras": "carga_valiosa",
+    "cobre": "granel_mineral",
+    "fosfato": "granel_mineral",
+    "carvao": "granel_mineral",
+    "sal-marinho": "granel_mineral",
+    "petroleo": "granel_liquido",
+    "gas-natural": "granel_gasoso_pressurizado",
+    "etanol": "granel_liquido",
+    "acucar": "granel_seco",
+    "tecido": "carga_geral_paletizada",
+    "pao": "carga_geral_perecivel",
+    "bebida": "carga_geral_paletizada",
+    "lacteos": "frigorificado",
+    "carne": "frigorificado",
+    "ovo": "carga_geral_perecivel",
+    "moveis": "carga_geral_paletizada",
+    "aco": "carga_aberta",
+    "fertilizante": "granel_seco",
+    "plastico": "carga_geral_paletizada",
+    "embalagem": "carga_geral_paletizada",
+    "eletronicos": "carga_valiosa",
+    "veiculos": "carga_aberta",
+    "ouro": "carga_valiosa",
+    "ovinos": "animais_vivos",
+    "manganes": "granel_mineral",
+}
+
+MASTER_PRODUCT_UNIT_OVERRIDES = {
+    "bovinos": "mil cab",
+    "suinos": "mil cab",
+    "aves": "mil cab",
+    "ovinos": "mil cab",
+    "leite": "mil l",
+    "pesca": "mil t",
+    "eletronicos": "mil un",
+    "veiculos": "mil un",
+}
+
+MASTER_PRODUCT_METADATA_OVERRIDES = {
+    "aluminio": {"density_class": "high", "value_class": "high"},
+    "terras-raras": {"density_class": "high", "value_class": "premium"},
+    "acucar": {"density_class": "high", "value_class": "high"},
+    "tecido": {"density_class": "low", "fragile": True},
+    "pao": {"perishable": True, "fragile": True},
+    "bebida": {"value_class": "high", "fragile": True},
+    "lacteos": {"perishable": True, "temperature_control_required": True, "value_class": "high"},
+    "carne": {"perishable": True, "temperature_control_required": True, "value_class": "high"},
+    "ovo": {"perishable": True, "fragile": True, "value_class": "high"},
+    "moveis": {"fragile": True, "value_class": "high"},
+    "aco": {"density_class": "very_high", "value_class": "high"},
+    "fertilizante": {"density_class": "high", "hazardous": True},
+    "plastico": {"density_class": "medium", "value_class": "high"},
+    "embalagem": {"density_class": "low", "fragile": True},
+    "eletronicos": {"fragile": True, "value_class": "premium"},
+    "veiculos": {"fragile": True, "value_class": "premium"},
 }
 
 DEFAULT_PRODUCT_INFERENCE_RULES = {
@@ -495,9 +586,23 @@ def load_city_product_demand_seed_payload(path: Path | None = None) -> list[dict
 
 def load_product_family_catalog_payload(path: Path | None = None) -> dict[str, Any]:
     target = path or PRODUCT_FAMILY_CATALOG_PATH
-    if not target.exists():
-        return dict(DEFAULT_PRODUCT_FAMILY_DOCUMENT)
-    return load_json(target)
+    families_document = dict(DEFAULT_PRODUCT_FAMILY_DOCUMENT)
+    if target.exists():
+        payload = load_json(target)
+        if isinstance(payload, dict):
+            families_document = payload
+    merged_by_id = {
+        str(item.get("id") or ""): dict(item)
+        for item in families_document.get("families", [])
+        if str(item.get("id") or "").strip()
+    }
+    for default_item in DEFAULT_PRODUCT_FAMILY_DOCUMENT.get("families", []):
+        merged_by_id.setdefault(default_item["id"], dict(default_item))
+    families = sorted(merged_by_id.values(), key=lambda item: (int(item.get("order") or 0), str(item.get("label") or "")))
+    return {
+        "id": families_document.get("id") or DEFAULT_PRODUCT_FAMILY_DOCUMENT["id"],
+        "families": families,
+    }
 
 
 def load_product_logistics_type_catalog_payload(path: Path | None = None) -> dict[str, Any]:
@@ -525,6 +630,106 @@ def load_product_catalog_v2_payload(path: Path | None = None) -> dict[str, Any]:
             "seed_source": payload.get("seed_source"),
             "products": products,
         }
+    return seed_document
+
+
+def load_product_master_v1_1_payload(path: Path | None = None) -> dict[str, Any]:
+    target = path or PRODUCT_MASTER_V1_1_PATH
+    if not target.exists():
+        return {"id": "product_master_v1_1", "version": "v1.1", "products": []}
+    payload = load_json(target)
+    if isinstance(payload, dict):
+        payload.setdefault("id", "product_master_v1_1")
+        payload.setdefault("version", "v1.1")
+        payload.setdefault("products", [])
+        return payload
+    return {"id": "product_master_v1_1", "version": "v1.1", "products": list(payload)}
+
+
+def save_product_master_v1_1_payload(payload: dict[str, Any], path: Path | None = None) -> dict[str, Any]:
+    return save_json(path or PRODUCT_MASTER_V1_1_PATH, payload)
+
+
+def _family_color_lookup() -> dict[str, str]:
+    return {
+        str(item.get("id") or ""): str(item.get("color") or "#4f8593")
+        for item in load_product_family_catalog_payload().get("families", [])
+        if str(item.get("id") or "").strip()
+    }
+
+
+def _build_product_record_from_master(master_item: dict[str, Any], order: int, seed_by_id: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    product_id = str(master_item.get("id") or "").strip() or f"produto_master_{order}"
+    legacy_source_id = str(master_item.get("legacy_source_product_id") or "").strip()
+    base_seed = dict(seed_by_id.get(product_id) or seed_by_id.get(legacy_source_id) or {})
+    family_id = str(master_item.get("family_id") or base_seed.get("family_id") or "agro").strip() or "agro"
+    defaults = CATEGORY_PRODUCT_DEFAULTS.get(family_id, CATEGORY_PRODUCT_DEFAULTS["agro"])
+    family_colors = _family_color_lookup()
+    logistics_type_id = MASTER_PRODUCT_LOGISTICS_TYPES.get(
+        product_id,
+        str(base_seed.get("logistics_type_id") or "carga_geral_paletizada"),
+    )
+    record = {
+        **base_seed,
+        "id": product_id,
+        "order": order,
+        "name": master_item.get("name") or base_seed.get("name") or product_id,
+        "short_name": master_item.get("name") or base_seed.get("short_name") or base_seed.get("name") or product_id,
+        "emoji": master_item.get("emoji") or base_seed.get("emoji") or "\U0001F4E6",
+        "family_id": family_id,
+        "logistics_type_id": logistics_type_id,
+        "unit": MASTER_PRODUCT_UNIT_OVERRIDES.get(
+            product_id,
+            str(base_seed.get("unit") or "mil t").strip() or "mil t",
+        ),
+        "color": str(base_seed.get("color") or family_colors.get(family_id) or "#4f8593"),
+        "source_kind": "master_v1_1_seed",
+        "source_column": str(base_seed.get("source_column") or "").strip(),
+        "legacy_category": str(base_seed.get("legacy_category") or family_id).strip(),
+        "legacy_source_product_id": legacy_source_id or None,
+        "is_active": bool(master_item.get("visible", True)),
+        "visible": bool(master_item.get("visible", True)),
+        "density_class": str(base_seed.get("density_class") or defaults["density_class"]).strip() or defaults["density_class"],
+        "value_class": str(base_seed.get("value_class") or defaults["value_class"]).strip() or defaults["value_class"],
+        "perishable": bool(base_seed.get("perishable", defaults["perishable"])),
+        "fragile": bool(base_seed.get("fragile", defaults["fragile"])),
+        "hazardous": bool(base_seed.get("hazardous", defaults["hazardous"])),
+        "temperature_control_required": bool(
+            base_seed.get("temperature_control_required", defaults["temperature_control_required"])
+        ),
+        "compatible_body_type_ids": LOGISTICS_COMPATIBLE_BODIES.get(logistics_type_id, ["truck_body_bau"]),
+        "notes": str(base_seed.get("notes") or "").strip(),
+        "inputs": list(master_item.get("inputs") or []),
+        "outputs": list(master_item.get("outputs") or []),
+        "status": "visible" if bool(master_item.get("visible", True)) else "hidden",
+    }
+    record.update(MASTER_PRODUCT_METADATA_OVERRIDES.get(product_id, {}))
+    return _normalize_product_record(record, order)
+
+
+def load_product_catalog_v2_master_payload() -> dict[str, Any]:
+    legacy_seed_document = _build_legacy_product_catalog_v2_document()
+    seed_by_id = {
+        str(item.get("id") or ""): dict(item)
+        for item in legacy_seed_document.get("products", [])
+        if str(item.get("id") or "").strip()
+    }
+    master_document = load_product_master_v1_1_payload()
+    seed_document = {
+        "id": "product_catalog_v2_master",
+        "seed_source": {"kind": "product_master_v1_1", "path": "product_master_v1_1.json"},
+        "products": [
+            _build_product_record_from_master(item, index, seed_by_id)
+            for index, item in enumerate(master_document.get("products", []), start=1)
+        ],
+    }
+
+    target = PRODUCT_CATALOG_V2_PATH
+    if not target.exists():
+        return seed_document
+    payload = load_json(target)
+    if isinstance(payload, dict) and "products" in payload:
+        return _merge_product_catalog_documents(seed_document, payload)
     return seed_document
 
 
@@ -667,6 +872,18 @@ def load_product_editor_v1_payload() -> dict[str, Any]:
     return {
         "screen": load_json(UI_PRODUCT_EDITOR_V1_SCREEN_PATH),
         "layout_desktop": load_json(UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V1_PATH),
+        "themes": load_json(UI_MAP_EDITOR_THEMES_PATH),
+        "shortcuts": shortcuts,
+    }
+
+
+def load_product_editor_v2_payload() -> dict[str, Any]:
+    shortcuts = dict(DEFAULT_PRODUCT_EDITOR_V1_SHORTCUTS)
+    if UI_SHORTCUTS_PRODUCT_EDITOR_V2_PATH.exists():
+        shortcuts = load_json(UI_SHORTCUTS_PRODUCT_EDITOR_V2_PATH)
+    return {
+        "screen": load_json(UI_PRODUCT_EDITOR_V2_SCREEN_PATH),
+        "layout_desktop": load_json(UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V2_PATH),
         "themes": load_json(UI_MAP_EDITOR_THEMES_PATH),
         "shortcuts": shortcuts,
     }
