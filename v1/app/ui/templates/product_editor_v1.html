@@ -70,13 +70,13 @@
             <span id="product-editor-v1-tool-toggle-label" class="eyebrow">Ferramenta</span>
             <div id="product-editor-v1-tool-toggle" class="product-editor-v1-tool-grid" role="group" aria-label="Ferramentas de edicao">
               <button class="product-editor-layer-button product-editor-icon-button is-active" type="button" data-tool="select" title="Selecionar" aria-label="Selecionar">
-                <span class="material-symbols-outlined">arrow_selector_tool</span>
+                <span class="material-symbols-outlined">pan_tool_alt</span>
               </button>
-              <button class="product-editor-layer-button product-editor-icon-button" type="button" data-tool="brush_add" title="Somar com pincel" aria-label="Somar com pincel">
-                <span class="material-symbols-outlined">add_circle</span>
-              </button>
-              <button class="product-editor-layer-button product-editor-icon-button" type="button" data-tool="brush_subtract" title="Subtrair com pincel" aria-label="Subtrair com pincel">
-                <span class="material-symbols-outlined">remove_circle</span>
+              <button class="product-editor-layer-button product-editor-icon-button" type="button" data-tool="modify" title="Modificar com pincel" aria-label="Modificar com pincel">
+                <span class="product-editor-icon-pair" aria-hidden="true">
+                  <span class="material-symbols-outlined">add_circle</span>
+                  <span class="material-symbols-outlined">remove_circle</span>
+                </span>
               </button>
             </div>
           </section>
@@ -102,20 +102,6 @@
             </div>
           </section>
 
-          <div class="product-editor-actions-row">
-            <button id="product-editor-v1-save-field-button" class="editor-header-action" type="button">
-              <span class="material-symbols-outlined">save</span>
-              <span id="product-editor-v1-save-field-label">Salvar campo</span>
-            </button>
-            <button id="product-editor-v1-reset-field-button" class="ghost-button" type="button">Limpar camada</button>
-          </div>
-
-          <div class="product-editor-actions-row">
-            <button id="product-editor-v1-undo-button" class="secondary-button" type="button">Desfazer</button>
-            <button id="product-editor-v1-redo-button" class="secondary-button" type="button">Refazer</button>
-          </div>
-
-          <p class="product-editor-city-note">Salvar campo grava as pinceladas editaveis e o bake por cidade canonica.</p>
         </div>
       </section>
 
@@ -161,22 +147,10 @@
 
         <div class="product-editor-detail">
           <section class="product-editor-city-section">
-            <div class="section-head product-editor-city-head">
-              <div>
-                <p class="eyebrow">Produto</p>
-                <h3>Resumo do produto</h3>
-              </div>
-            </div>
             <div id="product-editor-v1-product-detail" class="product-editor-city-detail"></div>
           </section>
 
           <section class="product-editor-city-section">
-            <div class="section-head product-editor-city-head">
-              <div>
-                <p class="eyebrow">Cidade</p>
-                <h3 id="product-editor-v1-city-panel-title">Cidade selecionada</h3>
-              </div>
-            </div>
             <div id="product-editor-v1-city-detail" class="product-editor-city-detail"></div>
           </section>
         </div>
@@ -201,7 +175,7 @@
 
 <script type="module">
   const productEditorV1ModuleUrl = new URL("{{ request.url_for('static', path='js/editors/product-editor-v1.js') }}", window.location.href);
-  productEditorV1ModuleUrl.searchParams.set("v", "20260330-products-v1-2");
+  productEditorV1ModuleUrl.searchParams.set("v", "20260331-products-v1-6");
 
   function showProductEditorV1LoadError(error) {
     const target = document.getElementById("product-editor-v1-status");

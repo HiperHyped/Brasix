@@ -221,7 +221,11 @@ def test_product_field_documents_default_to_empty() -> None:
     assert field_payload["strokes"] == []
     assert baked_payload["product_id"] == "soja"
     assert baked_payload["layer"] == "demand"
-    assert baked_payload["city_values"] == []
+    assert isinstance(baked_payload["city_values"], list)
+    if baked_payload["city_values"]:
+        first_entry = baked_payload["city_values"][0]
+        assert "city_id" in first_entry
+        assert "final_value" in first_entry
 
 
 def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:

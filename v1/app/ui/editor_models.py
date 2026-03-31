@@ -673,6 +673,7 @@ class ProductEditorUpdateRequest(BaseModel):
 
 
 class ProductFieldLayerSaveRequest(BaseModel):
+    map_id: str = Field(min_length=1)
     product_id: str = Field(min_length=1)
     layer: Literal["supply", "demand"]
     strokes: list[dict[str, Any]] = Field(default_factory=list)

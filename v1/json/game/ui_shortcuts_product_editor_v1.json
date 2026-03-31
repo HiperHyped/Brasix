@@ -7,14 +7,9 @@
       "description": "Ativa o modo de selecao de cidade."
     },
     {
-      "id": "product_editor_v1_shortcut_brush_add",
-      "key": "B",
-      "description": "Ativa o pincel de soma."
-    },
-    {
-      "id": "product_editor_v1_shortcut_brush_subtract",
-      "key": "N",
-      "description": "Ativa o pincel de subtracao."
+      "id": "product_editor_v1_shortcut_modify",
+      "key": "M",
+      "description": "Ativa o modo de modificacao por pincel."
     },
     {
       "id": "product_editor_v1_shortcut_brush_1",
@@ -64,12 +59,12 @@
     {
       "id": "product_editor_v1_shortcut_left",
       "key": "Mouse esquerdo",
-      "description": "Adiciona valor no modo pincel."
+      "description": "Adiciona valor no modo modificar."
     },
     {
       "id": "product_editor_v1_shortcut_right",
       "key": "Mouse direito",
-      "description": "Subtrai valor no modo pincel."
+      "description": "Subtrai valor no modo modificar."
     },
     {
       "id": "product_editor_v1_shortcut_shift",

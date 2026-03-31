@@ -83,8 +83,7 @@
     "demand_layer_label": "Demanda",
     "tool_toggle_label": "Ferramenta",
     "tool_select_label": "Selecionar",
-    "tool_add_label": "Somar",
-    "tool_subtract_label": "Subtrair",
+    "tool_modify_label": "Modificar",
     "brush_radius_label": "Grossura do pincel",
     "brush_intensity_label": "Intensidade",
     "save_field_label": "Salvar campo",
@@ -105,7 +104,7 @@
     "pending_city_edit_label": "O valor final salvo e bakeado para as cidades canonicas."
   },
   "status_messages": {
-    "idle": "Escolha produto, camada e ferramenta. No pincel, clique e arraste para pintar; mouse esquerdo soma e mouse direito subtrai.",
+    "idle": "Escolha produto, camada e ferramenta. Em modificar, clique e segure para pintar; mouse esquerdo soma e mouse direito subtrai.",
     "theme_day": "Modo diurno ativado.",
     "theme_night": "Modo noturno ativado.",
     "map_loaded": "Mapa de trabalho carregado no editor v1.",

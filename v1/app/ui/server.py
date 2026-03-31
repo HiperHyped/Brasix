@@ -691,12 +691,13 @@ def create_app() -> FastAPI:
 
     @app.get("/api/editor/products_v1/field")
     async def product_editor_v1_field(
+        map_id: str = Query(min_length=1),
         product_id: str = Query(min_length=1),
         layer: str = Query(pattern="^(supply|demand)$"),
     ) -> dict[str, Any]:
         return {
-            "field": load_product_field_edit_document(product_id, layer),
-            "baked": load_product_field_baked_document(product_id, layer),
+            "field": load_product_field_edit_document(product_id, layer, map_id=map_id),
+            "baked": load_product_field_baked_document(product_id, layer, map_id=map_id),
         }
 
     @app.get("/api/viewer/trucks/bootstrap")
@@ -803,7 +804,8 @@ def create_app() -> FastAPI:
 
         timestamp = document.updated_at or datetime.now().astimezone().isoformat(timespec="seconds")
         field_payload = {
-            "id": f"product_field_edit::{document.product_id}::{document.layer}",
+            "id": f"product_field_edit::{document.map_id}::{document.product_id}::{document.layer}",
+            "map_id": document.map_id,
             "product_id": document.product_id,
             "layer": document.layer,
             "version": 1,
@@ -812,15 +814,16 @@ def create_app() -> FastAPI:
             "baked_city_values": document.baked_city_values,
         }
         baked_payload = {
-            "id": f"product_field_baked::{document.product_id}::{document.layer}",
+            "id": f"product_field_baked::{document.map_id}::{document.product_id}::{document.layer}",
+            "map_id": document.map_id,
             "product_id": document.product_id,
             "layer": document.layer,
             "generated_at": timestamp,
             "city_values": document.baked_city_values,
         }
 
-        save_product_field_edit_document(document.product_id, document.layer, field_payload)
-        save_product_field_baked_document(document.product_id, document.layer, baked_payload)
+        save_product_field_edit_document(document.product_id, document.layer, field_payload, map_id=document.map_id)
+        save_product_field_baked_document(document.product_id, document.layer, baked_payload, map_id=document.map_id)
         return {"field": field_payload, "baked": baked_payload}
 
     @app.post("/api/viewer/trucks/generate", response_model=TruckImageGenerateResponse)

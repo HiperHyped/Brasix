@@ -3,7 +3,7 @@
   "product_id": "algodao",
   "layer": "demand",
   "version": 1,
-  "updated_at": "2026-03-31T11:07:58.050Z",
+  "updated_at": "2026-03-31T11:09:27.255Z",
   "strokes": [
     {
       "id": "stroke_1774955056963_49015",
@@ -2090,6 +2090,261 @@
           "lon": -54.58000492086887
         }
       ]
+    },
+    {
+      "id": "stroke_1774955356347_95851",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:16.347Z",
+      "points": [
+        {
+          "lat": -27.45043486793496,
+          "lon": -50.41858633072544
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955357421_73617",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:17.421Z",
+      "points": [
+        {
+          "lat": -27.495213237244897,
+          "lon": -49.9642961108464
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955357689_18234",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:17.689Z",
+      "points": [
+        {
+          "lat": -27.495213237244897,
+          "lon": -49.9642961108464
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955358833_70778",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:18.833Z",
+      "points": [
+        {
+          "lat": -27.69611558373462,
+          "lon": -49.94407692033148
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955359193_61784",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:19.193Z",
+      "points": [
+        {
+          "lat": -27.69611558373462,
+          "lon": -49.94407692033148
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955360263_59119",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:20.263Z",
+      "points": [
+        {
+          "lat": -27.252450296352816,
+          "lon": -49.305971290711874
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955360529_36021",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:20.529Z",
+      "points": [
+        {
+          "lat": -27.235447358952715,
+          "lon": -49.305971290711874
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955360773_72280",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:20.773Z",
+      "points": [
+        {
+          "lat": -27.255975384142022,
+          "lon": -49.26811834517137
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955361234_644",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:21.234Z",
+      "points": [
+        {
+          "lat": -27.244874592725047,
+          "lon": -49.25146724686812
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955361553_54359",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:21.553Z",
+      "points": [
+        {
+          "lat": -27.244874592725047,
+          "lon": -49.25146724686812
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955361778_70183",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:21.778Z",
+      "points": [
+        {
+          "lat": -27.252155889442683,
+          "lon": -49.23573754505205
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955362155_51161",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:22.155Z",
+      "points": [
+        {
+          "lat": -27.252155889442683,
+          "lon": -49.23573754505205
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955362897_57341",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:22.897Z",
+      "points": [
+        {
+          "lat": -27.021600920072654,
+          "lon": -49.070849833342926
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955363359_45333",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:23.359Z",
+      "points": [
+        {
+          "lat": -27.021600920072654,
+          "lon": -49.070849833342926
+        }
+      ]
+    },
+    {
+      "id": "stroke_1774955363702_65253",
+      "product_id": "algodao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.5,
+      "falloff": "gaussian",
+      "created_at": "2026-03-31T11:09:23.702Z",
+      "points": [
+        {
+          "lat": -27.018611023113856,
+          "lon": -49.05907804934206
+        }
+      ]
     }
   ],
   "baked_city_values": [
@@ -2296,8 +2551,8 @@
       "city_label": "Blumenau, SC",
       "state_code": "SC",
       "base_value": 2.2870024420339496,
-      "manual_delta": 53.027908456260285,
-      "final_value": 55.31491089829424,
+      "manual_delta": 83.18077272512868,
+      "final_value": 85.46777516716263,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 167.46694141546658
@@ -2615,8 +2870,8 @@
       "city_label": "Curitibanos, SC",
       "state_code": "SC",
       "base_value": 2.214028640867559,
-      "manual_delta": 17.970141283116618,
-      "final_value": 20.18416992398418,
+      "manual_delta": 25.77367884722201,
+      "final_value": 27.98770748808957,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 131.38219516423334
@@ -2736,8 +2991,8 @@
       "city_label": "Florianópolis, SC",
       "state_code": "SC",
       "base_value": 1.5625624888664966,
-      "manual_delta": 5.6199216094998805,
-      "final_value": 7.182484098366377,
+      "manual_delta": 11.212563567936115,
+      "final_value": 12.775126056802613,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 252.14808238033416
@@ -2912,8 +3167,8 @@
       "city_label": "Itajaí, SC",
       "state_code": "SC",
       "base_value": 2.250199289484396,
-      "manual_delta": 24.55889296649494,
-      "final_value": 26.809092255979337,
+      "manual_delta": 38.64887045101339,
+      "final_value": 40.89906974049778,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 176.86491264449657
@@ -2967,8 +3222,8 @@
       "city_label": "Joinville, SC",
       "state_code": "SC",
       "base_value": 3.1831787859768763,
-      "manual_delta": 5.069716100405755,
-      "final_value": 8.25289488638263,
+      "manual_delta": 7.180181099427817,
+      "final_value": 10.363359885404694,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 106.84441355700736
@@ -3022,8 +3277,8 @@
       "city_label": "Lages, SC",
       "state_code": "SC",
       "base_value": 1.806348724794112,
-      "manual_delta": 6.719305611214142,
-      "final_value": 8.525654336008254,
+      "manual_delta": 18.51982179893384,
+      "final_value": 20.326170523727953,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 191.97821455693546

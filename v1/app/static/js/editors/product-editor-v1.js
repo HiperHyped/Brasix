@@ -4,7 +4,9 @@ import { escapeHtml, numberFormatter } from "../shared/formatters.js";
 const LAYOUT_KEY = "brasix:v1:product-editor-v1-layout";
 const THEME_KEY = "brasix:v1:product-editor-v1-theme";
 const BRUSH_RADII_KM = [30, 60, 120, 220, 400];
-const BRUSH_INTENSITIES = [0.08, 0.16, 0.32, 0.5];
+const BRUSH_INTENSITIES = [0.1, 0.24, 0.52, 0.95];
+const PAINT_PULSE_INTERVAL_MS = [120, 85, 55, 30];
+const PAINT_PULSE_REPEAT_COUNT = [1, 2, 3, 5];
 const FIELD_HISTORY_LIMIT = 60;
 
 const state = {
@@ -46,9 +48,11 @@ const state = {
   },
   fieldDocsByKey: {},
   fieldHistoryByKey: {},
+  autosaveChain: Promise.resolve(),
   controlsBound: false,
   mapBound: false,
   paintSession: null,
+  paintPulseTimer: null,
   mapPointerLatLng: null,
 };
 
@@ -79,11 +83,15 @@ function currentMapEntry() {
     || null;
 }
 
-function currentFieldKey() {
-  if (!state.selectedProductId || !state.selectedLayer) {
+function buildFieldKey(mapId = state.selectedMapId, productId = state.selectedProductId, layer = state.selectedLayer) {
+  if (!mapId || !productId || !layer) {
     return "";
   }
-  return `${state.selectedProductId}::${state.selectedLayer}`;
+  return `${mapId}::${productId}::${layer}`;
+}
+
+function currentFieldKey() {
+  return buildFieldKey();
 }
 
 function currentFieldDoc() {
@@ -107,11 +115,8 @@ function layerLabel(layer) {
 }
 
 function toolLabel(tool) {
-  if (tool === "brush_add") {
-    return labels().tool_add_label || "Somar";
-  }
-  if (tool === "brush_subtract") {
-    return labels().tool_subtract_label || "Subtrair";
+  if (tool === "modify") {
+    return labels().tool_modify_label || "Modificar";
   }
   return labels().tool_select_label || "Selecionar";
 }
@@ -133,8 +138,9 @@ function loadBootstrap() {
   });
 }
 
-function loadFieldDocument(productId, layer) {
+function loadFieldDocument(mapId, productId, layer) {
   const query = new URLSearchParams({
+    map_id: mapId,
     product_id: productId,
     layer,
   });
@@ -421,8 +427,6 @@ function applyScreenCopy() {
     ["product-editor-v1-tool-toggle-label", labels().tool_toggle_label],
     ["product-editor-v1-brush-radius-label", labels().brush_radius_label],
     ["product-editor-v1-brush-intensity-label", labels().brush_intensity_label],
-    ["product-editor-v1-save-field-label", labels().save_field_label],
-    ["product-editor-v1-reset-field-button", labels().reset_field_label],
     ["product-editor-v1-undo-button", labels().undo_label],
     ["product-editor-v1-redo-button", labels().redo_label],
     ["product-editor-v1-city-panel-title", labels().city_panel_title],
@@ -437,8 +441,7 @@ function applyScreenCopy() {
 
   const toolButtons = {
     select: labels().tool_select_label || "Selecionar",
-    brush_add: labels().tool_add_label || "Somar",
-    brush_subtract: labels().tool_subtract_label || "Subtrair",
+    modify: labels().tool_modify_label || "Modificar",
   };
   document.querySelectorAll("#product-editor-v1-tool-toggle [data-tool]").forEach((button) => {
     const label = toolButtons[button.dataset.tool];
@@ -680,10 +683,11 @@ function normalizeStroke(stroke, productId, layer, index = 0) {
   };
 }
 
-function normalizeFieldDoc(payload, productId, layer) {
+function normalizeFieldDoc(payload, mapId, productId, layer) {
   const bakedCityValues = Array.isArray(payload?.baked_city_values) ? payload.baked_city_values : [];
   return {
-    id: String(payload?.id || `product_field_edit::${productId}::${layer}`),
+    id: String(payload?.id || `product_field_edit::${mapId || "default"}::${productId}::${layer}`),
+    map_id: String(payload?.map_id || mapId || ""),
     product_id: productId,
     layer,
     version: Number(payload?.version || 1),
@@ -714,17 +718,17 @@ function isFieldDirty(key) {
   return serializeStrokes(doc.strokes) !== history.savedSnapshot;
 }
 
-async function ensureFieldDocument(productId = state.selectedProductId, layer = state.selectedLayer) {
-  if (!productId || !layer) {
+async function ensureFieldDocument(productId = state.selectedProductId, layer = state.selectedLayer, mapId = state.selectedMapId) {
+  if (!mapId || !productId || !layer) {
     return null;
   }
-  const key = `${productId}::${layer}`;
+  const key = buildFieldKey(mapId, productId, layer);
   if (state.fieldDocsByKey[key]) {
     ensureHistoryEntry(key, state.fieldDocsByKey[key].strokes);
     return state.fieldDocsByKey[key];
   }
-  const payload = await loadFieldDocument(productId, layer);
-  const fieldDoc = normalizeFieldDoc(payload?.field, productId, layer);
+  const payload = await loadFieldDocument(mapId, productId, layer);
+  const fieldDoc = normalizeFieldDoc(payload?.field, mapId, productId, layer);
   const baked = payload?.baked?.city_values;
   if (Array.isArray(baked) && !fieldDoc.baked_city_values.length) {
     fieldDoc.baked_city_values = baked;
@@ -760,7 +764,7 @@ function undoCurrentField() {
   history.future.unshift(deepClone(history.past.pop()));
   doc.strokes = deepClone(history.past[history.past.length - 1]);
   renderAll();
-  renderStatus(messages().undo_applied || "Ultima operacao desfeita.");
+  void queueAutosaveCurrentField(messages().undo_applied || "Ultima operacao desfeita.");
 }
 
 function redoCurrentField() {
@@ -774,7 +778,7 @@ function redoCurrentField() {
   history.past.push(nextSnapshot);
   doc.strokes = deepClone(nextSnapshot);
   renderAll();
-  renderStatus(messages().redo_applied || "Operacao refeita.");
+  void queueAutosaveCurrentField(messages().redo_applied || "Operacao refeita.");
 }
 
 function resetCurrentField() {
@@ -785,7 +789,7 @@ function resetCurrentField() {
   }
   replaceCurrentFieldStrokes([]);
   renderAll();
-  renderStatus(messages().field_reset || "Camada manual limpa para o produto atual.");
+  void queueAutosaveCurrentField(messages().field_reset || "Camada manual limpa para o produto atual.");
 }
 
 function resolveLayerScale(productId, layer) {
@@ -827,7 +831,7 @@ function computeStrokeDeltaForCity(stroke, city, layerScale) {
 }
 
 function activeStrokesFor(productId, layer) {
-  const key = `${productId}::${layer}`;
+  const key = buildFieldKey(state.selectedMapId, productId, layer);
   const stored = state.fieldDocsByKey[key]?.strokes || [];
   const previewStroke = state.paintSession?.fieldKey === key ? state.paintSession.stroke : null;
   return previewStroke ? [...stored, previewStroke] : stored;
@@ -915,7 +919,7 @@ function renderHeader() {
       <span class="product-editor-header-pill">${escapeHtml(toolLabel(state.selectedTool))}</span>
       <span class="product-editor-header-pill">${escapeHtml(`${currentBrushRadiusKm()} km`)}</span>
       <span class="product-editor-header-pill">${escapeHtml(product?.name || "-")}</span>
-      ${dirty ? `<span class="product-editor-header-pill">${escapeHtml("Campo editado")}</span>` : ""}
+      ${dirty ? `<span class="product-editor-header-pill">${escapeHtml("Autosave pendente")}</span>` : `<span class="product-editor-header-pill">${escapeHtml("Auto salvo")}</span>`}
     `;
   }
 
@@ -1007,7 +1011,7 @@ function renderProductList() {
   const visible = filteredProducts();
   if (visible.length && !visible.some((product) => product.id === state.selectedProductId)) {
     state.selectedProductId = visible[0].id;
-    const key = `${state.selectedProductId}::${state.selectedLayer}`;
+    const key = buildFieldKey(state.selectedMapId, state.selectedProductId, state.selectedLayer);
     if (!state.fieldDocsByKey[key]) {
       void ensureFieldDocument(state.selectedProductId, state.selectedLayer)
         .then(() => renderAll())
@@ -1053,10 +1057,7 @@ function renderProductDetail(rows = null) {
   if (!target || !product) {
     return;
   }
-  const currentRows = rows || buildRowsForCurrentLayer();
-  const editedCount = currentRows.filter((row) => row.isEdited).length;
   const currentDoc = currentFieldDoc();
-  const currentKey = currentFieldKey();
   const stats = state.productStatsById[product.id] || {};
 
   target.innerHTML = `
@@ -1068,8 +1069,6 @@ function renderProductDetail(rows = null) {
       ${cityMetric("Fonte", product.source_kind || "-")}
       ${cityMetric("Ancoras observadas", `${stats.anchor_count || 0}`)}
       ${cityMetric("Sessoes manuais", `${(currentDoc?.strokes || []).length}`)}
-      ${cityMetric("Cidades afetadas", `${editedCount}`)}
-      ${cityMetric("Estado do campo", isFieldDirty(currentKey) ? "Com edicoes nao salvas" : "Sincronizado", { span2: true })}
     </div>
   `;
 }
@@ -1244,7 +1243,7 @@ function syncBrushPreview() {
   state.previewCircle.setRadius(currentBrushRadiusKm() * 1000);
   state.previewCircle.setStyle({
     fillColor: currentProduct()?.color || "#4f8593",
-    fillOpacity: state.selectedTool === "brush_subtract" ? 0.05 : 0.08,
+    fillOpacity: 0.08,
   });
 }
 
@@ -1361,7 +1360,7 @@ function isTextInput(target) {
 }
 
 function setSelectedTool(tool) {
-  state.selectedTool = tool;
+  state.selectedTool = tool === "select" ? "select" : "modify";
   syncControlState();
   renderHeader();
   syncBrushPreview();
@@ -1388,6 +1387,17 @@ function setBrushIntensityIndex(index) {
   state.brushIntensityIndex = clamp(Number(index), 0, BRUSH_INTENSITIES.length - 1);
   syncControlState();
   renderHeader();
+  if (state.paintSession) {
+    startPaintPulse();
+  }
+}
+
+function currentPaintPulseIntervalMs() {
+  return PAINT_PULSE_INTERVAL_MS[state.brushIntensityIndex] || PAINT_PULSE_INTERVAL_MS[1];
+}
+
+function currentPaintPulseRepeatCount() {
+  return PAINT_PULSE_REPEAT_COUNT[state.brushIntensityIndex] || PAINT_PULSE_REPEAT_COUNT[1];
 }
 
 async function setSelectedLayer(layer) {
@@ -1435,6 +1445,8 @@ function beginPaintSession(latlng, mode, originalEvent) {
   if (!key || !currentFieldDoc()) {
     return;
   }
+  stopPaintPulse();
+  state.mapPointerLatLng = latlng;
   state.paintSession = {
     fieldKey: key,
     stroke: buildStrokeForPoint(latlng, mode, originalEvent),
@@ -1448,17 +1460,18 @@ function beginPaintSession(latlng, mode, originalEvent) {
   if (nearestCity) {
     state.selectedCityId = nearestCity.id;
   }
+  startPaintPulse();
   renderMap();
   renderCityDetail();
 }
 
-function appendPointToPaintSession(latlng) {
+function appendPointToPaintSession(latlng, { force = false } = {}) {
   if (!state.paintSession) {
     return false;
   }
   const lastLatLng = state.paintSession.lastLatLng;
   const minSpacingKm = strokeSpacingKm(Number(state.paintSession.stroke.radius_km || currentBrushRadiusKm()));
-  if (lastLatLng && haversineKm(lastLatLng.lat, lastLatLng.lng, latlng.lat, latlng.lng) < minSpacingKm) {
+  if (!force && lastLatLng && haversineKm(lastLatLng.lat, lastLatLng.lng, latlng.lat, latlng.lng) < minSpacingKm) {
     return false;
   }
   state.paintSession.stroke.points.push({ lat: latlng.lat, lon: latlng.lng });
@@ -1466,10 +1479,42 @@ function appendPointToPaintSession(latlng) {
   return true;
 }
 
-function finalizePaintSession({ commit = true } = {}) {
-  if (!state.paintSession) {
+function startPaintPulse() {
+  stopPaintPulse();
+  state.paintPulseTimer = window.setInterval(() => {
+    if (!state.paintSession) {
+      stopPaintPulse();
+      return;
+    }
+    const pulseLatLng = state.mapPointerLatLng || state.paintSession.lastLatLng;
+    if (!pulseLatLng) {
+      return;
+    }
+    let didChange = false;
+    for (let index = 0; index < currentPaintPulseRepeatCount(); index += 1) {
+      didChange = appendPointToPaintSession(pulseLatLng, { force: true }) || didChange;
+    }
+    if (didChange) {
+      renderMap();
+      renderCityDetail();
+    }
+  }, currentPaintPulseIntervalMs());
+}
+
+function stopPaintPulse() {
+  if (!state.paintPulseTimer) {
     return;
   }
+  window.clearInterval(state.paintPulseTimer);
+  state.paintPulseTimer = null;
+}
+
+function finalizePaintSession({ commit = true } = {}) {
+  if (!state.paintSession) {
+    stopPaintPulse();
+    return;
+  }
+  stopPaintPulse();
   const session = state.paintSession;
   state.paintSession = null;
   if (session.draggingWasEnabled) {
@@ -1482,18 +1527,22 @@ function finalizePaintSession({ commit = true } = {}) {
     }
   }
   renderAll();
+  if (commit && session.stroke.points.length) {
+    void queueAutosaveCurrentField(messages().field_saved || "Alteracoes salvas automaticamente.");
+  }
 }
 
-async function saveCurrentField() {
-  finalizePaintSession({ commit: true });
+function buildCurrentFieldSavePayload() {
   const product = currentProduct();
   const doc = currentFieldDoc();
   const key = currentFieldKey();
-  if (!product || !doc || !key) {
-    return;
+  const mapEntry = currentMapEntry();
+  if (!product || !doc || !key || !state.selectedMapId || !mapEntry) {
+    return null;
   }
 
-  const bakedCityValues = state.referenceCities.map((city) => {
+  const strokesSnapshot = deepClone(doc.strokes || []);
+  const bakedCityValues = state.cities.map((city) => {
     const info = computeLayerInfo(product.id, city, state.selectedLayer);
     return {
       city_id: city.id,
@@ -1508,23 +1557,57 @@ async function saveCurrentField() {
     };
   });
 
-  const response = await saveFieldDocument({
+  return {
+    map_id: state.selectedMapId,
+    map_name: mapEntry.name || state.selectedMapId,
     product_id: product.id,
     layer: state.selectedLayer,
-    strokes: doc.strokes,
+    strokes: strokesSnapshot,
     baked_city_values: bakedCityValues,
     updated_at: new Date().toISOString(),
-  });
+    field_key: key,
+    snapshot_serialized: serializeStrokes(strokesSnapshot),
+  };
+}
 
-  state.fieldDocsByKey[key] = normalizeFieldDoc(response?.field, product.id, state.selectedLayer);
-  state.fieldDocsByKey[key].baked_city_values = response?.baked?.city_values || bakedCityValues;
-  ensureHistoryEntry(key, state.fieldDocsByKey[key].strokes).savedSnapshot = serializeStrokes(state.fieldDocsByKey[key].strokes);
-  renderAll();
-  renderStatus(messages().field_saved || "Campo editado salvo com sucesso.", [
-    { label: "Camada", value: layerLabel(state.selectedLayer) },
-    { label: "Cidades canonicas", value: `${bakedCityValues.length}` },
-    { label: "Sessoes", value: `${doc.strokes.length}` },
-  ]);
+function queueAutosaveCurrentField(statusMessage = null) {
+  finalizePaintSession({ commit: true });
+  const payload = buildCurrentFieldSavePayload();
+  if (!payload) {
+    return Promise.resolve();
+  }
+
+  state.autosaveChain = state.autosaveChain
+    .catch(() => null)
+    .then(async () => {
+      const response = await saveFieldDocument({
+        map_id: payload.map_id,
+        product_id: payload.product_id,
+        layer: payload.layer,
+        strokes: payload.strokes,
+        baked_city_values: payload.baked_city_values,
+        updated_at: payload.updated_at,
+      });
+
+      const currentSnapshot = serializeStrokes(state.fieldDocsByKey[payload.field_key]?.strokes || []);
+      if (currentSnapshot === payload.snapshot_serialized) {
+        state.fieldDocsByKey[payload.field_key] = normalizeFieldDoc(response?.field, payload.map_id, payload.product_id, payload.layer);
+        state.fieldDocsByKey[payload.field_key].baked_city_values = response?.baked?.city_values || payload.baked_city_values;
+        ensureHistoryEntry(payload.field_key, state.fieldDocsByKey[payload.field_key].strokes).savedSnapshot = payload.snapshot_serialized;
+      }
+
+      renderAll();
+      renderStatus(statusMessage || messages().field_saved || "Alteracoes salvas automaticamente.", [
+        { label: "Mapa", value: payload.map_name },
+        { label: "Camada", value: layerLabel(payload.layer) },
+        { label: "Cidades do mapa", value: `${payload.baked_city_values.length}` },
+      ]);
+    })
+    .catch((error) => {
+      renderStatus(error?.message || "Falha ao salvar automaticamente o campo editavel.");
+    });
+
+  return state.autosaveChain;
 }
 
 function bindColumnResizers() {
@@ -1590,6 +1673,13 @@ function bindMapInteractions() {
     }
   });
 
+  state.map.getContainer().addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+
+  state.map.doubleClickZoom?.disable?.();
+
   state.map.on("mousemove", (event) => {
     state.mapPointerLatLng = event.latlng;
     syncBrushPreview();
@@ -1614,9 +1704,9 @@ function bindMapInteractions() {
     }
     event.originalEvent?.preventDefault?.();
     event.originalEvent?.stopPropagation?.();
-    const defaultMode = state.selectedTool === "brush_subtract" ? "subtract" : "add";
-    const inverseMode = defaultMode === "add" ? "subtract" : "add";
-    beginPaintSession(event.latlng, button === 2 ? inverseMode : defaultMode, event.originalEvent);
+    state.mapPointerLatLng = event.latlng;
+    const mode = button === 2 ? "subtract" : "add";
+    beginPaintSession(event.latlng, mode, event.originalEvent);
   });
 
   state.map.on("mouseup", () => {
@@ -1658,14 +1748,9 @@ function bindKeyboardShortcuts() {
       setSelectedTool("select");
       return;
     }
-    if (lowerKey === "b") {
+    if (lowerKey === "m") {
       event.preventDefault();
-      setSelectedTool("brush_add");
-      return;
-    }
-    if (lowerKey === "n") {
-      event.preventDefault();
-      setSelectedTool("brush_subtract");
+      setSelectedTool("modify");
       return;
     }
     if (["1", "2", "3", "4", "5"].includes(event.key)) {
@@ -1758,16 +1843,6 @@ function bindControls() {
       setBrushIntensityIndex(Number(button.dataset.intensityIndex || 0));
     });
   });
-  document.getElementById("product-editor-v1-save-field-button")?.addEventListener("click", async () => {
-    try {
-      await saveCurrentField();
-    } catch (error) {
-      renderStatus(error?.message || "Falha ao salvar o campo editavel.");
-    }
-  });
-  document.getElementById("product-editor-v1-reset-field-button")?.addEventListener("click", () => {
-    resetCurrentField();
-  });
   document.getElementById("product-editor-v1-undo-button")?.addEventListener("click", () => {
     undoCurrentField();
   });
@@ -1814,11 +1889,19 @@ async function initialize() {
   bindControls();
   applyTheme(restoreTheme(), { persist: false });
   restoreLayout();
+  const leafletSettings = {
+    ...(state.bootstrap.map_editor?.leaflet_settings || {}),
+    interaction: {
+      ...((state.bootstrap.map_editor?.leaflet_settings || {}).interaction || {}),
+      double_click_zoom_enabled: false,
+    },
+  };
   state.map = createBrasixMap({
     elementId: "product-editor-v1-map-stage",
     viewport: state.bootstrap.map_viewport,
-    leafletSettings: state.bootstrap.map_editor?.leaflet_settings || {},
+    leafletSettings,
   });
+  state.map.doubleClickZoom?.disable?.();
   fitBrasixBounds(state.map, state.bootstrap.map_viewport);
   bindMapInteractions();
   await ensureFieldDocument(state.selectedProductId, state.selectedLayer);

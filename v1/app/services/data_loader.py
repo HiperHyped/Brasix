@@ -266,8 +266,7 @@ DEFAULT_PRODUCT_EDITOR_V1_SHORTCUTS = {
     "id": "ui_shortcuts_product_editor_v1",
     "items": [
         {"id": "product_editor_v1_shortcut_select", "key": "C", "description": "Ativa o modo de selecao de cidade."},
-        {"id": "product_editor_v1_shortcut_brush_add", "key": "B", "description": "Ativa o pincel de soma."},
-        {"id": "product_editor_v1_shortcut_brush_subtract", "key": "N", "description": "Ativa o pincel de subtracao."},
+        {"id": "product_editor_v1_shortcut_modify", "key": "M", "description": "Ativa o modo de modificacao por pincel."},
         {"id": "product_editor_v1_shortcut_radius_1", "key": "1", "description": "Seleciona o pincel muito fino."},
         {"id": "product_editor_v1_shortcut_radius_2", "key": "2", "description": "Seleciona o pincel fino."},
         {"id": "product_editor_v1_shortcut_radius_3", "key": "3", "description": "Seleciona o pincel medio."},
@@ -277,8 +276,8 @@ DEFAULT_PRODUCT_EDITOR_V1_SHORTCUTS = {
         {"id": "product_editor_v1_shortcut_intensity_up", "key": "]", "description": "Aumenta a intensidade do pincel."},
         {"id": "product_editor_v1_shortcut_undo", "key": "Z", "description": "Desfaz a ultima operacao da camada atual."},
         {"id": "product_editor_v1_shortcut_redo", "key": "Y", "description": "Refaz a ultima operacao desfeita."},
-        {"id": "product_editor_v1_shortcut_left_click", "key": "Mouse esquerdo", "description": "Adiciona valor no modo pincel."},
-        {"id": "product_editor_v1_shortcut_right_click", "key": "Mouse direito", "description": "Subtrai valor no modo pincel."},
+        {"id": "product_editor_v1_shortcut_left_click", "key": "Mouse esquerdo", "description": "Adiciona valor no modo modificar."},
+        {"id": "product_editor_v1_shortcut_right_click", "key": "Mouse direito", "description": "Subtrai valor no modo modificar."},
         {"id": "product_editor_v1_shortcut_shift", "key": "Shift", "description": "Aplica uma passada mais forte."},
         {"id": "product_editor_v1_shortcut_alt", "key": "Alt", "description": "Aplica uma passada mais suave."},
     ],
@@ -673,17 +672,32 @@ def load_product_editor_v1_payload() -> dict[str, Any]:
     }
 
 
-def _product_field_document_path(root_dir: Path, product_id: str, layer: str) -> Path:
+def _safe_product_field_segment(value: str | None, fallback: str) -> str:
+    safe_value = str(value or "").strip().replace("\\", "_").replace("/", "_")
+    return safe_value or fallback
+
+
+def _legacy_product_field_document_path(root_dir: Path, product_id: str, layer: str) -> Path:
     safe_product_id = str(product_id or "").strip() or "produto"
     safe_layer = str(layer or "").strip() or "supply"
     return root_dir / f"{safe_product_id}__{safe_layer}.json"
 
 
-def load_product_field_edit_document(product_id: str, layer: str) -> dict[str, Any]:
-    target = _product_field_document_path(PRODUCT_FIELD_EDITS_DIR, product_id, layer)
-    if not target.exists():
+def _product_field_document_path(root_dir: Path, map_id: str | None, product_id: str, layer: str) -> Path:
+    safe_map_id = _safe_product_field_segment(map_id, "map")
+    safe_product_id = _safe_product_field_segment(product_id, "produto")
+    safe_layer = _safe_product_field_segment(layer, "supply")
+    return root_dir / safe_map_id / f"{safe_product_id}__{safe_layer}.json"
+
+
+def load_product_field_edit_document(product_id: str, layer: str, map_id: str | None = None) -> dict[str, Any]:
+    target = _product_field_document_path(PRODUCT_FIELD_EDITS_DIR, map_id, product_id, layer)
+    legacy_target = _legacy_product_field_document_path(PRODUCT_FIELD_EDITS_DIR, product_id, layer)
+    source_target = target if target.exists() else legacy_target
+    if not source_target.exists():
         return {
-            "id": f"product_field_edit::{product_id}::{layer}",
+            "id": f"product_field_edit::{map_id or 'default'}::{product_id}::{layer}",
+            "map_id": map_id,
             "product_id": product_id,
             "layer": layer,
             "version": 1,
@@ -691,10 +705,11 @@ def load_product_field_edit_document(product_id: str, layer: str) -> dict[str, A
             "baked_city_values": [],
             "updated_at": None,
         }
-    payload = load_json(target)
+    payload = load_json(source_target)
     if not isinstance(payload, dict):
         return {
-            "id": f"product_field_edit::{product_id}::{layer}",
+            "id": f"product_field_edit::{map_id or 'default'}::{product_id}::{layer}",
+            "map_id": map_id,
             "product_id": product_id,
             "layer": layer,
             "version": 1,
@@ -702,7 +717,8 @@ def load_product_field_edit_document(product_id: str, layer: str) -> dict[str, A
             "baked_city_values": [],
             "updated_at": None,
         }
-    payload.setdefault("id", f"product_field_edit::{product_id}::{layer}")
+    payload.setdefault("id", f"product_field_edit::{map_id or 'default'}::{product_id}::{layer}")
+    payload.setdefault("map_id", map_id)
     payload.setdefault("product_id", product_id)
     payload.setdefault("layer", layer)
     payload.setdefault("version", 1)
@@ -712,31 +728,37 @@ def load_product_field_edit_document(product_id: str, layer: str) -> dict[str, A
     return payload
 
 
-def save_product_field_edit_document(product_id: str, layer: str, payload: dict[str, Any]) -> dict[str, Any]:
-    target = _product_field_document_path(PRODUCT_FIELD_EDITS_DIR, product_id, layer)
+def save_product_field_edit_document(product_id: str, layer: str, payload: dict[str, Any], map_id: str | None = None) -> dict[str, Any]:
+    target = _product_field_document_path(PRODUCT_FIELD_EDITS_DIR, map_id, product_id, layer)
+    target.parent.mkdir(parents=True, exist_ok=True)
     return save_json(target, payload)
 
 
-def load_product_field_baked_document(product_id: str, layer: str) -> dict[str, Any]:
-    target = _product_field_document_path(PRODUCT_FIELD_BAKED_DIR, product_id, layer)
-    if not target.exists():
+def load_product_field_baked_document(product_id: str, layer: str, map_id: str | None = None) -> dict[str, Any]:
+    target = _product_field_document_path(PRODUCT_FIELD_BAKED_DIR, map_id, product_id, layer)
+    legacy_target = _legacy_product_field_document_path(PRODUCT_FIELD_BAKED_DIR, product_id, layer)
+    source_target = target if target.exists() else legacy_target
+    if not source_target.exists():
         return {
-            "id": f"product_field_baked::{product_id}::{layer}",
+            "id": f"product_field_baked::{map_id or 'default'}::{product_id}::{layer}",
+            "map_id": map_id,
             "product_id": product_id,
             "layer": layer,
             "city_values": [],
             "generated_at": None,
         }
-    payload = load_json(target)
+    payload = load_json(source_target)
     if not isinstance(payload, dict):
         return {
-            "id": f"product_field_baked::{product_id}::{layer}",
+            "id": f"product_field_baked::{map_id or 'default'}::{product_id}::{layer}",
+            "map_id": map_id,
             "product_id": product_id,
             "layer": layer,
             "city_values": [],
             "generated_at": None,
         }
-    payload.setdefault("id", f"product_field_baked::{product_id}::{layer}")
+    payload.setdefault("id", f"product_field_baked::{map_id or 'default'}::{product_id}::{layer}")
+    payload.setdefault("map_id", map_id)
     payload.setdefault("product_id", product_id)
     payload.setdefault("layer", layer)
     payload.setdefault("city_values", [])
@@ -744,8 +766,9 @@ def load_product_field_baked_document(product_id: str, layer: str) -> dict[str, 
     return payload
 
 
-def save_product_field_baked_document(product_id: str, layer: str, payload: dict[str, Any]) -> dict[str, Any]:
-    target = _product_field_document_path(PRODUCT_FIELD_BAKED_DIR, product_id, layer)
+def save_product_field_baked_document(product_id: str, layer: str, payload: dict[str, Any], map_id: str | None = None) -> dict[str, Any]:
+    target = _product_field_document_path(PRODUCT_FIELD_BAKED_DIR, map_id, product_id, layer)
+    target.parent.mkdir(parents=True, exist_ok=True)
     return save_json(target, payload)
 
 
