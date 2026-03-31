@@ -1,0 +1,85 @@
+{
+  "id": "ui_shortcuts_product_editor_v1",
+  "items": [
+    {
+      "id": "product_editor_v1_shortcut_select",
+      "key": "C",
+      "description": "Ativa o modo de selecao de cidade."
+    },
+    {
+      "id": "product_editor_v1_shortcut_brush_add",
+      "key": "B",
+      "description": "Ativa o pincel de soma."
+    },
+    {
+      "id": "product_editor_v1_shortcut_brush_subtract",
+      "key": "N",
+      "description": "Ativa o pincel de subtracao."
+    },
+    {
+      "id": "product_editor_v1_shortcut_brush_1",
+      "key": "1",
+      "description": "Pincel muito fino (30 km)."
+    },
+    {
+      "id": "product_editor_v1_shortcut_brush_2",
+      "key": "2",
+      "description": "Pincel fino (60 km)."
+    },
+    {
+      "id": "product_editor_v1_shortcut_brush_3",
+      "key": "3",
+      "description": "Pincel medio (120 km)."
+    },
+    {
+      "id": "product_editor_v1_shortcut_brush_4",
+      "key": "4",
+      "description": "Pincel grosso (220 km)."
+    },
+    {
+      "id": "product_editor_v1_shortcut_brush_5",
+      "key": "5",
+      "description": "Pincel muito grosso (400 km)."
+    },
+    {
+      "id": "product_editor_v1_shortcut_intensity_down",
+      "key": "[",
+      "description": "Reduz a intensidade do pincel."
+    },
+    {
+      "id": "product_editor_v1_shortcut_intensity_up",
+      "key": "]",
+      "description": "Aumenta a intensidade do pincel."
+    },
+    {
+      "id": "product_editor_v1_shortcut_undo",
+      "key": "Z",
+      "description": "Desfaz a ultima operacao."
+    },
+    {
+      "id": "product_editor_v1_shortcut_redo",
+      "key": "Y",
+      "description": "Refaz a ultima operacao."
+    },
+    {
+      "id": "product_editor_v1_shortcut_left",
+      "key": "Mouse esquerdo",
+      "description": "Adiciona valor no modo pincel."
+    },
+    {
+      "id": "product_editor_v1_shortcut_right",
+      "key": "Mouse direito",
+      "description": "Subtrai valor no modo pincel."
+    },
+    {
+      "id": "product_editor_v1_shortcut_shift",
+      "key": "Shift",
+      "description": "Aumenta o peso da passada atual."
+    },
+    {
+      "id": "product_editor_v1_shortcut_alt",
+      "key": "Alt",
+      "description": "Suaviza a passada atual."
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "id": "ui_product_editor_screen_v1",
+  "page_title": "Brasix | Editor de produtos",
+  "components": [
+    {
+      "dom_target_id": "product-editor-brand-title",
+      "text": "Brasix"
+    },
+    {
+      "dom_target_id": "product-editor-brand-subtitle",
+      "text": "Editor de produtos"
+    },
+    {
+      "dom_target_id": "product-editor-left-eyebrow",
+      "text": "Catalogo"
+    },
+    {
+      "dom_target_id": "product-editor-left-title",
+      "text": "Produtos e filtros"
+    },
+    {
+      "dom_target_id": "product-editor-map-eyebrow",
+      "text": "Mapa"
+    },
+    {
+      "dom_target_id": "product-editor-map-title",
+      "text": "Oferta e demanda"
+    },
+    {
+      "dom_target_id": "product-editor-right-eyebrow",
+      "text": "Detalhes"
+    },
+    {
+      "dom_target_id": "product-editor-right-title",
+      "text": "Produto selecionado"
+    }
+  ],
+  "header_actions": [
+    {
+      "id": "product_editor_action_back_to_app",
+      "label": "Voltar ao app",
+      "icon": "arrow_back",
+      "href": "/"
+    },
+    {
+      "id": "product_editor_action_back_to_map",
+      "label": "Editor de mapa",
+      "icon": "map",
+      "href": "/editor/map"
+    },
+    {
+      "id": "product_editor_action_open_trucks",
+      "label": "Biblioteca de caminhoes",
+      "icon": "local_shipping",
+      "href": "/viewer/trucks"
+    },
+    {
+      "id": "product_editor_action_toggle_theme",
+      "label": "Modo noturno",
+      "icon": "dark_mode",
+      "action": "toggle-theme"
+    }
+  ],
+  "labels": {
+    "map_select_label": "Mapa de trabalho",
+    "family_filter_label": "Familia economica",
+    "logistics_filter_label": "Tipo logistico",
+    "product_list_label": "Produtos existentes",
+    "all_option_label": "Todos",
+    "create_button_label": "Novo produto",
+    "duplicate_button_label": "Duplicar produto",
+    "list_count_label": "produtos visiveis",
+    "layer_toggle_label": "Camada",
+    "supply_layer_label": "Oferta",
+    "demand_layer_label": "Demanda",
+    "product_name_label": "Nome",
+    "product_short_name_label": "Nome curto",
+    "product_emoji_label": "Emoji",
+    "product_family_label": "Familia",
+    "product_logistics_label": "Tipo logistico",
+    "product_unit_label": "Unidade",
+    "product_color_label": "Cor",
+    "product_density_label": "Densidade",
+    "product_value_label": "Valor",
+    "product_status_label": "Ativo",
+    "product_save_button_label": "Salvar produto",
+    "city_panel_title": "Cidade selecionada",
+    "city_supply_label": "Oferta exibida",
+    "city_supply_source_label": "Origem da oferta",
+    "city_demand_label": "Demanda exibida",
+    "city_population_label": "Populacao",
+    "city_state_label": "UF",
+    "map_legend_title": "Escala",
+    "empty_city_label": "Clique em uma cidade para ver os detalhes locais.",
+    "pending_city_edit_label": "Edicao por cidade entra na proxima etapa do Bloco A."
+  },
+  "status_messages": {
+    "idle": "Selecione um produto para explorar a camada de oferta e a estimativa inicial de demanda.",
+    "theme_day": "Modo diurno ativado.",
+    "theme_night": "Modo noturno ativado.",
+    "map_loaded": "Mapa de trabalho carregado no editor de produtos.",
+    "map_load_failed": "Nao foi possivel carregar o mapa selecionado.",
+    "product_created": "Novo produto criado no catalogo do editor.",
+    "product_updated": "Produto salvo com sucesso.",
+    "product_duplicated": "Produto duplicado a partir da base selecionada."
+  }
+}

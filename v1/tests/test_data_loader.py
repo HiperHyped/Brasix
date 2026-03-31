@@ -4,8 +4,19 @@ from pathlib import Path
 
 from app.services import data_loader
 from app.services import (
+    load_city_product_demand_matrix_payload,
     load_effective_truck_type_catalog_payload,
+    load_product_catalog_v2_payload,
+    load_product_editor_payload,
+    load_product_editor_v1_payload,
+    load_product_family_catalog_payload,
+    load_product_field_baked_document,
+    load_product_field_edit_document,
+    load_product_inference_rules_payload,
+    load_product_logistics_type_catalog_payload,
     load_map_editor_payload,
+    load_city_product_supply_matrix_payload,
+    load_region_product_supply_matrix_payload,
     load_reference_data,
     load_truck_body_catalog_payload,
     load_truck_brand_family_catalog_payload,
@@ -149,6 +160,68 @@ def test_truck_catalog_payloads_load() -> None:
     assert isinstance(review_queue_payload["pending_type_ids"], list)
     assert category_payload["id"] == "truck_category_catalog_v1"
     assert isinstance(category_payload["size_tiers"], list)
+
+
+def test_product_editor_payloads_load() -> None:
+    editor_payload = load_product_editor_payload()
+    editor_v1_payload = load_product_editor_v1_payload()
+    family_payload = load_product_family_catalog_payload()
+    logistics_payload = load_product_logistics_type_catalog_payload()
+    product_catalog_payload = load_product_catalog_v2_payload()
+    supply_payload = load_city_product_supply_matrix_payload()
+    demand_payload = load_city_product_demand_matrix_payload()
+    region_supply_payload = load_region_product_supply_matrix_payload()
+    inference_payload = load_product_inference_rules_payload()
+
+    assert editor_payload["screen"]["id"] == "ui_product_editor_screen_v1"
+    assert editor_payload["layout_desktop"]["id"] == "ui_layout_desktop_product_editor_v1"
+    assert editor_payload["themes"]["default_theme_id"] == "map_editor_theme_day"
+    assert editor_v1_payload["screen"]["id"] == "ui_product_editor_v1_screen_v1"
+    assert editor_v1_payload["layout_desktop"]["id"] == "ui_layout_desktop_product_editor_v1"
+    assert editor_v1_payload["themes"]["default_theme_id"] == "map_editor_theme_day"
+    assert any(item["key"] == "Mouse direito" for item in editor_v1_payload["shortcuts"]["items"])
+
+    assert family_payload["id"] == "product_family_catalog_v1"
+    assert [item["id"] for item in family_payload["families"]] == ["agro", "pecuaria", "florestal", "mineral", "energia"]
+
+    assert logistics_payload["id"] == "product_logistics_type_catalog_v1"
+    assert any(item["id"] == "granel_seco" for item in logistics_payload["types"])
+    assert any(item["id"] == "granel_liquido" for item in logistics_payload["types"])
+
+    assert product_catalog_payload["id"] == "product_catalog_v2"
+    assert len(product_catalog_payload["products"]) == 30
+    assert product_catalog_payload["products"][0]["id"] == "soja"
+    assert any(item["id"] == "petroleo" and item["hazardous"] is True for item in product_catalog_payload["products"])
+    assert any(item["id"] == "pesca" and item["temperature_control_required"] is True for item in product_catalog_payload["products"])
+
+    assert supply_payload["id"] == "city_product_supply_matrix_v1"
+    assert supply_payload["seed_source"]["kind"] == "legacy_city_product_matrix"
+    assert len(supply_payload["items"]) >= 2800
+    assert any(item["product_id"] == "soja" for item in supply_payload["items"])
+
+    assert demand_payload["id"] == "city_product_demand_matrix_v1"
+    assert demand_payload["seed_source"]["kind"] == "legacy_city_product_demand_matrix"
+    assert len(demand_payload["items"]) >= 2000
+    assert any(item["product_id"] == "petroleo" for item in demand_payload["items"])
+
+    assert region_supply_payload["id"] == "region_product_supply_matrix_v1"
+    assert region_supply_payload["items"] == []
+
+    assert inference_payload["id"] == "product_inference_rules_v1"
+    assert inference_payload["supply_interpolation"]["method"] == "inverse_distance_weighting"
+    assert inference_payload["demand_estimation"]["family_weights"]["energia"] == 0.75
+
+
+def test_product_field_documents_default_to_empty() -> None:
+    field_payload = load_product_field_edit_document("soja", "supply")
+    baked_payload = load_product_field_baked_document("soja", "demand")
+
+    assert field_payload["product_id"] == "soja"
+    assert field_payload["layer"] == "supply"
+    assert field_payload["strokes"] == []
+    assert baked_payload["product_id"] == "soja"
+    assert baked_payload["layer"] == "demand"
+    assert baked_payload["city_values"] == []
 
 
 def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:

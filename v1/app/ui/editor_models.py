@@ -643,3 +643,39 @@ class TruckPromptBuildResponse(BaseModel):
     prompt_items: list[str] = Field(default_factory=list)
     prompt_summary: str = ""
 
+
+class ProductEditorCreateRequest(BaseModel):
+    name: str = Field(min_length=1)
+    emoji: str = "\U0001F4E6"
+    family_id: str = Field(min_length=1)
+    logistics_type_id: str = Field(min_length=1)
+    unit: str = Field(min_length=1)
+    source_product_id: str | None = None
+
+
+class ProductEditorUpdateRequest(BaseModel):
+    name: str | None = None
+    short_name: str | None = None
+    emoji: str | None = None
+    family_id: str | None = None
+    logistics_type_id: str | None = None
+    unit: str | None = None
+    color: str | None = None
+    is_active: bool | None = None
+    density_class: str | None = None
+    value_class: str | None = None
+    perishable: bool | None = None
+    fragile: bool | None = None
+    hazardous: bool | None = None
+    temperature_control_required: bool | None = None
+    compatible_body_type_ids: list[str] | None = None
+    notes: str | None = None
+
+
+class ProductFieldLayerSaveRequest(BaseModel):
+    product_id: str = Field(min_length=1)
+    layer: Literal["supply", "demand"]
+    strokes: list[dict[str, Any]] = Field(default_factory=list)
+    baked_city_values: list[dict[str, Any]] = Field(default_factory=list)
+    updated_at: str | None = None
+

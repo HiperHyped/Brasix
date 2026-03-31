@@ -1,0 +1,35 @@
+{
+  "id": "product_family_catalog_v1",
+  "families": [
+    {
+      "id": "agro",
+      "label": "Agro",
+      "color": "#5b8f4d",
+      "order": 1
+    },
+    {
+      "id": "pecuaria",
+      "label": "Pecuaria",
+      "color": "#8a5b34",
+      "order": 2
+    },
+    {
+      "id": "florestal",
+      "label": "Florestal",
+      "color": "#2d7a63",
+      "order": 3
+    },
+    {
+      "id": "mineral",
+      "label": "Mineral",
+      "color": "#b46a2b",
+      "order": 4
+    },
+    {
+      "id": "energia",
+      "label": "Energia",
+      "color": "#c8501e",
+      "order": 5
+    }
+  ]
+}

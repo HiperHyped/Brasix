@@ -1,0 +1,8 @@
+{
+  "id": "city_product_supply_matrix_v1",
+  "seed_source": {
+    "kind": "legacy_city_product_matrix",
+    "path": "../city_product_matrix.json"
+  },
+  "items": []
+}

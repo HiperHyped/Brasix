@@ -1,0 +1,45 @@
+{
+  "id": "product_inference_rules_v1",
+  "supply_interpolation": {
+    "method": "inverse_distance_weighting",
+    "nearest_anchor_count": 3,
+    "power": 2.8,
+    "max_distance_km": 650,
+    "minimum_distance_km": 45,
+    "same_state_bonus": 1.15,
+    "out_of_state_penalty": 0.82,
+    "distance_decay_radius_km": 220,
+    "distance_decay_power": 1.45
+  },
+  "demand_estimation": {
+    "method": "population_weighted_seed",
+    "default_multiplier": 0.22,
+    "population_exponent": 0.85,
+    "minimum_reference_population_thousands": 40,
+    "family_weights": {
+      "agro": 0.55,
+      "pecuaria": 0.6,
+      "florestal": 0.45,
+      "mineral": 0.35,
+      "energia": 0.75
+    }
+  },
+  "demand_interpolation": {
+    "method": "inverse_distance_weighting",
+    "nearest_anchor_count": 4,
+    "power": 2.35,
+    "max_distance_km": 700,
+    "minimum_distance_km": 45,
+    "same_state_bonus": 1.12,
+    "out_of_state_penalty": 0.88,
+    "distance_decay_radius_km": 280,
+    "distance_decay_power": 1.25
+  },
+  "manual_influence_defaults": {
+    "radius_km": 160,
+    "minimum_radius_km": 40,
+    "maximum_radius_km": 600,
+    "intensity": 1.0,
+    "falloff": "smooth"
+  }
+}

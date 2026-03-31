@@ -1,14 +1,32 @@
 ﻿from __future__ import annotations
 
 from dataclasses import asdict
+from datetime import datetime
 from typing import Any
+import unicodedata
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.config import ASSETS_DIR, MAP_DISPLAY_SETTINGS_PATH, MAP_EDITOR_POPULATION_BANDS_PATH, MAP_LEAFLET_SETTINGS_PATH, STATIC_DIR, TEMPLATE_DIR, TRUCK_BODY_CATALOG_PATH, TRUCK_CATEGORY_CATALOG_PATH, TRUCK_CATALOG_EDITS_PATH, TRUCK_CATALOG_HIDDEN_PATH, TRUCK_CUSTOM_CATALOG_PATH, TRUCK_IMAGE_ASSET_REGISTRY_PATH, TRUCK_IMAGE_PROMPT_OVERRIDES_PATH, TRUCK_IMAGE_REVIEW_QUEUE_PATH
+from app.config import (
+    ASSETS_DIR,
+    MAP_DISPLAY_SETTINGS_PATH,
+    MAP_EDITOR_POPULATION_BANDS_PATH,
+    MAP_LEAFLET_SETTINGS_PATH,
+    PRODUCT_CATALOG_V2_PATH,
+    STATIC_DIR,
+    TEMPLATE_DIR,
+    TRUCK_BODY_CATALOG_PATH,
+    TRUCK_CATEGORY_CATALOG_PATH,
+    TRUCK_CATALOG_EDITS_PATH,
+    TRUCK_CATALOG_HIDDEN_PATH,
+    TRUCK_CUSTOM_CATALOG_PATH,
+    TRUCK_IMAGE_ASSET_REGISTRY_PATH,
+    TRUCK_IMAGE_PROMPT_OVERRIDES_PATH,
+    TRUCK_IMAGE_REVIEW_QUEUE_PATH,
+)
 from app.maptools import RouteGraph, RouteWorkspaceSnapshot
 from app.services import (
     AutoRouteError,
@@ -20,17 +38,27 @@ from app.services import (
     delete_map_bundle,
     generate_auto_route_preview,
     generate_truck_image_asset,
-    load_city_catalog_payload,
-    load_city_product_matrix_payload,
     load_active_map_bundle,
+    load_city_catalog_payload,
+    load_city_product_demand_matrix_payload,
+    load_city_product_matrix_payload,
+    load_city_product_supply_matrix_payload,
     load_map_editor_payload,
     load_map_editor_v2_payload,
-    load_route_planner_payload,
-    load_truck_gallery_payload,
     load_map_viewport_payload,
     load_maps_registry,
+    load_product_catalog_v2_payload,
+    load_product_editor_payload,
+    load_product_editor_v1_payload,
+    load_product_family_catalog_payload,
+    load_product_field_baked_document,
+    load_product_field_edit_document,
+    load_product_inference_rules_payload,
+    load_product_logistics_type_catalog_payload,
     load_product_catalog_payload,
     load_reference_data,
+    load_region_product_supply_matrix_payload,
+    load_route_planner_payload,
     load_truck_body_catalog_payload,
     load_truck_brand_family_catalog_payload,
     load_truck_category_catalog_payload,
@@ -38,6 +66,7 @@ from app.services import (
     load_truck_catalog_hidden_payload,
     load_truck_custom_catalog_payload,
     load_effective_truck_type_catalog_payload,
+    load_truck_gallery_payload,
     load_truck_image_asset_registry_payload,
     load_truck_image_generation_config_payload,
     load_truck_image_prompt_overrides_payload,
@@ -51,6 +80,8 @@ from app.services import (
     save_active_map,
     save_active_map_as,
     save_map_bundle,
+    save_product_field_baked_document,
+    save_product_field_edit_document,
     save_json,
     set_active_map,
 )
@@ -69,6 +100,9 @@ from app.ui.editor_models import (
     MapLeafletSettingsDocument,
     MapSaveRequest,
     PopulationBandDocument,
+    ProductEditorCreateRequest,
+    ProductFieldLayerSaveRequest,
+    ProductEditorUpdateRequest,
     RoutePlannerLegResponse,
     RoutePlannerPlanRequest,
     RoutePlannerPlanResponse,
@@ -134,6 +168,8 @@ def _build_bootstrap_payload() -> dict[str, Any]:
     active_map = load_active_map_bundle()
     city_catalog = [city.model_dump(mode="json") for city in active_map.cities]
     city_catalog.sort(key=lambda item: item["label"])
+    reference_cities = load_city_catalog_payload()
+    reference_cities.sort(key=lambda item: item["label"])
     reference_data = build_reference_data_from_city_catalog_payload(city_catalog)
     route_snapshot = active_map.route_network
     products = load_product_catalog_payload()
@@ -217,6 +253,125 @@ def _build_route_planner_bootstrap_payload() -> dict[str, Any]:
     }
 
 
+def _build_product_editor_bootstrap_payload() -> dict[str, Any]:
+    active_map = load_active_map_bundle()
+    city_catalog = [city.model_dump(mode="json") for city in active_map.cities]
+    city_catalog.sort(key=lambda item: item["label"])
+    reference_cities = load_city_catalog_payload()
+    reference_cities.sort(key=lambda item: item["label"])
+
+    product_catalog = load_product_catalog_v2_payload()
+    families = load_product_family_catalog_payload()
+    logistics_types = load_product_logistics_type_catalog_payload()
+    supply_matrix = load_city_product_supply_matrix_payload()
+    demand_matrix = load_city_product_demand_matrix_payload()
+    region_supply_matrix = load_region_product_supply_matrix_payload()
+    inference_rules = load_product_inference_rules_payload()
+    product_editor = load_product_editor_payload()
+    map_editor = load_map_editor_payload()
+
+    products = sorted(
+        product_catalog.get("products", []),
+        key=lambda item: (int(item.get("order") or 0), item.get("name", "")),
+    )
+    selected_product_id = next(
+        (item.get("id") for item in products if bool(item.get("is_active", True))),
+        products[0].get("id") if products else None,
+    )
+
+    return {
+        "ui": load_ui_payload(),
+        "product_editor": product_editor,
+        "map_repository": map_repository_payload(),
+        "cities": city_catalog,
+        "reference_cities": reference_cities,
+        "map_viewport": load_map_viewport_payload(),
+        "map_editor": {
+            "themes": map_editor["themes"],
+            "leaflet_settings": map_editor["leaflet_settings"],
+            "display_settings": map_editor["display_settings"],
+        },
+        "product_family_catalog": families,
+        "product_logistics_type_catalog": logistics_types,
+        "product_catalog": {
+            **product_catalog,
+            "products": products,
+        },
+        "product_supply_matrix": supply_matrix,
+        "product_demand_matrix": demand_matrix,
+        "region_product_supply_matrix": region_supply_matrix,
+        "product_inference_rules": inference_rules,
+        "summary": {
+            "city_count": len(city_catalog),
+            "product_count": len(products),
+            "family_count": len(families.get("families", [])),
+            "logistics_type_count": len(logistics_types.get("types", [])),
+            "supply_anchor_count": len(supply_matrix.get("items", [])),
+            "selected_product_id": selected_product_id,
+        },
+    }
+
+
+def _build_product_editor_v1_bootstrap_payload() -> dict[str, Any]:
+    active_map = load_active_map_bundle()
+    city_catalog = [city.model_dump(mode="json") for city in active_map.cities]
+    city_catalog.sort(key=lambda item: item["label"])
+    reference_cities = load_city_catalog_payload()
+    reference_cities.sort(key=lambda item: item["label"])
+
+    product_catalog = load_product_catalog_v2_payload()
+    families = load_product_family_catalog_payload()
+    logistics_types = load_product_logistics_type_catalog_payload()
+    supply_matrix = load_city_product_supply_matrix_payload()
+    demand_matrix = load_city_product_demand_matrix_payload()
+    region_supply_matrix = load_region_product_supply_matrix_payload()
+    inference_rules = load_product_inference_rules_payload()
+    product_editor_v1 = load_product_editor_v1_payload()
+    map_editor = load_map_editor_payload()
+
+    products = sorted(
+        product_catalog.get("products", []),
+        key=lambda item: (int(item.get("order") or 0), item.get("name", "")),
+    )
+    selected_product_id = next(
+        (item.get("id") for item in products if bool(item.get("is_active", True))),
+        products[0].get("id") if products else None,
+    )
+
+    return {
+        "ui": load_ui_payload(),
+        "product_editor_v1": product_editor_v1,
+        "map_repository": map_repository_payload(),
+        "cities": city_catalog,
+        "reference_cities": reference_cities,
+        "map_viewport": load_map_viewport_payload(),
+        "map_editor": {
+            "themes": map_editor["themes"],
+            "leaflet_settings": map_editor["leaflet_settings"],
+            "display_settings": map_editor["display_settings"],
+        },
+        "product_family_catalog": families,
+        "product_logistics_type_catalog": logistics_types,
+        "product_catalog": {
+            **product_catalog,
+            "products": products,
+        },
+        "product_supply_matrix": supply_matrix,
+        "product_demand_matrix": demand_matrix,
+        "region_product_supply_matrix": region_supply_matrix,
+        "product_inference_rules": inference_rules,
+        "summary": {
+            "city_count": len(city_catalog),
+            "reference_city_count": len(reference_cities),
+            "product_count": len(products),
+            "family_count": len(families.get("families", [])),
+            "logistics_type_count": len(logistics_types.get("types", [])),
+            "supply_anchor_count": len(supply_matrix.get("items", [])),
+            "selected_product_id": selected_product_id,
+        },
+    }
+
+
 def _build_truck_gallery_bootstrap_payload() -> dict[str, Any]:
     return {
         "ui": load_ui_payload(),
@@ -234,6 +389,36 @@ def _build_truck_gallery_bootstrap_payload() -> dict[str, Any]:
         "truck_image_asset_registry": load_truck_image_asset_registry_payload(),
         "truck_image_review_queue": load_truck_image_review_queue_payload(),
     }
+
+
+def _slugify_product(label: str) -> str:
+    source = unicodedata.normalize("NFKD", str(label or "")).encode("ascii", "ignore").decode("ascii")
+    source = "".join(char.lower() if char.isalnum() else "_" for char in source.strip())
+    source = "_".join(part for part in source.split("_") if part)
+    return source or "novo_produto"
+
+
+def _next_product_order(products: list[dict[str, Any]]) -> int:
+    orders = [int(item.get("order") or 0) for item in products]
+    return (max(orders) if orders else 0) + 1
+
+
+def _unique_product_id(products: list[dict[str, Any]], label: str) -> str:
+    base = _slugify_product(label)
+    existing_ids = {str(item.get("id") or "").strip() for item in products}
+    candidate = base
+    suffix = 2
+    while candidate in existing_ids:
+        candidate = f"{base}_{suffix}"
+        suffix += 1
+    return candidate
+
+
+def _find_product_or_404(products: list[dict[str, Any]], product_id: str) -> dict[str, Any]:
+    product = next((item for item in products if str(item.get("id") or "").strip() == product_id), None)
+    if product is None:
+        raise HTTPException(status_code=404, detail="Produto nao encontrado no catalogo.")
+    return product
 
 
 def _next_custom_truck_order() -> int:
@@ -438,6 +623,24 @@ def create_app() -> FastAPI:
             context={"page_title": planner_ui["screen"].get("page_title", "Brasix | Planejador de rota")},
         )
 
+    @app.get("/editor/products", response_class=HTMLResponse, include_in_schema=False)
+    async def product_editor(request: Request) -> HTMLResponse:
+        editor_ui = load_product_editor_payload()
+        return templates.TemplateResponse(
+            request=request,
+            name="product_editor.html",
+            context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de produtos")},
+        )
+
+    @app.get("/editor/products_v1", response_class=HTMLResponse, include_in_schema=False)
+    async def product_editor_v1(request: Request) -> HTMLResponse:
+        editor_ui = load_product_editor_v1_payload()
+        return templates.TemplateResponse(
+            request=request,
+            name="product_editor_v1.html",
+            context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de produtos v1")},
+        )
+
     @app.get("/viewer/trucks", response_class=HTMLResponse, include_in_schema=False)
     async def truck_gallery(request: Request) -> HTMLResponse:
         gallery_ui = load_truck_gallery_payload()
@@ -478,9 +681,147 @@ def create_app() -> FastAPI:
     async def route_planner_bootstrap() -> dict[str, Any]:
         return _build_route_planner_bootstrap_payload()
 
+    @app.get("/api/editor/products/bootstrap")
+    async def product_editor_bootstrap() -> dict[str, Any]:
+        return _build_product_editor_bootstrap_payload()
+
+    @app.get("/api/editor/products_v1/bootstrap")
+    async def product_editor_v1_bootstrap() -> dict[str, Any]:
+        return _build_product_editor_v1_bootstrap_payload()
+
+    @app.get("/api/editor/products_v1/field")
+    async def product_editor_v1_field(
+        product_id: str = Query(min_length=1),
+        layer: str = Query(pattern="^(supply|demand)$"),
+    ) -> dict[str, Any]:
+        return {
+            "field": load_product_field_edit_document(product_id, layer),
+            "baked": load_product_field_baked_document(product_id, layer),
+        }
+
     @app.get("/api/viewer/trucks/bootstrap")
     async def truck_gallery_bootstrap() -> dict[str, Any]:
         return _build_truck_gallery_bootstrap_payload()
+
+    @app.post("/api/editor/products/products")
+    async def create_product(document: ProductEditorCreateRequest) -> dict[str, Any]:
+        catalog_document = load_product_catalog_v2_payload()
+        products = list(catalog_document.get("products", []))
+        family_ids = {item.get("id") for item in load_product_family_catalog_payload().get("families", [])}
+        logistics_type_ids = {item.get("id") for item in load_product_logistics_type_catalog_payload().get("types", [])}
+
+        if document.family_id not in family_ids:
+            raise HTTPException(status_code=400, detail="Familia economica invalida para o produto.")
+        if document.logistics_type_id not in logistics_type_ids:
+            raise HTTPException(status_code=400, detail="Tipo logistico invalido para o produto.")
+
+        source_product = None
+        if document.source_product_id:
+            source_product = _find_product_or_404(products, str(document.source_product_id).strip())
+
+        product_name = str(document.name or "").strip()
+        if not product_name:
+            raise HTTPException(status_code=400, detail="O novo produto precisa de um nome.")
+
+        next_order = _next_product_order(products)
+        new_product = dict(source_product or {})
+        new_product["id"] = _unique_product_id(products, product_name)
+        new_product["order"] = next_order
+        new_product["name"] = product_name
+        new_product["short_name"] = product_name
+        new_product["emoji"] = str(document.emoji or new_product.get("emoji") or "\U0001F4E6")
+        new_product["family_id"] = document.family_id
+        new_product["logistics_type_id"] = document.logistics_type_id
+        new_product["unit"] = str(document.unit or new_product.get("unit") or "un").strip() or "un"
+        new_product["color"] = str(new_product.get("color") or "#4f8593").strip() or "#4f8593"
+        new_product["source_kind"] = "editor_clone" if source_product else "editor_custom"
+        new_product["legacy_category"] = str(new_product.get("legacy_category") or "").strip()
+        new_product["is_active"] = True
+        new_product["density_class"] = str(new_product.get("density_class") or "medium").strip() or "medium"
+        new_product["value_class"] = str(new_product.get("value_class") or "medium").strip() or "medium"
+        new_product["perishable"] = bool(new_product.get("perishable", False))
+        new_product["fragile"] = bool(new_product.get("fragile", False))
+        new_product["hazardous"] = bool(new_product.get("hazardous", False))
+        new_product["temperature_control_required"] = bool(new_product.get("temperature_control_required", False))
+        new_product["compatible_body_type_ids"] = [
+            str(item).strip()
+            for item in (new_product.get("compatible_body_type_ids") or ["truck_body_bau"])
+            if str(item).strip()
+        ] or ["truck_body_bau"]
+        new_product["notes"] = str(new_product.get("notes") or "").strip()
+
+        products.append(new_product)
+        catalog_document["products"] = sorted(
+            products,
+            key=lambda item: (int(item.get("order") or 0), item.get("name", "")),
+        )
+        save_json(PRODUCT_CATALOG_V2_PATH, catalog_document)
+        return {"product": new_product}
+
+    @app.put("/api/editor/products/products/{product_id}")
+    async def update_product(product_id: str, document: ProductEditorUpdateRequest) -> dict[str, Any]:
+        catalog_document = load_product_catalog_v2_payload()
+        products = list(catalog_document.get("products", []))
+        family_ids = {item.get("id") for item in load_product_family_catalog_payload().get("families", [])}
+        logistics_type_ids = {item.get("id") for item in load_product_logistics_type_catalog_payload().get("types", [])}
+        product = _find_product_or_404(products, product_id)
+
+        changes = document.model_dump(exclude_none=True)
+        if "family_id" in changes and changes["family_id"] not in family_ids:
+            raise HTTPException(status_code=400, detail="Familia economica invalida para o produto.")
+        if "logistics_type_id" in changes and changes["logistics_type_id"] not in logistics_type_ids:
+            raise HTTPException(status_code=400, detail="Tipo logistico invalido para o produto.")
+
+        for key, value in changes.items():
+            if key in {"name", "short_name", "emoji", "family_id", "logistics_type_id", "unit", "color", "notes", "density_class", "value_class"}:
+                product[key] = str(value).strip()
+                continue
+            if key == "compatible_body_type_ids":
+                product[key] = [str(item).strip() for item in (value or []) if str(item).strip()] or ["truck_body_bau"]
+                continue
+            product[key] = value
+
+        if not str(product.get("name") or "").strip():
+            raise HTTPException(status_code=400, detail="O produto precisa de um nome.")
+        product["short_name"] = str(product.get("short_name") or product["name"]).strip() or product["name"]
+        product["id"] = product_id
+
+        catalog_document["products"] = sorted(
+            [
+                product if str(item.get("id") or "").strip() == product_id else item
+                for item in products
+            ],
+            key=lambda item: (int(item.get("order") or 0), item.get("name", "")),
+        )
+        save_json(PRODUCT_CATALOG_V2_PATH, catalog_document)
+        return {"product": product}
+
+    @app.put("/api/editor/products_v1/field")
+    async def save_product_editor_v1_field(document: ProductFieldLayerSaveRequest) -> dict[str, Any]:
+        catalog_document = load_product_catalog_v2_payload()
+        _find_product_or_404(list(catalog_document.get("products", [])), document.product_id)
+
+        timestamp = document.updated_at or datetime.now().astimezone().isoformat(timespec="seconds")
+        field_payload = {
+            "id": f"product_field_edit::{document.product_id}::{document.layer}",
+            "product_id": document.product_id,
+            "layer": document.layer,
+            "version": 1,
+            "updated_at": timestamp,
+            "strokes": document.strokes,
+            "baked_city_values": document.baked_city_values,
+        }
+        baked_payload = {
+            "id": f"product_field_baked::{document.product_id}::{document.layer}",
+            "product_id": document.product_id,
+            "layer": document.layer,
+            "generated_at": timestamp,
+            "city_values": document.baked_city_values,
+        }
+
+        save_product_field_edit_document(document.product_id, document.layer, field_payload)
+        save_product_field_baked_document(document.product_id, document.layer, baked_payload)
+        return {"field": field_payload, "baked": baked_payload}
 
     @app.post("/api/viewer/trucks/generate", response_model=TruckImageGenerateResponse)
     async def generate_truck_image(document: TruckImageGenerateRequest) -> TruckImageGenerateResponse:

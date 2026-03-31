@@ -1,0 +1,65 @@
+{
+  "id": "product_logistics_type_catalog_v1",
+  "types": [
+    {
+      "id": "granel_seco",
+      "label": "Granel seco",
+      "description": "Carga solta ou ensacada de baixa complexidade.",
+      "order": 1
+    },
+    {
+      "id": "carga_geral_perecivel",
+      "label": "Carga perecivel",
+      "description": "Produtos in natura que pedem giro rapido, mas nao necessariamente frio.",
+      "order": 2
+    },
+    {
+      "id": "animais_vivos",
+      "label": "Animais vivos",
+      "description": "Carga viva com exigencia de implemento boiadeiro.",
+      "order": 3
+    },
+    {
+      "id": "granel_liquido",
+      "label": "Granel liquido",
+      "description": "Liquidos a granel em tanque dedicado.",
+      "order": 4
+    },
+    {
+      "id": "carga_geral_paletizada",
+      "label": "Carga geral paletizada",
+      "description": "Carga geral industrial ou enfardada em bau, sider ou container.",
+      "order": 5
+    },
+    {
+      "id": "carga_aberta",
+      "label": "Carga aberta",
+      "description": "Carga longa, volumosa ou sem necessidade de fechamento.",
+      "order": 6
+    },
+    {
+      "id": "frigorificado",
+      "label": "Frigorificado",
+      "description": "Carga com cadeia fria ou sensivel a temperatura.",
+      "order": 7
+    },
+    {
+      "id": "granel_mineral",
+      "label": "Granel mineral",
+      "description": "Minerais e granulos pesados de alta densidade.",
+      "order": 8
+    },
+    {
+      "id": "carga_valiosa",
+      "label": "Carga valiosa",
+      "description": "Carga de alto valor e baixo volume, com seguranca reforcada.",
+      "order": 9
+    },
+    {
+      "id": "granel_gasoso_pressurizado",
+      "label": "Gasoso pressurizado",
+      "description": "Gases ou derivados que pedem tanque especializado.",
+      "order": 10
+    }
+  ]
+}
