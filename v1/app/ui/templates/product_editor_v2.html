@@ -192,6 +192,14 @@
               </label>
 
               <label class="field is-span-2">
+                <span>Tipo logistico</span>
+                <div class="select-shell">
+                  <select id="product-editor-v1-create-logistics" class="editor-input"></select>
+                  <span class="material-symbols-outlined">expand_more</span>
+                </div>
+              </label>
+
+              <label class="field is-span-2">
                 <span>Insumos principais</span>
                 <select id="product-editor-v1-create-inputs" class="editor-input product-editor-multi-select" size="10" multiple></select>
               </label>
@@ -231,7 +239,7 @@
 
 <script type="module">
   const productEditorV2ModuleUrl = new URL("{{ request.url_for('static', path='js/editors/product-editor-v2.js') }}", window.location.href);
-  productEditorV2ModuleUrl.searchParams.set("v", "20260331-products-v2-1");
+  productEditorV2ModuleUrl.searchParams.set("v", "20260331-products-v2-2");
 
   function showProductEditorV2LoadError(error) {
     const target = document.getElementById("product-editor-v1-status");

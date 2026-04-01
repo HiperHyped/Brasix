@@ -116,7 +116,7 @@
     },
     {
       "truck_type_id": "truck_type_toco_semipesado_4x2",
-      "preferred_body_type_id": "truck_body_bau",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "prompt_items": [
         "perfil lateral puro do caminhão",
         "fundo transparente",
@@ -247,7 +247,7 @@
     },
     {
       "truck_type_id": "truck_type_bitruck_vocacional_8x4",
-      "preferred_body_type_id": "truck_body_basculante",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "prompt_items": [
         "perfil lateral puro do caminhão",
         "fundo transparente",
@@ -361,7 +361,7 @@
     },
     {
       "truck_type_id": "truck_type_cavalo_6x4",
-      "preferred_body_type_id": "truck_body_prancha",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "prompt_items": [
         "perfil lateral puro do caminhão",
         "fundo transparente",
@@ -562,7 +562,7 @@
     },
     {
       "truck_type_id": "truck_type_treminhao",
-      "preferred_body_type_id": "truck_body_canavieiro",
+      "preferred_body_type_id": "truck_body_graneleiro",
       "prompt_items": [
         "perfil lateral puro do caminhão",
         "fundo transparente",
@@ -759,6 +759,35 @@
         "não usar perspectiva"
       ],
       "reference_truck_type_id": "truck_type_cavalo_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_28",
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo truck 6x4 frigorificado",
+        "porte grande plus",
+        "estrutura rigido",
+        "eixos 6x4",
+        "composicao um caminhao rigido unico",
+        "missao rodoviario alta capacidade",
+        "implemento: bau frigorifico",
+        "usar poucos detalhes",
+        "observacoes importantes: bau com refrigeração (carrier)",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_truck_pesado_6x2",
       "reference_aspects": [
         "cabine",
         "estilo"

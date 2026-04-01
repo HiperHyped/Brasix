@@ -81,9 +81,16 @@ COMBINATION_KIND_HINTS = {
     "semi_trailer": "um cavalo mecanico e um semirreboque",
     "drawbar_trailer": "um caminhao rigido puxando um reboque separado",
     "multi_trailer": "combinacao rodoviaria com multiplos implementos articulados",
+    "articulated": "um cavalo mecanico preparado para semirreboque",
+    "combination": "combinacao rodoviaria completa",
+    "specialized": "combinacao especial do tipo correto",
 }
 
 SIZE_TIER_LABELS = {
+    "leve": "leve",
+    "medio": "medio",
+    "pesado": "pesado",
+    "especial": "especial",
     "smallest": "menor",
     "small": "pequeno",
     "medium": "medio",
@@ -100,6 +107,10 @@ SIZE_TIER_LABELS = {
 }
 
 BASE_VEHICLE_KIND_LABELS = {
+    "rigido": "rigido",
+    "cavalo": "cavalo",
+    "combinacao": "combinacao",
+    "especial": "especial",
     "rigid": "rigido",
     "tractor_unit": "cavalo mecanico",
     "articulated_combination": "combinacao articulada",
@@ -370,24 +381,20 @@ def build_truck_prompt_items_from_classification(
     size_tier: str,
     base_vehicle_kind: str,
     axle_config: str,
-    combination_kind: str,
-    cargo_scope: str,
-    canonical_body_type_id: str,
+    preferred_body_type_id: str,
     notes: str = "",
     config: dict[str, Any] | None = None,
 ) -> list[str]:
     active_config = config or load_truck_image_generation_config()
-    body_record = _find_body_record(canonical_body_type_id)
+    body_record = _find_body_record(preferred_body_type_id)
     prompt_builder = dict(active_config.get("prompt_builder") or {})
     prompt_items = _normalize_prompt_items(prompt_builder.get("base_instructions") or [])
     prompt_items.extend(
         [
             f"veiculo de carga brasileiro do tipo {str(label or truck_type_id).strip().lower()}",
             f"porte { _category_label_from_catalog('size_tier', size_tier, SIZE_TIER_LABELS) }",
-            f"estrutura { _category_label_from_catalog('base_vehicle_kind', base_vehicle_kind, BASE_VEHICLE_KIND_LABELS) }",
+            f"tipo { _category_label_from_catalog('base_vehicle_kind', base_vehicle_kind, BASE_VEHICLE_KIND_LABELS) }",
             f"eixos {str(axle_config or '').strip()}",
-            f"composicao { _category_label_from_catalog('combination_kind', combination_kind, COMBINATION_KIND_HINTS) }",
-            f"missao { _category_label_from_catalog('cargo_scope', cargo_scope, CARGO_SCOPE_LABELS) }",
             f"implemento: {_body_hint_for(body_record, active_config)}",
             "usar poucos detalhes",
         ]
@@ -504,7 +511,12 @@ def _default_prompt_items(
     type_record = _find_type_record(truck_type_id)
     visual_definition = _find_visual_definition(truck_type_id)
     override = (_override_for_type(truck_type_id) or {}) if allow_override_prompt_items else {}
-    body_id = str(override.get("preferred_body_type_id") or type_record.get("canonical_body_type_ids", [""])[0] or "")
+    body_id = str(
+        override.get("preferred_body_type_id")
+        or type_record.get("preferred_body_type_id")
+        or type_record.get("canonical_body_type_ids", [""])[0]
+        or ""
+    )
     body_record = _find_body_record(body_id)
 
     prompt_builder = dict(config.get("prompt_builder") or {})
@@ -520,9 +532,7 @@ def _default_prompt_items(
             size_tier=str(type_record.get("size_tier") or ""),
             base_vehicle_kind=str(type_record.get("base_vehicle_kind") or ""),
             axle_config=str(type_record.get("axle_config") or ""),
-            combination_kind=str(type_record.get("combination_kind") or ""),
-            cargo_scope=str(type_record.get("cargo_scope") or ""),
-            canonical_body_type_id=body_id,
+            preferred_body_type_id=body_id,
             notes=str(type_record.get("notes") or ""),
             config=config,
         )

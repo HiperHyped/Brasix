@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block body %}
+<script>
+  document.documentElement.classList.add("runtime-page");
+  document.body.classList.add("runtime-page");
+</script>
+<main class="runtime-shell">
+  <header class="topbar runtime-topbar">
+    <div class="runtime-topbar-left">
+      <div class="brand-lockup">
+        <h1 id="runtime-brand-title">Brasix</h1>
+        <span class="brand-divider"></span>
+        <p id="runtime-brand-subtitle">Inspector tecnico do runtime</p>
+      </div>
+    </div>
+
+    <div id="runtime-header-badges" class="editor-header-badges" aria-label="Estado do runtime"></div>
+    <div id="runtime-header-actions" class="editor-header-actions" aria-label="Acoes do runtime"></div>
+  </header>
+
+  <section class="runtime-grid">
+    <aside class="runtime-sidebar">
+      <section class="editor-card runtime-card runtime-summary-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Resumo</p>
+            <h2>Panorama</h2>
+          </div>
+        </div>
+
+        <div id="runtime-summary" class="runtime-summary"></div>
+      </section>
+
+      <section class="editor-card runtime-card runtime-domain-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Dominios</p>
+            <h2>Mapa, produtos e frota</h2>
+          </div>
+        </div>
+
+        <div id="runtime-domains" class="runtime-list"></div>
+      </section>
+
+      <section class="editor-card runtime-card runtime-source-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Fontes</p>
+            <h2>Pacote consolidado</h2>
+          </div>
+        </div>
+
+        <div id="runtime-sources" class="runtime-list"></div>
+      </section>
+    </aside>
+
+    <section class="runtime-main">
+      <section class="editor-card runtime-card runtime-data-card">
+        <div class="runtime-panel-head">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Inspector</p>
+              <h2>Validacao e dados</h2>
+            </div>
+          </div>
+
+          <div class="runtime-panel-controls">
+            <div id="runtime-view-toggle" class="segmented-control runtime-view-toggle" aria-label="Modo de visualizacao"></div>
+
+            <label id="runtime-json-select-field" class="field runtime-json-select-field" hidden>
+              <span>Secao</span>
+              <div class="select-shell">
+                <select id="runtime-json-section-select" class="editor-input"></select>
+                <span class="material-symbols-outlined">expand_more</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div id="runtime-validation-status" class="editor-status-box runtime-validation-status"></div>
+        <div id="runtime-panel" class="runtime-panel"></div>
+      </section>
+    </section>
+  </section>
+</main>
+
+<script type="module">
+  const runtimeModuleUrl = new URL("{{ request.url_for('static', path='js/runtime-inspector.js') }}", window.location.href);
+  runtimeModuleUrl.searchParams.set("v", "20260331-1");
+
+  function showRuntimeInspectorLoadError(error) {
+    const target = document.getElementById("runtime-validation-status");
+    if (!target) {
+      return;
+    }
+
+    target.innerHTML = `
+      <div class="editor-status-copy">Falha ao carregar o inspetor tecnico.</div>
+      <div class="editor-status-meta">
+        <div><span>Erro</span><strong>${String(error?.message || error || "Erro desconhecido")}</strong></div>
+      </div>
+    `;
+    console.error("Brasix runtime inspector load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showRuntimeInspectorLoadError(event.reason);
+  });
+
+  import(runtimeModuleUrl.href).catch(showRuntimeInspectorLoadError);
+</script>
+{% endblock %}

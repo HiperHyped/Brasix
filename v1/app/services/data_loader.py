@@ -91,32 +91,97 @@ DEFAULT_PRODUCT_FAMILY_DOCUMENT = {
 DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT = {
     "id": "product_logistics_type_catalog_v1",
     "types": [
-        {"id": "granel_seco", "label": "Granel seco", "description": "Carga solta ou ensacada.", "order": 1},
+        {
+            "id": "granel_seco",
+            "label": "Granel seco",
+            "description": "Carga solta ou ensacada.",
+            "order": 1,
+            "body_type_ids": ["truck_body_graneleiro", "truck_body_basculante", "truck_body_carga_seca"],
+        },
         {
             "id": "carga_geral_perecivel",
             "label": "Carga perecivel",
             "description": "Produto in natura de giro rapido.",
             "order": 2,
+            "body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_container"],
         },
-        {"id": "animais_vivos", "label": "Animais vivos", "description": "Carga viva em boiadeiro.", "order": 3},
-        {"id": "granel_liquido", "label": "Granel liquido", "description": "Liquido a granel em tanque.", "order": 4},
+        {
+            "id": "animais_vivos",
+            "label": "Animais vivos",
+            "description": "Carga viva em boiadeiro.",
+            "order": 3,
+            "body_type_ids": ["truck_body_boiadeiro"],
+        },
+        {
+            "id": "granel_liquido",
+            "label": "Granel liquido",
+            "description": "Liquido a granel em tanque.",
+            "order": 4,
+            "body_type_ids": ["truck_body_tanque"],
+        },
         {
             "id": "carga_geral_paletizada",
             "label": "Carga geral paletizada",
             "description": "Carga geral industrial em bau, sider ou container.",
             "order": 5,
+            "body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_container"],
         },
-        {"id": "carga_aberta", "label": "Carga aberta", "description": "Carga aberta ou alongada.", "order": 6},
-        {"id": "frigorificado", "label": "Frigorificado", "description": "Carga com cadeia fria.", "order": 7},
-        {"id": "granel_mineral", "label": "Granel mineral", "description": "Minerais pesados a granel.", "order": 8},
-        {"id": "carga_valiosa", "label": "Carga valiosa", "description": "Carga de alto valor.", "order": 9},
+        {
+            "id": "carga_aberta",
+            "label": "Carga aberta",
+            "description": "Carga aberta ou alongada.",
+            "order": 6,
+            "body_type_ids": ["truck_body_prancha", "truck_body_madeireiro", "truck_body_carga_seca"],
+        },
+        {
+            "id": "frigorificado",
+            "label": "Frigorificado",
+            "description": "Carga com cadeia fria.",
+            "order": 7,
+            "body_type_ids": ["truck_body_frigorifico"],
+        },
+        {
+            "id": "granel_mineral",
+            "label": "Granel mineral",
+            "description": "Minerais pesados a granel.",
+            "order": 8,
+            "body_type_ids": ["truck_body_basculante", "truck_body_graneleiro"],
+        },
+        {
+            "id": "carga_valiosa",
+            "label": "Carga valiosa",
+            "description": "Carga de alto valor.",
+            "order": 9,
+            "body_type_ids": ["truck_body_bau", "truck_body_container"],
+        },
         {
             "id": "granel_gasoso_pressurizado",
             "label": "Gasoso pressurizado",
             "description": "Tanque especializado para gas.",
             "order": 10,
+            "body_type_ids": ["truck_body_tanque"],
+        },
+        {
+            "id": "cana_in_natura",
+            "label": "Cana in natura",
+            "description": "Cana colhida com implemento canavieiro.",
+            "order": 11,
+            "body_type_ids": ["truck_body_canavieiro"],
+        },
+        {
+            "id": "transporte_veiculos",
+            "label": "Transporte de veiculos",
+            "description": "Veiculos novos em implemento cegonheiro.",
+            "order": 12,
+            "body_type_ids": ["truck_body_cegonheiro"],
         },
     ],
+}
+
+DEFAULT_LOGISTICS_BODY_IDS_BY_TYPE = {
+    str(item.get("id") or ""): [str(body_id).strip() for body_id in item.get("body_type_ids", []) if str(body_id).strip()]
+    for item in DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT.get("types", [])
+    if str(item.get("id") or "").strip()
 }
 
 CATEGORY_PRODUCT_DEFAULTS = {
@@ -179,7 +244,7 @@ CATEGORY_PRODUCT_DEFAULTS = {
 LEGACY_PRODUCT_LOGISTICS_TYPES = {
     "soja": "granel_seco",
     "milho": "granel_seco",
-    "cana-de-acucar": "granel_seco",
+    "cana-de-acucar": "cana_in_natura",
     "algodao": "carga_geral_paletizada",
     "cafe": "granel_seco",
     "arroz": "granel_seco",
@@ -209,19 +274,6 @@ LEGACY_PRODUCT_LOGISTICS_TYPES = {
     "etanol": "granel_liquido",
 }
 
-LOGISTICS_COMPATIBLE_BODIES = {
-    "granel_seco": ["truck_body_graneleiro", "truck_body_basculante", "truck_body_carga_seca"],
-    "carga_geral_perecivel": ["truck_body_bau", "truck_body_sider", "truck_body_container"],
-    "animais_vivos": ["truck_body_boiadeiro"],
-    "granel_liquido": ["truck_body_tanque"],
-    "carga_geral_paletizada": ["truck_body_bau", "truck_body_sider", "truck_body_container"],
-    "carga_aberta": ["truck_body_prancha", "truck_body_madeireiro", "truck_body_carga_seca"],
-    "frigorificado": ["truck_body_frigorifico"],
-    "granel_mineral": ["truck_body_basculante", "truck_body_graneleiro"],
-    "carga_valiosa": ["truck_body_bau", "truck_body_container"],
-    "granel_gasoso_pressurizado": ["truck_body_tanque"],
-}
-
 PRODUCT_METADATA_OVERRIDES = {
     "algodao": {"density_class": "low"},
     "cafe": {"value_class": "high"},
@@ -247,7 +299,7 @@ PRODUCT_METADATA_OVERRIDES = {
 MASTER_PRODUCT_LOGISTICS_TYPES = {
     "soja": "granel_seco",
     "milho": "granel_seco",
-    "cana-de-acucar": "granel_seco",
+    "cana-de-acucar": "cana_in_natura",
     "algodao": "carga_geral_paletizada",
     "cafe": "granel_seco",
     "arroz": "granel_seco",
@@ -285,7 +337,7 @@ MASTER_PRODUCT_LOGISTICS_TYPES = {
     "plastico": "carga_geral_paletizada",
     "embalagem": "carga_geral_paletizada",
     "eletronicos": "carga_valiosa",
-    "veiculos": "carga_aberta",
+    "veiculos": "transporte_veiculos",
     "ouro": "carga_valiosa",
     "ovinos": "animais_vivos",
     "manganes": "granel_mineral",
@@ -396,9 +448,44 @@ def _normalize_product_record(product: dict[str, Any], default_order: int) -> di
     normalized["fragile"] = bool(normalized.get("fragile", False))
     normalized["hazardous"] = bool(normalized.get("hazardous", False))
     normalized["temperature_control_required"] = bool(normalized.get("temperature_control_required", False))
-    compatible_body_type_ids = normalized.get("compatible_body_type_ids") or ["truck_body_bau"]
-    normalized["compatible_body_type_ids"] = [str(item).strip() for item in compatible_body_type_ids if str(item).strip()]
+    derived_compatible_body_type_ids = [
+        str(item).strip()
+        for item in _logistics_body_ids_by_type().get(normalized["logistics_type_id"], [])
+        if str(item).strip()
+    ]
+    normalized["compatible_body_type_ids"] = derived_compatible_body_type_ids
     normalized["notes"] = str(normalized.get("notes") or "").strip()
+    return normalized
+
+
+def _logistics_body_ids_by_type(logistics_catalog: dict[str, Any] | None = None) -> dict[str, list[str]]:
+    catalog = logistics_catalog or load_product_logistics_type_catalog_payload()
+    return {
+        str(item.get("id") or "").strip(): [str(body_id).strip() for body_id in item.get("body_type_ids", []) if str(body_id).strip()]
+        for item in catalog.get("types", [])
+        if str(item.get("id") or "").strip()
+    }
+
+
+def _normalize_product_logistics_type_record(
+    logistics_type: dict[str, Any],
+    default_order: int,
+    *,
+    default_record: dict[str, Any] | None = None,
+    truck_body_labels_by_id: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    base_record = dict(default_record or {})
+    normalized = {**base_record, **dict(logistics_type)}
+    normalized["id"] = str(normalized.get("id") or f"product_logistics_type_{default_order}").strip()
+    normalized["order"] = int(normalized.get("order") or default_order)
+    normalized["label"] = str(normalized.get("label") or normalized["id"]).strip() or normalized["id"]
+    normalized["description"] = str(normalized.get("description") or "").strip()
+    body_type_ids = normalized.get("body_type_ids")
+    if body_type_ids is None:
+        body_type_ids = base_record.get("body_type_ids") or DEFAULT_LOGISTICS_BODY_IDS_BY_TYPE.get(normalized["id"], [])
+    normalized["body_type_ids"] = [str(item).strip() for item in (body_type_ids or []) if str(item).strip()]
+    labels_by_id = truck_body_labels_by_id or {}
+    normalized["body_labels"] = [labels_by_id.get(body_id, body_id) for body_id in normalized["body_type_ids"]]
     return normalized
 
 
@@ -426,7 +513,6 @@ def _build_product_record_from_legacy(legacy_item: dict[str, Any], order: int) -
         "fragile": defaults["fragile"],
         "hazardous": defaults["hazardous"],
         "temperature_control_required": defaults["temperature_control_required"],
-        "compatible_body_type_ids": LOGISTICS_COMPATIBLE_BODIES.get(logistics_type_id, ["truck_body_bau"]),
         "notes": "",
     }
     record.update(PRODUCT_METADATA_OVERRIDES.get(legacy_item["id"], {}))
@@ -607,8 +693,54 @@ def load_product_family_catalog_payload(path: Path | None = None) -> dict[str, A
 
 def load_product_logistics_type_catalog_payload(path: Path | None = None) -> dict[str, Any]:
     target = path or PRODUCT_LOGISTICS_TYPE_CATALOG_PATH
-    if not target.exists():
-        return dict(DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT)
+    payload = dict(DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT)
+    if target.exists():
+        raw_payload = load_json(target)
+        if isinstance(raw_payload, dict):
+            payload = raw_payload
+        else:
+            payload = {"id": DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT["id"], "types": list(raw_payload)}
+
+    default_types_by_id = {
+        str(item.get("id") or ""): dict(item)
+        for item in DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT.get("types", [])
+        if str(item.get("id") or "").strip()
+    }
+    truck_body_labels_by_id = {
+        str(item.get("id") or ""): str(item.get("label") or item.get("id") or "").strip()
+        for item in load_truck_body_catalog_payload().get("types", [])
+        if str(item.get("id") or "").strip()
+    }
+
+    merged_by_id: dict[str, dict[str, Any]] = {}
+    for index, default_item in enumerate(DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT.get("types", []), start=1):
+        normalized = _normalize_product_logistics_type_record(
+            default_item,
+            index,
+            truck_body_labels_by_id=truck_body_labels_by_id,
+        )
+        merged_by_id[normalized["id"]] = normalized
+
+    next_order = max((int(item.get("order") or 0) for item in merged_by_id.values()), default=0) + 1
+    for raw_item in payload.get("types", []):
+        item_id = str(raw_item.get("id") or "").strip()
+        if not item_id:
+            continue
+        base_record = default_types_by_id.get(item_id)
+        order = int(raw_item.get("order") or (base_record or {}).get("order") or next_order)
+        if item_id not in merged_by_id and (not raw_item.get("order")):
+            next_order += 1
+        merged_by_id[item_id] = _normalize_product_logistics_type_record(
+            raw_item,
+            order,
+            default_record=base_record,
+            truck_body_labels_by_id=truck_body_labels_by_id,
+        )
+
+    return {
+        "id": payload.get("id") or DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT["id"],
+        "types": sorted(merged_by_id.values(), key=lambda item: (int(item.get("order") or 0), str(item.get("label") or ""))),
+    }
     return load_json(target)
 
 
@@ -665,10 +797,12 @@ def _build_product_record_from_master(master_item: dict[str, Any], order: int, s
     family_id = str(master_item.get("family_id") or base_seed.get("family_id") or "agro").strip() or "agro"
     defaults = CATEGORY_PRODUCT_DEFAULTS.get(family_id, CATEGORY_PRODUCT_DEFAULTS["agro"])
     family_colors = _family_color_lookup()
-    logistics_type_id = MASTER_PRODUCT_LOGISTICS_TYPES.get(
-        product_id,
-        str(base_seed.get("logistics_type_id") or "carga_geral_paletizada"),
-    )
+    logistics_type_id = str(
+        master_item.get("logistics_type_id")
+        or MASTER_PRODUCT_LOGISTICS_TYPES.get(product_id)
+        or base_seed.get("logistics_type_id")
+        or "carga_geral_paletizada"
+    ).strip()
     record = {
         **base_seed,
         "id": product_id,
@@ -697,7 +831,6 @@ def _build_product_record_from_master(master_item: dict[str, Any], order: int, s
         "temperature_control_required": bool(
             base_seed.get("temperature_control_required", defaults["temperature_control_required"])
         ),
-        "compatible_body_type_ids": LOGISTICS_COMPATIBLE_BODIES.get(logistics_type_id, ["truck_body_bau"]),
         "notes": str(base_seed.get("notes") or "").strip(),
         "inputs": list(master_item.get("inputs") or []),
         "outputs": list(master_item.get("outputs") or []),
@@ -1026,24 +1159,161 @@ def load_truck_catalog_hidden_payload(path: Path | None = None) -> dict[str, Any
 
 
 def load_truck_category_catalog_payload(path: Path | None = None) -> dict[str, Any]:
+    default_document = {
+        "id": "truck_category_catalog_v1",
+        "size_tiers": [
+            {"id": "leve", "label": "Leve"},
+            {"id": "medio", "label": "Medio"},
+            {"id": "pesado", "label": "Pesado"},
+            {"id": "especial", "label": "Especial"},
+        ],
+        "base_vehicle_kinds": [
+            {"id": "rigido", "label": "Rigido"},
+            {"id": "cavalo", "label": "Cavalo"},
+            {"id": "combinacao", "label": "Combinacao"},
+            {"id": "especial", "label": "Especial"},
+        ],
+        "axle_configs": [],
+        "combination_kinds": [],
+        "cargo_scopes": [],
+    }
+
+    def merge_locked_options(defaults: list[dict[str, str]], provided: list[dict[str, Any]]) -> list[dict[str, str]]:
+        provided_by_id = {
+            str(item.get("id") or "").strip(): str(item.get("label") or "").strip()
+            for item in provided
+            if str(item.get("id") or "").strip()
+        }
+        return [
+            {
+                "id": item["id"],
+                "label": provided_by_id.get(item["id"], item["label"]),
+            }
+            for item in defaults
+        ]
+
     target = path or TRUCK_CATEGORY_CATALOG_PATH
     if not target.exists():
-        return {
-            "id": "truck_category_catalog_v1",
-            "size_tiers": [],
-            "base_vehicle_kinds": [],
-            "axle_configs": [],
-            "combination_kinds": [],
-            "cargo_scopes": [],
-        }
+        return dict(default_document)
     payload = load_json(target)
-    payload.setdefault("id", "truck_category_catalog_v1")
-    payload.setdefault("size_tiers", [])
-    payload.setdefault("base_vehicle_kinds", [])
-    payload.setdefault("axle_configs", [])
-    payload.setdefault("combination_kinds", [])
-    payload.setdefault("cargo_scopes", [])
-    return payload
+    return {
+        "id": str(payload.get("id") or default_document["id"]),
+        "size_tiers": merge_locked_options(default_document["size_tiers"], list(payload.get("size_tiers") or [])),
+        "base_vehicle_kinds": merge_locked_options(default_document["base_vehicle_kinds"], list(payload.get("base_vehicle_kinds") or [])),
+        "axle_configs": list(payload.get("axle_configs") or []),
+        "combination_kinds": list(payload.get("combination_kinds") or []),
+        "cargo_scopes": list(payload.get("cargo_scopes") or []),
+    }
+
+
+TRUCK_SIZE_TIER_ALIASES = {
+    "smallest": "leve",
+    "small": "leve",
+    "medium": "medio",
+    "medium_plus": "medio",
+    "large": "pesado",
+    "large_plus": "pesado",
+    "extra_large": "pesado",
+    "tractor_small": "pesado",
+    "tractor_large": "pesado",
+    "tractor_extra_large": "pesado",
+    "articulated_large": "pesado",
+    "drawbar_large": "pesado",
+    "combination_extra_large": "especial",
+    "combination_massive": "especial",
+    "specialized_max_length": "especial",
+    "van": "leve",
+    "camionete": "leve",
+    "mini_pick_up": "leve",
+    "leve": "leve",
+    "medio": "medio",
+    "pesado": "pesado",
+    "especial": "especial",
+}
+
+TRUCK_BASE_KIND_ALIASES = {
+    "rigid": "rigido",
+    "rigido": "rigido",
+    "tractor_unit": "cavalo",
+    "cavalo": "cavalo",
+    "articulated_combination": "combinacao",
+    "drawbar_combination": "combinacao",
+    "combination": "combinacao",
+    "combinacao": "combinacao",
+    "special_combination": "especial",
+    "specialized": "especial",
+    "especial": "especial",
+}
+
+TRUCK_COMBINATION_KIND_BY_BASE = {
+    "rigido": "single_unit",
+    "cavalo": "articulated",
+    "combinacao": "combination",
+    "especial": "specialized",
+}
+
+
+def _normalize_truck_size_tier(raw_value: Any) -> str:
+    source = str(raw_value or "").strip().lower()
+    if source in TRUCK_SIZE_TIER_ALIASES:
+        return TRUCK_SIZE_TIER_ALIASES[source]
+    if any(token in source for token in ("van", "pick", "camionete")):
+        return "leve"
+    return "pesado"
+
+
+def _normalize_truck_base_vehicle_kind(raw_value: Any) -> str:
+    source = str(raw_value or "").strip().lower()
+    if source in TRUCK_BASE_KIND_ALIASES:
+        return TRUCK_BASE_KIND_ALIASES[source]
+    if "cavalo" in source:
+        return "cavalo"
+    if any(token in source for token in ("combo", "articul", "reboque")):
+        return "combinacao"
+    if any(token in source for token in ("especial", "cegonh")):
+        return "especial"
+    return "rigido"
+
+
+def _normalize_truck_body_type_ids(raw_ids: list[Any] | tuple[Any, ...] | None) -> list[str]:
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for raw_value in raw_ids or []:
+        value = str(raw_value or "").strip()
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        normalized.append(value)
+    return normalized
+
+
+def normalize_truck_type_record(raw_item: dict[str, Any]) -> dict[str, Any]:
+    item = dict(raw_item)
+    item["size_tier"] = _normalize_truck_size_tier(item.get("size_tier"))
+    item["base_vehicle_kind"] = _normalize_truck_base_vehicle_kind(item.get("base_vehicle_kind"))
+    item["combination_kind"] = TRUCK_COMBINATION_KIND_BY_BASE.get(item["base_vehicle_kind"], "single_unit")
+    item["cargo_scope"] = ""
+    body_ids = _normalize_truck_body_type_ids(
+        list(item.get("canonical_body_type_ids") or [])
+        or ([item.get("canonical_body_type_id")] if item.get("canonical_body_type_id") else [])
+        or ([item.get("preferred_body_type_id")] if item.get("preferred_body_type_id") else [])
+    )
+    item["canonical_body_type_ids"] = body_ids
+    preferred_body_type_id = str(
+        item.get("preferred_body_type_id")
+        or item.get("canonical_body_type_id")
+        or (body_ids[0] if body_ids else "")
+        or ""
+    ).strip()
+    if preferred_body_type_id:
+        item["preferred_body_type_id"] = preferred_body_type_id
+    else:
+        item.pop("preferred_body_type_id", None)
+    item.pop("canonical_body_type_id", None)
+    item["notes"] = str(item.get("notes") or "").strip()
+    if item.get("short_label") is not None:
+        item["short_label"] = str(item.get("short_label") or item.get("label") or "").strip()
+    return item
 
 
 def load_effective_truck_type_catalog_payload() -> dict[str, Any]:
@@ -1068,21 +1338,19 @@ def load_effective_truck_type_catalog_payload() -> dict[str, Any]:
             item["size_tier"] = str(edit.get("size_tier") or item.get("size_tier") or "").strip() or item.get("size_tier")
             item["base_vehicle_kind"] = str(edit.get("base_vehicle_kind") or item.get("base_vehicle_kind") or "").strip() or item.get("base_vehicle_kind")
             item["axle_config"] = str(edit.get("axle_config") or item.get("axle_config") or "").strip() or item.get("axle_config")
-            item["combination_kind"] = str(edit.get("combination_kind") or item.get("combination_kind") or "").strip() or item.get("combination_kind")
-            item["cargo_scope"] = str(edit.get("cargo_scope") or item.get("cargo_scope") or "").strip() or item.get("cargo_scope")
             item["notes"] = str(edit.get("notes") or item.get("notes") or "").strip()
-            canonical_body_type_id = str(edit.get("canonical_body_type_id") or "").strip()
-            if canonical_body_type_id:
-                item["canonical_body_type_ids"] = [canonical_body_type_id]
+            preferred_body_type_id = str(edit.get("preferred_body_type_id") or edit.get("canonical_body_type_id") or "").strip()
+            if preferred_body_type_id:
+                item["preferred_body_type_id"] = preferred_body_type_id
+        item = normalize_truck_type_record(item)
         item["is_custom"] = False
         types.append(item)
     for raw_item in custom_document.get("items", []):
         item = dict(raw_item)
         if str(item.get("id") or "") in hidden_ids:
             continue
+        item = normalize_truck_type_record(item)
         item["is_custom"] = True
-        if item.get("canonical_body_type_id") and not item.get("canonical_body_type_ids"):
-            item["canonical_body_type_ids"] = [item["canonical_body_type_id"]]
         types.append(item)
     types.sort(key=lambda item: (int(item.get("order") or 9999), str(item.get("label") or "")))
     payload["types"] = types

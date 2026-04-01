@@ -504,11 +504,18 @@ class TruckCatalogEditRecord(BaseModel):
     size_tier: str = Field(min_length=1)
     base_vehicle_kind: str = Field(min_length=1)
     axle_config: str = Field(min_length=1)
-    combination_kind: str = Field(min_length=1)
-    cargo_scope: str = Field(min_length=1)
-    canonical_body_type_id: str = Field(min_length=1)
+    preferred_body_type_id: str | None = None
     notes: str = ""
     updated_at: str = Field(default_factory=lambda: datetime.now().astimezone().isoformat(timespec="seconds"))
+
+    @model_validator(mode="before")
+    @classmethod
+    def migrate_legacy_body_field(cls, data: Any) -> Any:
+        if isinstance(data, dict) and not data.get("preferred_body_type_id") and data.get("canonical_body_type_id"):
+            next_data = dict(data)
+            next_data["preferred_body_type_id"] = str(data.get("canonical_body_type_id") or "").strip() or None
+            return next_data
+        return data
 
 
 class TruckCatalogEditsDocument(BaseModel):
@@ -529,9 +536,7 @@ class TruckCatalogClassificationRequest(BaseModel):
     size_tier: str = Field(min_length=1)
     base_vehicle_kind: str = Field(min_length=1)
     axle_config: str = Field(min_length=1)
-    combination_kind: str = Field(min_length=1)
-    cargo_scope: str = Field(min_length=1)
-    canonical_body_type_id: str = Field(min_length=1)
+    preferred_body_type_id: str | None = None
     notes: str = ""
 
 
@@ -547,19 +552,31 @@ class TruckCustomTypeRecord(BaseModel):
     size_tier: str = Field(min_length=1)
     base_vehicle_kind: str = Field(min_length=1)
     axle_config: str = Field(min_length=1)
-    combination_kind: str = Field(min_length=1)
-    cargo_scope: str = Field(min_length=1)
-    canonical_body_type_id: str = Field(min_length=1)
     canonical_body_type_ids: list[str] = Field(default_factory=list)
+    preferred_body_type_id: str | None = None
     canonical_sprite_profile_id: str = "truck_sprite_custom"
     source_basis: str = "custom_manual"
     notes: str = ""
     is_custom: bool = True
 
+    @model_validator(mode="before")
+    @classmethod
+    def migrate_legacy_fields(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        next_data = dict(data)
+        if not next_data.get("preferred_body_type_id") and next_data.get("canonical_body_type_id"):
+            next_data["preferred_body_type_id"] = str(next_data.get("canonical_body_type_id") or "").strip() or None
+        if not next_data.get("canonical_body_type_ids") and next_data.get("canonical_body_type_id"):
+            next_data["canonical_body_type_ids"] = [str(next_data.get("canonical_body_type_id") or "").strip()]
+        return next_data
+
     @model_validator(mode="after")
     def normalize_bodies(self) -> "TruckCustomTypeRecord":
-        if not self.canonical_body_type_ids:
-            self.canonical_body_type_ids = [self.canonical_body_type_id]
+        if self.preferred_body_type_id and not self.canonical_body_type_ids:
+            self.canonical_body_type_ids = [self.preferred_body_type_id]
+        if self.canonical_body_type_ids and not self.preferred_body_type_id:
+            self.preferred_body_type_id = self.canonical_body_type_ids[0]
         return self
 
 
@@ -598,14 +615,7 @@ class TruckCategoryCatalogDocument(BaseModel):
 
 
 class TruckCategoryCreateRequest(BaseModel):
-    group: Literal[
-        "size_tier",
-        "base_vehicle_kind",
-        "axle_config",
-        "combination_kind",
-        "cargo_scope",
-        "canonical_body_type_id",
-    ]
+    group: Literal["axle_config", "canonical_body_type_id"]
     label: str = Field(min_length=1)
 
 
@@ -633,9 +643,7 @@ class TruckPromptBuildRequest(BaseModel):
     size_tier: str = Field(min_length=1)
     base_vehicle_kind: str = Field(min_length=1)
     axle_config: str = Field(min_length=1)
-    combination_kind: str = Field(min_length=1)
-    cargo_scope: str = Field(min_length=1)
-    canonical_body_type_id: str = Field(min_length=1)
+    preferred_body_type_id: str = Field(min_length=1)
     notes: str = ""
 
 
@@ -658,6 +666,7 @@ class ProductMasterCreateRequest(BaseModel):
     name: str = Field(min_length=1)
     emoji: str = "\U0001F4E6"
     family_id: str = Field(min_length=1)
+    logistics_type_id: str = Field(min_length=1)
     status: Literal["visible", "hidden"] = "visible"
     inputs: list[str] = Field(default_factory=list)
     outputs: list[str] = Field(default_factory=list)
@@ -678,7 +687,6 @@ class ProductEditorUpdateRequest(BaseModel):
     fragile: bool | None = None
     hazardous: bool | None = None
     temperature_control_required: bool | None = None
-    compatible_body_type_ids: list[str] | None = None
     notes: str | None = None
 
 

@@ -231,19 +231,17 @@ def test_build_truck_prompt_items_from_classification_uses_notes_and_categories(
     items = service.build_truck_prompt_items_from_classification(
         truck_type_id="truck_type_custom_van",
         label="Van de carga",
-        size_tier="small",
-        base_vehicle_kind="rigid",
+        size_tier="leve",
+        base_vehicle_kind="rigido",
         axle_config="4x2",
-        combination_kind="single_unit",
-        cargo_scope="urban_and_regional",
-        canonical_body_type_id="truck_body_bau",
+        preferred_body_type_id="truck_body_bau",
         notes="utilitario curto com teto alto",
         config=_config_fixture(),
     )
 
     assert any("tipo van de carga" in item for item in items)
-    assert any("porte pequeno" in item for item in items)
-    assert any("estrutura rigido" in item for item in items)
+    assert any("porte leve" in item for item in items)
+    assert any("tipo rigido" in item for item in items)
     assert any("implemento: bau reto fechado" in item for item in items)
     assert any("observacoes importantes: utilitario curto com teto alto" in item for item in items)
 

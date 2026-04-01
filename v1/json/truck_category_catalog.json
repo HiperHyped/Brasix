@@ -1,21 +1,48 @@
 {
-  "id": "truck_category_catalog_v1",
-  "size_tiers": [
-    {
-      "id": "van",
-      "label": "Van"
-    },
-    {
-      "id": "camionete",
-      "label": "camionete"
-    },
-    {
-      "id": "mini_pick_up",
-      "label": "Mini Pick-up"
-    }
-  ],
-  "base_vehicle_kinds": [],
-  "axle_configs": [],
-  "combination_kinds": [],
-  "cargo_scopes": []
+    "id":  "truck_category_catalog_v1",
+    "size_tiers":  [
+                       {
+                           "id":  "leve",
+                           "label":  "Leve"
+                       },
+                       {
+                           "id":  "medio",
+                           "label":  "Medio"
+                       },
+                       {
+                           "id":  "pesado",
+                           "label":  "Pesado"
+                       },
+                       {
+                           "id":  "especial",
+                           "label":  "Especial"
+                       }
+                   ],
+    "base_vehicle_kinds":  [
+                               {
+                                   "id":  "rigido",
+                                   "label":  "Rigido"
+                               },
+                               {
+                                   "id":  "cavalo",
+                                   "label":  "Cavalo"
+                               },
+                               {
+                                   "id":  "combinacao",
+                                   "label":  "Combinacao"
+                               },
+                               {
+                                   "id":  "especial",
+                                   "label":  "Especial"
+                               }
+                           ],
+    "axle_configs":  [
+
+                     ],
+    "combination_kinds":  [
+
+                          ],
+    "cargo_scopes":  [
+
+                     ]
 }

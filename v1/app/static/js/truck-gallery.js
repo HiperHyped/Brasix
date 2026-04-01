@@ -29,63 +29,24 @@ const LEGACY_GENERATED_PROMPT_EXACT = new Set([
 
 const ENUM_LABELS = {
   size_tier: {
-    smallest: "Menor",
-    small: "Pequeno",
-    medium: "Medio",
-    medium_plus: "Medio plus",
-    large: "Grande",
-    large_plus: "Grande plus",
-    extra_large: "Extra grande",
-    tractor_small: "Cavalo pequeno",
-    tractor_large: "Cavalo grande",
-    tractor_extra_large: "Cavalo extra grande",
-    articulated_large: "Articulado grande",
-    drawbar_large: "Reboque grande",
-    combination_extra_large: "Combinacao extra grande",
+    leve: "Leve",
+    medio: "Medio",
+    pesado: "Pesado",
+    especial: "Especial",
   },
   base_vehicle_kind: {
-    rigid: "Rigido",
-    tractor_unit: "Cavalo mecanico",
-    articulated_combination: "Combinacao articulada",
-    drawbar_combination: "Combinacao com reboque",
-  },
-  combination_kind: {
-    single_unit: "Unidade simples",
-    semi_trailer: "Semirreboque",
-    drawbar_trailer: "Reboque",
-    multi_trailer: "Multiarticulado",
-  },
-  cargo_scope: {
-    urban_last_mile: "Urbano ultima milha",
-    urban_and_regional: "Urbano e regional",
-    urban_zero_emission: "Urbano emissao zero",
-    regional_general_cargo: "Carga geral regional",
-    regional_and_national: "Regional e nacional",
-    national_general_cargo: "Carga geral nacional",
-    mixed_road_and_vocational: "Rodoviario e vocacional",
-    high_capacity_rigid: "Rigido alta capacidade",
-    construction_and_mining: "Construcao e mineracao",
-    offroad_heavy_duty: "Fora de estrada pesado",
-    regional_articulated: "Articulado regional",
-    national_articulated: "Articulado nacional",
-    heavy_articulated_and_vocational: "Articulado pesado e vocacional",
-    standard_articulated: "Articulado padrao",
-    regional_drawbar: "Regional com reboque",
-    high_capacity_road: "Rodoviario alta capacidade",
-    sugarcane_and_forest: "Cana e floresta",
-    extreme_road_capacity: "Capacidade rodoviaria extrema",
-    agricultural_multi_combo: "Combinacao agricola",
-    vehicle_transport: "Transporte de veiculos",
+    rigido: "Rigido",
+    cavalo: "Cavalo",
+    combinacao: "Combinacao",
+    especial: "Especial",
   },
 };
 
 const CATEGORY_GROUP_CONFIG = {
-  size_tier: { catalogKey: "size_tiers", filterKey: "sizeTier", createLabel: "porte" },
-  base_vehicle_kind: { catalogKey: "base_vehicle_kinds", filterKey: "vehicleKind", createLabel: "estrutura" },
+  size_tier: { catalogKey: "size_tiers", filterKey: "sizeTier" },
+  base_vehicle_kind: { catalogKey: "base_vehicle_kinds", filterKey: "vehicleKind" },
   axle_config: { catalogKey: "axle_configs", filterKey: "axleConfig", createLabel: "eixo" },
-  combination_kind: { catalogKey: "combination_kinds", filterKey: "combinationKind", createLabel: "composição" },
-  cargo_scope: { catalogKey: "cargo_scopes", filterKey: "cargoScope", createLabel: "missão" },
-  canonical_body_type_id: { catalogKey: "types", filterKey: "bodyId", createLabel: "implemento" },
+  canonical_body_type_id: { catalogKey: "types", filterKey: "bodyId", createLabel: "implemento visual" },
 };
 
 function createOptionValue(group) {
@@ -122,8 +83,6 @@ const state = {
     sizeTier: "",
     vehicleKind: "",
     axleConfig: "",
-    combinationKind: "",
-    cargoScope: "",
     bodyId: "",
     brandFamilyId: "",
   },
@@ -336,9 +295,27 @@ function assetEntry(typeId) {
   return state.assetRegistryByTypeId[typeId] || null;
 }
 
+function preferredBodyId(type) {
+  return String(type.preferred_body_type_id || type.canonical_body_type_ids?.[0] || "").trim();
+}
+
 function canonicalBody(type) {
-  const firstId = type.canonical_body_type_ids?.[0] || "";
-  return state.bodiesById[firstId] || null;
+  return state.bodiesById[preferredBodyId(type)] || null;
+}
+
+function compatibleBodies(type) {
+  return (type.canonical_body_type_ids || []).map((bodyId) => state.bodiesById[bodyId]).filter(Boolean);
+}
+
+function compatibleBodySummary(type) {
+  const labels = compatibleBodies(type).map((body) => body.label).filter(Boolean);
+  if (!labels.length) {
+    return "-";
+  }
+  if (labels.length <= 2) {
+    return labels.join(" / ");
+  }
+  return `${labels.slice(0, 2).join(" / ")} +${labels.length - 2}`;
 }
 
 function orderedUniqueValues(values) {
@@ -617,12 +594,10 @@ function classificationEditorMarkup(type) {
             ${disabled}
           />
         </label>
-        ${selectField("size_tier", labels().size_tier_label || "Porte", selectOptionsMarkup(categoryOptions("size_tier").map((item) => item.id), type.size_tier, (value) => enumLabel("size_tier", value)) + `<option value="${escapeHtml(createOptionValue("size_tier"))}">+ ${escapeHtml(labels().create_category_prefix_label || "Criar novo")} ${escapeHtml(CATEGORY_GROUP_CONFIG.size_tier.createLabel)}</option>`, "size_tier")}
+        ${selectField("size_tier", labels().size_tier_label || "Porte", selectOptionsMarkup(categoryOptions("size_tier").map((item) => item.id), type.size_tier, (value) => enumLabel("size_tier", value)), "")}
+        ${selectField("base_vehicle_kind", labels().vehicle_kind_label || "Tipo", selectOptionsMarkup(categoryOptions("base_vehicle_kind").map((item) => item.id), type.base_vehicle_kind, (value) => enumLabel("base_vehicle_kind", value)), "")}
         ${selectField("axle_config", labels().axle_config_label || "Eixos", selectOptionsMarkup(categoryOptions("axle_config").map((item) => item.id), type.axle_config, (value) => enumLabel("axle_config", value)) + `<option value="${escapeHtml(createOptionValue("axle_config"))}">+ ${escapeHtml(labels().create_category_prefix_label || "Criar novo")} ${escapeHtml(CATEGORY_GROUP_CONFIG.axle_config.createLabel)}</option>`, "axle_config")}
-        ${selectField("base_vehicle_kind", labels().vehicle_kind_label || "Estrutura", selectOptionsMarkup(categoryOptions("base_vehicle_kind").map((item) => item.id), type.base_vehicle_kind, (value) => enumLabel("base_vehicle_kind", value)) + `<option value="${escapeHtml(createOptionValue("base_vehicle_kind"))}">+ ${escapeHtml(labels().create_category_prefix_label || "Criar novo")} ${escapeHtml(CATEGORY_GROUP_CONFIG.base_vehicle_kind.createLabel)}</option>`, "base_vehicle_kind")}
-        ${selectField("cargo_scope", labels().cargo_scope_label || "Missao", selectOptionsMarkup(categoryOptions("cargo_scope").map((item) => item.id), type.cargo_scope, (value) => enumLabel("cargo_scope", value)) + `<option value="${escapeHtml(createOptionValue("cargo_scope"))}">+ ${escapeHtml(labels().create_category_prefix_label || "Criar novo")} ${escapeHtml(CATEGORY_GROUP_CONFIG.cargo_scope.createLabel)}</option>`, "cargo_scope")}
-        ${selectField("combination_kind", labels().combination_label || "Composicao", selectOptionsMarkup(categoryOptions("combination_kind").map((item) => item.id), type.combination_kind, (value) => enumLabel("combination_kind", value)) + `<option value="${escapeHtml(createOptionValue("combination_kind"))}">+ ${escapeHtml(labels().create_category_prefix_label || "Criar novo")} ${escapeHtml(CATEGORY_GROUP_CONFIG.combination_kind.createLabel)}</option>`, "combination_kind")}
-        ${selectField("canonical_body_type_id", labels().body_selector_label || "Implemento", selectOptionsMarkup(categoryOptions("canonical_body_type_id").map((item) => item.id), bodyId, (value) => state.bodiesById[value]?.label || value) + `<option value="${escapeHtml(createOptionValue("canonical_body_type_id"))}">+ ${escapeHtml(labels().create_category_prefix_label || "Criar novo")} ${escapeHtml(CATEGORY_GROUP_CONFIG.canonical_body_type_id.createLabel)}</option>`, "canonical_body_type_id")}
+        ${selectField("preferred_body_type_id", labels().body_selector_label || "Implemento visual", selectOptionsMarkup(categoryOptions("canonical_body_type_id").map((item) => item.id), bodyId, (value) => state.bodiesById[value]?.label || value) + `<option value="${escapeHtml(createOptionValue("canonical_body_type_id"))}">+ ${escapeHtml(labels().create_category_prefix_label || "Criar novo")} ${escapeHtml(CATEGORY_GROUP_CONFIG.canonical_body_type_id.createLabel)}</option>`, "canonical_body_type_id")}
         <label class="truck-gallery-detail-metric is-editable is-span-2">
           <span>${escapeHtml(labels().notes_label || "Observacoes")}</span>
           <textarea
@@ -677,10 +652,8 @@ function renderHeader() {
 function renderFilters() {
   document.getElementById("truck-gallery-search-label").textContent = labels().search_label || "Buscar modelo";
   document.getElementById("truck-gallery-size-filter-label").textContent = labels().size_filter_label || "Porte";
-  document.getElementById("truck-gallery-vehicle-kind-filter-label").textContent = labels().vehicle_kind_filter_label || "Estrutura";
+  document.getElementById("truck-gallery-vehicle-kind-filter-label").textContent = labels().vehicle_kind_filter_label || "Tipo";
   document.getElementById("truck-gallery-axle-filter-label").textContent = labels().axle_filter_label || "Eixos";
-  document.getElementById("truck-gallery-combination-filter-label").textContent = labels().combination_filter_label || "Composicao";
-  document.getElementById("truck-gallery-cargo-scope-filter-label").textContent = labels().cargo_scope_filter_label || "Missao";
   document.getElementById("truck-gallery-body-filter-label").textContent = labels().body_filter_label || "Implemento";
   document.getElementById("truck-gallery-brand-filter-label").textContent = labels().brand_filter_label || "Familia de marca";
 
@@ -698,11 +671,9 @@ function renderFilters() {
     ...(createGroup ? [`<option value="${escapeHtml(createOptionValue(createGroup))}">${escapeHtml(`+ ${labels().create_category_prefix_label || "Criar novo"} ${CATEGORY_GROUP_CONFIG[createGroup]?.createLabel || "item"}`)}</option>`] : []),
   ].join("");
 
-  document.getElementById("truck-gallery-size-filter").innerHTML = buildOptions(categoryOptions("size_tier"), state.filters.sizeTier, (item) => item.label, { createGroup: "size_tier" });
-  document.getElementById("truck-gallery-vehicle-kind-filter").innerHTML = buildOptions(categoryOptions("base_vehicle_kind"), state.filters.vehicleKind, (item) => item.label, { createGroup: "base_vehicle_kind" });
+  document.getElementById("truck-gallery-size-filter").innerHTML = buildOptions(categoryOptions("size_tier"), state.filters.sizeTier, (item) => item.label);
+  document.getElementById("truck-gallery-vehicle-kind-filter").innerHTML = buildOptions(categoryOptions("base_vehicle_kind"), state.filters.vehicleKind, (item) => item.label);
   document.getElementById("truck-gallery-axle-filter").innerHTML = buildOptions(categoryOptions("axle_config"), state.filters.axleConfig, (item) => item.label, { createGroup: "axle_config" });
-  document.getElementById("truck-gallery-combination-filter").innerHTML = buildOptions(categoryOptions("combination_kind"), state.filters.combinationKind, (item) => item.label, { createGroup: "combination_kind" });
-  document.getElementById("truck-gallery-cargo-scope-filter").innerHTML = buildOptions(categoryOptions("cargo_scope"), state.filters.cargoScope, (item) => item.label, { createGroup: "cargo_scope" });
   document.getElementById("truck-gallery-body-filter").innerHTML = buildOptions(
     categoryOptions("canonical_body_type_id"),
     state.filters.bodyId,
@@ -724,9 +695,7 @@ function typeMatchesFilters(type) {
     type.label,
     type.short_label,
     type.axle_config,
-    type.combination_kind,
     type.base_vehicle_kind,
-    type.cargo_scope,
     bodyLabels,
     familyLabels,
   ].join(" ").toLowerCase();
@@ -741,12 +710,6 @@ function typeMatchesFilters(type) {
     return false;
   }
   if (state.filters.axleConfig && type.axle_config !== state.filters.axleConfig) {
-    return false;
-  }
-  if (state.filters.combinationKind && type.combination_kind !== state.filters.combinationKind) {
-    return false;
-  }
-  if (state.filters.cargoScope && type.cargo_scope !== state.filters.cargoScope) {
     return false;
   }
   if (state.filters.bodyId && !(type.canonical_body_type_ids || []).includes(state.filters.bodyId)) {
@@ -1036,9 +999,7 @@ function currentClassificationPayload(typeId) {
     size_tier: String(type.size_tier || "").trim(),
     base_vehicle_kind: String(type.base_vehicle_kind || "").trim(),
     axle_config: String(type.axle_config || "").trim(),
-    combination_kind: String(type.combination_kind || "").trim(),
-    cargo_scope: String(type.cargo_scope || "").trim(),
-    canonical_body_type_id: String(canonicalBody(type)?.id || "").trim(),
+    preferred_body_type_id: String(preferredBodyId(type) || "").trim(),
     notes: String(type.notes || "").trim(),
   };
 }
@@ -1123,7 +1084,7 @@ async function createCategoryOption(group) {
 
 async function buildPromptFromClassification(typeId) {
   const payload = currentClassificationPayload(typeId);
-  if (!payload || !payload.label || !payload.canonical_body_type_id) {
+  if (!payload || !payload.label || !payload.preferred_body_type_id) {
     return;
   }
   state.pendingAction = typeId;
@@ -1151,7 +1112,7 @@ async function buildPromptFromClassification(typeId) {
 
 async function saveClassification(typeId) {
   const payload = currentClassificationPayload(typeId);
-  if (!payload || !payload.label || !payload.canonical_body_type_id) {
+  if (!payload || !payload.label || !payload.preferred_body_type_id) {
     return;
   }
   state.pendingClassificationTypeId = typeId;
@@ -1291,9 +1252,7 @@ function renderList() {
             <span>${escapeHtml(enumLabel("size_tier", type.size_tier))}</span>
             <span>${escapeHtml(enumLabel("axle_config", type.axle_config))}</span>
             <span>${escapeHtml(enumLabel("base_vehicle_kind", type.base_vehicle_kind))}</span>
-            <span>${escapeHtml(enumLabel("combination_kind", type.combination_kind))}</span>
-            <span>${escapeHtml(body?.label || "-")}</span>
-            <span>${escapeHtml(enumLabel("cargo_scope", type.cargo_scope))}</span>
+            <span>${escapeHtml(compatibleBodySummary(type))}</span>
             <span class="truck-gallery-status-pill is-${statusTone(entry)}">${escapeHtml(statusLabel(entry))}</span>
           </div>
         </div>
@@ -1367,9 +1326,11 @@ function renderDetail() {
       </section>
 
       <section class="truck-gallery-detail-section">
-        <p class="eyebrow">${escapeHtml(labels().body_selector_label || "Implemento")}</p>
+        <p class="eyebrow">${escapeHtml(labels().body_selector_label || "Implementos compativeis")}</p>
         <div class="truck-gallery-pill-list">
-          <span class="truck-gallery-pill">${escapeHtml(body?.label || "-")}</span>
+          ${compatibleBodies(type).length
+            ? compatibleBodies(type).map((item) => `<span class="truck-gallery-pill ${item.id === preferredBodyId(type) ? "is-active" : ""}">${escapeHtml(item.label)}${item.id === preferredBodyId(type) ? " · visual" : ""}</span>`).join("")
+            : `<span class="truck-gallery-pill is-muted">-</span>`}
         </div>
       </section>
 
@@ -1583,21 +1544,11 @@ function bindControls() {
   });
 
   document.getElementById("truck-gallery-size-filter").addEventListener("change", (event) => {
-    if (String(event.target.value || "") === createOptionValue("size_tier")) {
-      event.target.value = state.filters.sizeTier;
-      void createCategoryOption("size_tier");
-      return;
-    }
     state.filters.sizeTier = event.target.value;
     renderAll();
   });
 
   document.getElementById("truck-gallery-vehicle-kind-filter").addEventListener("change", (event) => {
-    if (String(event.target.value || "") === createOptionValue("base_vehicle_kind")) {
-      event.target.value = state.filters.vehicleKind;
-      void createCategoryOption("base_vehicle_kind");
-      return;
-    }
     state.filters.vehicleKind = event.target.value;
     renderAll();
   });
@@ -1609,26 +1560,6 @@ function bindControls() {
       return;
     }
     state.filters.axleConfig = event.target.value;
-    renderAll();
-  });
-
-  document.getElementById("truck-gallery-combination-filter").addEventListener("change", (event) => {
-    if (String(event.target.value || "") === createOptionValue("combination_kind")) {
-      event.target.value = state.filters.combinationKind;
-      void createCategoryOption("combination_kind");
-      return;
-    }
-    state.filters.combinationKind = event.target.value;
-    renderAll();
-  });
-
-  document.getElementById("truck-gallery-cargo-scope-filter").addEventListener("change", (event) => {
-    if (String(event.target.value || "") === createOptionValue("cargo_scope")) {
-      event.target.value = state.filters.cargoScope;
-      void createCategoryOption("cargo_scope");
-      return;
-    }
-    state.filters.cargoScope = event.target.value;
     renderAll();
   });
 
@@ -1764,8 +1695,8 @@ function bindControls() {
       const createGroup = String(classificationSelect.dataset.createGroup || "");
       const nextValue = String(classificationSelect.value || "").trim();
       if (createGroup && nextValue === createOptionValue(createGroup)) {
-        const previousValue = field === "canonical_body_type_id"
-          ? String(canonicalBody(type)?.id || "")
+        const previousValue = field === "preferred_body_type_id"
+          ? String(preferredBodyId(type) || "")
           : String(type[field] || "");
         classificationSelect.value = previousValue;
         void createCategoryOption(createGroup).then((createdId) => {
@@ -1776,8 +1707,8 @@ function bindControls() {
           if (!freshType) {
             return;
           }
-          if (field === "canonical_body_type_id") {
-            freshType.canonical_body_type_ids = [createdId];
+          if (field === "preferred_body_type_id") {
+            freshType.preferred_body_type_id = createdId;
           } else {
             freshType[field] = createdId;
           }
@@ -1787,8 +1718,8 @@ function bindControls() {
         });
         return;
       }
-      if (field === "canonical_body_type_id") {
-        type.canonical_body_type_ids = nextValue ? [nextValue] : [];
+      if (field === "preferred_body_type_id") {
+        type.preferred_body_type_id = nextValue;
       } else if (field === "label") {
         type.label = nextValue;
       } else if (field) {

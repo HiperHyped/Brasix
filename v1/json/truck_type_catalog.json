@@ -1,318 +1,395 @@
 {
-  "id": "truck_type_catalog_v1",
-  "scope": "brazil_road_cargo",
-  "default_sort": "order_ascending",
-  "sources": [
-    {
-      "id": "source_contran_882_2021",
-      "label": "CONTRAN 882/2021",
-      "url": "https://www.gov.br/transportes/pt-br/assuntos/transito/conteudo-contran/resolucoes/Resolucao8822021.pdf"
-    },
-    {
-      "id": "source_dnit_aet",
-      "label": "DNIT AET",
-      "url": "https://www.gov.br/dnit/pt-br/assuntos/infraestrutura-rodoviaria/aet"
-    },
-    {
-      "id": "source_vuc_sp",
-      "label": "Decreto VUC Sao Paulo",
-      "url": "https://legislacao.prefeitura.sp.gov.br/leis/decreto-48338-de-10-de-maio-de-2007/"
-    }
-  ],
-  "types": [
-    {
-      "id": "truck_type_vuc_4x2",
-      "order": 1,
-      "label": "VUC 4x2",
-      "short_label": "VUC",
-      "size_tier": "smallest",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "4x2",
-      "combination_kind": "single_unit",
-      "cargo_scope": "urban_last_mile",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_carga_seca", "truck_body_sider", "truck_body_frigorifico"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_compact",
-      "source_basis": "regulatory_and_market"
-    },
-    {
-      "id": "truck_type_toco_leve_4x2",
-      "order": 2,
-      "label": "Toco leve 4x2",
-      "short_label": "Toco leve",
-      "size_tier": "small",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "4x2",
-      "combination_kind": "single_unit",
-      "cargo_scope": "urban_and_regional",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_carga_seca", "truck_body_sider", "truck_body_frigorifico"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_short",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_toco_leve_eletrico_4x2",
-      "order": 3,
-      "label": "Toco leve eletrico 4x2",
-      "short_label": "Toco eletrico",
-      "size_tier": "small",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "4x2",
-      "combination_kind": "single_unit",
-      "cargo_scope": "urban_zero_emission",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_carga_seca", "truck_body_sider", "truck_body_frigorifico"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_short",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_toco_medio_4x2",
-      "order": 4,
-      "label": "Toco medio 4x2",
-      "short_label": "Toco medio",
-      "size_tier": "medium",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "4x2",
-      "combination_kind": "single_unit",
-      "cargo_scope": "regional_general_cargo",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_carga_seca", "truck_body_frigorifico", "truck_body_tanque"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_medium",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_toco_semipesado_4x2",
-      "order": 5,
-      "label": "Toco semipesado 4x2",
-      "short_label": "Toco semipesado",
-      "size_tier": "medium_plus",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "4x2",
-      "combination_kind": "single_unit",
-      "cargo_scope": "regional_general_cargo",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_carga_seca", "truck_body_graneleiro", "truck_body_frigorifico", "truck_body_tanque"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_medium",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_truck_semipesado_6x2",
-      "order": 6,
-      "label": "Truck semipesado 6x2",
-      "short_label": "Truck 6x2",
-      "size_tier": "large",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "6x2",
-      "combination_kind": "single_unit",
-      "cargo_scope": "regional_and_national",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_carga_seca", "truck_body_graneleiro", "truck_body_frigorifico", "truck_body_tanque"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_long",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_truck_pesado_6x2",
-      "order": 7,
-      "label": "Truck pesado 6x2",
-      "short_label": "Truck pesado",
-      "size_tier": "large",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "6x2",
-      "combination_kind": "single_unit",
-      "cargo_scope": "national_general_cargo",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_carga_seca", "truck_body_graneleiro", "truck_body_tanque", "truck_body_container"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_long",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_truck_pesado_6x4",
-      "order": 8,
-      "label": "Truck pesado 6x4",
-      "short_label": "Truck 6x4",
-      "size_tier": "large_plus",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "6x4",
-      "combination_kind": "single_unit",
-      "cargo_scope": "mixed_road_and_vocational",
-      "canonical_body_type_ids": ["truck_body_basculante", "truck_body_betoneira", "truck_body_tanque", "truck_body_container", "truck_body_prancha", "truck_body_munck"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_long",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_bitruck_8x2",
-      "order": 9,
-      "label": "Bitruck 8x2",
-      "short_label": "Bitruck",
-      "size_tier": "extra_large",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "8x2",
-      "combination_kind": "single_unit",
-      "cargo_scope": "high_capacity_rigid",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_container", "truck_body_tanque", "truck_body_carga_seca"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_extra_long",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_bitruck_vocacional_8x4",
-      "order": 10,
-      "label": "Bitruck vocacional 8x4",
-      "short_label": "Bitruck 8x4",
-      "size_tier": "extra_large",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "8x4",
-      "combination_kind": "single_unit",
-      "cargo_scope": "construction_and_mining",
-      "canonical_body_type_ids": ["truck_body_basculante", "truck_body_betoneira", "truck_body_munck", "truck_body_prancha"],
-      "canonical_sprite_profile_id": "truck_sprite_rigid_vocational",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_offroad_6x6",
-      "order": 11,
-      "label": "Vocacional fora de estrada 6x6",
-      "short_label": "Off-road 6x6",
-      "size_tier": "extra_large",
-      "base_vehicle_kind": "rigid",
-      "axle_config": "6x6",
-      "combination_kind": "single_unit",
-      "cargo_scope": "offroad_heavy_duty",
-      "canonical_body_type_ids": ["truck_body_basculante", "truck_body_prancha", "truck_body_munck", "truck_body_madeireiro"],
-      "canonical_sprite_profile_id": "truck_sprite_offroad_6x6",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_cavalo_4x2",
-      "order": 12,
-      "label": "Cavalo mecanico 4x2",
-      "short_label": "Cavalo 4x2",
-      "size_tier": "tractor_small",
-      "base_vehicle_kind": "tractor_unit",
-      "axle_config": "4x2",
-      "combination_kind": "semi_trailer",
-      "cargo_scope": "regional_articulated",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_tanque", "truck_body_container", "truck_body_prancha"],
-      "canonical_sprite_profile_id": "truck_sprite_tractor_short",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_cavalo_6x2",
-      "order": 13,
-      "label": "Cavalo mecanico 6x2",
-      "short_label": "Cavalo 6x2",
-      "size_tier": "tractor_large",
-      "base_vehicle_kind": "tractor_unit",
-      "axle_config": "6x2",
-      "combination_kind": "semi_trailer",
-      "cargo_scope": "national_articulated",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_tanque", "truck_body_container", "truck_body_prancha", "truck_body_graneleiro", "truck_body_frigorifico"],
-      "canonical_sprite_profile_id": "truck_sprite_tractor_long",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_cavalo_6x4",
-      "order": 14,
-      "label": "Cavalo mecanico 6x4",
-      "short_label": "Cavalo 6x4",
-      "size_tier": "tractor_extra_large",
-      "base_vehicle_kind": "tractor_unit",
-      "axle_config": "6x4",
-      "combination_kind": "semi_trailer",
-      "cargo_scope": "heavy_articulated_and_vocational",
-      "canonical_body_type_ids": ["truck_body_prancha", "truck_body_basculante", "truck_body_tanque", "truck_body_container", "truck_body_graneleiro"],
-      "canonical_sprite_profile_id": "truck_sprite_tractor_long",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_carreta_ls",
-      "order": 15,
-      "label": "Carreta simples / LS",
-      "short_label": "Carreta LS",
-      "size_tier": "articulated_large",
-      "base_vehicle_kind": "articulated_combination",
-      "axle_config": "cavalo_4x2_ou_6x2",
-      "combination_kind": "semi_trailer",
-      "cargo_scope": "standard_articulated",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_tanque", "truck_body_container", "truck_body_graneleiro", "truck_body_frigorifico", "truck_body_prancha"],
-      "canonical_sprite_profile_id": "truck_sprite_semitrailer_standard",
-      "source_basis": "market_canonical"
-    },
-    {
-      "id": "truck_type_romeu_julieta",
-      "order": 16,
-      "label": "Romeu e Julieta",
-      "short_label": "Romeu e Julieta",
-      "size_tier": "drawbar_large",
-      "base_vehicle_kind": "drawbar_combination",
-      "axle_config": "rigido_mais_reboque",
-      "combination_kind": "drawbar_trailer",
-      "cargo_scope": "regional_drawbar",
-      "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_graneleiro", "truck_body_carga_seca", "truck_body_canavieiro"],
-      "canonical_sprite_profile_id": "truck_sprite_drawbar_standard",
-      "source_basis": "regulatory_cvc"
-    },
-    {
-      "id": "truck_type_bitrem",
-      "order": 17,
-      "label": "Bitrem",
-      "short_label": "Bitrem",
-      "size_tier": "combination_extra_large",
-      "base_vehicle_kind": "articulated_combination",
-      "axle_config": "cavalo_6x2_ou_6x4",
-      "combination_kind": "multi_trailer",
-      "cargo_scope": "high_capacity_road",
-      "canonical_body_type_ids": ["truck_body_graneleiro", "truck_body_tanque", "truck_body_container", "truck_body_canavieiro"],
-      "canonical_sprite_profile_id": "truck_sprite_bitrem",
-      "source_basis": "regulatory_cvc"
-    },
-    {
-      "id": "truck_type_rodotrem",
-      "order": 18,
-      "label": "Rodotrem",
-      "short_label": "Rodotrem",
-      "size_tier": "combination_massive",
-      "base_vehicle_kind": "articulated_combination",
-      "axle_config": "cavalo_6x4",
-      "combination_kind": "multi_trailer",
-      "cargo_scope": "very_high_capacity_road",
-      "canonical_body_type_ids": ["truck_body_graneleiro", "truck_body_tanque", "truck_body_container", "truck_body_canavieiro"],
-      "canonical_sprite_profile_id": "truck_sprite_rodotrem",
-      "source_basis": "regulatory_cvc"
-    },
-    {
-      "id": "truck_type_tritrem",
-      "order": 19,
-      "label": "Tritrem",
-      "short_label": "Tritrem",
-      "size_tier": "combination_massive",
-      "base_vehicle_kind": "articulated_combination",
-      "axle_config": "cavalo_6x4",
-      "combination_kind": "multi_trailer",
-      "cargo_scope": "very_high_capacity_agro",
-      "canonical_body_type_ids": ["truck_body_canavieiro", "truck_body_graneleiro", "truck_body_madeireiro"],
-      "canonical_sprite_profile_id": "truck_sprite_tritrem",
-      "source_basis": "regulatory_cvc"
-    },
-    {
-      "id": "truck_type_treminhao",
-      "order": 20,
-      "label": "Treminhao",
-      "short_label": "Treminhao",
-      "size_tier": "combination_massive",
-      "base_vehicle_kind": "drawbar_combination",
-      "axle_config": "rigido_mais_dois_reboques",
-      "combination_kind": "multi_trailer",
-      "cargo_scope": "very_high_capacity_agro",
-      "canonical_body_type_ids": ["truck_body_canavieiro", "truck_body_graneleiro", "truck_body_madeireiro"],
-      "canonical_sprite_profile_id": "truck_sprite_treminhao",
-      "source_basis": "regulatory_cvc"
-    },
-    {
-      "id": "truck_type_cegonheiro",
-      "order": 21,
-      "label": "Cegonheiro / CTV / CTVP",
-      "short_label": "Cegonheiro",
-      "size_tier": "specialized_max_length",
-      "base_vehicle_kind": "special_combination",
-      "axle_config": "specialized",
-      "combination_kind": "vehicle_carrier",
-      "cargo_scope": "vehicle_transport",
-      "canonical_body_type_ids": ["truck_body_cegonheiro"],
-      "canonical_sprite_profile_id": "truck_sprite_cegonheiro",
-      "source_basis": "regulatory_cvc"
-    }
-  ]
+    "id":  "truck_type_catalog_v1",
+    "scope":  "brazil_road_cargo",
+    "default_sort":  "order_ascending",
+    "sources":  [
+                    {
+                        "id":  "source_contran_882_2021",
+                        "label":  "CONTRAN 882/2021",
+                        "url":  "https://www.gov.br/transportes/pt-br/assuntos/transito/conteudo-contran/resolucoes/Resolucao8822021.pdf"
+                    },
+                    {
+                        "id":  "source_dnit_aet",
+                        "label":  "DNIT AET",
+                        "url":  "https://www.gov.br/dnit/pt-br/assuntos/infraestrutura-rodoviaria/aet"
+                    },
+                    {
+                        "id":  "source_vuc_sp",
+                        "label":  "Decreto VUC Sao Paulo",
+                        "url":  "https://legislacao.prefeitura.sp.gov.br/leis/decreto-48338-de-10-de-maio-de-2007/"
+                    }
+                ],
+    "types":  [
+                  {
+                      "id":  "truck_type_vuc_4x2",
+                      "order":  1,
+                      "label":  "VUC 4x2",
+                      "short_label":  "VUC",
+                      "size_tier":  "leve",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "4x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_carga_seca",
+                                                      "truck_body_sider",
+                                                      "truck_body_frigorifico"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_compact",
+                      "source_basis":  "regulatory_and_market"
+                  },
+                  {
+                      "id":  "truck_type_toco_leve_4x2",
+                      "order":  2,
+                      "label":  "Toco leve 4x2",
+                      "short_label":  "Toco leve",
+                      "size_tier":  "leve",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "4x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_carga_seca",
+                                                      "truck_body_sider",
+                                                      "truck_body_frigorifico"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_short",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_toco_leve_eletrico_4x2",
+                      "order":  3,
+                      "label":  "Toco leve eletrico 4x2",
+                      "short_label":  "Toco eletrico",
+                      "size_tier":  "leve",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "4x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_carga_seca",
+                                                      "truck_body_sider",
+                                                      "truck_body_frigorifico"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_short",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_toco_medio_4x2",
+                      "order":  4,
+                      "label":  "Toco medio 4x2",
+                      "short_label":  "Toco medio",
+                      "size_tier":  "medio",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "4x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_carga_seca",
+                                                      "truck_body_frigorifico",
+                                                      "truck_body_tanque"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_medium",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_toco_semipesado_4x2",
+                      "order":  5,
+                      "label":  "Toco semipesado 4x2",
+                      "short_label":  "Toco semipesado",
+                      "size_tier":  "medio",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "4x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_carga_seca",
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_frigorifico",
+                                                      "truck_body_tanque"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_medium",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_truck_semipesado_6x2",
+                      "order":  6,
+                      "label":  "Truck semipesado 6x2",
+                      "short_label":  "Truck 6x2",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "6x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_carga_seca",
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_frigorifico",
+                                                      "truck_body_tanque"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_long",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_truck_pesado_6x2",
+                      "order":  7,
+                      "label":  "Truck pesado 6x2",
+                      "short_label":  "Truck pesado",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "6x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_carga_seca",
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_tanque",
+                                                      "truck_body_container"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_long",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_truck_pesado_6x4",
+                      "order":  8,
+                      "label":  "Truck pesado 6x4",
+                      "short_label":  "Truck 6x4",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "6x4",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_basculante",
+                                                      "truck_body_betoneira",
+                                                      "truck_body_tanque",
+                                                      "truck_body_container",
+                                                      "truck_body_prancha",
+                                                      "truck_body_munck"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_long",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_bitruck_8x2",
+                      "order":  9,
+                      "label":  "Bitruck 8x2",
+                      "short_label":  "Bitruck",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "8x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_container",
+                                                      "truck_body_tanque",
+                                                      "truck_body_carga_seca"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_extra_long",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_bitruck_vocacional_8x4",
+                      "order":  10,
+                      "label":  "Bitruck vocacional 8x4",
+                      "short_label":  "Bitruck 8x4",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "8x4",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_basculante",
+                                                      "truck_body_betoneira",
+                                                      "truck_body_munck",
+                                                      "truck_body_prancha"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rigid_vocational",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_offroad_6x6",
+                      "order":  11,
+                      "label":  "Vocacional fora de estrada 6x6",
+                      "short_label":  "Off-road 6x6",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "rigido",
+                      "axle_config":  "6x6",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_basculante",
+                                                      "truck_body_prancha",
+                                                      "truck_body_munck",
+                                                      "truck_body_madeireiro"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_offroad_6x6",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_cavalo_4x2",
+                      "order":  12,
+                      "label":  "Cavalo mecanico 4x2",
+                      "short_label":  "Cavalo 4x2",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "cavalo",
+                      "axle_config":  "4x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_tanque",
+                                                      "truck_body_container",
+                                                      "truck_body_prancha"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_tractor_short",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_cavalo_6x2",
+                      "order":  13,
+                      "label":  "Cavalo mecanico 6x2",
+                      "short_label":  "Cavalo 6x2",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "cavalo",
+                      "axle_config":  "6x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_tanque",
+                                                      "truck_body_container",
+                                                      "truck_body_prancha",
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_frigorifico"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_tractor_long",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_cavalo_6x4",
+                      "order":  14,
+                      "label":  "Cavalo mecanico 6x4",
+                      "short_label":  "Cavalo 6x4",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "cavalo",
+                      "axle_config":  "6x4",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_prancha",
+                                                      "truck_body_basculante",
+                                                      "truck_body_tanque",
+                                                      "truck_body_container",
+                                                      "truck_body_graneleiro"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_tractor_long",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_carreta_ls",
+                      "order":  15,
+                      "label":  "Carreta simples / LS",
+                      "short_label":  "Carreta LS",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "combinacao",
+                      "axle_config":  "cavalo_4x2_ou_6x2",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_tanque",
+                                                      "truck_body_container",
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_frigorifico",
+                                                      "truck_body_prancha"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_semitrailer_standard",
+                      "source_basis":  "market_canonical"
+                  },
+                  {
+                      "id":  "truck_type_romeu_julieta",
+                      "order":  16,
+                      "label":  "Romeu e Julieta",
+                      "short_label":  "Romeu e Julieta",
+                      "size_tier":  "pesado",
+                      "base_vehicle_kind":  "combinacao",
+                      "axle_config":  "rigido_mais_reboque",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_bau",
+                                                      "truck_body_sider",
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_carga_seca",
+                                                      "truck_body_canavieiro"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_drawbar_standard",
+                      "source_basis":  "regulatory_cvc"
+                  },
+                  {
+                      "id":  "truck_type_bitrem",
+                      "order":  17,
+                      "label":  "Bitrem",
+                      "short_label":  "Bitrem",
+                      "size_tier":  "especial",
+                      "base_vehicle_kind":  "combinacao",
+                      "axle_config":  "cavalo_6x2_ou_6x4",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_tanque",
+                                                      "truck_body_container",
+                                                      "truck_body_canavieiro"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_bitrem",
+                      "source_basis":  "regulatory_cvc"
+                  },
+                  {
+                      "id":  "truck_type_rodotrem",
+                      "order":  18,
+                      "label":  "Rodotrem",
+                      "short_label":  "Rodotrem",
+                      "size_tier":  "especial",
+                      "base_vehicle_kind":  "combinacao",
+                      "axle_config":  "cavalo_6x4",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_tanque",
+                                                      "truck_body_container",
+                                                      "truck_body_canavieiro"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_rodotrem",
+                      "source_basis":  "regulatory_cvc"
+                  },
+                  {
+                      "id":  "truck_type_tritrem",
+                      "order":  19,
+                      "label":  "Tritrem",
+                      "short_label":  "Tritrem",
+                      "size_tier":  "especial",
+                      "base_vehicle_kind":  "combinacao",
+                      "axle_config":  "cavalo_6x4",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_canavieiro",
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_madeireiro"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_tritrem",
+                      "source_basis":  "regulatory_cvc"
+                  },
+                  {
+                      "id":  "truck_type_treminhao",
+                      "order":  20,
+                      "label":  "Treminhao",
+                      "short_label":  "Treminhao",
+                      "size_tier":  "especial",
+                      "base_vehicle_kind":  "combinacao",
+                      "axle_config":  "rigido_mais_dois_reboques",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_canavieiro",
+                                                      "truck_body_graneleiro",
+                                                      "truck_body_madeireiro"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_treminhao",
+                      "source_basis":  "regulatory_cvc"
+                  },
+                  {
+                      "id":  "truck_type_cegonheiro",
+                      "order":  21,
+                      "label":  "Cegonheiro / CTV / CTVP",
+                      "short_label":  "Cegonheiro",
+                      "size_tier":  "especial",
+                      "base_vehicle_kind":  "especial",
+                      "axle_config":  "specialized",
+                      "canonical_body_type_ids":  [
+                                                      "truck_body_cegonheiro"
+                                                  ],
+                      "canonical_sprite_profile_id":  "truck_sprite_cegonheiro",
+                      "source_basis":  "regulatory_cvc"
+                  }
+              ]
 }

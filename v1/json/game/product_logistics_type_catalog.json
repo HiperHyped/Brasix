@@ -5,61 +5,119 @@
       "id": "granel_seco",
       "label": "Granel seco",
       "description": "Carga solta ou ensacada de baixa complexidade.",
-      "order": 1
+      "order": 1,
+      "body_type_ids": [
+        "truck_body_graneleiro",
+        "truck_body_basculante",
+        "truck_body_carga_seca"
+      ]
     },
     {
       "id": "carga_geral_perecivel",
       "label": "Carga perecivel",
       "description": "Produtos in natura que pedem giro rapido, mas nao necessariamente frio.",
-      "order": 2
+      "order": 2,
+      "body_type_ids": [
+        "truck_body_bau",
+        "truck_body_sider",
+        "truck_body_container"
+      ]
     },
     {
       "id": "animais_vivos",
       "label": "Animais vivos",
       "description": "Carga viva com exigencia de implemento boiadeiro.",
-      "order": 3
+      "order": 3,
+      "body_type_ids": [
+        "truck_body_boiadeiro"
+      ]
     },
     {
       "id": "granel_liquido",
       "label": "Granel liquido",
       "description": "Liquidos a granel em tanque dedicado.",
-      "order": 4
+      "order": 4,
+      "body_type_ids": [
+        "truck_body_tanque"
+      ]
     },
     {
       "id": "carga_geral_paletizada",
       "label": "Carga geral paletizada",
       "description": "Carga geral industrial ou enfardada em bau, sider ou container.",
-      "order": 5
+      "order": 5,
+      "body_type_ids": [
+        "truck_body_bau",
+        "truck_body_sider",
+        "truck_body_container"
+      ]
     },
     {
       "id": "carga_aberta",
       "label": "Carga aberta",
       "description": "Carga longa, volumosa ou sem necessidade de fechamento.",
-      "order": 6
+      "order": 6,
+      "body_type_ids": [
+        "truck_body_prancha",
+        "truck_body_madeireiro",
+        "truck_body_carga_seca"
+      ]
     },
     {
       "id": "frigorificado",
       "label": "Frigorificado",
       "description": "Carga com cadeia fria ou sensivel a temperatura.",
-      "order": 7
+      "order": 7,
+      "body_type_ids": [
+        "truck_body_frigorifico"
+      ]
     },
     {
       "id": "granel_mineral",
       "label": "Granel mineral",
       "description": "Minerais e granulos pesados de alta densidade.",
-      "order": 8
+      "order": 8,
+      "body_type_ids": [
+        "truck_body_basculante",
+        "truck_body_graneleiro"
+      ]
     },
     {
       "id": "carga_valiosa",
       "label": "Carga valiosa",
       "description": "Carga de alto valor e baixo volume, com seguranca reforcada.",
-      "order": 9
+      "order": 9,
+      "body_type_ids": [
+        "truck_body_bau",
+        "truck_body_container"
+      ]
     },
     {
       "id": "granel_gasoso_pressurizado",
       "label": "Gasoso pressurizado",
       "description": "Gases ou derivados que pedem tanque especializado.",
-      "order": 10
+      "order": 10,
+      "body_type_ids": [
+        "truck_body_tanque"
+      ]
+    },
+    {
+      "id": "cana_in_natura",
+      "label": "Cana in natura",
+      "description": "Cana colhida e transportada em canavieiro.",
+      "order": 11,
+      "body_type_ids": [
+        "truck_body_canavieiro"
+      ]
+    },
+    {
+      "id": "transporte_veiculos",
+      "label": "Transporte de veiculos",
+      "description": "Veiculos novos transportados em cegonheiro.",
+      "order": 12,
+      "body_type_ids": [
+        "truck_body_cegonheiro"
+      ]
     }
   ]
 }

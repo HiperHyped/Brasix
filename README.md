@@ -2,7 +2,6 @@
 
 Mapa interativo de cidades representativas da producao de commodities do Brasil.
 
-O projeto segue a mesma linha estrutural do `RdM`: FastAPI, Jinja2, JSON versionado, JavaScript modular e uma camada separada para grafo de rotas.
 
 ## Requisitos
 

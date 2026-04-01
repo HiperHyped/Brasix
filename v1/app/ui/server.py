@@ -27,6 +27,7 @@ from app.config import (
     TRUCK_IMAGE_PROMPT_OVERRIDES_PATH,
     TRUCK_IMAGE_REVIEW_QUEUE_PATH,
 )
+from app.game import build_game_world_runtime, build_truck_product_matrix_payload
 from app.maptools import RouteGraph, RouteWorkspaceSnapshot
 from app.services import (
     AutoRouteError,
@@ -506,13 +507,11 @@ def _default_custom_truck_record(label: str) -> TruckCustomTypeRecord:
         order=order,
         label=label,
         short_label=label,
-        size_tier="small",
-        base_vehicle_kind="rigid",
+        size_tier="leve",
+        base_vehicle_kind="rigido",
         axle_config="4x2",
-        combination_kind="single_unit",
-        cargo_scope="urban_and_regional",
-        canonical_body_type_id="truck_body_bau",
         canonical_body_type_ids=["truck_body_bau"],
+        preferred_body_type_id="truck_body_bau",
         notes="",
     )
 
@@ -531,11 +530,7 @@ def _next_body_order() -> int:
 
 def _category_group_key(group: str) -> str:
     mapping = {
-        "size_tier": "size_tiers",
-        "base_vehicle_kind": "base_vehicle_kinds",
         "axle_config": "axle_configs",
-        "combination_kind": "combination_kinds",
-        "cargo_scope": "cargo_scopes",
     }
     return mapping[group]
 
@@ -724,6 +719,22 @@ def create_app() -> FastAPI:
             context={"page_title": gallery_ui["screen"].get("page_title", "Brasix | Biblioteca de caminhoes")},
         )
 
+    @app.get("/viewer/truck-product-matrix", response_class=HTMLResponse, include_in_schema=False)
+    async def truck_product_matrix(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="truck_product_matrix.html",
+            context={"page_title": "Brasix | Matriz caminhoes x produtos"},
+        )
+
+    @app.get("/inspector/runtime", response_class=HTMLResponse, include_in_schema=False)
+    async def runtime_inspector(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="runtime_inspector.html",
+            context={"page_title": "Brasix | Runtime do jogo"},
+        )
+
     @app.get("/api/health")
     async def healthcheck() -> dict[str, Any]:
         payload = _build_bootstrap_payload()
@@ -738,6 +749,16 @@ def create_app() -> FastAPI:
     @app.get("/api/bootstrap")
     async def bootstrap() -> dict[str, Any]:
         return _build_bootstrap_payload()
+
+    @app.get("/api/game/runtime")
+    async def game_runtime() -> dict[str, Any]:
+        runtime = build_game_world_runtime(include_validation=True)
+        return runtime.model_dump(mode="json")
+
+    @app.get("/api/game/runtime/validation")
+    async def game_runtime_validation() -> dict[str, Any]:
+        runtime = build_game_world_runtime(include_validation=True)
+        return runtime.validation.model_dump(mode="json")
 
     @app.get("/api/editor/map/bootstrap")
     async def map_editor_bootstrap() -> dict[str, Any]:
@@ -793,6 +814,10 @@ def create_app() -> FastAPI:
     async def truck_gallery_bootstrap() -> dict[str, Any]:
         return _build_truck_gallery_bootstrap_payload()
 
+    @app.get("/api/viewer/truck-product-matrix")
+    async def truck_product_matrix_bootstrap() -> dict[str, Any]:
+        return build_truck_product_matrix_payload()
+
     @app.post("/api/editor/products/products")
     async def create_product(document: ProductEditorCreateRequest) -> dict[str, Any]:
         catalog_document = load_product_catalog_v2_payload()
@@ -833,11 +858,6 @@ def create_app() -> FastAPI:
         new_product["fragile"] = bool(new_product.get("fragile", False))
         new_product["hazardous"] = bool(new_product.get("hazardous", False))
         new_product["temperature_control_required"] = bool(new_product.get("temperature_control_required", False))
-        new_product["compatible_body_type_ids"] = [
-            str(item).strip()
-            for item in (new_product.get("compatible_body_type_ids") or ["truck_body_bau"])
-            if str(item).strip()
-        ] or ["truck_body_bau"]
         new_product["notes"] = str(new_product.get("notes") or "").strip()
 
         products.append(new_product)
@@ -846,7 +866,9 @@ def create_app() -> FastAPI:
             key=lambda item: (int(item.get("order") or 0), item.get("name", "")),
         )
         save_json(PRODUCT_CATALOG_V2_PATH, catalog_document)
-        return {"product": new_product}
+        saved_catalog_document = load_product_catalog_v2_payload()
+        saved_product = _find_product_or_404(list(saved_catalog_document.get("products", [])), new_product["id"])
+        return {"product": saved_product}
 
     @app.put("/api/editor/products/products/{product_id}")
     async def update_product(product_id: str, document: ProductEditorUpdateRequest) -> dict[str, Any]:
@@ -866,9 +888,6 @@ def create_app() -> FastAPI:
             if key in {"name", "short_name", "emoji", "family_id", "logistics_type_id", "unit", "color", "notes", "density_class", "value_class"}:
                 product[key] = str(value).strip()
                 continue
-            if key == "compatible_body_type_ids":
-                product[key] = [str(item).strip() for item in (value or []) if str(item).strip()] or ["truck_body_bau"]
-                continue
             product[key] = value
 
         if not str(product.get("name") or "").strip():
@@ -884,7 +903,9 @@ def create_app() -> FastAPI:
             key=lambda item: (int(item.get("order") or 0), item.get("name", "")),
         )
         save_json(PRODUCT_CATALOG_V2_PATH, catalog_document)
-        return {"product": product}
+        saved_catalog_document = load_product_catalog_v2_payload()
+        saved_product = _find_product_or_404(list(saved_catalog_document.get("products", [])), product_id)
+        return {"product": saved_product}
 
     @app.put("/api/editor/products_v1/field")
     async def save_product_editor_v1_field(document: ProductFieldLayerSaveRequest) -> dict[str, Any]:
@@ -949,9 +970,12 @@ def create_app() -> FastAPI:
         master_document = load_product_master_v1_1_payload()
         master_products = list(master_document.get("products", []))
         family_ids = {item.get("id") for item in load_product_family_catalog_payload().get("families", [])}
+        logistics_type_ids = {item.get("id") for item in load_product_logistics_type_catalog_payload().get("types", [])}
 
         if document.family_id not in family_ids:
             raise HTTPException(status_code=400, detail="Familia economica invalida para o produto.")
+        if document.logistics_type_id not in logistics_type_ids:
+            raise HTTPException(status_code=400, detail="Tipo logistico invalido para o produto.")
 
         known_product_ids = {str(item.get("id") or "").strip() for item in master_products}
         for product_id in [*document.inputs, *document.outputs]:
@@ -968,6 +992,7 @@ def create_app() -> FastAPI:
             "name": product_name,
             "emoji": str(document.emoji or "\U0001F4E6"),
             "family_id": document.family_id,
+            "logistics_type_id": document.logistics_type_id,
             "visible": document.status == "visible",
             "legacy_source_product_id": None,
             "inputs": list(dict.fromkeys(document.inputs)),
@@ -1141,9 +1166,11 @@ def create_app() -> FastAPI:
         if not is_base_type and not is_custom_type:
             raise HTTPException(status_code=404, detail="Caminhao nao encontrado no catalogo.")
 
-        body_catalog = load_truck_body_catalog_payload()
-        if not any(item.get("id") == document.canonical_body_type_id for item in body_catalog.get("types", [])):
-            raise HTTPException(status_code=400, detail="Implemento canonico nao encontrado no catalogo.")
+        preferred_body_type_id = str(document.preferred_body_type_id or "").strip() or None
+        if preferred_body_type_id:
+            body_catalog = load_truck_body_catalog_payload()
+            if not any(item.get("id") == preferred_body_type_id for item in body_catalog.get("types", [])):
+                raise HTTPException(status_code=400, detail="Implemento preferido nao encontrado no catalogo.")
 
         if is_custom_type:
             next_items: list[TruckCustomTypeRecord] = []
@@ -1157,10 +1184,7 @@ def create_app() -> FastAPI:
                                 "size_tier": document.size_tier,
                                 "base_vehicle_kind": document.base_vehicle_kind,
                                 "axle_config": document.axle_config,
-                                "combination_kind": document.combination_kind,
-                                "cargo_scope": document.cargo_scope,
-                                "canonical_body_type_id": document.canonical_body_type_id,
-                                "canonical_body_type_ids": [document.canonical_body_type_id],
+                                "preferred_body_type_id": preferred_body_type_id,
                                 "notes": document.notes,
                             }
                         )
@@ -1171,7 +1195,15 @@ def create_app() -> FastAPI:
             save_json(TRUCK_CUSTOM_CATALOG_PATH, custom_catalog.model_dump(mode="json"))
         else:
             edits_document = TruckCatalogEditsDocument.model_validate(load_truck_catalog_edits_payload())
-            next_record = TruckCatalogEditRecord(**document.model_dump(mode="json"))
+            next_record = TruckCatalogEditRecord(
+                truck_type_id=document.truck_type_id,
+                label=document.label,
+                size_tier=document.size_tier,
+                base_vehicle_kind=document.base_vehicle_kind,
+                axle_config=document.axle_config,
+                preferred_body_type_id=preferred_body_type_id,
+                notes=document.notes,
+            )
             replaced = False
             next_items: list[TruckCatalogEditRecord] = []
             for item in edits_document.items:
@@ -1185,18 +1217,20 @@ def create_app() -> FastAPI:
             edits_document.items = next_items
             save_json(TRUCK_CATALOG_EDITS_PATH, edits_document.model_dump(mode="json"))
 
-        prompt_overrides_payload = load_truck_image_prompt_overrides_payload()
-        override_items = list(prompt_overrides_payload.get("overrides", []))
-        for item in override_items:
-            if item.get("truck_type_id") == document.truck_type_id:
-                item["preferred_body_type_id"] = document.canonical_body_type_id
-        save_json(TRUCK_IMAGE_PROMPT_OVERRIDES_PATH, prompt_overrides_payload)
+        if preferred_body_type_id:
+            prompt_overrides_payload = load_truck_image_prompt_overrides_payload()
+            override_items = list(prompt_overrides_payload.get("overrides", []))
+            for item in override_items:
+                if item.get("truck_type_id") == document.truck_type_id:
+                    item["preferred_body_type_id"] = preferred_body_type_id
+            save_json(TRUCK_IMAGE_PROMPT_OVERRIDES_PATH, prompt_overrides_payload)
 
-        asset_registry_payload = load_truck_image_asset_registry_payload()
-        for item in asset_registry_payload.get("items", []):
-            if item.get("truck_type_id") == document.truck_type_id:
-                item["canonical_body_type_id"] = document.canonical_body_type_id
-        save_json(TRUCK_IMAGE_ASSET_REGISTRY_PATH, asset_registry_payload)
+        if preferred_body_type_id:
+            asset_registry_payload = load_truck_image_asset_registry_payload()
+            for item in asset_registry_payload.get("items", []):
+                if item.get("truck_type_id") == document.truck_type_id:
+                    item["canonical_body_type_id"] = preferred_body_type_id
+            save_json(TRUCK_IMAGE_ASSET_REGISTRY_PATH, asset_registry_payload)
 
         effective_catalog = load_effective_truck_type_catalog_payload()
         saved_type = next(
@@ -1216,9 +1250,7 @@ def create_app() -> FastAPI:
                 size_tier=document.size_tier,
                 base_vehicle_kind=document.base_vehicle_kind,
                 axle_config=document.axle_config,
-                combination_kind=document.combination_kind,
-                cargo_scope=document.cargo_scope,
-                canonical_body_type_id=document.canonical_body_type_id,
+                preferred_body_type_id=document.preferred_body_type_id,
                 notes=document.notes,
             )
         except TruckImageGenerationError as exc:

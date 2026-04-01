@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<style>
+  .truck-product-matrix-row-button {
+    min-height: 112px;
+    gap: 8px;
+  }
+
+  .truck-product-matrix-row-preview,
+  .truck-product-matrix-row-preview-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .truck-product-matrix-row-preview-image {
+    width: 100%;
+    max-width: 88px;
+    max-height: 46px;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .truck-product-matrix-row-preview-fallback {
+    font-size: 1.15rem;
+    line-height: 1;
+    opacity: 0.78;
+  }
+
+  html[data-editor-theme="night"] .truck-product-matrix-row-preview-image {
+    filter: invert(0.92);
+  }
+
+  @media (max-width: 900px) {
+    .truck-product-matrix-row-button {
+      min-height: 96px;
+      gap: 6px;
+    }
+
+    .truck-product-matrix-row-preview {
+      min-height: 36px;
+    }
+
+    .truck-product-matrix-row-preview-image {
+      max-width: 70px;
+      max-height: 36px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<script>
+  document.documentElement.classList.add("truck-product-matrix-page");
+  document.body.classList.add("truck-product-matrix-page");
+</script>
+<main class="truck-product-matrix-shell">
+  <header class="topbar truck-product-matrix-topbar">
+    <div class="truck-product-matrix-topbar-left">
+      <div class="brand-lockup">
+        <h1>Brasix</h1>
+        <span class="brand-divider"></span>
+        <p>Matriz produto -> logistica -> implemento -> caminhao</p>
+      </div>
+    </div>
+
+    <div id="truck-product-matrix-header-badges" class="editor-header-badges" aria-label="Estado da matriz"></div>
+    <div id="truck-product-matrix-header-actions" class="editor-header-actions" aria-label="Acoes da matriz"></div>
+  </header>
+
+  <section class="truck-product-matrix-grid">
+    <aside class="truck-product-matrix-sidebar">
+      <section class="editor-card truck-product-matrix-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Resumo</p>
+            <h2>Frota atual</h2>
+          </div>
+        </div>
+
+        <div id="truck-product-matrix-summary" class="truck-product-matrix-summary"></div>
+      </section>
+
+      <section class="editor-card truck-product-matrix-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Filtros</p>
+            <h2>Cruzar a matriz</h2>
+          </div>
+        </div>
+
+        <div class="truck-product-matrix-filter-grid">
+          <label class="field">
+            <span>Buscar caminhao</span>
+            <input id="truck-product-matrix-truck-search" class="editor-input" type="search" placeholder="Nome, eixos ou porte" />
+          </label>
+
+          <label class="field">
+            <span>Buscar produto</span>
+            <input id="truck-product-matrix-product-search" class="editor-input" type="search" placeholder="Nome, familia ou logistica" />
+          </label>
+
+          <label class="field">
+            <span>Familia</span>
+            <div class="select-shell">
+              <select id="truck-product-matrix-family-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Tipo logistico</span>
+            <div class="select-shell">
+              <select id="truck-product-matrix-logistics-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Implemento</span>
+            <div class="select-shell">
+              <select id="truck-product-matrix-body-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="truck-product-matrix-toggle" for="truck-product-matrix-hide-empty-toggle">
+            <input id="truck-product-matrix-hide-empty-toggle" type="checkbox" checked />
+            <span>Ocultar linhas e colunas vazias</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="editor-card truck-product-matrix-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Detalhe</p>
+            <h2>Compatibilidade</h2>
+          </div>
+        </div>
+
+        <div id="truck-product-matrix-detail" class="truck-product-matrix-detail"></div>
+      </section>
+    </aside>
+
+    <section class="truck-product-matrix-main">
+      <section class="editor-card truck-product-matrix-card truck-product-matrix-table-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Matriz</p>
+            <h2>Compatibilidade por tipo logistico</h2>
+          </div>
+          <div id="truck-product-matrix-table-summary" class="truck-product-matrix-table-summary"></div>
+        </div>
+
+        <div class="truck-product-matrix-legend" aria-label="Legenda da matriz">
+          <span class="truck-product-matrix-legend-item"><span class="truck-product-matrix-legend-swatch is-compatible"></span><span>Compatível</span></span>
+          <span class="truck-product-matrix-legend-item"><span class="truck-product-matrix-legend-swatch is-incompatible"></span><span>Sem implemento compatível</span></span>
+          <span class="truck-product-matrix-legend-item"><span class="truck-product-matrix-legend-swatch is-selected"></span><span>Seleção atual</span></span>
+        </div>
+
+        <div id="truck-product-matrix-status" class="editor-status-box truck-product-matrix-status"></div>
+        <div id="truck-product-matrix-table-wrap" class="truck-product-matrix-table-wrap"></div>
+      </section>
+    </section>
+  </section>
+</main>
+
+<script type="module">
+  const matrixModuleUrl = new URL("{{ request.url_for('static', path='js/truck-product-matrix.js') }}", window.location.href);
+  matrixModuleUrl.searchParams.set("v", "20260331-4");
+
+  function showTruckProductMatrixLoadError(error) {
+    const target = document.getElementById("truck-product-matrix-status");
+    if (!target) {
+      return;
+    }
+
+    target.innerHTML = `
+      <div class="editor-status-copy">Falha ao carregar a matriz de compatibilidade.</div>
+      <div class="editor-status-meta">
+        <div><span>Erro</span><strong>${String(error?.message || error || "Erro desconhecido")}</strong></div>
+      </div>
+    `;
+    console.error("Brasix truck product matrix load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showTruckProductMatrixLoadError(event.reason);
+  });
+
+  import(matrixModuleUrl.href).catch(showTruckProductMatrixLoadError);
+</script>
+{% endblock %}

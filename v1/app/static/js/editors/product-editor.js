@@ -245,6 +245,10 @@ function logisticsLabel(logisticsTypeId) {
   return (state.logisticsCatalog.types || []).find((item) => item.id === logisticsTypeId)?.label || logisticsTypeId || "-";
 }
 
+function logisticsBodyLabels(logisticsTypeId) {
+  return (state.logisticsCatalog.types || []).find((item) => item.id === logisticsTypeId)?.body_labels || [];
+}
+
 function median(values) {
   const ordered = [...values].sort((left, right) => left - right);
   if (!ordered.length) {
@@ -691,7 +695,7 @@ function renderCityDetail() {
       </div>
       <div class="product-editor-city-metric is-span-2">
         <span>Implementos</span>
-        <strong>${escapeHtml((product.compatible_body_type_ids || []).join(", ") || "-")}</strong>
+        <strong>${escapeHtml(logisticsBodyLabels(product.logistics_type_id).join(", ") || "-")}</strong>
       </div>
     </div>
     <div class="product-editor-city-note">${escapeHtml(labels().pending_city_edit_label || "")}</div>

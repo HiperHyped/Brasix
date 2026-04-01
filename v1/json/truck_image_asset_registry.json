@@ -272,7 +272,7 @@
     },
     {
       "truck_type_id": "truck_type_toco_semipesado_4x2",
-      "canonical_body_type_id": "truck_body_bau",
+      "canonical_body_type_id": "truck_body_carga_seca",
       "status": "generated",
       "prompt_items": [
         "perfil lateral puro do caminhão",
@@ -525,7 +525,7 @@
     },
     {
       "truck_type_id": "truck_type_bitruck_vocacional_8x4",
-      "canonical_body_type_id": "truck_body_basculante",
+      "canonical_body_type_id": "truck_body_carga_seca",
       "status": "approved",
       "prompt_items": [
         "perfil lateral puro do caminhão",
@@ -739,7 +739,7 @@
     },
     {
       "truck_type_id": "truck_type_cavalo_6x4",
-      "canonical_body_type_id": "truck_body_prancha",
+      "canonical_body_type_id": "truck_body_carga_seca",
       "status": "approved",
       "prompt_items": [
         "perfil lateral puro do caminhão",
@@ -1032,7 +1032,7 @@
     },
     {
       "truck_type_id": "truck_type_treminhao",
-      "canonical_body_type_id": "truck_body_canavieiro",
+      "canonical_body_type_id": "truck_body_graneleiro",
       "status": "approved",
       "prompt_items": [
         "perfil lateral puro do caminhão",
@@ -1403,6 +1403,60 @@
       "reviewed_at": "2026-03-31T12:13:45-03:00",
       "approved_at": "2026-03-31T12:13:45-03:00",
       "updated_at": "2026-03-31T12:13:45-03:00",
+      "error_message": null
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_28",
+      "canonical_body_type_id": "truck_body_frigorifico",
+      "status": "generated",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo truck 6x4 frigorificado",
+        "porte grande plus",
+        "estrutura rigido",
+        "eixos 6x4",
+        "composicao um caminhao rigido unico",
+        "missao rodoviario alta capacidade",
+        "implemento: bau frigorifico",
+        "usar poucos detalhes",
+        "observacoes importantes: bau com refrigeração (carrier)",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva",
+        "usar Truck pesado 6x2 apenas como referencia parcial",
+        "copiar apenas a cabine da referencia",
+        "copiar apenas o estilo do desenho da referencia",
+        "nao copiar eixos, modulos, implementos ou comprimento da referencia"
+      ],
+      "reference_truck_type_id": "truck_type_truck_pesado_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "reference_image_rel_path": "trucks/generated/truck_type_truck_pesado_6x2/main.png",
+      "reference_image_url_path": "/assets/trucks/generated/truck_type_truck_pesado_6x2/main.png",
+      "prompt": "- perfil lateral puro do caminhão\n- fundo transparente\n- veículo inteiro em preto sólido\n- desenho técnico simples\n- sem cenário, sem texto e sem sombra\n- veiculo de carga brasileiro do tipo truck 6x4 frigorificado\n- porte grande plus\n- estrutura rigido\n- eixos 6x4\n- composicao um caminhao rigido unico\n- missao rodoviario alta capacidade\n- implemento: bau frigorifico\n- usar poucos detalhes\n- observacoes importantes: bau com refrigeração (carrier)\n- não usar contorno preto com miolo branco\n- não usar perspectiva\n- usar Truck pesado 6x2 apenas como referencia parcial\n- copiar apenas a cabine da referencia\n- copiar apenas o estilo do desenho da referencia\n- nao copiar eixos, modulos, implementos ou comprimento da referencia",
+      "prompt_summary": "Truck 6x4 Frigorificado com Frigorifico e 20 item(ns) de prompt.",
+      "provider": "openai_gpt_image",
+      "requested_model": "gpt-image-1.5",
+      "used_model": "gpt-image-1.5",
+      "dry_run": false,
+      "approved_image_rel_path": null,
+      "approved_image_url_path": null,
+      "candidate_image_rel_path": "trucks/generated/truck_type_custom_novo_caminhao_28/candidate.png",
+      "candidate_image_url_path": "/assets/trucks/generated/truck_type_custom_novo_caminhao_28/candidate.png",
+      "manifest_rel_path": "trucks/generated/truck_type_custom_novo_caminhao_28/manifest.json",
+      "output_format": "png",
+      "background": "transparent",
+      "width_px": 1024,
+      "height_px": 1024,
+      "generated_at": "2026-03-31T18:59:39-03:00",
+      "reviewed_at": null,
+      "approved_at": null,
+      "updated_at": "2026-03-31T18:59:39-03:00",
       "error_message": null
     }
   ]

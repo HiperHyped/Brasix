@@ -3088,6 +3088,11 @@ html[data-editor-theme="night"] .planner-step-surface-label {
   color: var(--muted);
 }
 
+.truck-gallery-pill.is-active {
+  background: rgba(188, 115, 41, 0.16);
+  color: var(--accent-strong);
+}
+
 .truck-gallery-detail-head {
   display: grid;
   gap: 4px;
@@ -3484,6 +3489,10 @@ html[data-editor-theme="night"] .truck-gallery-detail-action.is-danger {
 html[data-editor-theme="night"] .truck-gallery-item-meta span,
 html[data-editor-theme="night"] .truck-gallery-pill {
   background: rgba(51, 53, 50, 0.88);
+}
+
+html[data-editor-theme="night"] .truck-gallery-pill.is-active {
+  background: rgba(255, 183, 123, 0.16);
 }
 
 html[data-editor-theme="night"] .truck-gallery-detail-metric.is-editable .truck-gallery-name-input,
@@ -4050,5 +4059,800 @@ html[data-editor-theme="night"] .product-editor-resizer::before {
 
   .truck-gallery-generation-meta {
     grid-template-columns: 1fr;
+  }
+}
+
+html.runtime-page,
+body.runtime-page {
+  min-height: 100%;
+  overflow: auto;
+}
+
+html.runtime-page[data-editor-theme="night"] {
+  --bg: #121411;
+  --surface: #171b18;
+  --surface-soft: #1d221e;
+  --surface-lift: #242925;
+  --surface-deep: #2f3530;
+  --text: #f3f5ef;
+  --muted: #b3bbb2;
+  --green: #a1d494;
+  --green-soft: rgba(161, 212, 148, 0.2);
+  --copper: #ffb77b;
+  --blue: #82bfd0;
+  --border: rgba(137, 146, 146, 0.18);
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.28);
+  --shadow-card: 0 12px 24px rgba(0, 0, 0, 0.22);
+}
+
+.runtime-shell {
+  min-height: 100vh;
+  height: auto;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  font-size: 0.9rem;
+}
+
+.runtime-topbar {
+  grid-template-columns: auto 1fr auto;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.runtime-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.runtime-shell .brand-lockup h1 {
+  font-size: var(--editor-header-title-size, 1.7rem);
+}
+
+.runtime-shell .brand-lockup p {
+  font-size: var(--editor-header-subtitle-size, 0.96rem);
+}
+
+.runtime-shell .section-head h2 {
+  font-size: var(--editor-section-title-size, 1.18rem);
+  line-height: 0.96;
+}
+
+.runtime-shell .eyebrow {
+  font-size: var(--editor-eyebrow-size, 0.58rem);
+}
+
+.runtime-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+  align-items: start;
+}
+
+.runtime-sidebar,
+.runtime-main {
+  min-height: 0;
+}
+
+.runtime-sidebar {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  position: sticky;
+  top: calc(var(--header-h) + 12px);
+}
+
+.runtime-card {
+  height: auto;
+  gap: 10px;
+  padding: 12px;
+}
+
+.runtime-source-card,
+.runtime-summary {
+  display: grid;
+  gap: 12px;
+}
+
+.runtime-summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.runtime-shell .metric-card {
+  min-height: 92px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.runtime-shell .metric-card span {
+  color: var(--muted);
+}
+
+.runtime-shell .metric-card strong,
+.runtime-shell .editor-map-load-item strong,
+.runtime-shell .section-head h2,
+.runtime-shell .brand-lockup h1,
+.runtime-shell .brand-lockup p {
+  color: var(--text);
+}
+
+.runtime-shell .editor-map-load-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.runtime-main {
+  min-width: 0;
+}
+
+.runtime-data-card {
+  min-height: calc(100vh - var(--header-h) - 24px);
+  align-content: start;
+}
+
+.runtime-panel-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.runtime-panel-controls {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.runtime-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.runtime-json-select-field {
+  min-width: 220px;
+}
+
+.runtime-json-select-field .editor-input {
+  min-width: 220px;
+}
+
+.runtime-validation-status {
+  grid-template-columns: 1fr;
+}
+
+.runtime-panel,
+.runtime-list {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.runtime-scroll {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+}
+
+.runtime-panel .runtime-scroll {
+  max-height: calc(100vh - 320px);
+}
+
+.runtime-json-wrap {
+  min-width: 0;
+}
+
+.runtime-json-view {
+  margin: 0;
+  min-height: 420px;
+  max-height: calc(100vh - 320px);
+  overflow: auto;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.runtime-issue-row {
+  align-items: start;
+}
+
+.runtime-severity-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-family: var(--font-head);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.runtime-severity-badge.is-ok {
+  background: rgba(45, 90, 39, 0.14);
+  color: var(--green);
+}
+
+.runtime-severity-badge.is-warning {
+  background: rgba(140, 79, 16, 0.14);
+  color: var(--copper);
+}
+
+.runtime-severity-badge.is-error {
+  background: rgba(143, 49, 49, 0.14);
+  color: #8f3131;
+}
+
+html[data-editor-theme="night"] .runtime-severity-badge.is-ok {
+  background: rgba(161, 212, 148, 0.16);
+  color: #a1d494;
+}
+
+html[data-editor-theme="night"] .runtime-severity-badge.is-warning {
+  background: rgba(255, 183, 123, 0.14);
+  color: #ffb77b;
+}
+
+html[data-editor-theme="night"] .runtime-severity-badge.is-error {
+  background: rgba(255, 136, 136, 0.14);
+  color: #ff8888;
+}
+
+@media (max-width: 1460px) {
+  .runtime-grid {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1180px) {
+  .runtime-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .runtime-sidebar {
+    position: static;
+  }
+
+  .runtime-card,
+  .runtime-data-card {
+    height: auto;
+  }
+
+  .runtime-scroll {
+    max-height: 320px;
+  }
+
+  .runtime-json-view {
+    max-height: 420px;
+  }
+}
+
+html.truck-product-matrix-page,
+body.truck-product-matrix-page {
+  min-height: 100%;
+  overflow: auto;
+}
+
+html.truck-product-matrix-page[data-editor-theme="night"] {
+  --bg: #121411;
+  --surface: #171b18;
+  --surface-soft: #1d221e;
+  --surface-lift: #242925;
+  --surface-deep: #2f3530;
+  --text: #f3f5ef;
+  --muted: #b3bbb2;
+  --green: #a1d494;
+  --green-soft: rgba(161, 212, 148, 0.2);
+  --copper: #ffb77b;
+  --blue: #82bfd0;
+  --border: rgba(137, 146, 146, 0.18);
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.28);
+  --shadow-card: 0 12px 24px rgba(0, 0, 0, 0.22);
+}
+
+.truck-product-matrix-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-h) 1fr;
+  font-size: 0.9rem;
+}
+
+.truck-product-matrix-topbar {
+  grid-template-columns: auto 1fr auto;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.truck-product-matrix-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.truck-product-matrix-shell .brand-lockup h1 {
+  font-size: var(--editor-header-title-size, 1.7rem);
+}
+
+.truck-product-matrix-shell .brand-lockup p {
+  font-size: var(--editor-header-subtitle-size, 0.96rem);
+}
+
+.truck-product-matrix-shell .section-head h2 {
+  font-size: var(--editor-section-title-size, 1.16rem);
+  line-height: 0.98;
+}
+
+.truck-product-matrix-shell .eyebrow {
+  font-size: var(--editor-eyebrow-size, 0.58rem);
+}
+
+.truck-product-matrix-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+  align-items: start;
+}
+
+.truck-product-matrix-sidebar,
+.truck-product-matrix-main {
+  min-height: 0;
+}
+
+.truck-product-matrix-sidebar {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  position: sticky;
+  top: calc(var(--header-h) + 12px);
+}
+
+.truck-product-matrix-card {
+  gap: 10px;
+  padding: 12px;
+}
+
+.truck-product-matrix-summary,
+.truck-product-matrix-detail {
+  display: grid;
+  gap: 12px;
+}
+
+.truck-product-matrix-summary-metrics,
+.truck-product-matrix-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.truck-product-matrix-shell .metric-card {
+  min-height: 92px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.truck-product-matrix-shell .metric-card span,
+.truck-product-matrix-help {
+  color: var(--muted);
+}
+
+.truck-product-matrix-shell .metric-card strong,
+.truck-product-matrix-shell .section-head h2,
+.truck-product-matrix-shell .brand-lockup h1,
+.truck-product-matrix-shell .brand-lockup p,
+.truck-product-matrix-detail-hero strong,
+.truck-product-matrix-cell-state strong,
+.truck-product-matrix-row-label,
+.truck-product-matrix-col-label {
+  color: var(--text);
+}
+
+.truck-product-matrix-filter-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.truck-product-matrix-toggle {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.56);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.truck-product-matrix-toggle input {
+  margin-top: 2px;
+}
+
+.truck-product-matrix-detail-scroll {
+  display: grid;
+  gap: 10px;
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.truck-product-matrix-detail-scroll.is-short {
+  max-height: 220px;
+}
+
+.truck-product-matrix-subhead {
+  margin-top: 2px;
+}
+
+.truck-product-matrix-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.truck-product-matrix-detail-hero,
+.truck-product-matrix-cell-state {
+  display: grid;
+  gap: 8px;
+}
+
+.truck-product-matrix-cell-state {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.truck-product-matrix-cell-state.is-compatible {
+  background: rgba(72, 131, 73, 0.12);
+}
+
+.truck-product-matrix-cell-state.is-incompatible {
+  background: rgba(124, 132, 136, 0.1);
+}
+
+.truck-product-matrix-main {
+  min-width: 0;
+}
+
+.truck-product-matrix-table-card {
+  min-height: calc(100vh - var(--header-h) - 24px);
+  align-content: start;
+}
+
+.truck-product-matrix-table-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.truck-product-matrix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.truck-product-matrix-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.truck-product-matrix-legend-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.14);
+}
+
+.truck-product-matrix-legend-swatch.is-compatible {
+  background: rgba(72, 131, 73, 0.18);
+}
+
+.truck-product-matrix-legend-swatch.is-incompatible {
+  background: rgba(124, 132, 136, 0.1);
+}
+
+.truck-product-matrix-legend-swatch.is-selected {
+  background: rgba(255, 183, 123, 0.18);
+}
+
+.truck-product-matrix-status {
+  grid-template-columns: 1fr;
+}
+
+.truck-product-matrix-table-wrap {
+  min-height: 420px;
+  max-height: calc(100vh - 255px);
+  overflow: auto;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.truck-product-matrix-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.truck-product-matrix-table th,
+.truck-product-matrix-table td {
+  padding: 0;
+  border-right: 1px solid rgba(114, 121, 110, 0.08);
+  border-bottom: 1px solid rgba(114, 121, 110, 0.08);
+}
+
+.truck-product-matrix-corner,
+.truck-product-matrix-col-head {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: rgba(245, 244, 238, 0.96);
+  backdrop-filter: blur(10px);
+}
+
+.truck-product-matrix-corner {
+  left: 0;
+  min-width: 220px;
+  padding: 12px 14px;
+  text-align: left;
+  color: var(--text);
+}
+
+.truck-product-matrix-row-head {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: rgba(245, 244, 238, 0.96);
+  backdrop-filter: blur(10px);
+  min-width: 220px;
+  max-width: 220px;
+}
+
+.truck-product-matrix-col-head {
+  min-width: 116px;
+  max-width: 116px;
+}
+
+.truck-product-matrix-col-button,
+.truck-product-matrix-row-button {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.truck-product-matrix-col-button {
+  min-height: 112px;
+  padding: 12px 10px;
+}
+
+.truck-product-matrix-row-button {
+  min-height: 74px;
+  padding: 12px 14px;
+}
+
+.truck-product-matrix-col-button.is-selected,
+.truck-product-matrix-row-button.is-selected {
+  background: rgba(255, 183, 123, 0.14);
+}
+
+.truck-product-matrix-col-emoji {
+  font-size: 1.02rem;
+  line-height: 1;
+}
+
+.truck-product-matrix-col-label,
+.truck-product-matrix-row-label {
+  font-family: var(--font-head);
+  font-weight: 700;
+}
+
+.truck-product-matrix-col-label {
+  font-size: 0.82rem;
+  line-height: 1.15;
+}
+
+.truck-product-matrix-row-label {
+  font-size: 0.92rem;
+  line-height: 1.1;
+}
+
+.truck-product-matrix-col-meta,
+.truck-product-matrix-row-meta {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.truck-product-matrix-table-cell {
+  width: 56px;
+  min-width: 56px;
+  height: 56px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.truck-product-matrix-table-cell.is-compatible {
+  background: rgba(72, 131, 73, 0.16);
+  color: #24522b;
+}
+
+.truck-product-matrix-table-cell.is-incompatible {
+  background: rgba(124, 132, 136, 0.06);
+}
+
+.truck-product-matrix-table-cell.is-selected {
+  box-shadow: inset 0 0 0 2px rgba(255, 183, 123, 0.88);
+}
+
+.truck-product-matrix-table-cell-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  min-height: 22px;
+  border-radius: 999px;
+  font-family: var(--font-head);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.truck-product-matrix-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-family: var(--font-head);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.truck-product-matrix-badge.is-ok {
+  background: rgba(45, 90, 39, 0.14);
+  color: #2d5a27;
+}
+
+.truck-product-matrix-badge.is-warning {
+  background: rgba(140, 79, 16, 0.14);
+  color: #8c4f10;
+}
+
+.truck-product-matrix-badge.is-error {
+  background: rgba(143, 49, 49, 0.14);
+  color: #8f3131;
+}
+
+html[data-editor-theme="night"] .truck-product-matrix-shell .metric-card,
+html[data-editor-theme="night"] .truck-product-matrix-toggle,
+html[data-editor-theme="night"] .truck-product-matrix-cell-state,
+html[data-editor-theme="night"] .truck-product-matrix-table-wrap {
+  background: rgba(23, 27, 24, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(137, 146, 146, 0.14);
+}
+
+html[data-editor-theme="night"] .truck-product-matrix-corner,
+html[data-editor-theme="night"] .truck-product-matrix-col-head,
+html[data-editor-theme="night"] .truck-product-matrix-row-head {
+  background: rgba(23, 27, 24, 0.96);
+}
+
+html[data-editor-theme="night"] .truck-product-matrix-table-cell.is-compatible,
+html[data-editor-theme="night"] .truck-product-matrix-cell-state.is-compatible,
+html[data-editor-theme="night"] .truck-product-matrix-legend-swatch.is-compatible {
+  background: rgba(161, 212, 148, 0.16);
+  color: #a1d494;
+}
+
+html[data-editor-theme="night"] .truck-product-matrix-table-cell.is-incompatible,
+html[data-editor-theme="night"] .truck-product-matrix-cell-state.is-incompatible,
+html[data-editor-theme="night"] .truck-product-matrix-legend-swatch.is-incompatible {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html[data-editor-theme="night"] .truck-product-matrix-legend-swatch.is-selected,
+html[data-editor-theme="night"] .truck-product-matrix-col-button.is-selected,
+html[data-editor-theme="night"] .truck-product-matrix-row-button.is-selected {
+  background: rgba(255, 183, 123, 0.14);
+}
+
+html[data-editor-theme="night"] .truck-product-matrix-badge.is-ok {
+  background: rgba(161, 212, 148, 0.16);
+  color: #a1d494;
+}
+
+html[data-editor-theme="night"] .truck-product-matrix-badge.is-warning {
+  background: rgba(255, 183, 123, 0.14);
+  color: #ffb77b;
+}
+
+html[data-editor-theme="night"] .truck-product-matrix-badge.is-error {
+  background: rgba(255, 136, 136, 0.14);
+  color: #ff8888;
+}
+
+@media (max-width: 1280px) {
+  .truck-product-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .truck-product-matrix-sidebar {
+    position: static;
+  }
+
+  .truck-product-matrix-table-card {
+    min-height: auto;
+  }
+
+  .truck-product-matrix-table-wrap {
+    max-height: 640px;
+  }
+}
+
+@media (max-width: 900px) {
+  .truck-product-matrix-summary-metrics,
+  .truck-product-matrix-detail-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .truck-product-matrix-corner,
+  .truck-product-matrix-row-head {
+    min-width: 176px;
+    max-width: 176px;
+  }
+
+  .truck-product-matrix-col-head {
+    min-width: 96px;
+    max-width: 96px;
+  }
+
+  .truck-product-matrix-col-button {
+    min-height: 98px;
+    padding: 10px 8px;
+  }
+
+  .truck-product-matrix-table-cell {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
   }
 }

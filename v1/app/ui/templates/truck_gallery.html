@@ -47,7 +47,7 @@
           </label>
 
           <label class="field">
-            <span id="truck-gallery-vehicle-kind-filter-label">Estrutura</span>
+            <span id="truck-gallery-vehicle-kind-filter-label">Tipo</span>
             <div class="select-shell">
               <select id="truck-gallery-vehicle-kind-filter" class="editor-input"></select>
               <span class="material-symbols-outlined">expand_more</span>
@@ -58,22 +58,6 @@
             <span id="truck-gallery-axle-filter-label">Eixos</span>
             <div class="select-shell">
               <select id="truck-gallery-axle-filter" class="editor-input"></select>
-              <span class="material-symbols-outlined">expand_more</span>
-            </div>
-          </label>
-
-          <label class="field">
-            <span id="truck-gallery-combination-filter-label">Composicao</span>
-            <div class="select-shell">
-              <select id="truck-gallery-combination-filter" class="editor-input"></select>
-              <span class="material-symbols-outlined">expand_more</span>
-            </div>
-          </label>
-
-          <label class="field">
-            <span id="truck-gallery-cargo-scope-filter-label">Missao</span>
-            <div class="select-shell">
-              <select id="truck-gallery-cargo-scope-filter" class="editor-input"></select>
               <span class="material-symbols-outlined">expand_more</span>
             </div>
           </label>
@@ -131,7 +115,7 @@
 
 <script type="module">
   const galleryModuleUrl = new URL("{{ request.url_for('static', path='js/truck-gallery.js') }}", window.location.href);
-  galleryModuleUrl.searchParams.set("v", "20260330-7");
+  galleryModuleUrl.searchParams.set("v", "20260331-2");
 
   function showTruckGalleryLoadError(error) {
     const target = document.getElementById("truck-gallery-list");

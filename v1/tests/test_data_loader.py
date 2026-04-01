@@ -102,6 +102,7 @@ def test_truck_catalog_payloads_load() -> None:
     gallery_payload = load_truck_gallery_payload()
     type_payload = load_truck_type_catalog_payload()
     effective_type_payload = load_effective_truck_type_catalog_payload()
+    custom_payload = load_truck_custom_catalog_payload()
     body_payload = load_truck_body_catalog_payload()
     sprite_payload = load_truck_sprite_2d_catalog_payload()
     brand_payload = load_truck_brand_family_catalog_payload()
@@ -123,6 +124,11 @@ def test_truck_catalog_payloads_load() -> None:
     assert type_payload["types"][-1]["id"] == "truck_type_cegonheiro"
     assert effective_type_payload["id"] == "truck_type_catalog_v1"
     assert len(effective_type_payload["types"]) >= len(type_payload["types"])
+    edited_vuc = next(item for item in effective_type_payload["types"] if item["id"] == "truck_type_vuc_4x2")
+    assert edited_vuc["size_tier"] == "leve"
+    assert edited_vuc["base_vehicle_kind"] == "rigido"
+    assert edited_vuc["preferred_body_type_id"] == "truck_body_bau"
+    assert len(edited_vuc["canonical_body_type_ids"]) == 4
 
     assert body_payload["id"] == "truck_body_catalog_v1"
     assert any(item["id"] == "truck_body_canavieiro" for item in body_payload["types"])
@@ -162,6 +168,31 @@ def test_truck_catalog_payloads_load() -> None:
     assert isinstance(review_queue_payload["pending_type_ids"], list)
     assert category_payload["id"] == "truck_category_catalog_v1"
     assert isinstance(category_payload["size_tiers"], list)
+    assert [item["id"] for item in category_payload["size_tiers"]] == ["leve", "medio", "pesado", "especial"]
+    assert [item["id"] for item in category_payload["base_vehicle_kinds"]] == ["rigido", "cavalo", "combinacao", "especial"]
+
+    refrigerated_combo = next(item for item in custom_payload["items"] if item["id"] == "truck_type_custom_novo_caminhao_27")
+    assert refrigerated_combo["label"] == "Carreta frigorificada"
+    assert refrigerated_combo["base_vehicle_kind"] == "combinacao"
+    assert refrigerated_combo["preferred_body_type_id"] == "truck_body_frigorifico"
+
+
+def test_normalize_truck_type_record_preserves_visual_body_outside_canonical_list() -> None:
+    normalized = data_loader.normalize_truck_type_record(
+        {
+            "id": "truck_type_test_visual_only",
+            "label": "Teste visual",
+            "short_label": "Teste visual",
+            "size_tier": "pesado",
+            "base_vehicle_kind": "cavalo",
+            "axle_config": "6x4",
+            "canonical_body_type_ids": ["truck_body_basculante"],
+            "preferred_body_type_id": "truck_body_carga_seca",
+        }
+    )
+
+    assert normalized["canonical_body_type_ids"] == ["truck_body_basculante"]
+    assert normalized["preferred_body_type_id"] == "truck_body_carga_seca"
 
 
 def test_product_editor_payloads_load() -> None:
@@ -194,15 +225,29 @@ def test_product_editor_payloads_load() -> None:
     assert logistics_payload["id"] == "product_logistics_type_catalog_v1"
     assert any(item["id"] == "granel_seco" for item in logistics_payload["types"])
     assert any(item["id"] == "granel_liquido" for item in logistics_payload["types"])
+    assert any(item["id"] == "cana_in_natura" and item["body_type_ids"] == ["truck_body_canavieiro"] for item in logistics_payload["types"])
+    assert any(item["id"] == "transporte_veiculos" and item["body_type_ids"] == ["truck_body_cegonheiro"] for item in logistics_payload["types"])
 
     assert product_catalog_payload["id"] == "product_catalog_v2"
     assert len(product_catalog_payload["products"]) == 30
     assert product_catalog_payload["products"][0]["id"] == "soja"
     assert any(item["id"] == "petroleo" and item["hazardous"] is True for item in product_catalog_payload["products"])
     assert any(item["id"] == "pesca" and item["temperature_control_required"] is True for item in product_catalog_payload["products"])
+    assert any(
+        item["id"] == "cana-de-acucar"
+        and item["logistics_type_id"] == "cana_in_natura"
+        and item["compatible_body_type_ids"] == ["truck_body_canavieiro"]
+        for item in product_catalog_payload["products"]
+    )
     assert product_catalog_master_payload["id"] == "product_catalog_v2"
     assert len(product_catalog_master_payload["products"]) == 44
     assert any(item["id"] == "veiculos" and item["emoji"] for item in product_catalog_master_payload["products"])
+    assert any(
+        item["id"] == "veiculos"
+        and item["logistics_type_id"] == "transporte_veiculos"
+        and item["compatible_body_type_ids"] == ["truck_body_cegonheiro"]
+        for item in product_catalog_master_payload["products"]
+    )
     assert any(item["id"] == "derivado" for item in family_payload["families"])
 
     assert supply_payload["id"] == "city_product_supply_matrix_v1"

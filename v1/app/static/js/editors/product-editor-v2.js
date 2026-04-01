@@ -125,6 +125,7 @@ function defaultCreateDraft(baseProduct = null) {
     name: "",
     emoji: baseProduct?.emoji || PRODUCT_EMOJI_OPTIONS[0],
     family_id: baseProduct?.family_id || state.familyCatalog.families[0]?.id || "agro",
+    logistics_type_id: baseProduct?.logistics_type_id || state.logisticsCatalog.types[0]?.id || "carga_geral_paletizada",
     status: baseProduct?.is_active === false ? "hidden" : "visible",
     inputs: Array.isArray(baseProduct?.inputs) ? [...baseProduct.inputs] : [],
     outputs: Array.isArray(baseProduct?.outputs) ? [...baseProduct.outputs] : [],
@@ -415,6 +416,14 @@ function familyLabel(familyId) {
 
 function logisticsLabel(logisticsTypeId) {
   return (state.logisticsCatalog.types || []).find((item) => item.id === logisticsTypeId)?.label || logisticsTypeId || "-";
+}
+
+function logisticsRecord(logisticsTypeId) {
+  return (state.logisticsCatalog.types || []).find((item) => item.id === logisticsTypeId) || null;
+}
+
+function logisticsBodyLabels(logisticsTypeId) {
+  return logisticsRecord(logisticsTypeId)?.body_labels || [];
 }
 
 function median(values) {
@@ -1117,12 +1126,14 @@ function renderProductDetail(rows = null) {
   const stats = state.productStatsById[product.id] || {};
   const inputNames = (product.inputs || []).map((productId) => state.productsById[productId]?.name || productId);
   const outputNames = (product.outputs || []).map((productId) => state.productsById[productId]?.name || productId);
+  const allowedBodies = logisticsBodyLabels(product.logistics_type_id);
 
   target.innerHTML = `
     <div class="product-editor-city-grid">
       ${cityMetric("Produto", `${product.emoji || "\u{1F4E6}"} ${product.name}`.trim(), { span2: true })}
       ${cityMetric("Familia", familyLabel(product.family_id))}
       ${cityMetric("Tipo logistico", logisticsLabel(product.logistics_type_id))}
+      ${cityMetric("Implementos", allowedBodies.length ? allowedBodies.join(", ") : "-", { span2: true })}
       ${cityMetric("Unidade", product.unit || "-")}
       ${cityMetric("Fonte", product.source_kind || "-")}
       ${cityMetric("Ancoras observadas", `${stats.anchor_count || 0}`)}
@@ -1187,6 +1198,7 @@ function renderCreateProductPanel() {
   const nameInput = document.getElementById("product-editor-v1-create-name");
   const emojiSelect = document.getElementById("product-editor-v1-create-emoji");
   const familySelect = document.getElementById("product-editor-v1-create-family");
+  const logisticsSelect = document.getElementById("product-editor-v1-create-logistics");
   const statusSelect = document.getElementById("product-editor-v1-create-status");
   const inputsSelect = document.getElementById("product-editor-v1-create-inputs");
   const outputsSelect = document.getElementById("product-editor-v1-create-outputs");
@@ -1223,6 +1235,12 @@ function renderCreateProductPanel() {
       .map((family) => `<option value="${escapeHtml(family.id)}">${escapeHtml(family.label)}</option>`)
       .join("");
     familySelect.value = draft.family_id;
+  }
+  if (logisticsSelect) {
+    logisticsSelect.innerHTML = (state.logisticsCatalog.types || [])
+      .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.label)}</option>`)
+      .join("");
+    logisticsSelect.value = draft.logistics_type_id;
   }
   if (statusSelect) {
     statusSelect.value = draft.status;
@@ -1453,6 +1471,7 @@ async function submitCreateProduct() {
       name: draft.name,
       emoji: draft.emoji || "\u{1F4E6}",
       family_id: draft.family_id,
+      logistics_type_id: draft.logistics_type_id,
       status: draft.status || "visible",
       inputs: draft.inputs || [],
       outputs: draft.outputs || [],
@@ -1995,6 +2014,9 @@ function bindControls() {
   });
   document.getElementById("product-editor-v1-create-family")?.addEventListener("change", (event) => {
     currentCreateDraft().family_id = event.target.value || state.familyCatalog.families[0]?.id || "agro";
+  });
+  document.getElementById("product-editor-v1-create-logistics")?.addEventListener("change", (event) => {
+    currentCreateDraft().logistics_type_id = event.target.value || state.logisticsCatalog.types[0]?.id || "carga_geral_paletizada";
   });
   document.getElementById("product-editor-v1-create-status")?.addEventListener("change", (event) => {
     currentCreateDraft().status = event.target.value || "visible";
