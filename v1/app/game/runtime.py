@@ -24,6 +24,7 @@ from app.services import (
     load_region_product_supply_matrix_payload,
     load_truck_body_catalog_payload,
     load_truck_category_catalog_payload,
+    load_truck_operational_catalog_payload,
 )
 
 
@@ -47,6 +48,7 @@ def build_game_world_runtime(*, include_validation: bool = True) -> GameWorldRun
     truck_type_catalog = load_effective_truck_type_catalog_payload()
     truck_body_catalog = load_truck_body_catalog_payload()
     truck_category_catalog = load_truck_category_catalog_payload()
+    truck_operational_catalog = load_truck_operational_catalog_payload()
 
     product_ids = [
         str(item.get("id") or "").strip()
@@ -103,6 +105,7 @@ def build_game_world_runtime(*, include_validation: bool = True) -> GameWorldRun
             truck_type_catalog_id=str(truck_type_catalog.get("id") or "truck_type_catalog_v1"),
             truck_body_catalog_id=str(truck_body_catalog.get("id") or "truck_body_catalog_v1"),
             truck_category_catalog_id=str(truck_category_catalog.get("id") or "truck_category_catalog_v1"),
+            truck_operational_catalog_id=str(truck_operational_catalog.get("id") or "truck_operational_catalog_v1"),
         ),
         map=GameWorldMapSnapshot(
             active_map_id=active_map.id,
@@ -129,6 +132,7 @@ def build_game_world_runtime(*, include_validation: bool = True) -> GameWorldRun
             type_catalog=truck_type_catalog,
             body_catalog=truck_body_catalog,
             category_catalog=truck_category_catalog,
+            operational_catalog=truck_operational_catalog,
             truck_type_ids=truck_type_ids,
             active_truck_type_ids=active_truck_type_ids,
             body_type_ids=body_type_ids,
@@ -160,6 +164,11 @@ def build_game_world_runtime(*, include_validation: bool = True) -> GameWorldRun
                 item["id"]: item
                 for item in truck_type_catalog.get("types", [])
                 if str(item.get("id") or "").strip()
+            },
+            truck_operational_by_id={
+                item["truck_type_id"]: item
+                for item in truck_operational_catalog.get("items", [])
+                if str(item.get("truck_type_id") or "").strip()
             },
         ),
     )

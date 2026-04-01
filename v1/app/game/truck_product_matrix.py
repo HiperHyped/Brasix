@@ -3,7 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from app.game.runtime import build_game_world_runtime
-from app.services.data_loader import load_truck_image_asset_registry_payload
+from app.services.data_loader import (
+    load_truck_image_asset_registry_payload,
+    load_truck_product_compatibility_overrides_payload,
+    sort_truck_type_records,
+)
 
 
 def _text(value: Any) -> str:
@@ -59,6 +63,11 @@ def build_truck_product_matrix_payload() -> dict[str, Any]:
         for item in load_truck_image_asset_registry_payload().get("items", [])
         if _text(item.get("truck_type_id"))
     }
+    compatibility_overrides_by_pair = {
+        (_text(item.get("truck_type_id")), _text(item.get("product_id"))): dict(item)
+        for item in load_truck_product_compatibility_overrides_payload().get("items", [])
+        if _text(item.get("truck_type_id")) and _text(item.get("product_id"))
+    }
 
     products: list[dict[str, Any]] = []
     for product in _sort_records(list(runtime.products.catalog.get("products", [])), label_keys=("name", "short_name", "id")):
@@ -96,7 +105,7 @@ def build_truck_product_matrix_payload() -> dict[str, Any]:
 
     trucks: list[dict[str, Any]] = []
     compatible_pair_count = 0
-    for truck in _sort_records(list(runtime.trucks.type_catalog.get("types", []))):
+    for truck in sort_truck_type_records(list(runtime.trucks.type_catalog.get("types", []))):
         truck_id = _text(truck.get("id"))
         if not truck_id:
             continue
@@ -107,8 +116,14 @@ def build_truck_product_matrix_payload() -> dict[str, Any]:
         cells: list[dict[str, Any]] = []
 
         for product in products:
-            matched_body_type_ids = [body_id for body_id in body_type_ids if body_id in set(product["logistics_body_type_ids"])]
-            compatible = bool(matched_body_type_ids)
+            base_matched_body_type_ids = [body_id for body_id in body_type_ids if body_id in set(product["logistics_body_type_ids"])]
+            base_matched_body_labels = _label_list(base_matched_body_type_ids, truck_body_by_id)
+            base_compatible = bool(base_matched_body_type_ids)
+            override_record = compatibility_overrides_by_pair.get((truck_id, product["id"])) or {}
+            manual_override_compatible = override_record.get("compatible") if override_record else None
+            compatible = bool(manual_override_compatible) if override_record else base_compatible
+            compatibility_source = "manual" if override_record else "logistics_type"
+            display_count = len(base_matched_body_type_ids) if compatible and base_matched_body_type_ids else (1 if compatible and override_record else 0)
             if compatible:
                 compatible_pair_count += 1
                 supported_product_ids.append(product["id"])
@@ -119,8 +134,13 @@ def build_truck_product_matrix_payload() -> dict[str, Any]:
                 {
                     "product_id": product["id"],
                     "compatible": compatible,
-                    "matched_body_type_ids": matched_body_type_ids,
-                    "matched_body_labels": _label_list(matched_body_type_ids, truck_body_by_id),
+                    "base_compatible": base_compatible,
+                    "compatibility_source": compatibility_source,
+                    "manual_override_compatible": manual_override_compatible,
+                    "manual_override_updated_at": _text(override_record.get("updated_at")),
+                    "matched_body_type_ids": base_matched_body_type_ids,
+                    "matched_body_labels": base_matched_body_labels,
+                    "display_count": display_count,
                 }
             )
 
@@ -207,6 +227,7 @@ def build_truck_product_matrix_payload() -> dict[str, Any]:
             "product_count": len(products),
             "body_type_count": len(bodies),
             "compatible_pair_count": compatible_pair_count,
+            "manual_override_count": len(compatibility_overrides_by_pair),
             "incompatible_pair_count": total_pairs - compatible_pair_count,
             "compatibility_ratio_pct": round((compatible_pair_count / total_pairs) * 100, 1) if total_pairs else 0.0,
             "covered_product_count": covered_product_count,

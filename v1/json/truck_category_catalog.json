@@ -2,6 +2,10 @@
     "id":  "truck_category_catalog_v1",
     "size_tiers":  [
                        {
+                           "id":  "super_leve",
+                           "label":  "Super-leve"
+                       },
+                       {
                            "id":  "leve",
                            "label":  "Leve"
                        },
@@ -14,8 +18,8 @@
                            "label":  "Pesado"
                        },
                        {
-                           "id":  "especial",
-                           "label":  "Especial"
+                           "id":  "super_pesado",
+                           "label":  "Super-pesado"
                        }
                    ],
     "base_vehicle_kinds":  [

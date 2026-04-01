@@ -37,9 +37,12 @@ from app.config import (
     TRUCK_CUSTOM_CATALOG_PATH,
     TRUCK_IMAGE_ASSET_REGISTRY_PATH,
     TRUCK_IMAGE_GENERATION_CONFIG_PATH,
+    TRUCK_OPERATIONAL_DATA_PATH,
+    TRUCK_OPERATIONAL_LEGACY_DATA_PATH,
     TRUCK_IMAGE_PROMPT_OVERRIDES_PATH,
     TRUCK_IMAGE_REVIEW_QUEUE_PATH,
     TRUCK_IMAGE_VISUAL_DEFINITIONS_PATH,
+    TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_PATH,
     TRUCK_SILHOUETTE_CATALOG_PATH,
     TRUCK_SPRITE_2D_CATALOG_PATH,
     TRUCK_TYPE_CATALOG_PATH,
@@ -178,6 +181,17 @@ DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT = {
     ],
 }
 
+DEFAULT_TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_DOCUMENT = {
+    "id": "truck_product_compatibility_overrides_v1",
+    "items": [],
+}
+
+DEFAULT_TRUCK_OPERATIONAL_CATALOG_DOCUMENT = {
+    "id": "truck_operational_catalog_v1",
+    "source_file": "",
+    "items": [],
+}
+
 DEFAULT_LOGISTICS_BODY_IDS_BY_TYPE = {
     str(item.get("id") or ""): [str(body_id).strip() for body_id in item.get("body_type_ids", []) if str(body_id).strip()]
     for item in DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT.get("types", [])
@@ -249,7 +263,7 @@ LEGACY_PRODUCT_LOGISTICS_TYPES = {
     "cafe": "granel_seco",
     "arroz": "granel_seco",
     "trigo": "granel_seco",
-    "laranja": "carga_geral_perecivel",
+    "laranja": "granel_liquido",
     "feijao": "granel_seco",
     "mandioca": "granel_seco",
     "bovinos": "animais_vivos",
@@ -304,7 +318,7 @@ MASTER_PRODUCT_LOGISTICS_TYPES = {
     "cafe": "granel_seco",
     "arroz": "granel_seco",
     "trigo": "granel_seco",
-    "laranja": "carga_geral_perecivel",
+    "laranja": "granel_liquido",
     "feijao": "granel_seco",
     "mandioca": "granel_seco",
     "bovinos": "animais_vivos",
@@ -585,6 +599,114 @@ def _maybe_fix_mojibake(value: Any) -> Any:
         return value.encode("latin-1").decode("utf-8")
     except (UnicodeEncodeError, UnicodeDecodeError):
         return value
+
+
+def _coerce_optional_number(value: Any) -> int | float | None:
+    if value in (None, ""):
+        return None
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        if isinstance(value, float) and value.is_integer():
+            return int(value)
+        return value
+    try:
+        number = float(str(value).strip().replace(",", "."))
+    except (TypeError, ValueError):
+        return None
+    if number.is_integer():
+        return int(number)
+    return number
+
+
+def _normalize_truck_operational_record(raw_item: dict[str, Any]) -> dict[str, Any] | None:
+    truck_type_id = str(raw_item.get("truck_type_id") or raw_item.get("id") or "").strip()
+    if not truck_type_id:
+        return None
+    return {
+        "truck_type_id": truck_type_id,
+        "label": str(_maybe_fix_mojibake(raw_item.get("label") or "")).strip(),
+        "size_tier": _normalize_truck_size_tier(raw_item.get("size_tier")),
+        "base_vehicle_kind": _normalize_truck_base_vehicle_kind(raw_item.get("base_vehicle_kind")),
+        "axle_config": str(raw_item.get("axle_config") or "").strip(),
+        "preferred_body_type_id": str(raw_item.get("preferred_body_type_id") or "").strip() or None,
+        "payload_weight_kg": _coerce_optional_number(raw_item.get("payload_weight_kg")),
+        "cargo_volume_m3": _coerce_optional_number(raw_item.get("cargo_volume_m3")),
+        "overall_length_m": _coerce_optional_number(raw_item.get("overall_length_m")),
+        "overall_width_m": _coerce_optional_number(raw_item.get("overall_width_m")),
+        "overall_height_m": _coerce_optional_number(raw_item.get("overall_height_m")),
+        "confidence": str(raw_item.get("confidence") or "").strip() or None,
+        "research_basis": str(raw_item.get("research_basis") or "").strip() or None,
+        "source_urls": [
+            str(item).strip()
+            for item in raw_item.get("source_urls", [])
+            if str(item).strip()
+        ],
+        "notes": str(_maybe_fix_mojibake(raw_item.get("notes") or "")).strip(),
+    }
+
+
+def load_truck_operational_catalog_payload(path: Path | None = None) -> dict[str, Any]:
+    candidate_paths = [path] if path is not None else [TRUCK_OPERATIONAL_DATA_PATH, TRUCK_OPERATIONAL_LEGACY_DATA_PATH]
+    target = next((candidate for candidate in candidate_paths if candidate and candidate.exists()), None)
+    if target is None:
+        return dict(DEFAULT_TRUCK_OPERATIONAL_CATALOG_DOCUMENT)
+
+    payload = load_json(target)
+    raw_items = payload.get("items", []) if isinstance(payload, dict) else payload
+    items_by_id: dict[str, dict[str, Any]] = {}
+    for raw_item in raw_items or []:
+        if not isinstance(raw_item, dict):
+            continue
+        normalized = _normalize_truck_operational_record(raw_item)
+        if not normalized:
+            continue
+        items_by_id[normalized["truck_type_id"]] = normalized
+
+    items = sorted(
+        items_by_id.values(),
+        key=lambda item: (
+            TRUCK_SIZE_TIER_SORT_ORDER.get(item.get("size_tier") or "", len(TRUCK_SIZE_TIER_SORT_ORDER)),
+            str(item.get("label") or "").strip().lower(),
+            item["truck_type_id"],
+        ),
+    )
+    return {
+        "id": str(payload.get("id") or DEFAULT_TRUCK_OPERATIONAL_CATALOG_DOCUMENT["id"])
+        if isinstance(payload, dict)
+        else DEFAULT_TRUCK_OPERATIONAL_CATALOG_DOCUMENT["id"],
+        "source_file": target.name,
+        "items": items,
+    }
+
+
+def _merge_truck_operational_fields(
+    item: dict[str, Any],
+    operational_record: dict[str, Any] | None,
+    *,
+    catalog_id: str,
+) -> dict[str, Any]:
+    if not operational_record:
+        return item
+    merged = dict(item)
+    for field in (
+        "payload_weight_kg",
+        "cargo_volume_m3",
+        "overall_length_m",
+        "overall_width_m",
+        "overall_height_m",
+    ):
+        value = operational_record.get(field)
+        if value is not None:
+            merged[field] = value
+    merged["operational"] = {
+        "catalog_id": catalog_id,
+        "confidence": operational_record.get("confidence"),
+        "research_basis": operational_record.get("research_basis"),
+        "source_urls": list(operational_record.get("source_urls") or []),
+        "notes": str(operational_record.get("notes") or "").strip(),
+    }
+    return merged
 
 
 def _sanitize_user_city_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -1162,10 +1284,11 @@ def load_truck_category_catalog_payload(path: Path | None = None) -> dict[str, A
     default_document = {
         "id": "truck_category_catalog_v1",
         "size_tiers": [
+            {"id": "super_leve", "label": "Super-leve"},
             {"id": "leve", "label": "Leve"},
             {"id": "medio", "label": "Medio"},
             {"id": "pesado", "label": "Pesado"},
-            {"id": "especial", "label": "Especial"},
+            {"id": "super_pesado", "label": "Super-pesado"},
         ],
         "base_vehicle_kinds": [
             {"id": "rigido", "label": "Rigido"},
@@ -1207,7 +1330,11 @@ def load_truck_category_catalog_payload(path: Path | None = None) -> dict[str, A
 
 
 TRUCK_SIZE_TIER_ALIASES = {
-    "smallest": "leve",
+    "super_leve": "super_leve",
+    "super-leve": "super_leve",
+    "super leve": "super_leve",
+    "smallest": "super_leve",
+    "urban_compact": "super_leve",
     "small": "leve",
     "medium": "medio",
     "medium_plus": "medio",
@@ -1216,19 +1343,23 @@ TRUCK_SIZE_TIER_ALIASES = {
     "extra_large": "pesado",
     "tractor_small": "pesado",
     "tractor_large": "pesado",
-    "tractor_extra_large": "pesado",
+    "tractor_extra_large": "super_pesado",
     "articulated_large": "pesado",
     "drawbar_large": "pesado",
-    "combination_extra_large": "especial",
-    "combination_massive": "especial",
-    "specialized_max_length": "especial",
-    "van": "leve",
-    "camionete": "leve",
-    "mini_pick_up": "leve",
+    "combination_extra_large": "super_pesado",
+    "combination_massive": "super_pesado",
+    "specialized_max_length": "super_pesado",
+    "van": "super_leve",
+    "camionete": "super_leve",
+    "mini_pick_up": "super_leve",
+    "mini pick-up": "super_leve",
     "leve": "leve",
     "medio": "medio",
     "pesado": "pesado",
-    "especial": "especial",
+    "super_pesado": "super_pesado",
+    "super-pesado": "super_pesado",
+    "super pesado": "super_pesado",
+    "especial": "super_pesado",
 }
 
 TRUCK_BASE_KIND_ALIASES = {
@@ -1252,13 +1383,23 @@ TRUCK_COMBINATION_KIND_BY_BASE = {
     "especial": "specialized",
 }
 
+TRUCK_SIZE_TIER_SORT_ORDER = {
+    "super_leve": 0,
+    "leve": 1,
+    "medio": 2,
+    "pesado": 3,
+    "super_pesado": 4,
+}
+
 
 def _normalize_truck_size_tier(raw_value: Any) -> str:
     source = str(raw_value or "").strip().lower()
     if source in TRUCK_SIZE_TIER_ALIASES:
         return TRUCK_SIZE_TIER_ALIASES[source]
     if any(token in source for token in ("van", "pick", "camionete")):
-        return "leve"
+        return "super_leve"
+    if any(token in source for token in ("super pesado", "especial", "extremo")):
+        return "super_pesado"
     return "pesado"
 
 
@@ -1285,6 +1426,21 @@ def _normalize_truck_body_type_ids(raw_ids: list[Any] | tuple[Any, ...] | None) 
         seen.add(value)
         normalized.append(value)
     return normalized
+
+
+def truck_type_sort_key(raw_item: dict[str, Any]) -> tuple[int, str, str]:
+    size_tier = _normalize_truck_size_tier(raw_item.get("size_tier"))
+    label = str(raw_item.get("label") or raw_item.get("short_label") or raw_item.get("id") or "").strip().casefold()
+    truck_id = str(raw_item.get("id") or "").strip().casefold()
+    return (
+        TRUCK_SIZE_TIER_SORT_ORDER.get(size_tier, len(TRUCK_SIZE_TIER_SORT_ORDER)),
+        label,
+        truck_id,
+    )
+
+
+def sort_truck_type_records(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted((dict(item) for item in items), key=truck_type_sort_key)
 
 
 def normalize_truck_type_record(raw_item: dict[str, Any]) -> dict[str, Any]:
@@ -1321,10 +1477,16 @@ def load_effective_truck_type_catalog_payload() -> dict[str, Any]:
     edits_document = load_truck_catalog_edits_payload()
     hidden_document = load_truck_catalog_hidden_payload()
     custom_document = load_truck_custom_catalog_payload()
+    operational_document = load_truck_operational_catalog_payload()
     hidden_ids = {str(item).strip() for item in hidden_document.get("hidden_type_ids", []) if str(item).strip()}
     edits_by_id = {
         str(item.get("truck_type_id") or ""): dict(item)
         for item in edits_document.get("items", [])
+        if str(item.get("truck_type_id") or "").strip()
+    }
+    operational_by_id = {
+        str(item.get("truck_type_id") or ""): dict(item)
+        for item in operational_document.get("items", [])
         if str(item.get("truck_type_id") or "").strip()
     }
     types: list[dict[str, Any]] = []
@@ -1344,6 +1506,11 @@ def load_effective_truck_type_catalog_payload() -> dict[str, Any]:
                 item["preferred_body_type_id"] = preferred_body_type_id
         item = normalize_truck_type_record(item)
         item["is_custom"] = False
+        item = _merge_truck_operational_fields(
+            item,
+            operational_by_id.get(str(item.get("id") or "")),
+            catalog_id=str(operational_document.get("id") or DEFAULT_TRUCK_OPERATIONAL_CATALOG_DOCUMENT["id"]),
+        )
         types.append(item)
     for raw_item in custom_document.get("items", []):
         item = dict(raw_item)
@@ -1351,10 +1518,79 @@ def load_effective_truck_type_catalog_payload() -> dict[str, Any]:
             continue
         item = normalize_truck_type_record(item)
         item["is_custom"] = True
+        item = _merge_truck_operational_fields(
+            item,
+            operational_by_id.get(str(item.get("id") or "")),
+            catalog_id=str(operational_document.get("id") or DEFAULT_TRUCK_OPERATIONAL_CATALOG_DOCUMENT["id"]),
+        )
         types.append(item)
-    types.sort(key=lambda item: (int(item.get("order") or 9999), str(item.get("label") or "")))
-    payload["types"] = types
+    payload["types"] = sort_truck_type_records(types)
+    payload["operational_catalog_id"] = str(
+        operational_document.get("id") or DEFAULT_TRUCK_OPERATIONAL_CATALOG_DOCUMENT["id"]
+    )
     return payload
+
+
+def _normalize_truck_product_compatibility_override_record(raw_item: dict[str, Any]) -> dict[str, Any] | None:
+    truck_type_id = str(raw_item.get("truck_type_id") or "").strip()
+    product_id = str(raw_item.get("product_id") or "").strip()
+    if not truck_type_id or not product_id:
+        return None
+    return {
+        "truck_type_id": truck_type_id,
+        "product_id": product_id,
+        "compatible": bool(raw_item.get("compatible", False)),
+        "updated_at": str(raw_item.get("updated_at") or "").strip(),
+    }
+
+
+def load_truck_product_compatibility_overrides_payload(path: Path | None = None) -> dict[str, Any]:
+    target = path or TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_PATH
+    if not target.exists():
+        return dict(DEFAULT_TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_DOCUMENT)
+
+    payload = load_json(target)
+    if not isinstance(payload, dict):
+        payload = {
+            "id": DEFAULT_TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_DOCUMENT["id"],
+            "items": list(payload or []),
+        }
+
+    merged_by_pair: dict[tuple[str, str], dict[str, Any]] = {}
+    for raw_item in payload.get("items", []):
+        if not isinstance(raw_item, dict):
+            continue
+        normalized = _normalize_truck_product_compatibility_override_record(raw_item)
+        if not normalized:
+            continue
+        pair_key = (normalized["truck_type_id"], normalized["product_id"])
+        merged_by_pair[pair_key] = normalized
+
+    return {
+        "id": str(payload.get("id") or DEFAULT_TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_DOCUMENT["id"]),
+        "items": sorted(
+            merged_by_pair.values(),
+            key=lambda item: (item["truck_type_id"], item["product_id"]),
+        ),
+    }
+
+
+def save_truck_product_compatibility_overrides_payload(payload: dict[str, Any], path: Path | None = None) -> dict[str, Any]:
+    normalized_payload = load_truck_product_compatibility_overrides_payload(path) if path and path.exists() else {
+        "id": str(payload.get("id") or DEFAULT_TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_DOCUMENT["id"]),
+        "items": [],
+    }
+    normalized_payload["id"] = str(payload.get("id") or normalized_payload.get("id") or DEFAULT_TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_DOCUMENT["id"])
+    merged_by_pair: dict[tuple[str, str], dict[str, Any]] = {}
+    for raw_item in payload.get("items", []):
+        if not isinstance(raw_item, dict):
+            continue
+        normalized = _normalize_truck_product_compatibility_override_record(raw_item)
+        if not normalized:
+            continue
+        merged_by_pair[(normalized["truck_type_id"], normalized["product_id"])] = normalized
+    normalized_payload["items"] = sorted(merged_by_pair.values(), key=lambda item: (item["truck_type_id"], item["product_id"]))
+    return save_json(path or TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_PATH, normalized_payload)
 
 
 def load_truck_body_catalog_payload() -> dict[str, Any]:

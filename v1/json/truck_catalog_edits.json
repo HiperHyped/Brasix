@@ -4,7 +4,7 @@
     {
       "truck_type_id": "truck_type_vuc_4x2",
       "label": "VUC",
-      "size_tier": "leve",
+      "size_tier": "super_leve",
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "preferred_body_type_id": "truck_body_bau",
@@ -23,73 +23,143 @@
     },
     {
       "truck_type_id": "truck_type_toco_leve_eletrico_4x2",
-      "label": "Toco leve eletrico bau",
+      "label": "Toco leve bau",
       "size_tier": "leve",
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "preferred_body_type_id": "truck_body_bau",
       "notes": "",
-      "updated_at": "2026-03-30T14:52:51-03:00"
+      "updated_at": "2026-03-31T23:25:58-03:00"
     },
     {
       "truck_type_id": "truck_type_toco_medio_4x2",
       "label": "Toco medio",
-      "size_tier": "medio",
+      "size_tier": "leve",
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "preferred_body_type_id": "truck_body_bau",
       "notes": "",
-      "updated_at": "2026-03-30T14:50:28-03:00"
+      "updated_at": "2026-03-31T23:26:02-03:00"
     },
     {
       "truck_type_id": "truck_type_toco_semipesado_4x2",
       "label": "Toco semipesado 4x2",
-      "size_tier": "medio",
+      "size_tier": "leve",
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "preferred_body_type_id": "truck_body_carga_seca",
       "notes": "",
-      "updated_at": "2026-03-31T21:23:30-03:00"
-    },
-    {
-      "truck_type_id": "truck_type_carreta_ls",
-      "label": "Carreta simples / LS",
-      "size_tier": "pesado",
-      "base_vehicle_kind": "cavalo",
-      "axle_config": "cavalo_4x2_ou_6x2",
-      "preferred_body_type_id": "truck_body_bau",
-      "notes": "",
-      "updated_at": "2026-03-31T19:55:13-03:00"
+      "updated_at": "2026-03-31T23:26:07-03:00"
     },
     {
       "truck_type_id": "truck_type_cavalo_6x4",
-      "label": "Carreta 6x4 aberta",
+      "label": "Carreta Aberta 6x2",
       "size_tier": "pesado",
       "base_vehicle_kind": "cavalo",
       "axle_config": "6x4",
       "preferred_body_type_id": "truck_body_carga_seca",
       "notes": "",
-      "updated_at": "2026-03-31T21:23:52-03:00"
+      "updated_at": "2026-03-31T22:56:41-03:00"
     },
     {
       "truck_type_id": "truck_type_bitruck_vocacional_8x4",
-      "label": "Bitruck vocacional 8x4",
-      "size_tier": "pesado",
+      "label": "Bitruck aberto 8x2",
+      "size_tier": "medio",
       "base_vehicle_kind": "rigido",
       "axle_config": "8x4",
       "preferred_body_type_id": "truck_body_carga_seca",
       "notes": "",
-      "updated_at": "2026-03-31T21:13:18-03:00"
+      "updated_at": "2026-03-31T23:15:53-03:00"
     },
     {
       "truck_type_id": "truck_type_treminhao",
       "label": "Treminhao",
-      "size_tier": "especial",
+      "size_tier": "super_pesado",
       "base_vehicle_kind": "combinacao",
       "axle_config": "rigido_mais_dois_reboques",
       "preferred_body_type_id": "truck_body_graneleiro",
       "notes": "",
       "updated_at": "2026-03-31T21:24:15-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_offroad_6x6",
+      "label": "Bitruck basculante 8x4",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "8x4",
+      "preferred_body_type_id": "truck_body_basculante",
+      "notes": "",
+      "updated_at": "2026-03-31T23:15:57-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_bitruck_8x2",
+      "label": "Bitruck Baú 8x2",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "8x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-31T23:16:04-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_cavalo_4x2",
+      "label": "Carreta Baú 4x2",
+      "size_tier": "pesado",
+      "base_vehicle_kind": "cavalo",
+      "axle_config": "4x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-31T22:56:15-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_cavalo_6x2",
+      "label": "Carreta Baú 6x2",
+      "size_tier": "pesado",
+      "base_vehicle_kind": "cavalo",
+      "axle_config": "6x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-31T22:56:27-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_truck_pesado_6x2",
+      "label": "Truck pesado 6x2",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "6x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-31T23:16:24-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_truck_pesado_6x4",
+      "label": "Truck pesado 6x4",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "6x4",
+      "preferred_body_type_id": "truck_body_basculante",
+      "notes": "",
+      "updated_at": "2026-03-31T23:16:28-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_truck_semipesado_6x2",
+      "label": "Truck semipesado 6x2",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "6x2",
+      "preferred_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-03-31T23:16:30-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_cegonheiro",
+      "label": "Carreta Cegonha",
+      "size_tier": "pesado",
+      "base_vehicle_kind": "especial",
+      "axle_config": "specialized",
+      "preferred_body_type_id": "truck_body_cegonheiro",
+      "notes": "",
+      "updated_at": "2026-03-31T23:23:45-03:00"
     }
   ]
 }

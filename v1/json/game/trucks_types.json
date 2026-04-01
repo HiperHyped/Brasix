@@ -1,0 +1,308 @@
+[
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_25",
+    "label": "Camionete",
+    "size_tier": "super_leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_26",
+    "label": "Pick-up",
+    "size_tier": "super_leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_24",
+    "label": "Van",
+    "size_tier": "super_leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_custom_van",
+    "canonical_body_type_ids": ["truck_body_custom_van"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_31",
+    "label": "Van Refrigerada",
+    "size_tier": "super_leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_frigorifico",
+    "canonical_body_type_ids": ["truck_body_bau"]
+  },
+  {
+    "truck_type_id": "truck_type_vuc_4x2",
+    "label": "VUC",
+    "size_tier": "super_leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_carga_seca", "truck_body_sider", "truck_body_frigorifico"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_22",
+    "label": "VUC carroceria aberta",
+    "size_tier": "super_leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_carga_seca",
+    "canonical_body_type_ids": ["truck_body_carga_seca"]
+  },
+  {
+    "truck_type_id": "truck_type_toco_leve_4x2",
+    "label": "Toco leve aberto",
+    "size_tier": "leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_carga_seca",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_carga_seca", "truck_body_sider", "truck_body_frigorifico"]
+  },
+  {
+    "truck_type_id": "truck_type_toco_leve_eletrico_4x2",
+    "label": "Toco leve bau",
+    "size_tier": "leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_carga_seca", "truck_body_sider", "truck_body_frigorifico"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_32",
+    "label": "Toco Leve Refrigerado",
+    "size_tier": "leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_frigorifico",
+    "canonical_body_type_ids": ["truck_body_bau"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_34",
+    "label": "Toco Leve Tanque",
+    "size_tier": "leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_tanque",
+    "canonical_body_type_ids": ["truck_body_bau"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_33",
+    "label": "Toco Medio Refrigerado",
+    "size_tier": "leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_frigorifico",
+    "canonical_body_type_ids": ["truck_body_bau"]
+  },
+  {
+    "truck_type_id": "truck_type_toco_medio_4x2",
+    "label": "Toco medio",
+    "size_tier": "leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_carga_seca", "truck_body_frigorifico", "truck_body_tanque"]
+  },
+  {
+    "truck_type_id": "truck_type_toco_semipesado_4x2",
+    "label": "Toco semipesado 4x2",
+    "size_tier": "leve",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_carga_seca",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_carga_seca", "truck_body_graneleiro", "truck_body_frigorifico", "truck_body_tanque"]
+  },
+  {
+    "truck_type_id": "truck_type_bitruck_vocacional_8x4",
+    "label": "Bitruck aberto 8x2",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "8x4",
+    "preferred_body_type_id": "truck_body_carga_seca",
+    "canonical_body_type_ids": ["truck_body_basculante", "truck_body_betoneira", "truck_body_munck", "truck_body_prancha"]
+  },
+  {
+    "truck_type_id": "truck_type_bitruck_8x2",
+    "label": "Bitruck Bau 8x2",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "8x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_container", "truck_body_tanque", "truck_body_carga_seca"]
+  },
+  {
+    "truck_type_id": "truck_type_offroad_6x6",
+    "label": "Bitruck basculante 8x4",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "8x4",
+    "preferred_body_type_id": "truck_body_basculante",
+    "canonical_body_type_ids": ["truck_body_basculante", "truck_body_prancha", "truck_body_munck", "truck_body_madeireiro"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_28",
+    "label": "Truck 6x2 frigorificado",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "6x2",
+    "preferred_body_type_id": "truck_body_frigorifico",
+    "canonical_body_type_ids": ["truck_body_frigorifico"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_36",
+    "label": "Truck Gaseiro 6x2",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "6x2",
+    "preferred_body_type_id": "truck_body_custom_gas_comprimido",
+    "canonical_body_type_ids": ["truck_body_bau"]
+  },
+  {
+    "truck_type_id": "truck_type_truck_pesado_6x2",
+    "label": "Truck pesado 6x2",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "6x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_carga_seca", "truck_body_graneleiro", "truck_body_tanque", "truck_body_container"]
+  },
+  {
+    "truck_type_id": "truck_type_truck_pesado_6x4",
+    "label": "Truck pesado 6x4",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "6x4",
+    "preferred_body_type_id": "truck_body_basculante",
+    "canonical_body_type_ids": ["truck_body_basculante", "truck_body_betoneira", "truck_body_tanque", "truck_body_container", "truck_body_prancha", "truck_body_munck"]
+  },
+  {
+    "truck_type_id": "truck_type_truck_semipesado_6x2",
+    "label": "Truck semipesado 6x2",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "6x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_carga_seca", "truck_body_graneleiro", "truck_body_frigorifico", "truck_body_tanque"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_35",
+    "label": "Truck Tanque 6x2",
+    "size_tier": "medio",
+    "base_vehicle_kind": "rigido",
+    "axle_config": "6x2",
+    "preferred_body_type_id": "truck_body_tanque",
+    "canonical_body_type_ids": ["truck_body_bau"]
+  },
+  {
+    "truck_type_id": "truck_type_cavalo_6x4",
+    "label": "Carreta Aberta 6x2",
+    "size_tier": "pesado",
+    "base_vehicle_kind": "cavalo",
+    "axle_config": "6x4",
+    "preferred_body_type_id": "truck_body_carga_seca",
+    "canonical_body_type_ids": ["truck_body_prancha", "truck_body_basculante", "truck_body_tanque", "truck_body_container", "truck_body_graneleiro"]
+  },
+  {
+    "truck_type_id": "truck_type_cavalo_4x2",
+    "label": "Carreta Bau 4x2",
+    "size_tier": "pesado",
+    "base_vehicle_kind": "cavalo",
+    "axle_config": "4x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_tanque", "truck_body_container", "truck_body_prancha"]
+  },
+  {
+    "truck_type_id": "truck_type_cavalo_6x2",
+    "label": "Carreta Bau 6x2",
+    "size_tier": "pesado",
+    "base_vehicle_kind": "cavalo",
+    "axle_config": "6x2",
+    "preferred_body_type_id": "truck_body_bau",
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_tanque", "truck_body_container", "truck_body_prancha", "truck_body_graneleiro", "truck_body_frigorifico"]
+  },
+  {
+    "truck_type_id": "truck_type_cegonheiro",
+    "label": "Carreta Cegonha",
+    "size_tier": "pesado",
+    "base_vehicle_kind": "especial",
+    "axle_config": "specialized",
+    "preferred_body_type_id": "truck_body_cegonheiro",
+    "canonical_body_type_ids": ["truck_body_cegonheiro"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_27",
+    "label": "Carreta frigorificada",
+    "size_tier": "pesado",
+    "base_vehicle_kind": "combinacao",
+    "axle_config": "cavalo_6x2_ou_6x4",
+    "preferred_body_type_id": "truck_body_frigorifico",
+    "canonical_body_type_ids": ["truck_body_frigorifico"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_30",
+    "label": "Carreta gaseira",
+    "size_tier": "pesado",
+    "base_vehicle_kind": "cavalo",
+    "axle_config": "6x4",
+    "preferred_body_type_id": "truck_body_custom_gas_comprimido",
+    "canonical_body_type_ids": ["truck_body_custom_gas_comprimido"]
+  },
+  {
+    "truck_type_id": "truck_type_custom_novo_caminhao_29",
+    "label": "Carreta Tanque 6x2",
+    "size_tier": "pesado",
+    "base_vehicle_kind": "cavalo",
+    "axle_config": "6x4",
+    "preferred_body_type_id": "truck_body_tanque",
+    "canonical_body_type_ids": ["truck_body_tanque"]
+  },
+  {
+    "truck_type_id": "truck_type_romeu_julieta",
+    "label": "Romeu e Julieta",
+    "size_tier": "pesado",
+    "base_vehicle_kind": "combinacao",
+    "axle_config": "rigido_mais_reboque",
+    "preferred_body_type_id": null,
+    "canonical_body_type_ids": ["truck_body_bau", "truck_body_sider", "truck_body_graneleiro", "truck_body_carga_seca", "truck_body_canavieiro"]
+  },
+  {
+    "truck_type_id": "truck_type_bitrem",
+    "label": "Bitrem",
+    "size_tier": "super_pesado",
+    "base_vehicle_kind": "combinacao",
+    "axle_config": "cavalo_6x2_ou_6x4",
+    "preferred_body_type_id": null,
+    "canonical_body_type_ids": ["truck_body_graneleiro", "truck_body_tanque", "truck_body_container", "truck_body_canavieiro"]
+  },
+  {
+    "truck_type_id": "truck_type_rodotrem",
+    "label": "Rodotrem",
+    "size_tier": "super_pesado",
+    "base_vehicle_kind": "combinacao",
+    "axle_config": "cavalo_6x4",
+    "preferred_body_type_id": null,
+    "canonical_body_type_ids": ["truck_body_graneleiro", "truck_body_tanque", "truck_body_container", "truck_body_canavieiro"]
+  },
+  {
+    "truck_type_id": "truck_type_treminhao",
+    "label": "Treminhao",
+    "size_tier": "super_pesado",
+    "base_vehicle_kind": "combinacao",
+    "axle_config": "rigido_mais_dois_reboques",
+    "preferred_body_type_id": "truck_body_graneleiro",
+    "canonical_body_type_ids": ["truck_body_canavieiro", "truck_body_graneleiro", "truck_body_madeireiro"]
+  },
+  {
+    "truck_type_id": "truck_type_tritrem",
+    "label": "Tritrem",
+    "size_tier": "super_pesado",
+    "base_vehicle_kind": "combinacao",
+    "axle_config": "cavalo_6x4",
+    "preferred_body_type_id": null,
+    "canonical_body_type_ids": ["truck_body_canavieiro", "truck_body_graneleiro", "truck_body_madeireiro"]
+  }
+]

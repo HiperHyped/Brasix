@@ -29,10 +29,11 @@ const LEGACY_GENERATED_PROMPT_EXACT = new Set([
 
 const ENUM_LABELS = {
   size_tier: {
+    super_leve: "Super-leve",
     leve: "Leve",
     medio: "Medio",
     pesado: "Pesado",
-    especial: "Especial",
+    super_pesado: "Super-pesado",
   },
   base_vehicle_kind: {
     rigido: "Rigido",
@@ -41,6 +42,14 @@ const ENUM_LABELS = {
     especial: "Especial",
   },
 };
+
+const TRUCK_SIZE_TIER_SORT_ORDER = Object.freeze({
+  super_leve: 0,
+  leve: 1,
+  medio: 2,
+  pesado: 3,
+  super_pesado: 4,
+});
 
 const CATEGORY_GROUP_CONFIG = {
   size_tier: { catalogKey: "size_tiers", filterKey: "sizeTier" },
@@ -132,6 +141,31 @@ function enumLabel(group, rawValue) {
     }
   }
   return ENUM_LABELS[group]?.[source] || slugLabel(source);
+}
+
+function truckTierRank(rawValue) {
+  const normalized = String(rawValue || "").trim().toLowerCase();
+  return TRUCK_SIZE_TIER_SORT_ORDER[normalized] ?? Object.keys(TRUCK_SIZE_TIER_SORT_ORDER).length;
+}
+
+function truckSortLabel(type) {
+  return String(type?.label || type?.short_label || type?.id || "").trim().toLowerCase();
+}
+
+function compareTruckTypesCanonical(left, right) {
+  const leftTierRank = truckTierRank(left?.size_tier);
+  const rightTierRank = truckTierRank(right?.size_tier);
+  if (leftTierRank !== rightTierRank) {
+    return leftTierRank - rightTierRank;
+  }
+
+  const leftLabel = truckSortLabel(left);
+  const rightLabel = truckSortLabel(right);
+  if (leftLabel !== rightLabel) {
+    return leftLabel.localeCompare(rightLabel, "pt-BR");
+  }
+
+  return String(left?.id || "").localeCompare(String(right?.id || ""), "pt-BR");
 }
 
 function applyCssVariables(source) {
@@ -251,7 +285,7 @@ function buildDerivedData() {
   state.screen = state.bootstrap.truck_gallery.screen;
   state.themesDocument = state.bootstrap.truck_gallery.themes;
   state.themesById = Object.fromEntries((state.themesDocument?.themes || []).map((theme) => [theme.id, theme]));
-  state.types = [...(state.bootstrap.truck_type_catalog.types || [])].sort((left, right) => left.order - right.order);
+  state.types = [...(state.bootstrap.truck_type_catalog.types || [])];
   state.typesById = Object.fromEntries(state.types.map((item) => [item.id, item]));
   state.bodiesById = Object.fromEntries((state.bootstrap.truck_body_catalog.types || []).map((item) => [item.id, item]));
   state.families = [...(state.bootstrap.truck_brand_family_catalog.families || [])];
@@ -293,6 +327,30 @@ function familiesForType(typeId) {
 
 function assetEntry(typeId) {
   return state.assetRegistryByTypeId[typeId] || null;
+}
+
+function typeHasApprovedImage(typeId) {
+  const entry = assetEntry(typeId);
+  return Boolean(entry?.status === "approved" && entry?.approved_image_url_path);
+}
+
+function latestPendingCustomTypeId() {
+  const pendingCustomTypes = state.types
+    .filter((type) => Boolean(type?.is_custom) && !typeHasApprovedImage(type.id))
+    .sort((left, right) => Number(right?.order || 0) - Number(left?.order || 0) || compareTruckTypesCanonical(left, right));
+  return pendingCustomTypes[0]?.id || "";
+}
+
+function sortTruckTypesForViewer(types) {
+  const pinnedTypeId = latestPendingCustomTypeId();
+  return [...types].sort((left, right) => {
+    const leftPinned = left?.id === pinnedTypeId;
+    const rightPinned = right?.id === pinnedTypeId;
+    if (leftPinned !== rightPinned) {
+      return leftPinned ? -1 : 1;
+    }
+    return compareTruckTypesCanonical(left, right);
+  });
 }
 
 function preferredBodyId(type) {
@@ -722,7 +780,7 @@ function typeMatchesFilters(type) {
 }
 
 function filteredTypes() {
-  return state.types.filter(typeMatchesFilters);
+  return sortTruckTypesForViewer(state.types.filter(typeMatchesFilters));
 }
 
 function ensureSelection() {

@@ -87,23 +87,25 @@ COMBINATION_KIND_HINTS = {
 }
 
 SIZE_TIER_LABELS = {
+    "super_leve": "super-leve",
     "leve": "leve",
     "medio": "medio",
     "pesado": "pesado",
-    "especial": "especial",
-    "smallest": "menor",
-    "small": "pequeno",
+    "super_pesado": "super-pesado",
+    "especial": "super-pesado",
+    "smallest": "super-leve",
+    "small": "leve",
     "medium": "medio",
     "medium_plus": "medio plus",
     "large": "grande",
     "large_plus": "grande plus",
-    "extra_large": "extra grande",
+    "extra_large": "pesado",
     "tractor_small": "cavalo pequeno",
     "tractor_large": "cavalo grande",
-    "tractor_extra_large": "cavalo extra grande",
-    "articulated_large": "articulado grande",
-    "drawbar_large": "reboque grande",
-    "combination_extra_large": "combinacao extra grande",
+    "tractor_extra_large": "super-pesado",
+    "articulated_large": "pesado",
+    "drawbar_large": "pesado",
+    "combination_extra_large": "super-pesado",
 }
 
 BASE_VEHICLE_KIND_LABELS = {

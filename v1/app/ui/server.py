@@ -75,6 +75,7 @@ from app.services import (
     load_truck_image_generation_config_payload,
     load_truck_image_prompt_overrides_payload,
     load_truck_image_review_queue_payload,
+    load_truck_product_compatibility_overrides_payload,
     load_truck_silhouette_catalog_payload,
     load_truck_sprite_2d_catalog_payload,
     load_truck_type_catalog_payload,
@@ -87,6 +88,7 @@ from app.services import (
     save_product_field_baked_document,
     save_product_field_edit_document,
     save_product_master_v1_1_payload,
+    save_truck_product_compatibility_overrides_payload,
     save_json,
     set_active_map,
 )
@@ -128,6 +130,7 @@ from app.ui.editor_models import (
     TruckCatalogEditRecord,
     TruckCatalogEditsDocument,
     TruckCustomTypeRecord,
+    TruckProductMatrixToggleRequest,
     TruckPromptBuildRequest,
     TruckPromptBuildResponse,
     TruckImageGenerateRequest,
@@ -487,6 +490,13 @@ def _find_product_or_404(products: list[dict[str, Any]], product_id: str) -> dic
     return product
 
 
+def _find_truck_or_404(trucks: list[dict[str, Any]], truck_type_id: str) -> dict[str, Any]:
+    truck = next((item for item in trucks if str(item.get("id") or "").strip() == truck_type_id), None)
+    if truck is None:
+        raise HTTPException(status_code=404, detail="Caminhao nao encontrado no catalogo.")
+    return truck
+
+
 def _next_custom_truck_order() -> int:
     effective = load_effective_truck_type_catalog_payload()
     orders = [int(item.get("order") or 0) for item in effective.get("types", [])]
@@ -816,6 +826,58 @@ def create_app() -> FastAPI:
 
     @app.get("/api/viewer/truck-product-matrix")
     async def truck_product_matrix_bootstrap() -> dict[str, Any]:
+        return build_truck_product_matrix_payload()
+
+    @app.post("/api/viewer/truck-product-matrix/toggle")
+    async def truck_product_matrix_toggle(document: TruckProductMatrixToggleRequest) -> dict[str, Any]:
+        current_payload = build_truck_product_matrix_payload()
+        truck = _find_truck_or_404(list(current_payload.get("trucks", [])), document.truck_type_id)
+        _find_product_or_404(list(current_payload.get("products", [])), document.product_id)
+
+        current_cell = next(
+            (
+                item
+                for item in truck.get("cells", [])
+                if str(item.get("product_id") or "").strip() == document.product_id
+            ),
+            None,
+        )
+        if current_cell is None:
+            raise HTTPException(status_code=404, detail="Celula nao encontrada na matriz.")
+
+        base_compatible = bool(current_cell.get("base_compatible", current_cell.get("compatible")))
+        current_effective = bool(current_cell.get("compatible"))
+        next_effective = not current_effective
+        timestamp = datetime.now().astimezone().isoformat(timespec="seconds")
+
+        overrides_document = load_truck_product_compatibility_overrides_payload()
+        next_items = [
+            item
+            for item in overrides_document.get("items", [])
+            if not (
+                str(item.get("truck_type_id") or "").strip() == document.truck_type_id
+                and str(item.get("product_id") or "").strip() == document.product_id
+            )
+        ]
+
+        if next_effective != base_compatible:
+            next_items.append(
+                {
+                    "truck_type_id": document.truck_type_id,
+                    "product_id": document.product_id,
+                    "compatible": next_effective,
+                    "updated_at": timestamp,
+                }
+            )
+
+        overrides_document["items"] = sorted(
+            next_items,
+            key=lambda item: (
+                str(item.get("truck_type_id") or ""),
+                str(item.get("product_id") or ""),
+            ),
+        )
+        save_truck_product_compatibility_overrides_payload(overrides_document)
         return build_truck_product_matrix_payload()
 
     @app.post("/api/editor/products/products")

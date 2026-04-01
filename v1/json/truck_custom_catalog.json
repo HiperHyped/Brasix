@@ -1,107 +1,243 @@
 {
-    "id": "truck_custom_catalog_v1",
-    "items": [
-        {
-            "id": "truck_type_custom_novo_caminhao_22",
-            "order": 22,
-            "label": "VUC carroceria aberta",
-            "short_label": "VUC carroceria aberta",
-            "size_tier": "leve",
-            "base_vehicle_kind": "rigido",
-            "axle_config": "4x2",
-            "canonical_body_type_ids": [
-                "truck_body_carga_seca"
-            ],
-            "preferred_body_type_id": "truck_body_carga_seca",
-            "canonical_sprite_profile_id": "truck_sprite_custom",
-            "source_basis": "custom_manual",
-            "notes": "",
-            "is_custom": true
-        },
-        {
-            "id": "truck_type_custom_novo_caminhao_24",
-            "order": 24,
-            "label": "Van",
-            "short_label": "Van",
-            "size_tier": "leve",
-            "base_vehicle_kind": "rigido",
-            "axle_config": "4x2",
-            "canonical_body_type_ids": [
-                "truck_body_custom_van"
-            ],
-            "preferred_body_type_id": "truck_body_custom_van",
-            "canonical_sprite_profile_id": "truck_sprite_custom",
-            "source_basis": "custom_manual",
-            "notes": "Atencao! Nao e um caminhao, e sim uma camionete!!",
-            "is_custom": true
-        },
-        {
-            "id": "truck_type_custom_novo_caminhao_25",
-            "order": 25,
-            "label": "Camionete",
-            "short_label": "Camionete",
-            "size_tier": "leve",
-            "base_vehicle_kind": "rigido",
-            "axle_config": "4x2",
-            "canonical_body_type_ids": [
-                "truck_body_bau"
-            ],
-            "preferred_body_type_id": "truck_body_bau",
-            "canonical_sprite_profile_id": "truck_sprite_custom",
-            "source_basis": "custom_manual",
-            "notes": "e uma camionete",
-            "is_custom": true
-        },
-        {
-            "id": "truck_type_custom_novo_caminhao_26",
-            "order": 26,
-            "label": "Novo caminhao",
-            "short_label": "Novo caminhao",
-            "size_tier": "leve",
-            "base_vehicle_kind": "rigido",
-            "axle_config": "4x2",
-            "canonical_body_type_ids": [
-                "truck_body_bau"
-            ],
-            "preferred_body_type_id": "truck_body_bau",
-            "canonical_sprite_profile_id": "truck_sprite_custom",
-            "source_basis": "custom_manual",
-            "notes": "janela e rodas internas brancas. o resto e igual",
-            "is_custom": true
-        },
-        {
-            "id": "truck_type_custom_novo_caminhao_27",
-            "order": 27,
-            "label": "Carreta frigorificada",
-            "short_label": "Carreta frigorificada",
-            "size_tier": "pesado",
-            "base_vehicle_kind": "combinacao",
-            "axle_config": "cavalo_6x2_ou_6x4",
-            "canonical_body_type_ids": [
-                "truck_body_frigorifico"
-            ],
-            "preferred_body_type_id": "truck_body_frigorifico",
-            "canonical_sprite_profile_id": "truck_sprite_custom",
-            "source_basis": "custom_manual",
-            "notes": "bau refrigerado",
-            "is_custom": true
-        },
-        {
-            "id": "truck_type_custom_novo_caminhao_28",
-            "order": 28,
-            "label": "Truck 6x2 frigorificado",
-            "short_label": "Truck 6x2 frigorificado",
-            "size_tier": "pesado",
-            "base_vehicle_kind": "rigido",
-            "axle_config": "6x2",
-            "canonical_body_type_ids": [
-                "truck_body_frigorifico"
-            ],
-            "preferred_body_type_id": "truck_body_frigorifico",
-            "canonical_sprite_profile_id": "truck_sprite_custom",
-            "source_basis": "custom_manual",
-            "notes": "bau com refrigeracao (carrier) pendurada no bau",
-            "is_custom": true
-        }
-    ]
+  "id": "truck_custom_catalog_v1",
+  "items": [
+    {
+      "id": "truck_type_custom_novo_caminhao_22",
+      "order": 22,
+      "label": "VUC carroceria aberta",
+      "short_label": "VUC carroceria aberta",
+      "size_tier": "super_leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_carga_seca"
+      ],
+      "preferred_body_type_id": "truck_body_carga_seca",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_24",
+      "order": 24,
+      "label": "Van",
+      "short_label": "Van",
+      "size_tier": "super_leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_custom_van"
+      ],
+      "preferred_body_type_id": "truck_body_custom_van",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Atencao! Nao e um caminhao, e sim uma camionete!!",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_25",
+      "order": 25,
+      "label": "Camionete Aberta",
+      "short_label": "Camionete Aberta",
+      "size_tier": "super_leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "preferred_body_type_id": "truck_body_bau",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "e uma camionete",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_26",
+      "order": 26,
+      "label": "Pick-up",
+      "short_label": "Pick-up",
+      "size_tier": "super_leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "preferred_body_type_id": "truck_body_bau",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "janela e rodas internas brancas. o resto e igual",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_27",
+      "order": 27,
+      "label": "Carreta frigorificada",
+      "short_label": "Carreta frigorificada",
+      "size_tier": "pesado",
+      "base_vehicle_kind": "combinacao",
+      "axle_config": "cavalo_6x2_ou_6x4",
+      "canonical_body_type_ids": [
+        "truck_body_frigorifico"
+      ],
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "bau refrigerado",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_28",
+      "order": 28,
+      "label": "Truck 6x2 frigorificado",
+      "short_label": "Truck 6x2 frigorificado",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "6x2",
+      "canonical_body_type_ids": [
+        "truck_body_frigorifico"
+      ],
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "bau com refrigeracao (carrier) pendurada no bau",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_29",
+      "order": 29,
+      "label": "Carreta Tanque 6x2",
+      "short_label": "Carreta Tanque 6x2",
+      "size_tier": "pesado",
+      "base_vehicle_kind": "cavalo",
+      "axle_config": "6x4",
+      "canonical_body_type_ids": [
+        "truck_body_tanque"
+      ],
+      "preferred_body_type_id": "truck_body_tanque",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Carreta feita para levar granel liquido : tanque de combustivel",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_30",
+      "order": 30,
+      "label": "Carreta gaseira",
+      "short_label": "Carreta gaseira",
+      "size_tier": "pesado",
+      "base_vehicle_kind": "cavalo",
+      "axle_config": "6x4",
+      "canonical_body_type_ids": [
+        "truck_body_custom_gás_comprimido"
+      ],
+      "preferred_body_type_id": "truck_body_custom_gás_comprimido",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Carreta com tanque de gás comprimido",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_31",
+      "order": 31,
+      "label": "Van Refrigerada",
+      "short_label": "Van Refrigerada",
+      "size_tier": "super_leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Van com carrier sobre o teto",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_32",
+      "order": 32,
+      "label": "Toco Leve Refrigerado",
+      "short_label": "Toco Leve Refrigerado",
+      "size_tier": "leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "bau com refrigeracao (carrier) pendurada no bau",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_33",
+      "order": 33,
+      "label": "Toco Médio Refrigerado",
+      "short_label": "Toco Médio Refrigerado",
+      "size_tier": "leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "bau com refrigeracao (carrier) pendurada no bau",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_34",
+      "order": 34,
+      "label": "Toco Leve Tanque",
+      "short_label": "Toco Leve Tanque",
+      "size_tier": "leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "preferred_body_type_id": "truck_body_tanque",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "trat-se de um toco leve com implemento de tanque",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_35",
+      "order": 35,
+      "label": "Truck Tanque 6x2",
+      "short_label": "Truck Tanque 6x2",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "6x2",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "preferred_body_type_id": "truck_body_tanque",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Trata-se de um Truck 6x2 com um tanque para granel liquido",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_36",
+      "order": 36,
+      "label": "Truck Gaseiro 6x2",
+      "short_label": "Truck Gaseiro 6x2",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "6x2",
+      "canonical_body_type_ids": [
+        "truck_body_bau"
+      ],
+      "preferred_body_type_id": "truck_body_custom_gás_comprimido",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "truck 6x2 com tanques de gas comprimido",
+      "is_custom": true
+    }
+  ]
 }

@@ -1,7 +1,7 @@
 {
   "truck_type_id": "truck_type_custom_novo_caminhao_28",
   "canonical_body_type_id": "truck_body_frigorifico",
-  "status": "generated",
+  "status": "approved",
   "prompt_items": [
     "perfil lateral puro do caminhão",
     "fundo transparente",
@@ -37,8 +37,8 @@
   "requested_model": "gpt-image-1.5",
   "used_model": "gpt-image-1.5",
   "dry_run": false,
-  "approved_image_rel_path": null,
-  "approved_image_url_path": null,
+  "approved_image_rel_path": "trucks/generated/truck_type_custom_novo_caminhao_28/main.png",
+  "approved_image_url_path": "/assets/trucks/generated/truck_type_custom_novo_caminhao_28/main.png",
   "candidate_image_rel_path": "trucks/generated/truck_type_custom_novo_caminhao_28/candidate.png",
   "candidate_image_url_path": "/assets/trucks/generated/truck_type_custom_novo_caminhao_28/candidate.png",
   "manifest_rel_path": "trucks/generated/truck_type_custom_novo_caminhao_28/manifest.json",
@@ -47,9 +47,9 @@
   "width_px": 1024,
   "height_px": 1024,
   "generated_at": "2026-03-31T18:59:39-03:00",
-  "reviewed_at": null,
-  "approved_at": null,
-  "updated_at": "2026-03-31T18:59:39-03:00",
+  "reviewed_at": "2026-03-31T23:15:29-03:00",
+  "approved_at": "2026-03-31T23:15:29-03:00",
+  "updated_at": "2026-03-31T23:15:29-03:00",
   "error_message": null,
-  "truck_type_label": "Truck 6x4 Frigorificado"
+  "decision": "approved"
 }

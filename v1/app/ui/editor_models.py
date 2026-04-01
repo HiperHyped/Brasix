@@ -652,6 +652,11 @@ class TruckPromptBuildResponse(BaseModel):
     prompt_summary: str = ""
 
 
+class TruckProductMatrixToggleRequest(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    product_id: str = Field(min_length=1)
+
+
 class ProductEditorCreateRequest(BaseModel):
     name: str = Field(min_length=1)
     emoji: str = "\U0001F4E6"

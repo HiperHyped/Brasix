@@ -255,6 +255,7 @@ function renderSources() {
     ["Caminhoes", sourceSummary.truck_type_catalog_id || "-"],
     ["Implementos", sourceSummary.truck_body_catalog_id || "-"],
     ["Categorias", sourceSummary.truck_category_catalog_id || "-"],
+    ["Operacional", sourceSummary.truck_operational_catalog_id || "-"],
   ];
 
   target.innerHTML = items.map(([label, value]) => `
@@ -360,6 +361,7 @@ function jsonSectionPayload() {
       truck_type_count: runtime.trucks.truck_type_count,
       body_type_ids: runtime.trucks.body_type_ids,
       truck_types_sample: (runtime.trucks.type_catalog?.types || []).slice(0, 30),
+      operational_catalog: runtime.trucks.operational_catalog,
       body_catalog: runtime.trucks.body_catalog,
     };
   }

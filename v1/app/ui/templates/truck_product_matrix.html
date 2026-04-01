@@ -2,8 +2,23 @@
 
 {% block head_extra %}
 <style>
+  .truck-product-matrix-top-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-height: 18px;
+    max-width: 100%;
+    margin-bottom: 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.52);
+    box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+  }
+
+  .truck-product-matrix-top-scroll-content {
+    min-height: 1px;
+  }
+
   .truck-product-matrix-row-button {
-    min-height: 112px;
+    min-height: 136px;
     gap: 8px;
   }
 
@@ -13,16 +28,47 @@
     align-items: center;
     justify-content: flex-start;
     width: 100%;
-    min-height: 46px;
+    min-height: 68px;
   }
 
   .truck-product-matrix-row-preview-image {
     width: 100%;
-    max-width: 88px;
-    max-height: 46px;
+    max-width: 132px;
+    max-height: 68px;
     object-fit: contain;
     pointer-events: none;
     user-select: none;
+  }
+
+  .truck-product-matrix-table-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .truck-product-matrix-table-cell-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+  }
+
+  .truck-product-matrix-table-cell.is-manual {
+    box-shadow: inset 0 0 0 2px rgba(70, 118, 170, 0.36);
+  }
+
+  .truck-product-matrix-table-cell.is-saving {
+    opacity: 0.62;
+    cursor: wait;
+  }
+
+  .truck-product-matrix-legend-swatch.is-manual {
+    background: linear-gradient(135deg, rgba(70, 118, 170, 0.18), rgba(70, 118, 170, 0.42));
+    border: 1px solid rgba(70, 118, 170, 0.48);
   }
 
   .truck-product-matrix-row-preview-fallback {
@@ -35,19 +81,28 @@
     filter: invert(0.92);
   }
 
+  html[data-editor-theme="night"] .truck-product-matrix-top-scroll {
+    background: rgba(23, 27, 24, 0.9);
+    box-shadow: inset 0 0 0 1px rgba(137, 146, 146, 0.14);
+  }
+
   @media (max-width: 900px) {
+    .truck-product-matrix-top-scroll {
+      margin-bottom: 8px;
+    }
+
     .truck-product-matrix-row-button {
-      min-height: 96px;
+      min-height: 110px;
       gap: 6px;
     }
 
     .truck-product-matrix-row-preview {
-      min-height: 36px;
+      min-height: 52px;
     }
 
     .truck-product-matrix-row-preview-image {
-      max-width: 70px;
-      max-height: 36px;
+      max-width: 102px;
+      max-height: 52px;
     }
   }
 </style>
@@ -77,17 +132,6 @@
       <section class="editor-card truck-product-matrix-card">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Resumo</p>
-            <h2>Frota atual</h2>
-          </div>
-        </div>
-
-        <div id="truck-product-matrix-summary" class="truck-product-matrix-summary"></div>
-      </section>
-
-      <section class="editor-card truck-product-matrix-card">
-        <div class="section-head">
-          <div>
             <p class="eyebrow">Filtros</p>
             <h2>Cruzar a matriz</h2>
           </div>
@@ -96,7 +140,7 @@
         <div class="truck-product-matrix-filter-grid">
           <label class="field">
             <span>Buscar caminhao</span>
-            <input id="truck-product-matrix-truck-search" class="editor-input" type="search" placeholder="Nome, eixos ou porte" />
+            <input id="truck-product-matrix-truck-search" class="editor-input" type="search" placeholder="Nome, porte, eixo, estrutura ou implemento" />
           </label>
 
           <label class="field">
@@ -113,9 +157,9 @@
           </label>
 
           <label class="field">
-            <span>Tipo logistico</span>
+            <span>Porte</span>
             <div class="select-shell">
-              <select id="truck-product-matrix-logistics-filter" class="editor-input"></select>
+              <select id="truck-product-matrix-size-tier-filter" class="editor-input"></select>
               <span class="material-symbols-outlined">expand_more</span>
             </div>
           </label>
@@ -128,11 +172,38 @@
             </div>
           </label>
 
+          <label class="field">
+            <span>Eixo</span>
+            <div class="select-shell">
+              <select id="truck-product-matrix-axle-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Estrutura</span>
+            <div class="select-shell">
+              <select id="truck-product-matrix-structure-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
           <label class="truck-product-matrix-toggle" for="truck-product-matrix-hide-empty-toggle">
             <input id="truck-product-matrix-hide-empty-toggle" type="checkbox" checked />
             <span>Ocultar linhas e colunas vazias</span>
           </label>
         </div>
+      </section>
+
+      <section class="editor-card truck-product-matrix-card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Resumo</p>
+            <h2>Frota atual</h2>
+          </div>
+        </div>
+
+        <div id="truck-product-matrix-summary" class="truck-product-matrix-summary"></div>
       </section>
 
       <section class="editor-card truck-product-matrix-card">
@@ -157,14 +228,17 @@
           <div id="truck-product-matrix-table-summary" class="truck-product-matrix-table-summary"></div>
         </div>
 
+        <div id="truck-product-matrix-top-scroll" class="truck-product-matrix-top-scroll" aria-label="Rolagem horizontal superior da matriz" hidden>
+          <div id="truck-product-matrix-top-scroll-content" class="truck-product-matrix-top-scroll-content" aria-hidden="true"></div>
+        </div>
+        <div id="truck-product-matrix-table-wrap" class="truck-product-matrix-table-wrap"></div>
         <div class="truck-product-matrix-legend" aria-label="Legenda da matriz">
           <span class="truck-product-matrix-legend-item"><span class="truck-product-matrix-legend-swatch is-compatible"></span><span>Compatível</span></span>
           <span class="truck-product-matrix-legend-item"><span class="truck-product-matrix-legend-swatch is-incompatible"></span><span>Sem implemento compatível</span></span>
+          <span class="truck-product-matrix-legend-item"><span class="truck-product-matrix-legend-swatch is-manual"></span><span>Override manual</span></span>
           <span class="truck-product-matrix-legend-item"><span class="truck-product-matrix-legend-swatch is-selected"></span><span>Seleção atual</span></span>
         </div>
-
         <div id="truck-product-matrix-status" class="editor-status-box truck-product-matrix-status"></div>
-        <div id="truck-product-matrix-table-wrap" class="truck-product-matrix-table-wrap"></div>
       </section>
     </section>
   </section>
@@ -172,7 +246,7 @@
 
 <script type="module">
   const matrixModuleUrl = new URL("{{ request.url_for('static', path='js/truck-product-matrix.js') }}", window.location.href);
-  matrixModuleUrl.searchParams.set("v", "20260331-4");
+  matrixModuleUrl.searchParams.set("v", "20260331-6");
 
   function showTruckProductMatrixLoadError(error) {
     const target = document.getElementById("truck-product-matrix-status");

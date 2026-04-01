@@ -26,8 +26,10 @@ from app.services import (
     load_truck_gallery_payload,
     load_truck_image_asset_registry_payload,
     load_truck_image_generation_config_payload,
+    load_truck_operational_catalog_payload,
     load_truck_image_prompt_overrides_payload,
     load_truck_image_review_queue_payload,
+    load_truck_product_compatibility_overrides_payload,
     load_truck_image_visual_definitions_payload,
     load_truck_silhouette_catalog_payload,
     load_truck_sprite_2d_catalog_payload,
@@ -109,6 +111,7 @@ def test_truck_catalog_payloads_load() -> None:
     silhouette_payload = load_truck_silhouette_catalog_payload()
     visual_definition_payload = load_truck_image_visual_definitions_payload()
     generation_payload = load_truck_image_generation_config_payload()
+    operational_payload = load_truck_operational_catalog_payload()
     overrides_payload = load_truck_image_prompt_overrides_payload()
     registry_payload = load_truck_image_asset_registry_payload()
     review_queue_payload = load_truck_image_review_queue_payload()
@@ -125,10 +128,13 @@ def test_truck_catalog_payloads_load() -> None:
     assert effective_type_payload["id"] == "truck_type_catalog_v1"
     assert len(effective_type_payload["types"]) >= len(type_payload["types"])
     edited_vuc = next(item for item in effective_type_payload["types"] if item["id"] == "truck_type_vuc_4x2")
-    assert edited_vuc["size_tier"] == "leve"
+    assert edited_vuc["size_tier"] == "super_leve"
     assert edited_vuc["base_vehicle_kind"] == "rigido"
     assert edited_vuc["preferred_body_type_id"] == "truck_body_bau"
     assert len(edited_vuc["canonical_body_type_ids"]) == 4
+    assert edited_vuc["payload_weight_kg"] == 2250
+    assert edited_vuc["cargo_volume_m3"] == 4
+    assert edited_vuc["operational"]["catalog_id"] == "truck_operational_catalog_v1"
 
     assert body_payload["id"] == "truck_body_catalog_v1"
     assert any(item["id"] == "truck_body_canavieiro" for item in body_payload["types"])
@@ -154,6 +160,11 @@ def test_truck_catalog_payloads_load() -> None:
     assert generation_payload["image_api"]["primary_model"] == "gpt-image-1.5"
     assert generation_payload["image_api"]["output_format"] == "png"
 
+    assert operational_payload["id"] == "truck_operational_catalog_v1"
+    assert operational_payload["source_file"] == "merged_truck_data.json"
+    assert len(operational_payload["items"]) == 34
+    assert any(item["truck_type_id"] == "truck_type_vuc_4x2" for item in operational_payload["items"])
+
     assert overrides_payload["id"] == "truck_image_prompt_overrides_v1"
     assert isinstance(overrides_payload["overrides"], list)
 
@@ -168,13 +179,21 @@ def test_truck_catalog_payloads_load() -> None:
     assert isinstance(review_queue_payload["pending_type_ids"], list)
     assert category_payload["id"] == "truck_category_catalog_v1"
     assert isinstance(category_payload["size_tiers"], list)
-    assert [item["id"] for item in category_payload["size_tiers"]] == ["leve", "medio", "pesado", "especial"]
+    assert [item["id"] for item in category_payload["size_tiers"]] == ["super_leve", "leve", "medio", "pesado", "super_pesado"]
     assert [item["id"] for item in category_payload["base_vehicle_kinds"]] == ["rigido", "cavalo", "combinacao", "especial"]
 
     refrigerated_combo = next(item for item in custom_payload["items"] if item["id"] == "truck_type_custom_novo_caminhao_27")
     assert refrigerated_combo["label"] == "Carreta frigorificada"
     assert refrigerated_combo["base_vehicle_kind"] == "combinacao"
     assert refrigerated_combo["preferred_body_type_id"] == "truck_body_frigorifico"
+
+    liquid_combo = next(item for item in custom_payload["items"] if item["id"] == "truck_type_custom_novo_caminhao_29")
+    assert liquid_combo["canonical_body_type_ids"] == ["truck_body_tanque"]
+    assert liquid_combo["preferred_body_type_id"] == "truck_body_tanque"
+
+    gas_combo = next(item for item in custom_payload["items"] if item["id"] == "truck_type_custom_novo_caminhao_30")
+    assert gas_combo["canonical_body_type_ids"] == ["truck_body_custom_gás_comprimido"]
+    assert gas_combo["preferred_body_type_id"] == "truck_body_custom_gás_comprimido"
 
 
 def test_normalize_truck_type_record_preserves_visual_body_outside_canonical_list() -> None:
@@ -193,6 +212,38 @@ def test_normalize_truck_type_record_preserves_visual_body_outside_canonical_lis
 
     assert normalized["canonical_body_type_ids"] == ["truck_body_basculante"]
     assert normalized["preferred_body_type_id"] == "truck_body_carga_seca"
+
+
+def test_load_truck_product_compatibility_overrides_payload_normalizes_duplicates() -> None:
+    document_path = Path(__file__).resolve().parent / "_tmp_truck_product_compatibility_overrides.json"
+    try:
+        document_path.write_text(
+            """
+            {
+              "id": "truck_product_compatibility_overrides_v1",
+              "items": [
+                {"truck_type_id": "truck_a", "product_id": "produto_x", "compatible": false, "updated_at": "2026-03-31T10:00:00-03:00"},
+                {"truck_type_id": "truck_a", "product_id": "produto_x", "compatible": true, "updated_at": "2026-03-31T10:05:00-03:00"},
+                {"truck_type_id": "", "product_id": "produto_invalido", "compatible": true}
+              ]
+            }
+            """.strip(),
+            encoding="utf-8",
+        )
+
+        payload = load_truck_product_compatibility_overrides_payload(document_path)
+
+        assert payload["id"] == "truck_product_compatibility_overrides_v1"
+        assert payload["items"] == [
+            {
+                "truck_type_id": "truck_a",
+                "product_id": "produto_x",
+                "compatible": True,
+                "updated_at": "2026-03-31T10:05:00-03:00",
+            }
+        ]
+    finally:
+        document_path.unlink(missing_ok=True)
 
 
 def test_product_editor_payloads_load() -> None:
@@ -225,6 +276,11 @@ def test_product_editor_payloads_load() -> None:
     assert logistics_payload["id"] == "product_logistics_type_catalog_v1"
     assert any(item["id"] == "granel_seco" for item in logistics_payload["types"])
     assert any(item["id"] == "granel_liquido" for item in logistics_payload["types"])
+    assert any(
+        item["id"] == "granel_gasoso_pressurizado"
+        and "truck_body_custom_gás_comprimido" in item["body_type_ids"]
+        for item in logistics_payload["types"]
+    )
     assert any(item["id"] == "cana_in_natura" and item["body_type_ids"] == ["truck_body_canavieiro"] for item in logistics_payload["types"])
     assert any(item["id"] == "transporte_veiculos" and item["body_type_ids"] == ["truck_body_cegonheiro"] for item in logistics_payload["types"])
 
@@ -234,6 +290,12 @@ def test_product_editor_payloads_load() -> None:
     assert any(item["id"] == "petroleo" and item["hazardous"] is True for item in product_catalog_payload["products"])
     assert any(item["id"] == "pesca" and item["temperature_control_required"] is True for item in product_catalog_payload["products"])
     assert any(
+        item["id"] == "laranja"
+        and item["logistics_type_id"] == "granel_liquido"
+        and item["compatible_body_type_ids"] == ["truck_body_tanque"]
+        for item in product_catalog_payload["products"]
+    )
+    assert any(
         item["id"] == "cana-de-acucar"
         and item["logistics_type_id"] == "cana_in_natura"
         and item["compatible_body_type_ids"] == ["truck_body_canavieiro"]
@@ -242,6 +304,12 @@ def test_product_editor_payloads_load() -> None:
     assert product_catalog_master_payload["id"] == "product_catalog_v2"
     assert len(product_catalog_master_payload["products"]) == 44
     assert any(item["id"] == "veiculos" and item["emoji"] for item in product_catalog_master_payload["products"])
+    assert any(
+        item["id"] == "laranja"
+        and item["logistics_type_id"] == "granel_liquido"
+        and item["compatible_body_type_ids"] == ["truck_body_tanque"]
+        for item in product_catalog_master_payload["products"]
+    )
     assert any(
         item["id"] == "veiculos"
         and item["logistics_type_id"] == "transporte_veiculos"
@@ -285,6 +353,11 @@ def test_product_field_documents_default_to_empty() -> None:
 
 
 def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
+    monkeypatch.setattr(
+        data_loader,
+        "load_truck_catalog_hidden_payload",
+        lambda: {"id": "truck_catalog_hidden_v1", "hidden_type_ids": []},
+    )
     monkeypatch.setattr(
         data_loader,
         "load_truck_type_catalog_payload",
@@ -348,6 +421,39 @@ def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
             ],
         },
     )
+    monkeypatch.setattr(
+        data_loader,
+        "load_truck_operational_catalog_payload",
+        lambda: {
+            "id": "truck_operational_catalog_v1",
+            "items": [
+                {
+                    "truck_type_id": "truck_type_vuc_4x2",
+                    "payload_weight_kg": 2200,
+                    "cargo_volume_m3": 4,
+                    "overall_length_m": 6.3,
+                    "overall_width_m": 2.1,
+                    "overall_height_m": 2.6,
+                    "confidence": "high",
+                    "research_basis": "test_fixture",
+                    "source_urls": ["https://example.com/vuc"],
+                    "notes": "operacional base",
+                },
+                {
+                    "truck_type_id": "truck_type_custom_van_1",
+                    "payload_weight_kg": 1500,
+                    "cargo_volume_m3": 3,
+                    "overall_length_m": 5.9,
+                    "overall_width_m": 2.0,
+                    "overall_height_m": 2.3,
+                    "confidence": "medium",
+                    "research_basis": "test_fixture",
+                    "source_urls": [],
+                    "notes": "operacional custom",
+                },
+            ],
+        },
+    )
 
     payload = data_loader.load_effective_truck_type_catalog_payload()
     types_by_id = {item["id"]: item for item in payload["types"]}
@@ -356,7 +462,115 @@ def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
     assert types_by_id["truck_type_vuc_4x2"]["canonical_body_type_ids"] == ["truck_body_carga_seca"]
     assert types_by_id["truck_type_vuc_4x2"]["notes"] == "catalogo editado"
     assert types_by_id["truck_type_vuc_4x2"]["is_custom"] is False
+    assert types_by_id["truck_type_vuc_4x2"]["payload_weight_kg"] == 2200
+    assert types_by_id["truck_type_vuc_4x2"]["operational"]["notes"] == "operacional base"
 
     assert types_by_id["truck_type_custom_van_1"]["label"] == "Van de carga"
     assert types_by_id["truck_type_custom_van_1"]["canonical_body_type_ids"] == ["truck_body_bau"]
     assert types_by_id["truck_type_custom_van_1"]["is_custom"] is True
+    assert types_by_id["truck_type_custom_van_1"]["cargo_volume_m3"] == 3
+    assert types_by_id["truck_type_custom_van_1"]["operational"]["research_basis"] == "test_fixture"
+
+
+def test_effective_truck_catalog_sorts_by_size_tier_then_label(monkeypatch) -> None:
+    monkeypatch.setattr(
+        data_loader,
+        "load_truck_catalog_hidden_payload",
+        lambda: {"id": "truck_catalog_hidden_v1", "hidden_type_ids": []},
+    )
+    monkeypatch.setattr(
+        data_loader,
+        "load_truck_catalog_edits_payload",
+        lambda: {"id": "truck_catalog_edits_v1", "items": []},
+    )
+    monkeypatch.setattr(
+        data_loader,
+        "load_truck_type_catalog_payload",
+        lambda: {
+            "id": "truck_type_catalog_v1",
+            "types": [
+                {
+                    "id": "truck_type_pesado_zulu",
+                    "order": 50,
+                    "label": "Zulu pesado",
+                    "short_label": "Zulu pesado",
+                    "size_tier": "pesado",
+                    "base_vehicle_kind": "rigido",
+                    "axle_config": "6x2",
+                    "canonical_body_type_ids": ["truck_body_bau"],
+                },
+                {
+                    "id": "truck_type_super_pesado_omega",
+                    "order": 1,
+                    "label": "Omega super pesado",
+                    "short_label": "Omega super pesado",
+                    "size_tier": "super_pesado",
+                    "base_vehicle_kind": "especial",
+                    "axle_config": "8x4",
+                    "canonical_body_type_ids": ["truck_body_bau"],
+                },
+                {
+                    "id": "truck_type_medio_alpha",
+                    "order": 10,
+                    "label": "Alpha medio",
+                    "short_label": "Alpha medio",
+                    "size_tier": "medio",
+                    "base_vehicle_kind": "rigido",
+                    "axle_config": "4x2",
+                    "canonical_body_type_ids": ["truck_body_bau"],
+                },
+                {
+                    "id": "truck_type_leve_beta",
+                    "order": 99,
+                    "label": "Beta leve",
+                    "short_label": "Beta leve",
+                    "size_tier": "leve",
+                    "base_vehicle_kind": "rigido",
+                    "axle_config": "4x2",
+                    "canonical_body_type_ids": ["truck_body_bau"],
+                },
+                {
+                    "id": "truck_type_super_leve_alpha",
+                    "order": 120,
+                    "label": "Alpha super leve",
+                    "short_label": "Alpha super leve",
+                    "size_tier": "super_leve",
+                    "base_vehicle_kind": "rigido",
+                    "axle_config": "4x2",
+                    "canonical_body_type_ids": ["truck_body_bau"],
+                },
+            ],
+        },
+    )
+    monkeypatch.setattr(
+        data_loader,
+        "load_truck_custom_catalog_payload",
+        lambda: {
+            "id": "truck_custom_catalog_v1",
+            "items": [
+                {
+                    "id": "truck_type_custom_alpha_leve",
+                    "order": 120,
+                    "label": "Alpha leve",
+                    "short_label": "Alpha leve",
+                    "size_tier": "leve",
+                    "base_vehicle_kind": "rigido",
+                    "axle_config": "4x2",
+                    "canonical_body_type_ids": ["truck_body_bau"],
+                    "preferred_body_type_id": "truck_body_bau",
+                    "notes": "",
+                }
+            ],
+        },
+    )
+
+    payload = data_loader.load_effective_truck_type_catalog_payload()
+
+    assert [item["id"] for item in payload["types"]] == [
+        "truck_type_super_leve_alpha",
+        "truck_type_custom_alpha_leve",
+        "truck_type_leve_beta",
+        "truck_type_medio_alpha",
+        "truck_type_pesado_zulu",
+        "truck_type_super_pesado_omega",
+    ]

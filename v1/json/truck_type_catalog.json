@@ -25,7 +25,7 @@
                       "order":  1,
                       "label":  "VUC 4x2",
                       "short_label":  "VUC",
-                      "size_tier":  "leve",
+                      "size_tier":  "super_leve",
                       "base_vehicle_kind":  "rigido",
                       "axle_config":  "4x2",
                       "canonical_body_type_ids":  [
@@ -316,7 +316,7 @@
                       "order":  17,
                       "label":  "Bitrem",
                       "short_label":  "Bitrem",
-                      "size_tier":  "especial",
+                      "size_tier":  "super_pesado",
                       "base_vehicle_kind":  "combinacao",
                       "axle_config":  "cavalo_6x2_ou_6x4",
                       "canonical_body_type_ids":  [
@@ -333,7 +333,7 @@
                       "order":  18,
                       "label":  "Rodotrem",
                       "short_label":  "Rodotrem",
-                      "size_tier":  "especial",
+                      "size_tier":  "super_pesado",
                       "base_vehicle_kind":  "combinacao",
                       "axle_config":  "cavalo_6x4",
                       "canonical_body_type_ids":  [
@@ -350,7 +350,7 @@
                       "order":  19,
                       "label":  "Tritrem",
                       "short_label":  "Tritrem",
-                      "size_tier":  "especial",
+                      "size_tier":  "super_pesado",
                       "base_vehicle_kind":  "combinacao",
                       "axle_config":  "cavalo_6x4",
                       "canonical_body_type_ids":  [
@@ -366,7 +366,7 @@
                       "order":  20,
                       "label":  "Treminhao",
                       "short_label":  "Treminhao",
-                      "size_tier":  "especial",
+                      "size_tier":  "super_pesado",
                       "base_vehicle_kind":  "combinacao",
                       "axle_config":  "rigido_mais_dois_reboques",
                       "canonical_body_type_ids":  [
@@ -382,7 +382,7 @@
                       "order":  21,
                       "label":  "Cegonheiro / CTV / CTVP",
                       "short_label":  "Cegonheiro",
-                      "size_tier":  "especial",
+                      "size_tier":  "super_pesado",
                       "base_vehicle_kind":  "especial",
                       "axle_config":  "specialized",
                       "canonical_body_type_ids":  [

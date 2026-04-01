@@ -2,21 +2,57 @@ import { escapeHtml, numberFormatter } from "./shared/formatters.js";
 
 const THEME_KEY = "brasix:v1:truck-product-matrix-theme";
 
+const TRUCK_SIZE_TIER_LABELS = Object.freeze({
+  super_leve: "Super-leve",
+  leve: "Leve",
+  medio: "Medio",
+  pesado: "Pesado",
+  super_pesado: "Super-pesado",
+});
+
+const TRUCK_BASE_VEHICLE_KIND_LABELS = Object.freeze({
+  rigido: "Rigido",
+  cavalo: "Cavalo",
+  combinacao: "Combinacao",
+  especial: "Especial",
+});
+
+const TRUCK_SIZE_TIER_SORT_ORDER = Object.freeze({
+  super_leve: 0,
+  leve: 1,
+  medio: 2,
+  pesado: 3,
+  super_pesado: 4,
+});
+
+const TRUCK_BASE_VEHICLE_KIND_SORT_ORDER = Object.freeze({
+  rigido: 0,
+  cavalo: 1,
+  combinacao: 2,
+  especial: 3,
+});
+
 const state = {
   theme: restoreTheme(),
   payload: null,
   loading: false,
+  savingCellKey: null,
   error: null,
   filters: {
     truckSearch: "",
     productSearch: "",
     familyId: "all",
-    logisticsTypeId: "all",
+    sizeTier: "all",
     bodyTypeId: "all",
+    axleConfig: "all",
+    baseVehicleKind: "all",
     hideEmptyAxes: true,
   },
   selection: { kind: "overview" },
 };
+
+let syncingMatrixHorizontalScroll = false;
+let lastVisibilityRefreshAt = 0;
 
 function restoreTheme() {
   try {
@@ -78,6 +114,115 @@ function normalizeText(value) {
   return String(value || "").toLowerCase();
 }
 
+function compareText(leftValue, rightValue) {
+  return String(leftValue || "").localeCompare(String(rightValue || ""), "pt-BR", { sensitivity: "base", numeric: true });
+}
+
+function compareTrucksCanonical(leftTruck, rightTruck) {
+  const left = leftTruck || {};
+  const right = rightTruck || {};
+  const leftTier = String(left.size_tier || "").trim().toLowerCase();
+  const rightTier = String(right.size_tier || "").trim().toLowerCase();
+  const leftOrder = TRUCK_SIZE_TIER_SORT_ORDER[leftTier] ?? Number.MAX_SAFE_INTEGER;
+  const rightOrder = TRUCK_SIZE_TIER_SORT_ORDER[rightTier] ?? Number.MAX_SAFE_INTEGER;
+
+  if (leftOrder !== rightOrder) {
+    return leftOrder - rightOrder;
+  }
+
+  const leftLabel = String(left.label || left.short_label || left.id || "").trim();
+  const rightLabel = String(right.label || right.short_label || right.id || "").trim();
+  const labelCompare = compareText(leftLabel, rightLabel);
+  if (labelCompare !== 0) {
+    return labelCompare;
+  }
+
+  return compareText(left.id, right.id);
+}
+
+function formatTruckSizeTier(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!normalized) {
+    return "-";
+  }
+  return TRUCK_SIZE_TIER_LABELS[normalized] || normalized.replace(/_/g, " ");
+}
+
+function formatTruckBaseVehicleKind(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!normalized) {
+    return "-";
+  }
+  return TRUCK_BASE_VEHICLE_KIND_LABELS[normalized] || normalized.replace(/_/g, " ");
+}
+
+function collectUniqueOptions(records, getId, getLabel) {
+  const options = [];
+  const seen = new Set();
+
+  for (const record of records || []) {
+    const optionId = String(getId(record) || "").trim();
+    if (!optionId || seen.has(optionId)) {
+      continue;
+    }
+
+    seen.add(optionId);
+    options.push({
+      id: optionId,
+      label: String(getLabel(record, optionId) || optionId).trim() || optionId,
+    });
+  }
+
+  return options;
+}
+
+function buildSelectOptions(items, allLabel) {
+  return [
+    `<option value="all">${escapeHtml(allLabel)}</option>`,
+    ...items.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.label)}</option>`),
+  ];
+}
+
+function syncSelectValue(select, value) {
+  const nextValue = String(value || "all").trim() || "all";
+  select.value = nextValue;
+  if (select.value !== nextValue) {
+    select.value = "all";
+  }
+  return select.value || "all";
+}
+
+function availableFamilyOptions() {
+  return collectUniqueOptions(state.payload?.products || [], (product) => product.family_id, (product) => product.family_label || product.family_id);
+}
+
+function availableTruckSizeTierOptions() {
+  return collectUniqueOptions(state.payload?.trucks || [], (truck) => truck.size_tier, (truck) => formatTruckSizeTier(truck.size_tier)).sort(
+    (left, right) => (TRUCK_SIZE_TIER_SORT_ORDER[left.id] ?? Number.MAX_SAFE_INTEGER) - (TRUCK_SIZE_TIER_SORT_ORDER[right.id] ?? Number.MAX_SAFE_INTEGER)
+      || compareText(left.label, right.label),
+  );
+}
+
+function availableTruckBodyOptions() {
+  return (state.payload?.bodies || [])
+    .filter((body) => Number(body.truck_type_count || 0) > 0)
+    .map((body) => ({ id: String(body.id || "").trim(), label: String(body.label || body.id || "").trim() }))
+    .filter((body) => body.id);
+}
+
+function availableTruckAxleOptions() {
+  return collectUniqueOptions(state.payload?.trucks || [], (truck) => truck.axle_config, (truck) => truck.axle_config).sort(
+    (left, right) => compareText(left.label, right.label),
+  );
+}
+
+function availableTruckStructureOptions() {
+  return collectUniqueOptions(state.payload?.trucks || [], (truck) => truck.base_vehicle_kind, (truck) => formatTruckBaseVehicleKind(truck.base_vehicle_kind)).sort(
+    (left, right) => (TRUCK_BASE_VEHICLE_KIND_SORT_ORDER[left.id] ?? Number.MAX_SAFE_INTEGER) - (TRUCK_BASE_VEHICLE_KIND_SORT_ORDER[right.id] ?? Number.MAX_SAFE_INTEGER)
+      || compareText(left.label, right.label),
+  );
+}
+
 function truckRowPreviewMarkup(truck) {
   const previewUrl = versionedAssetUrl(truck.preview_image_url_path, truck.preview_image_version);
   if (previewUrl) {
@@ -91,14 +236,68 @@ function truckRowPreviewMarkup(truck) {
   return `<span class="truck-product-matrix-row-preview-fallback" aria-hidden="true">🚚</span>`;
 }
 
+function buildCellKey(truckId, productId) {
+  return `${String(truckId || "").trim()}::${String(productId || "").trim()}`;
+}
+
+function resetMatrixHorizontalScrollbars() {
+  const topScroll = document.getElementById("truck-product-matrix-top-scroll");
+  const topScrollContent = document.getElementById("truck-product-matrix-top-scroll-content");
+  if (!topScroll || !topScrollContent) {
+    return;
+  }
+
+  topScroll.hidden = true;
+  topScroll.scrollLeft = 0;
+  topScrollContent.style.width = "0px";
+}
+
+function syncMatrixHorizontalScroll(source, target) {
+  if (!source || !target || syncingMatrixHorizontalScroll) {
+    return;
+  }
+
+  syncingMatrixHorizontalScroll = true;
+  target.scrollLeft = source.scrollLeft;
+  window.requestAnimationFrame(() => {
+    syncingMatrixHorizontalScroll = false;
+  });
+}
+
+function updateMatrixHorizontalScrollbars() {
+  const topScroll = document.getElementById("truck-product-matrix-top-scroll");
+  const topScrollContent = document.getElementById("truck-product-matrix-top-scroll-content");
+  const tableWrap = document.getElementById("truck-product-matrix-table-wrap");
+  const table = tableWrap?.querySelector(".truck-product-matrix-table");
+  if (!topScroll || !topScrollContent || !tableWrap || !table) {
+    resetMatrixHorizontalScrollbars();
+    return;
+  }
+
+  const scrollWidth = Math.ceil(table.scrollWidth);
+  const clientWidth = Math.ceil(tableWrap.clientWidth);
+  const hasHorizontalOverflow = scrollWidth > clientWidth + 1;
+
+  topScroll.hidden = !hasHorizontalOverflow;
+  topScrollContent.style.width = `${Math.max(scrollWidth, clientWidth)}px`;
+
+  if (hasHorizontalOverflow && Math.abs(topScroll.scrollLeft - tableWrap.scrollLeft) > 1) {
+    topScroll.scrollLeft = tableWrap.scrollLeft;
+  }
+}
+
 function hydratePayload(payload) {
+  const trucks = (payload.trucks || [])
+    .map((truck) => ({
+      ...truck,
+      cellsByProductId: Object.fromEntries((truck.cells || []).map((cell) => [cell.product_id, cell])),
+    }))
+    .sort(compareTrucksCanonical);
+
   const hydrated = {
     ...payload,
     products: [...(payload.products || [])],
-    trucks: (payload.trucks || []).map((truck) => ({
-      ...truck,
-      cellsByProductId: Object.fromEntries((truck.cells || []).map((cell) => [cell.product_id, cell])),
-    })),
+    trucks,
     bodies: [...(payload.bodies || [])],
     families: [...(payload.families || [])],
     logistics_types: [...(payload.logistics_types || [])],
@@ -107,6 +306,14 @@ function hydratePayload(payload) {
   hydrated.productsById = Object.fromEntries(hydrated.products.map((item) => [item.id, item]));
   hydrated.trucksById = Object.fromEntries(hydrated.trucks.map((item) => [item.id, item]));
   hydrated.bodiesById = Object.fromEntries(hydrated.bodies.map((item) => [item.id, item]));
+
+  for (const product of hydrated.products) {
+    product.compatible_truck_type_ids = [...(product.compatible_truck_type_ids || [])]
+      .map((truckId) => String(truckId || "").trim())
+      .filter(Boolean)
+      .sort((leftTruckId, rightTruckId) => compareTrucksCanonical(hydrated.trucksById?.[leftTruckId], hydrated.trucksById?.[rightTruckId]));
+  }
+
   return hydrated;
 }
 
@@ -238,43 +445,49 @@ function renderSummary() {
 
 function renderFilters() {
   const familySelect = document.getElementById("truck-product-matrix-family-filter");
-  const logisticsSelect = document.getElementById("truck-product-matrix-logistics-filter");
+  const sizeTierSelect = document.getElementById("truck-product-matrix-size-tier-filter");
   const bodySelect = document.getElementById("truck-product-matrix-body-filter");
+  const axleSelect = document.getElementById("truck-product-matrix-axle-filter");
+  const structureSelect = document.getElementById("truck-product-matrix-structure-filter");
   const truckSearch = document.getElementById("truck-product-matrix-truck-search");
   const productSearch = document.getElementById("truck-product-matrix-product-search");
   const hideEmptyToggle = document.getElementById("truck-product-matrix-hide-empty-toggle");
-  if (!familySelect || !logisticsSelect || !bodySelect || !truckSearch || !productSearch || !hideEmptyToggle) {
+  if (!familySelect || !sizeTierSelect || !bodySelect || !axleSelect || !structureSelect || !truckSearch || !productSearch || !hideEmptyToggle) {
     return;
   }
 
-  const familyOptions = [
-    `<option value="all">Todas as familias</option>`,
-    ...(state.payload?.families || []).map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.label)}</option>`),
-  ];
-  const logisticsOptions = [
-    `<option value="all">Todos os tipos</option>`,
-    ...(state.payload?.logistics_types || []).map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.label)}</option>`),
-  ];
-  const bodyOptions = [
-    `<option value="all">Todos os implementos</option>`,
-    ...(state.payload?.bodies || []).map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.label)}</option>`),
-  ];
+  familySelect.innerHTML = buildSelectOptions(availableFamilyOptions(), "Todas as familias").join("");
+  sizeTierSelect.innerHTML = buildSelectOptions(availableTruckSizeTierOptions(), "Todos os portes").join("");
+  bodySelect.innerHTML = buildSelectOptions(availableTruckBodyOptions(), "Todos os implementos").join("");
+  axleSelect.innerHTML = buildSelectOptions(availableTruckAxleOptions(), "Todos os eixos").join("");
+  structureSelect.innerHTML = buildSelectOptions(availableTruckStructureOptions(), "Todas as estruturas").join("");
 
-  familySelect.innerHTML = familyOptions.join("");
-  logisticsSelect.innerHTML = logisticsOptions.join("");
-  bodySelect.innerHTML = bodyOptions.join("");
-
-  familySelect.value = state.filters.familyId;
-  logisticsSelect.value = state.filters.logisticsTypeId;
-  bodySelect.value = state.filters.bodyTypeId;
+  state.filters.familyId = syncSelectValue(familySelect, state.filters.familyId);
+  state.filters.sizeTier = syncSelectValue(sizeTierSelect, state.filters.sizeTier);
+  state.filters.bodyTypeId = syncSelectValue(bodySelect, state.filters.bodyTypeId);
+  state.filters.axleConfig = syncSelectValue(axleSelect, state.filters.axleConfig);
+  state.filters.baseVehicleKind = syncSelectValue(structureSelect, state.filters.baseVehicleKind);
   truckSearch.value = state.filters.truckSearch;
   productSearch.value = state.filters.productSearch;
   hideEmptyToggle.checked = state.filters.hideEmptyAxes;
 }
 
 function truckMatchesFilters(truck) {
+  const sizeTier = state.filters.sizeTier;
   const bodyTypeId = state.filters.bodyTypeId;
+  const axleConfig = state.filters.axleConfig;
+  const baseVehicleKind = state.filters.baseVehicleKind;
+
+  if (sizeTier !== "all" && truck.size_tier !== sizeTier) {
+    return false;
+  }
   if (bodyTypeId !== "all" && !(truck.body_type_ids || []).includes(bodyTypeId)) {
+    return false;
+  }
+  if (axleConfig !== "all" && String(truck.axle_config || "") !== axleConfig) {
+    return false;
+  }
+  if (baseVehicleKind !== "all" && String(truck.base_vehicle_kind || "") !== baseVehicleKind) {
     return false;
   }
 
@@ -284,7 +497,16 @@ function truckMatchesFilters(truck) {
   }
 
   const haystack = normalizeText(
-    [truck.label, truck.short_label, truck.size_tier, truck.axle_config, ...(truck.body_labels || [])].join(" "),
+    [
+      truck.label,
+      truck.short_label,
+      truck.size_tier,
+      formatTruckSizeTier(truck.size_tier),
+      truck.axle_config,
+      truck.base_vehicle_kind,
+      formatTruckBaseVehicleKind(truck.base_vehicle_kind),
+      ...(truck.body_labels || []),
+    ].join(" "),
   );
   return haystack.includes(needle);
 }
@@ -292,9 +514,6 @@ function truckMatchesFilters(truck) {
 function productMatchesFilters(product) {
   const bodyTypeId = state.filters.bodyTypeId;
   if (state.filters.familyId !== "all" && product.family_id !== state.filters.familyId) {
-    return false;
-  }
-  if (state.filters.logisticsTypeId !== "all" && product.logistics_type_id !== state.filters.logisticsTypeId) {
     return false;
   }
   if (bodyTypeId !== "all" && !(product.logistics_body_type_ids || []).includes(bodyTypeId)) {
@@ -312,28 +531,44 @@ function productMatchesFilters(product) {
   return haystack.includes(needle);
 }
 
+function cellKeepsAxisVisible(cell) {
+  if (!cell) {
+    return false;
+  }
+
+  if (cell.compatible) {
+    return true;
+  }
+
+  if (cell.base_compatible) {
+    return true;
+  }
+
+  return cell.manual_override_compatible !== null && cell.manual_override_compatible !== undefined;
+}
+
 function filteredAxes() {
   if (!state.payload) {
     return { products: [], trucks: [] };
   }
 
   let products = state.payload.products.filter(productMatchesFilters);
-  let trucks = state.payload.trucks.filter(truckMatchesFilters);
+  let trucks = state.payload.trucks.filter(truckMatchesFilters).sort(compareTrucksCanonical);
 
   if (state.filters.hideEmptyAxes) {
     const visibleTruckIds = new Set();
     const visibleProductIds = new Set();
 
     for (const truck of trucks) {
-      let truckHasCompatible = false;
+      let truckHasVisibleCell = false;
       for (const product of products) {
-        const compatible = Boolean(truck.cellsByProductId?.[product.id]?.compatible);
-        if (compatible) {
-          truckHasCompatible = true;
+        const cell = truck.cellsByProductId?.[product.id];
+        if (cellKeepsAxisVisible(cell)) {
+          truckHasVisibleCell = true;
           visibleProductIds.add(product.id);
         }
       }
-      if (truckHasCompatible) {
+      if (truckHasVisibleCell) {
         visibleTruckIds.add(truck.id);
       }
     }
@@ -386,13 +621,17 @@ function renderStatusAndSummary(products, trucks) {
   const totalPairs = products.length * trucks.length;
   const ratio = totalPairs ? (compatibleCount / totalPairs) * 100 : 0;
   const validation = state.payload.validation || { error_count: 0, warning_count: 0 };
+  const savingMarkup = state.savingCellKey
+    ? `<div><span>Override manual</span><strong>Salvando...</strong></div>`
+    : `<div><span>Overrides</span><strong>${formatInt(state.payload.summary?.manual_override_count || 0)}</strong></div>`;
   statusTarget.innerHTML = `
-    <div class="editor-status-copy">Cruze cada produto pelo tipo logistico, pelos implementos aceitos e pelos caminhoes que oferecem esses implementos.</div>
+    <div class="editor-status-copy">Cruze cada produto pelo tipo logistico, pelos implementos aceitos e pelos caminhoes que oferecem esses implementos. Clique em uma celula para inverter manualmente essa relacao.</div>
     <div class="editor-status-meta">
       <div><span>Visiveis</span><strong>${formatInt(trucks.length)} x ${formatInt(products.length)}</strong></div>
       <div><span>Compativeis</span><strong>${formatInt(compatibleCount)}</strong></div>
       <div><span>Taxa</span><strong>${escapeHtml(formatPercent(ratio))}</strong></div>
       <div><span>Runtime</span><strong>${formatInt(validation.error_count)} erros / ${formatInt(validation.warning_count)} avisos</strong></div>
+      ${savingMarkup}
     </div>
   `;
   summaryTarget.innerHTML = `<span>${formatInt(trucks.length)} caminhoes</span><span>${formatInt(products.length)} produtos</span><span>${formatInt(compatibleCount)} encaixes</span>`;
@@ -405,7 +644,7 @@ function detailOverviewMarkup() {
     .slice(0, 8);
 
   return `
-    <p class="truck-product-matrix-help">Selecione um caminhao, um produto ou uma celula para ver a cadeia completa produto -> tipo logistico -> implemento -> caminhao.</p>
+    <p class="truck-product-matrix-help">Selecione um caminhao, um produto ou uma celula para ver a cadeia completa produto -> tipo logistico -> implemento -> caminhao. Clique na celula para incluir ou excluir manualmente o transporte.</p>
 
     <div class="section-head truck-product-matrix-subhead">
       <div>
@@ -453,7 +692,7 @@ function detailTruckMarkup(truck) {
   return `
     <div class="truck-product-matrix-detail-hero">
       <strong>${escapeHtml(truck.label)}</strong>
-      <div class="editor-map-load-meta"><span>${escapeHtml(truck.axle_config || "-")}</span><span>${escapeHtml(truck.base_vehicle_kind || "-")}</span><span>${escapeHtml(truck.size_tier || "-")}</span></div>
+      <div class="editor-map-load-meta"><span>${escapeHtml(truck.axle_config || "-")}</span><span>${escapeHtml(formatTruckBaseVehicleKind(truck.base_vehicle_kind))}</span><span>${escapeHtml(formatTruckSizeTier(truck.size_tier))}</span></div>
       <div class="truck-product-matrix-chip-list">${bodyChipsMarkup(truck.body_labels || [])}</div>
     </div>
 
@@ -520,7 +759,7 @@ function detailProductMarkup(product) {
         <article class="editor-map-load-item">
           <div class="editor-map-load-copy">
             <strong>${escapeHtml(truck.label)}</strong>
-            <div class="editor-map-load-meta"><span>${escapeHtml(truck.axle_config || "-")}</span><span>${escapeHtml(truck.base_vehicle_kind || "-")}</span></div>
+            <div class="editor-map-load-meta"><span>${escapeHtml(truck.axle_config || "-")}</span><span>${escapeHtml(formatTruckBaseVehicleKind(truck.base_vehicle_kind))}</span></div>
             <div class="truck-product-matrix-chip-list">${bodyChipsMarkup(truck.body_labels || [])}</div>
           </div>
         </article>
@@ -531,10 +770,23 @@ function detailProductMarkup(product) {
 
 function detailCellMarkup(truck, product, cell) {
   const compatible = Boolean(cell?.compatible);
+  const baseCompatible = Boolean(cell?.base_compatible);
+  const isManual = cell?.compatibility_source === "manual";
+  const baseBodies = (cell?.matched_body_labels || []).join(", ") || "nenhum implemento compativel";
   const title = compatible ? "Compatibilidade confirmada" : "Sem compatibilidade";
-  const explanation = compatible
-    ? `O produto usa o tipo logistico ${product.logistics_type_label}, que aceita ${cell.matched_body_labels.join(", ")}. Este caminhao oferece esse implemento.`
+  let explanation = compatible
+    ? `O produto usa o tipo logistico ${product.logistics_type_label}, que aceita ${baseBodies}. Este caminhao oferece esse implemento.`
     : `O produto usa o tipo logistico ${product.logistics_type_label}, que aceita ${(product.logistics_body_labels || []).join(", ") || "nenhum implemento"}. Este caminhao oferece ${(truck.body_labels || []).join(", ") || "nenhum implemento"}.`;
+
+  if (isManual) {
+    explanation = compatible
+      ? `Compatibilidade ligada manualmente. Pela regra automatica, esta celula ficaria ${baseCompatible ? "compativel" : "incompativel"}.`
+      : `Compatibilidade desligada manualmente. Pela regra automatica, esta celula ficaria ${baseCompatible ? "compativel" : "incompativel"}.`;
+  }
+
+  const sourceBadge = isManual
+    ? `<span class="editor-badge">Override manual</span>`
+    : `<span class="editor-badge">Regra automatica</span>`;
 
   return `
     <div class="truck-product-matrix-detail-hero">
@@ -545,7 +797,8 @@ function detailCellMarkup(truck, product, cell) {
     <div class="truck-product-matrix-cell-state ${compatible ? "is-compatible" : "is-incompatible"}">
       <strong>${escapeHtml(explanation)}</strong>
       <div class="truck-product-matrix-chip-list">
-        ${compatible ? bodyChipsMarkup(cell.matched_body_labels || []) : `<span class="editor-badge">Sem implemento compativel</span>`}
+        ${sourceBadge}
+        ${compatible && (cell.matched_body_labels || []).length ? bodyChipsMarkup(cell.matched_body_labels || []) : `<span class="editor-badge">Sem implemento compativel</span>`}
       </div>
     </div>
 
@@ -566,6 +819,42 @@ function detailCellMarkup(truck, product, cell) {
     <div class="editor-map-load-meta"><span>${escapeHtml(product.logistics_type_label || "-")}</span><span>${escapeHtml(product.logistics_type_description || "-")}</span></div>
     <div class="truck-product-matrix-chip-list">${bodyChipsMarkup(product.logistics_body_labels || [])}</div>
   `;
+}
+
+async function toggleCellCompatibility(truckId, productId) {
+  const cellKey = buildCellKey(truckId, productId);
+  if (!truckId || !productId || state.savingCellKey === cellKey) {
+    return;
+  }
+
+  state.savingCellKey = cellKey;
+  renderAll();
+
+  try {
+    const response = await fetch("/api/viewer/truck-product-matrix/toggle", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        truck_type_id: truckId,
+        product_id: productId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorPayload = await response.json().catch(() => null);
+      throw new Error(errorPayload?.detail || `Falha ao salvar a celula (${response.status})`);
+    }
+
+    state.payload = hydratePayload(await response.json());
+    state.error = null;
+  } catch (error) {
+    state.error = String(error?.message || error || "Erro desconhecido");
+  } finally {
+    state.savingCellKey = null;
+    renderAll();
+  }
 }
 
 function renderDetail() {
@@ -652,21 +941,26 @@ function tableMarkup(products, trucks) {
               ${products.map((product) => {
                 const cell = truck.cellsByProductId?.[product.id] || { compatible: false, matched_body_type_ids: [], matched_body_labels: [] };
                 const compatible = Boolean(cell.compatible);
-                const buttonTitle = compatible
-                  ? `${truck.label} atende ${product.name} via ${cell.matched_body_labels.join(", ")}`
-                  : `${truck.label} nao atende ${product.name}`;
+                const isManual = cell.compatibility_source === "manual";
+                const buttonTitle = isManual
+                  ? `${truck.label} ${compatible ? "foi marcado manualmente para atender" : "foi marcado manualmente para nao atender"} ${product.name}. Clique para inverter.`
+                  : compatible
+                    ? `${truck.label} atende ${product.name} via ${cell.matched_body_labels.join(", ")}. Clique para excluir.`
+                    : `${truck.label} nao atende ${product.name}. Clique para incluir.`;
                 const selected = isSelectedCell(truck.id, product.id);
+                const saving = state.savingCellKey === buildCellKey(truck.id, product.id);
                 return `
                   <td>
                     <button
-                      class="truck-product-matrix-table-cell ${compatible ? "is-compatible" : "is-incompatible"} ${selected ? "is-selected" : ""}"
+                      class="truck-product-matrix-table-cell ${compatible ? "is-compatible" : "is-incompatible"} ${selected ? "is-selected" : ""} ${isManual ? "is-manual" : ""} ${saving ? "is-saving" : ""}"
                       type="button"
                       title="${escapeHtml(buttonTitle)}"
                       aria-label="${escapeHtml(buttonTitle)}"
                       data-truck-id="${escapeHtml(truck.id)}"
                       data-product-id="${escapeHtml(product.id)}"
+                      ${saving ? "disabled" : ""}
                     >
-                      <span class="truck-product-matrix-table-cell-count">${compatible ? escapeHtml(String((cell.matched_body_type_ids || []).length)) : ""}</span>
+                      <span class="truck-product-matrix-table-cell-count">${compatible ? escapeHtml(String(cell.display_count || 0)) : ""}</span>
                     </button>
                   </td>
                 `;
@@ -682,18 +976,21 @@ function tableMarkup(products, trucks) {
 function renderTable() {
   const target = document.getElementById("truck-product-matrix-table-wrap");
   if (!target) {
+    resetMatrixHorizontalScrollbars();
     return;
   }
 
   if (state.loading) {
     renderStatusAndSummary([], []);
     target.innerHTML = `<p class="route-placeholder">Carregando a matriz de compatibilidade...</p>`;
+    resetMatrixHorizontalScrollbars();
     return;
   }
 
   if (state.error || !state.payload) {
     renderStatusAndSummary([], []);
     target.innerHTML = `<p class="route-placeholder">A tabela nao pode ser montada.</p>`;
+    resetMatrixHorizontalScrollbars();
     return;
   }
 
@@ -702,10 +999,12 @@ function renderTable() {
 
   if (!products.length || !trucks.length) {
     target.innerHTML = `<p class="route-placeholder">Nenhum cruzamento disponivel com os filtros atuais.</p>`;
+    resetMatrixHorizontalScrollbars();
     return;
   }
 
   target.innerHTML = tableMarkup(products, trucks);
+  updateMatrixHorizontalScrollbars();
 }
 
 function renderAll() {
@@ -750,12 +1049,15 @@ function handleClick(event) {
 
   const cellButton = event.target.closest("[data-truck-id][data-product-id]");
   if (cellButton) {
+    const truckId = cellButton.getAttribute("data-truck-id") || "";
+    const productId = cellButton.getAttribute("data-product-id") || "";
     state.selection = {
       kind: "cell",
-      truckId: cellButton.getAttribute("data-truck-id") || "",
-      productId: cellButton.getAttribute("data-product-id") || "",
+      truckId,
+      productId,
     };
     renderAll();
+    void toggleCellCompatibility(truckId, productId);
   }
 }
 
@@ -763,31 +1065,84 @@ function handleFilterInput() {
   const truckSearch = document.getElementById("truck-product-matrix-truck-search");
   const productSearch = document.getElementById("truck-product-matrix-product-search");
   const familySelect = document.getElementById("truck-product-matrix-family-filter");
-  const logisticsSelect = document.getElementById("truck-product-matrix-logistics-filter");
+  const sizeTierSelect = document.getElementById("truck-product-matrix-size-tier-filter");
   const bodySelect = document.getElementById("truck-product-matrix-body-filter");
+  const axleSelect = document.getElementById("truck-product-matrix-axle-filter");
+  const structureSelect = document.getElementById("truck-product-matrix-structure-filter");
   const hideEmptyToggle = document.getElementById("truck-product-matrix-hide-empty-toggle");
-  if (!truckSearch || !productSearch || !familySelect || !logisticsSelect || !bodySelect || !hideEmptyToggle) {
+  if (!truckSearch || !productSearch || !familySelect || !sizeTierSelect || !bodySelect || !axleSelect || !structureSelect || !hideEmptyToggle) {
     return;
   }
 
   state.filters.truckSearch = truckSearch.value || "";
   state.filters.productSearch = productSearch.value || "";
   state.filters.familyId = familySelect.value || "all";
-  state.filters.logisticsTypeId = logisticsSelect.value || "all";
+  state.filters.sizeTier = sizeTierSelect.value || "all";
   state.filters.bodyTypeId = bodySelect.value || "all";
+  state.filters.axleConfig = axleSelect.value || "all";
+  state.filters.baseVehicleKind = structureSelect.value || "all";
   state.filters.hideEmptyAxes = hideEmptyToggle.checked;
   renderAll();
+}
+
+function handleMatrixHorizontalScroll(event) {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) {
+    return;
+  }
+
+  const tableWrap = document.getElementById("truck-product-matrix-table-wrap");
+  const topScroll = document.getElementById("truck-product-matrix-top-scroll");
+  if (!tableWrap || !topScroll) {
+    return;
+  }
+
+  if (target.id === "truck-product-matrix-top-scroll") {
+    syncMatrixHorizontalScroll(topScroll, tableWrap);
+    return;
+  }
+
+  if (target.id === "truck-product-matrix-table-wrap") {
+    syncMatrixHorizontalScroll(tableWrap, topScroll);
+  }
+}
+
+function handleMatrixResize() {
+  updateMatrixHorizontalScrollbars();
+}
+
+function refreshPayloadWhenVisible() {
+  if (document.visibilityState !== "visible" || state.loading || !state.payload) {
+    return;
+  }
+
+  const now = Date.now();
+  if (now - lastVisibilityRefreshAt < 750) {
+    return;
+  }
+
+  lastVisibilityRefreshAt = now;
+  void loadPayload();
 }
 
 function bindEvents() {
   document.addEventListener("click", handleClick);
 
+  const tableWrap = document.getElementById("truck-product-matrix-table-wrap");
+  const topScroll = document.getElementById("truck-product-matrix-top-scroll");
+  topScroll?.addEventListener("scroll", handleMatrixHorizontalScroll, { passive: true });
+  tableWrap?.addEventListener("scroll", handleMatrixHorizontalScroll, { passive: true });
+  window.addEventListener("resize", handleMatrixResize);
+  document.addEventListener("visibilitychange", refreshPayloadWhenVisible);
+
   const filterIds = [
     "truck-product-matrix-truck-search",
     "truck-product-matrix-product-search",
     "truck-product-matrix-family-filter",
-    "truck-product-matrix-logistics-filter",
+    "truck-product-matrix-size-tier-filter",
     "truck-product-matrix-body-filter",
+    "truck-product-matrix-axle-filter",
+    "truck-product-matrix-structure-filter",
     "truck-product-matrix-hide-empty-toggle",
   ];
 

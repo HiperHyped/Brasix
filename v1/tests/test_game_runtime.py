@@ -16,9 +16,18 @@ def test_build_game_world_runtime_contains_core_snapshots() -> None:
     assert runtime.products.active_product_ids
     assert runtime.trucks.truck_type_count > 0
     assert runtime.trucks.active_truck_type_ids
+    assert runtime.trucks.operational_catalog["id"] == "truck_operational_catalog_v1"
     assert runtime.catalogs.city_by_id
     assert runtime.catalogs.product_by_id
     assert runtime.catalogs.truck_type_by_id
+    assert runtime.catalogs.truck_operational_by_id
+    assert runtime.source_summary.truck_operational_catalog_id == runtime.trucks.operational_catalog["id"]
+
+    vuc_operational = runtime.catalogs.truck_operational_by_id["truck_type_vuc_4x2"]
+    vuc_type = runtime.catalogs.truck_type_by_id["truck_type_vuc_4x2"]
+    assert vuc_type["payload_weight_kg"] == vuc_operational["payload_weight_kg"]
+    assert vuc_type["cargo_volume_m3"] == vuc_operational["cargo_volume_m3"]
+    assert vuc_type["operational"]["catalog_id"] == runtime.trucks.operational_catalog["id"]
 
 
 def test_build_game_world_runtime_validation_has_no_errors_for_seed_data() -> None:

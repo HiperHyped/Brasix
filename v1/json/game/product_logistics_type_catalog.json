@@ -95,10 +95,11 @@
     {
       "id": "granel_gasoso_pressurizado",
       "label": "Gasoso pressurizado",
-      "description": "Gases ou derivados que pedem tanque especializado.",
+      "description": "Gases ou derivados que pedem tanque especializado, inclusive carreta de gás comprimido.",
       "order": 10,
       "body_type_ids": [
-        "truck_body_tanque"
+        "truck_body_tanque",
+        "truck_body_custom_gás_comprimido"
       ]
     },
     {

@@ -428,39 +428,6 @@
       "enabled": true
     },
     {
-      "truck_type_id": "truck_type_carreta_ls",
-      "preferred_body_type_id": "truck_body_bau",
-      "prompt_items": [
-        "perfil lateral puro do caminhão",
-        "fundo transparente",
-        "veículo inteiro em preto sólido",
-        "desenho técnico simples",
-        "sem cenário, sem texto e sem sombra",
-        "carreta ls com um cavalo mecanico e um semirreboque longo",
-        "apenas um semirreboque na parte traseira",
-        "uma unica articulacao principal entre cavalo e semirreboque",
-        "conjunto longo de estrada, mas com apenas uma unidade rebocada",
-        "nao desenhar segundo reboque ou dolly",
-        "implemento: bau reto fechado",
-        "usar poucos detalhes",
-        "não usar carroceria branca ou cinza",
-        "não usar contorno preto com miolo branco",
-        "não usar perspectiva",
-        "carreta ls com um cavalo mecanico e um semirreboque longo",
-        "apenas um semirreboque na parte traseira",
-        "uma unica articulacao principal entre cavalo e semirreboque",
-        "conjunto longo de estrada, mas com apenas uma unidade rebocada",
-        "nao desenhar segundo reboque ou dolly"
-      ],
-      "reference_truck_type_id": "truck_type_cavalo_6x2",
-      "reference_aspects": [
-        "cabine",
-        "estilo"
-      ],
-      "extra_instructions": "",
-      "enabled": true
-    },
-    {
       "truck_type_id": "truck_type_bitrem",
       "preferred_body_type_id": "truck_body_graneleiro",
       "prompt_items": [
@@ -702,8 +669,9 @@
         "não usar perspectiva",
         "respeite a escala e a formatação da imagem anexa"
       ],
-      "reference_truck_type_id": "truck_type_vuc_4x2",
+      "reference_truck_type_id": "truck_type_custom_novo_caminhao_26",
       "reference_aspects": [
+        "cabine",
         "estilo"
       ],
       "extra_instructions": "",
@@ -785,6 +753,209 @@
         "usar poucos detalhes",
         "observacoes importantes: bau com refrigeração (carrier)",
         "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_truck_pesado_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_29",
+      "preferred_body_type_id": "truck_body_tanque",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo carreta petroleira",
+        "porte Pesado",
+        "tipo Cavalo",
+        "eixos 6x4",
+        "implemento: tanque cilindrico",
+        "usar poucos detalhes",
+        "observacoes importantes: Carreta feita para levar granel liquido : tanque de combustivel",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_cavalo_6x4",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_30",
+      "preferred_body_type_id": "truck_body_custom_gás_comprimido",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo carreta gaseira",
+        "porte Pesado",
+        "tipo Cavalo",
+        "eixos 6x4",
+        "implemento: gás comprimido",
+        "usar poucos detalhes",
+        "observacoes importantes: Carreta com tanque de gás comprimido",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_custom_novo_caminhao_29",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_31",
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo van refrigerada",
+        "porte Leve",
+        "tipo Rigido",
+        "eixos 4x2",
+        "implemento: bau frigorifico",
+        "usar poucos detalhes",
+        "observacoes importantes: Van com carrier sobre o teto",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_custom_novo_caminhao_24",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_32",
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "IMPORTANTE: veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo toco leve refrigerado",
+        "porte Leve",
+        "tipo Rigido",
+        "eixos 4x2",
+        "implemento: bau frigorifico",
+        "usar poucos detalhes",
+        "observacoes importantes: bau com refrigeracao (carrier) pendurada no bau",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_toco_leve_eletrico_4x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_33",
+      "preferred_body_type_id": "truck_body_frigorifico",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "IMPORTNATE: veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo toco médio refrigerado",
+        "porte Medio",
+        "tipo Rigido",
+        "eixos 4x2",
+        "implemento: bau frigorifico",
+        "usar poucos detalhes",
+        "observacoes importantes: bau com refrigeracao (carrier) pendurada no bau",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_toco_medio_4x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_34",
+      "preferred_body_type_id": "truck_body_tanque",
+      "prompt_items": [],
+      "reference_truck_type_id": "truck_type_custom_novo_caminhao_32",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_35",
+      "preferred_body_type_id": "truck_body_tanque",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo truck tanque 6x2",
+        "porte Pesado",
+        "tipo Rigido",
+        "eixos 6x2",
+        "implemento: tanque cilindrico",
+        "usar poucos detalhes",
+        "observacoes importantes: Trata-se de um Truck 6x2 com um tanque para granel liquido",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_truck_pesado_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_36",
+      "preferred_body_type_id": "truck_body_custom_gás_comprimido",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo truck gaseiro 6x2",
+        "porte Medio",
+        "tipo Rigido",
+        "eixos 6x2",
+        "implemento: gás comprimido",
+        "usar poucos detalhes",
+        "observacoes importantes: truck 6x2 com tanque de gas",
+        "usar poucos detalhes",
         "não usar perspectiva"
       ],
       "reference_truck_type_id": "truck_type_truck_pesado_6x2",

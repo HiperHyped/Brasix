@@ -35,6 +35,7 @@ class GameWorldSourceSummary(BaseModel):
     truck_type_catalog_id: str
     truck_body_catalog_id: str
     truck_category_catalog_id: str
+    truck_operational_catalog_id: str | None = None
 
 
 class GameWorldMetadata(BaseModel):
@@ -79,6 +80,7 @@ class GameWorldTruckSnapshot(BaseModel):
     type_catalog: dict[str, Any] = Field(default_factory=dict)
     body_catalog: dict[str, Any] = Field(default_factory=dict)
     category_catalog: dict[str, Any] = Field(default_factory=dict)
+    operational_catalog: dict[str, Any] = Field(default_factory=dict)
     truck_type_ids: list[str] = Field(default_factory=list)
     active_truck_type_ids: list[str] = Field(default_factory=list)
     body_type_ids: list[str] = Field(default_factory=list)
@@ -92,6 +94,7 @@ class GameWorldCatalogSnapshot(BaseModel):
     product_logistics_type_by_id: dict[str, dict[str, Any]] = Field(default_factory=dict)
     truck_body_by_id: dict[str, dict[str, Any]] = Field(default_factory=dict)
     truck_type_by_id: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    truck_operational_by_id: dict[str, dict[str, Any]] = Field(default_factory=dict)
 
 
 class GameWorldRuntimeDocument(BaseModel):
