@@ -573,7 +573,7 @@ class TruckCustomTypeRecord(BaseModel):
 
     @model_validator(mode="after")
     def normalize_bodies(self) -> "TruckCustomTypeRecord":
-        if self.preferred_body_type_id and not self.canonical_body_type_ids:
+        if self.preferred_body_type_id:
             self.canonical_body_type_ids = [self.preferred_body_type_id]
         if self.canonical_body_type_ids and not self.preferred_body_type_id:
             self.preferred_body_type_id = self.canonical_body_type_ids[0]
@@ -657,6 +657,62 @@ class TruckProductMatrixToggleRequest(BaseModel):
     product_id: str = Field(min_length=1)
 
 
+class TruckOperationalSaveRequest(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+    payload_weight_kg: int | float | None = Field(default=None, ge=0)
+    cargo_volume_m3: int | float | None = Field(default=None, ge=0)
+    overall_length_m: int | float | None = Field(default=None, ge=0)
+    overall_width_m: int | float | None = Field(default=None, ge=0)
+    overall_height_m: int | float | None = Field(default=None, ge=0)
+    energy_source: str | None = None
+    consumption_unit: str | None = None
+    empty_consumption_per_km: int | float | None = Field(default=None, ge=0)
+    loaded_consumption_per_km: int | float | None = Field(default=None, ge=0)
+    truck_price_brl: int | float | None = Field(default=None, ge=0)
+    base_fixed_cost_brl_per_day: int | float | None = Field(default=None, ge=0)
+    base_variable_cost_brl_per_km: int | float | None = Field(default=None, ge=0)
+    implement_cost_brl: int | float | None = Field(default=None, ge=0)
+    urban_access_level: str | None = None
+    road_access_level: str | None = None
+    supported_surface_codes: list[str] = Field(default_factory=list)
+    load_time_minutes: int | float | None = Field(default=None, ge=0)
+    unload_time_minutes: int | float | None = Field(default=None, ge=0)
+    confidence: str | None = None
+    research_basis: str | None = None
+    source_urls: list[str] = Field(default_factory=list)
+    notes: str = ""
+
+
+class TruckOperationalSaveResponse(BaseModel):
+    type_record: dict[str, Any]
+    operational_record: dict[str, Any]
+
+
+class TruckOperationalAutofillRequest(BaseModel):
+    truck_type_id: str = Field(min_length=1)
+
+
+class TruckOperationalAutofillResponse(BaseModel):
+    truck_type_id: str
+    payload: dict[str, Any]
+    summary: str = ""
+    provider: str | None = None
+    model: str | None = None
+
+
+class TruckOperationalAutofillStatusResponse(BaseModel):
+    truck_type_id: str
+    status: Literal["idle", "queued", "running", "completed", "failed"] = "idle"
+    message: str = ""
+    summary: str = ""
+    provider: str | None = None
+    model: str | None = None
+    error: str | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+    started_at: str | None = None
+    finished_at: str | None = None
+
+
 class ProductEditorCreateRequest(BaseModel):
     name: str = Field(min_length=1)
     emoji: str = "\U0001F4E6"
@@ -702,4 +758,61 @@ class ProductFieldLayerSaveRequest(BaseModel):
     strokes: list[dict[str, Any]] = Field(default_factory=list)
     baked_city_values: list[dict[str, Any]] = Field(default_factory=list)
     updated_at: str | None = None
+
+
+class ProductOperationalSaveRequest(BaseModel):
+    product_id: str = Field(min_length=1)
+    unit: str | None = None
+    weight_per_unit_kg: int | float | None = Field(default=None, ge=0)
+    volume_per_unit_m3: int | float | None = Field(default=None, ge=0)
+    price_reference_brl_per_unit: int | float | None = Field(default=None, ge=0)
+    price_min_brl_per_unit: int | float | None = Field(default=None, ge=0)
+    price_max_brl_per_unit: int | float | None = Field(default=None, ge=0)
+    is_seasonal: bool | None = None
+    seasonality_index_jan: int | float | None = Field(default=None, ge=0)
+    seasonality_index_feb: int | float | None = Field(default=None, ge=0)
+    seasonality_index_mar: int | float | None = Field(default=None, ge=0)
+    seasonality_index_apr: int | float | None = Field(default=None, ge=0)
+    seasonality_index_may: int | float | None = Field(default=None, ge=0)
+    seasonality_index_jun: int | float | None = Field(default=None, ge=0)
+    seasonality_index_jul: int | float | None = Field(default=None, ge=0)
+    seasonality_index_aug: int | float | None = Field(default=None, ge=0)
+    seasonality_index_sep: int | float | None = Field(default=None, ge=0)
+    seasonality_index_oct: int | float | None = Field(default=None, ge=0)
+    seasonality_index_nov: int | float | None = Field(default=None, ge=0)
+    seasonality_index_dec: int | float | None = Field(default=None, ge=0)
+    confidence: str | None = None
+    research_basis: str | None = None
+    source_urls: list[str] = Field(default_factory=list)
+    notes: str = ""
+
+
+class ProductOperationalSaveResponse(BaseModel):
+    product_record: dict[str, Any]
+    operational_record: dict[str, Any]
+
+
+class ProductOperationalAutofillRequest(BaseModel):
+    product_id: str = Field(min_length=1)
+
+
+class ProductOperationalAutofillResponse(BaseModel):
+    product_id: str
+    payload: dict[str, Any]
+    summary: str = ""
+    provider: str | None = None
+    model: str | None = None
+
+
+class ProductOperationalAutofillStatusResponse(BaseModel):
+    product_id: str
+    status: Literal["idle", "queued", "running", "completed", "failed"] = "idle"
+    message: str = ""
+    summary: str = ""
+    provider: str | None = None
+    model: str | None = None
+    error: str | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+    started_at: str | None = None
+    finished_at: str | None = None
 

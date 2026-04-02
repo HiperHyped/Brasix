@@ -1,0 +1,3249 @@
+{
+  "id": "product_field_edit::map_mapa-6-3::milho::demand",
+  "map_id": "map_mapa-6-3",
+  "product_id": "milho",
+  "layer": "demand",
+  "version": 1,
+  "updated_at": "2026-04-02T00:26:30.081Z",
+  "strokes": [
+    {
+      "id": "stroke_1775089585047_5079",
+      "product_id": "milho",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 220,
+      "intensity": 0.52,
+      "falloff": "gaussian",
+      "created_at": "2026-04-02T00:26:25.047Z",
+      "points": [
+        {
+          "lat": -25.327136856341717,
+          "lon": -47.67536899565026
+        },
+        {
+          "lat": -25.327136856341717,
+          "lon": -47.67536899565026
+        },
+        {
+          "lat": -25.327136856341717,
+          "lon": -47.67536899565026
+        },
+        {
+          "lat": -25.327136856341717,
+          "lon": -47.67536899565026
+        },
+        {
+          "lat": -25.327136856341717,
+          "lon": -47.67536899565026
+        },
+        {
+          "lat": -25.327136856341717,
+          "lon": -47.67536899565026
+        },
+        {
+          "lat": -25.327136856341717,
+          "lon": -47.67536899565026
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775089585739_33964",
+      "product_id": "milho",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 220,
+      "intensity": 0.52,
+      "falloff": "gaussian",
+      "created_at": "2026-04-02T00:26:25.739Z",
+      "points": [
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.35128376178512
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.300794803933506
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.300794803933506
+        },
+        {
+          "lat": -23.581629882880875,
+          "lon": -50.300794803933506
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775089586829_58141",
+      "product_id": "milho",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 220,
+      "intensity": 0.52,
+      "falloff": "gaussian",
+      "created_at": "2026-04-02T00:26:26.829Z",
+      "points": [
+        {
+          "lat": -20.919694521705463,
+          "lon": -46.86754567002461
+        },
+        {
+          "lat": -20.872549638181837,
+          "lon": -46.86754567002461
+        },
+        {
+          "lat": -20.872549638181837,
+          "lon": -46.86754567002461
+        },
+        {
+          "lat": -20.872549638181837,
+          "lon": -46.86754567002461
+        },
+        {
+          "lat": -20.872549638181837,
+          "lon": -46.86754567002461
+        },
+        {
+          "lat": -20.872549638181837,
+          "lon": -46.86754567002461
+        },
+        {
+          "lat": -20.872549638181837,
+          "lon": -46.86754567002461
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775089587561_82733",
+      "product_id": "milho",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 220,
+      "intensity": 0.52,
+      "falloff": "gaussian",
+      "created_at": "2026-04-02T00:26:27.561Z",
+      "points": [
+        {
+          "lat": -18.113739047219525,
+          "lon": -50.14932793037871
+        },
+        {
+          "lat": -18.113739047219525,
+          "lon": -50.14932793037871
+        },
+        {
+          "lat": -18.113739047219525,
+          "lon": -50.14932793037871
+        },
+        {
+          "lat": -18.113739047219525,
+          "lon": -50.14932793037871
+        },
+        {
+          "lat": -18.113739047219525,
+          "lon": -50.14932793037871
+        },
+        {
+          "lat": -18.113739047219525,
+          "lon": -50.14932793037871
+        },
+        {
+          "lat": -18.113739047219525,
+          "lon": -50.14932793037871
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775089588270_23431",
+      "product_id": "milho",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 220,
+      "intensity": 0.52,
+      "falloff": "gaussian",
+      "created_at": "2026-04-02T00:26:28.270Z",
+      "points": [
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        },
+        {
+          "lat": -16.475603515364394,
+          "lon": -54.28942247421003
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775089588913_46392",
+      "product_id": "milho",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 220,
+      "intensity": 0.52,
+      "falloff": "gaussian",
+      "created_at": "2026-04-02T00:26:28.913Z",
+      "points": [
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        },
+        {
+          "lat": -14.823499149007766,
+          "lon": -56.510936619680486
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775089589660_61753",
+      "product_id": "milho",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 220,
+      "intensity": 0.52,
+      "falloff": "gaussian",
+      "created_at": "2026-04-02T00:26:29.660Z",
+      "points": [
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        },
+        {
+          "lat": -15.310788595637069,
+          "lon": -55.80409120975808
+        }
+      ]
+    }
+  ],
+  "baked_city_values": [
+    {
+      "city_id": "ba-alagoinhas",
+      "city_label": "Alagoinhas, BA",
+      "state_code": "BA",
+      "base_value": 300,
+      "manual_delta": 0,
+      "final_value": 300,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pa-altamira",
+      "city_label": "Altamira, PA",
+      "state_code": "PA",
+      "base_value": 225,
+      "manual_delta": 0,
+      "final_value": 225,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774655515243",
+      "city_label": "Anápolis, GO",
+      "state_code": "GO",
+      "base_value": 4885.295471952239,
+      "manual_delta": 0,
+      "final_value": 4885.295471952239,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 51.46979136451815
+    },
+    {
+      "city_id": "custom-city-1774653448919",
+      "city_label": "Angra dos Reis, RJ",
+      "state_code": "RJ",
+      "base_value": 284.05462174886094,
+      "manual_delta": 0,
+      "final_value": 284.05462174886094,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 57.17729698566301
+    },
+    {
+      "city_id": "custom-city-1774628161537",
+      "city_label": "Apucarana, PR",
+      "state_code": "PR",
+      "base_value": 3622.135360561862,
+      "manual_delta": 495.14388911709983,
+      "final_value": 4117.279249678962,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "se-aracaju",
+      "city_label": "Aracaju, SE",
+      "state_code": "SE",
+      "base_value": 150,
+      "manual_delta": 0,
+      "final_value": 150,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sp-aracatuba",
+      "city_label": "Araçatuba, SP",
+      "state_code": "SP",
+      "base_value": 750,
+      "manual_delta": 0,
+      "final_value": 750,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774656618112",
+      "city_label": "Araguaína, TO",
+      "state_code": "TO",
+      "base_value": 309.2689289649938,
+      "manual_delta": 0,
+      "final_value": 309.2689289649938,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 204.09423289221937
+    },
+    {
+      "city_id": "al-arapiraca",
+      "city_label": "Arapiraca, AL",
+      "state_code": "AL",
+      "base_value": 420,
+      "manual_delta": 0,
+      "final_value": 420,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sp-araraquara",
+      "city_label": "Araraquara, SP",
+      "state_code": "SP",
+      "base_value": 550,
+      "manual_delta": 74.46549984280276,
+      "final_value": 624.4654998428027,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774655738463",
+      "city_label": "Araxá, MG",
+      "state_code": "MG",
+      "base_value": 1687.8001775187117,
+      "manual_delta": 160.7936490136236,
+      "final_value": 1848.5938265323352,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 159.91703277246322
+    },
+    {
+      "city_id": "custom-city-1774652111570",
+      "city_label": "Arujá, SP",
+      "state_code": "SP",
+      "base_value": 5684.002421329452,
+      "manual_delta": 0,
+      "final_value": 5684.002421329452,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "sp-assis",
+      "city_label": "Assis, SP",
+      "state_code": "SP",
+      "base_value": 600,
+      "manual_delta": 735.8553065350292,
+      "final_value": 1335.8553065350293,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774706313030",
+      "city_label": "Atibaia, SP",
+      "state_code": "SP",
+      "base_value": 4967.983991536164,
+      "manual_delta": 0,
+      "final_value": 4967.983991536164,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 48.636406671124156
+    },
+    {
+      "city_id": "ma-bacabal",
+      "city_label": "Bacabal, MA",
+      "state_code": "MA",
+      "base_value": 350,
+      "manual_delta": 0,
+      "final_value": 350,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774656652719",
+      "city_label": "Bacabeira, MA",
+      "state_code": "MA",
+      "base_value": 1746.4107195316406,
+      "manual_delta": 0,
+      "final_value": 1746.4107195316406,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 48.29701795560981
+    },
+    {
+      "city_id": "rs-bage",
+      "city_label": "Bagé, RS",
+      "state_code": "RS",
+      "base_value": 2500,
+      "manual_delta": 0,
+      "final_value": 2500,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774651936401",
+      "city_label": "Balsa Nova, PR",
+      "state_code": "PR",
+      "base_value": 6449.0183793589895,
+      "manual_delta": 43.20266189143246,
+      "final_value": 6492.221041250422,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45.64387252817066
+    },
+    {
+      "city_id": "custom-city-1774654970382",
+      "city_label": "Barbacena, MG",
+      "state_code": "MG",
+      "base_value": 602.4215337754514,
+      "manual_delta": 0,
+      "final_value": 602.4215337754514,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 52.85147889381894
+    },
+    {
+      "city_id": "am-barcelos",
+      "city_label": "Barcelos, AM",
+      "state_code": "AM",
+      "base_value": 43,
+      "manual_delta": 0,
+      "final_value": 43,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774616720397",
+      "city_label": "Barra do Bugres, MT",
+      "state_code": "MT",
+      "base_value": 2628.0300489219553,
+      "manual_delta": 1985.0732186399946,
+      "final_value": 4613.10326756195,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 129.61474495548674
+    },
+    {
+      "city_id": "mt-barra-do-garcas",
+      "city_label": "Barra do Garças, MT",
+      "state_code": "MT",
+      "base_value": 1150,
+      "manual_delta": 0,
+      "final_value": 1150,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774653208269",
+      "city_label": "Barra Mansa, RJ",
+      "state_code": "RJ",
+      "base_value": 218.8024595270766,
+      "manual_delta": 0,
+      "final_value": 218.8024595270766,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774659702502",
+      "city_label": "Barra, BA",
+      "state_code": "BA",
+      "base_value": 467.6750530865738,
+      "manual_delta": 0,
+      "final_value": 467.6750530865738,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 235.2287152544368
+    },
+    {
+      "city_id": "ba-barreiras",
+      "city_label": "Barreiras, BA",
+      "state_code": "BA",
+      "base_value": 1700,
+      "manual_delta": 0,
+      "final_value": 1700,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774616489414",
+      "city_label": "Barretos, SP",
+      "state_code": "SP",
+      "base_value": 1110.3783996229374,
+      "manual_delta": 51.572449004135244,
+      "final_value": 1161.9508486270727,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 88.42052516074465
+    },
+    {
+      "city_id": "custom-city-1774652143280",
+      "city_label": "Barueri, SP",
+      "state_code": "SP",
+      "base_value": 6026.868448295476,
+      "manual_delta": 11.85267377140085,
+      "final_value": 6038.721122066877,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "sp-bauru",
+      "city_label": "Bauru, SP",
+      "state_code": "SP",
+      "base_value": 750,
+      "manual_delta": 69.35645562642168,
+      "final_value": 819.3564556264216,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774655617684",
+      "city_label": "Bebedouro, SP",
+      "state_code": "SP",
+      "base_value": 994.0712928437385,
+      "manual_delta": 84.92194411935695,
+      "final_value": 1078.9932369630956,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 71.7005461845322
+    },
+    {
+      "city_id": "pa-belem",
+      "city_label": "Belém, PA",
+      "state_code": "PA",
+      "base_value": 540,
+      "manual_delta": 0,
+      "final_value": 540,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "mg-belo-horizonte",
+      "city_label": "Belo Horizonte, MG",
+      "state_code": "MG",
+      "base_value": 3750,
+      "manual_delta": 0,
+      "final_value": 3750,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774616779992",
+      "city_label": "Benjamin Constant, AM",
+      "state_code": "AM",
+      "base_value": 8.70261608576371,
+      "manual_delta": 0,
+      "final_value": 8.70261608576371,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 465.90773240653726
+    },
+    {
+      "city_id": "custom-city-1774655722853",
+      "city_label": "Betim, MG",
+      "state_code": "MG",
+      "base_value": 2635.1858939264584,
+      "manual_delta": 0,
+      "final_value": 2635.1858939264584,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "sc-blumenau",
+      "city_label": "Blumenau, SC",
+      "state_code": "SC",
+      "base_value": 1400,
+      "manual_delta": 0,
+      "final_value": 1400,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rr-boa-vista",
+      "city_label": "Boa Vista, RR",
+      "state_code": "RR",
+      "base_value": 67.5,
+      "manual_delta": 0,
+      "final_value": 67.5,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774656074062",
+      "city_label": "Bom Jesus da Lapa, BA",
+      "state_code": "BA",
+      "base_value": 647.2680622074029,
+      "manual_delta": 0,
+      "final_value": 647.2680622074029,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 211.57641834619903
+    },
+    {
+      "city_id": "custom-city-1774654601817",
+      "city_label": "Botucatu, SP",
+      "state_code": "SP",
+      "base_value": 605.3535059147721,
+      "manual_delta": 35.014084570377655,
+      "final_value": 640.3675904851498,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 83.60500051804084
+    },
+    {
+      "city_id": "custom-city-1774654798605",
+      "city_label": "Bragança Paulista, SP",
+      "state_code": "SP",
+      "base_value": 4031.7174002775832,
+      "manual_delta": 0,
+      "final_value": 4031.7174002775832,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 57.504558090301806
+    },
+    {
+      "city_id": "df-brasilia",
+      "city_label": "Brasília, DF",
+      "state_code": "DF",
+      "base_value": 810,
+      "manual_delta": 0,
+      "final_value": 810,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pa-breves",
+      "city_label": "Breves, PA",
+      "state_code": "PA",
+      "base_value": 25,
+      "manual_delta": 0,
+      "final_value": 25,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774653483028",
+      "city_label": "Cabo Frio, RJ",
+      "state_code": "RJ",
+      "base_value": 485.05599862632255,
+      "manual_delta": 0,
+      "final_value": 485.05599862632255,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 120.39513572333293
+    },
+    {
+      "city_id": "es-cachoeiro-de-itapemirim",
+      "city_label": "Cachoeiro de Itapemirim, ES",
+      "state_code": "ES",
+      "base_value": 125,
+      "manual_delta": 0,
+      "final_value": 125,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rn-caico",
+      "city_label": "Caicó, RN",
+      "state_code": "RN",
+      "base_value": 140,
+      "manual_delta": 0,
+      "final_value": 140,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pb-campina-grande-parte",
+      "city_label": "Campina Grande (parte), PB",
+      "state_code": "PB",
+      "base_value": 87,
+      "manual_delta": 0,
+      "final_value": 87,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pb-campina-grande",
+      "city_label": "Campina Grande, PB",
+      "state_code": "PB",
+      "base_value": 150,
+      "manual_delta": 0,
+      "final_value": 150,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sp-campinas",
+      "city_label": "Campinas, SP",
+      "state_code": "SP",
+      "base_value": 1400,
+      "manual_delta": 0,
+      "final_value": 1400,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ms-campo-grande",
+      "city_label": "Campo Grande, MS",
+      "state_code": "MS",
+      "base_value": 3500,
+      "manual_delta": 0,
+      "final_value": 3500,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pr-campo-mourao",
+      "city_label": "Campo Mourão, PR",
+      "state_code": "PR",
+      "base_value": 2500,
+      "manual_delta": 28.249235755324868,
+      "final_value": 2528.2492357553247,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rj-campos-dos-goytacazes",
+      "city_label": "Campos dos Goytacazes, RJ",
+      "state_code": "RJ",
+      "base_value": 35,
+      "manual_delta": 0,
+      "final_value": 35,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pe-caruaru-parte-vitoria-de-s-antao",
+      "city_label": "Caruaru (parte)/Vitória de S.Antão, PE",
+      "state_code": "PE",
+      "base_value": 280,
+      "manual_delta": 0,
+      "final_value": 280,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pe-caruaru",
+      "city_label": "Caruaru, PE",
+      "state_code": "PE",
+      "base_value": 290,
+      "manual_delta": 0,
+      "final_value": 290,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pr-cascavel",
+      "city_label": "Cascavel, PR",
+      "state_code": "PR",
+      "base_value": 7000,
+      "manual_delta": 0,
+      "final_value": 7000,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pa-castanhal",
+      "city_label": "Castanhal, PA",
+      "state_code": "PA",
+      "base_value": 475,
+      "manual_delta": 0,
+      "final_value": 475,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ce-caucaia",
+      "city_label": "Caucaia, CE",
+      "state_code": "CE",
+      "base_value": 145,
+      "manual_delta": 0,
+      "final_value": 145,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rs-caxias-do-sul",
+      "city_label": "Caxias do Sul, RS",
+      "state_code": "RS",
+      "base_value": 1550,
+      "manual_delta": 0,
+      "final_value": 1550,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ma-caxias",
+      "city_label": "Caxias, MA",
+      "state_code": "MA",
+      "base_value": 425,
+      "manual_delta": 0,
+      "final_value": 425,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sc-chapeco",
+      "city_label": "Chapecó, SC",
+      "state_code": "SC",
+      "base_value": 7500,
+      "manual_delta": 0,
+      "final_value": 7500,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774658967321",
+      "city_label": "Chuí, RS",
+      "state_code": "RS",
+      "base_value": 1171.2754541088823,
+      "manual_delta": 0,
+      "final_value": 1171.2754541088823,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 237.9693856661515
+    },
+    {
+      "city_id": "es-colatina",
+      "city_label": "Colatina, ES",
+      "state_code": "ES",
+      "base_value": 100,
+      "manual_delta": 0,
+      "final_value": 100,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774660103748",
+      "city_label": "Contagem, MG",
+      "state_code": "MG",
+      "base_value": 2702.820600466583,
+      "manual_delta": 0,
+      "final_value": 2702.820600466583,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "pr-cornelio-procopio",
+      "city_label": "Cornélio Procópio, PR",
+      "state_code": "PR",
+      "base_value": 2200,
+      "manual_delta": 1491.6585334321785,
+      "final_value": 3691.6585334321785,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ms-corumba",
+      "city_label": "Corumbá, MS",
+      "state_code": "MS",
+      "base_value": 200,
+      "manual_delta": 0,
+      "final_value": 200,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774657835435",
+      "city_label": "Coxim, MS",
+      "state_code": "MS",
+      "base_value": 1373.4806094931434,
+      "manual_delta": 0,
+      "final_value": 1373.4806094931434,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 216.1893940164633
+    },
+    {
+      "city_id": "sc-criciuma",
+      "city_label": "Criciúma, SC",
+      "state_code": "SC",
+      "base_value": 1300,
+      "manual_delta": 0,
+      "final_value": 1300,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "go-crixas",
+      "city_label": "Crixás, GO",
+      "state_code": "GO",
+      "base_value": 700,
+      "manual_delta": 0,
+      "final_value": 700,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774659438572",
+      "city_label": "Cruzeiro do Sul, AC",
+      "state_code": "AC",
+      "base_value": 49.8048876021159,
+      "manual_delta": 0,
+      "final_value": 49.8048876021159,
+      "source": "interpolated",
+      "anchor_count": 2,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "mt-cuiaba",
+      "city_label": "Cuiabá, MT",
+      "state_code": "MT",
+      "base_value": 4150,
+      "manual_delta": 3605.384908856734,
+      "final_value": 7755.384908856734,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pr-curitiba",
+      "city_label": "Curitiba, PR",
+      "state_code": "PR",
+      "base_value": 9750,
+      "manual_delta": 97.98639163921268,
+      "final_value": 9847.986391639213,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "graph_node_1774574040180",
+      "city_label": "Curitibanos, SC",
+      "state_code": "SC",
+      "base_value": 944.6542687407673,
+      "manual_delta": 0,
+      "final_value": 944.6542687407673,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 60.597246302208305
+    },
+    {
+      "city_id": "rn-currais-novos",
+      "city_label": "Currais Novos, RN",
+      "state_code": "RN",
+      "base_value": 137,
+      "manual_delta": 0,
+      "final_value": 137,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "mg-curvelo",
+      "city_label": "Curvelo, MG",
+      "state_code": "MG",
+      "base_value": 850,
+      "manual_delta": 0,
+      "final_value": 850,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "al-delmiro-gouveia",
+      "city_label": "Delmiro Gouveia, AL",
+      "state_code": "AL",
+      "base_value": 215,
+      "manual_delta": 0,
+      "final_value": 215,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "mg-diamantina",
+      "city_label": "Diamantina, MG",
+      "state_code": "MG",
+      "base_value": 300,
+      "manual_delta": 0,
+      "final_value": 300,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "mg-divinopolis",
+      "city_label": "Divinópolis, MG",
+      "state_code": "MG",
+      "base_value": 1000,
+      "manual_delta": 0,
+      "final_value": 1000,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ms-dourados",
+      "city_label": "Dourados, MS",
+      "state_code": "MS",
+      "base_value": 4150,
+      "manual_delta": 0,
+      "final_value": 4150,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rj-duque-de-caxias",
+      "city_label": "Duque de Caxias, RJ",
+      "state_code": "RJ",
+      "base_value": 225,
+      "manual_delta": 0,
+      "final_value": 225,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774652196430",
+      "city_label": "Embu das Artes, SP",
+      "state_code": "SP",
+      "base_value": 6023.58591734565,
+      "manual_delta": 20.398209393936614,
+      "final_value": 6043.984126739587,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774793855241",
+      "city_label": "Erechim, RS",
+      "state_code": "RS",
+      "base_value": 4915.8207955442895,
+      "manual_delta": 0,
+      "final_value": 4915.8207955442895,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 69.17102488561758
+    },
+    {
+      "city_id": "se-estancia",
+      "city_label": "Estância, SE",
+      "state_code": "SE",
+      "base_value": 95,
+      "manual_delta": 0,
+      "final_value": 95,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774654438749",
+      "city_label": "Eunápolis, BA",
+      "state_code": "BA",
+      "base_value": 126.6104723113921,
+      "manual_delta": 0,
+      "final_value": 126.6104723113921,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 185.23402409006368
+    },
+    {
+      "city_id": "custom-city-1774794308956",
+      "city_label": "Feira de Santana, BA",
+      "state_code": "BA",
+      "base_value": 468.6747251743034,
+      "manual_delta": 0,
+      "final_value": 468.6747251743034,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "pi-floriano",
+      "city_label": "Floriano, PI",
+      "state_code": "PI",
+      "base_value": 325,
+      "manual_delta": 0,
+      "final_value": 325,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sc-florianopolis",
+      "city_label": "Florianópolis, SC",
+      "state_code": "SC",
+      "base_value": 900,
+      "manual_delta": 0,
+      "final_value": 900,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "go-formosa",
+      "city_label": "Formosa, GO",
+      "state_code": "GO",
+      "base_value": 2050,
+      "manual_delta": 0,
+      "final_value": 2050,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ce-fortaleza",
+      "city_label": "Fortaleza, CE",
+      "state_code": "CE",
+      "base_value": 525,
+      "manual_delta": 0,
+      "final_value": 525,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774654466040",
+      "city_label": "Foz do Iguaçu, PR",
+      "state_code": "PR",
+      "base_value": 4058.2197574181087,
+      "manual_delta": 0,
+      "final_value": 4058.2197574181087,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 127.57257008485621
+    },
+    {
+      "city_id": "pr-francisco-beltrao",
+      "city_label": "Francisco Beltrão, PR",
+      "state_code": "PR",
+      "base_value": 4500,
+      "manual_delta": 0,
+      "final_value": 4500,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774656274443",
+      "city_label": "Garanhuns, PE",
+      "state_code": "PE",
+      "base_value": 291.6383370804943,
+      "manual_delta": 0,
+      "final_value": 291.6383370804943,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 87.57116830371226
+    },
+    {
+      "city_id": "go-goiania",
+      "city_label": "Goiânia, GO",
+      "state_code": "GO",
+      "base_value": 6250,
+      "manual_delta": 44.83622669650466,
+      "final_value": 6294.836226696505,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "mg-governador-valadares",
+      "city_label": "Governador Valadares, MG",
+      "state_code": "MG",
+      "base_value": 650,
+      "manual_delta": 0,
+      "final_value": 650,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774657068750",
+      "city_label": "Guajará-Mirim, RO",
+      "state_code": "RO",
+      "base_value": 132.94749647928265,
+      "manual_delta": 0,
+      "final_value": 132.94749647928265,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 273.88558717810133
+    },
+    {
+      "city_id": "pr-guarapuava",
+      "city_label": "Guarapuava, PR",
+      "state_code": "PR",
+      "base_value": 3000,
+      "manual_delta": 0,
+      "final_value": 3000,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774654851133",
+      "city_label": "Guarulhos, SP",
+      "state_code": "SP",
+      "base_value": 6289.08350881653,
+      "manual_delta": 0,
+      "final_value": 6289.08350881653,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "graph_node_1774579811095",
+      "city_label": "Humaitá, AM",
+      "state_code": "AM",
+      "base_value": 154.7066186165976,
+      "manual_delta": 0,
+      "final_value": 154.7066186165976,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 169.32820655300176
+    },
+    {
+      "city_id": "custom-city-1774706999311",
+      "city_label": "Ibotirama, BA",
+      "state_code": "BA",
+      "base_value": 666.809144287206,
+      "manual_delta": 0,
+      "final_value": 666.809144287206,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 193.36403211968332
+    },
+    {
+      "city_id": "ce-iguatu",
+      "city_label": "Iguatu, CE",
+      "state_code": "CE",
+      "base_value": 90,
+      "manual_delta": 0,
+      "final_value": 90,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774650002313",
+      "city_label": "Ijuí, RS",
+      "state_code": "RS",
+      "base_value": 2754.756430452272,
+      "manual_delta": 0,
+      "final_value": 2754.756430452272,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 143.29650138749165
+    },
+    {
+      "city_id": "ba-ilheus",
+      "city_label": "Ilhéus, BA",
+      "state_code": "BA",
+      "base_value": 200,
+      "manual_delta": 0,
+      "final_value": 200,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ma-imperatriz-regiao-acailandia",
+      "city_label": "Imperatriz (região)/ Açailândia, MA",
+      "state_code": "MA",
+      "base_value": 750,
+      "manual_delta": 0,
+      "final_value": 750,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ma-imperatriz",
+      "city_label": "Imperatriz, MA",
+      "state_code": "MA",
+      "base_value": 550,
+      "manual_delta": 0,
+      "final_value": 550,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774919748633",
+      "city_label": "Irati, PR",
+      "state_code": "PR",
+      "base_value": 2933.01778128316,
+      "manual_delta": 30.829710979812347,
+      "final_value": 2963.847492262972,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 62.29779098035608
+    },
+    {
+      "city_id": "se-itabaiana",
+      "city_label": "Itabaiana, SE",
+      "state_code": "SE",
+      "base_value": 90,
+      "manual_delta": 0,
+      "final_value": 90,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "graph_node_1774576897604",
+      "city_label": "Itaberaí, GO",
+      "state_code": "GO",
+      "base_value": 3947.874017680905,
+      "manual_delta": 0,
+      "final_value": 3947.874017680905,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 90.61403804084351
+    },
+    {
+      "city_id": "custom-city-1774653589761",
+      "city_label": "Itaboraí, RJ",
+      "state_code": "RJ",
+      "base_value": 736.2589514520974,
+      "manual_delta": 0,
+      "final_value": 736.2589514520974,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774656012834",
+      "city_label": "Itabuna, BA",
+      "state_code": "BA",
+      "base_value": 199.6313465153677,
+      "manual_delta": 0,
+      "final_value": 199.6313465153677,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "am-itacoatiara",
+      "city_label": "Itacoatiara, AM",
+      "state_code": "AM",
+      "base_value": 40,
+      "manual_delta": 0,
+      "final_value": 40,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "graph_node_1774580502898",
+      "city_label": "Itaituba, PA",
+      "state_code": "PA",
+      "base_value": 63.75228918053878,
+      "manual_delta": 0,
+      "final_value": 63.75228918053878,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 249.43924104725616
+    },
+    {
+      "city_id": "custom-city-1774620893762",
+      "city_label": "Itajaí, SC",
+      "state_code": "SC",
+      "base_value": 1498.6502880884093,
+      "manual_delta": 23.50991617725568,
+      "final_value": 1522.160204265665,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774991729696",
+      "city_label": "Itaobim, MG",
+      "state_code": "MG",
+      "base_value": 262.4815216292986,
+      "manual_delta": 0,
+      "final_value": 262.4815216292986,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 142.85466031810938
+    },
+    {
+      "city_id": "custom-city-1774706423438",
+      "city_label": "Itaocara, RJ",
+      "state_code": "RJ",
+      "base_value": 55.46613369586836,
+      "manual_delta": 0,
+      "final_value": 55.46613369586836,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774793968551",
+      "city_label": "Itapetininga, SP",
+      "state_code": "SP",
+      "base_value": 1345.080286240417,
+      "manual_delta": 30.168831258671887,
+      "final_value": 1375.249117499089,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 61.9492989572848
+    },
+    {
+      "city_id": "custom-city-1774793978625",
+      "city_label": "Itararé, SP",
+      "state_code": "SP",
+      "base_value": 2881.691576257617,
+      "manual_delta": 571.5369297887773,
+      "final_value": 3453.228506046394,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 136.4726766552111
+    },
+    {
+      "city_id": "custom-city-1774659913650",
+      "city_label": "Jaboatão dos Guararapes, PE",
+      "state_code": "PE",
+      "base_value": 623.4318631063347,
+      "manual_delta": 0,
+      "final_value": 623.4318631063347,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774706353273",
+      "city_label": "Jacareí, SP",
+      "state_code": "SP",
+      "base_value": 3743.625709507488,
+      "manual_delta": 0,
+      "final_value": 3743.625709507488,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774616975848",
+      "city_label": "Jales, SP",
+      "state_code": "SP",
+      "base_value": 624.5009558426173,
+      "manual_delta": 0,
+      "final_value": 624.5009558426173,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 104.24806882212569
+    },
+    {
+      "city_id": "custom-city-1774655394860",
+      "city_label": "Jataí, GO",
+      "state_code": "GO",
+      "base_value": 5519.23638143662,
+      "manual_delta": 74.87079075076176,
+      "final_value": 5594.107172187381,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 86.87586028699558
+    },
+    {
+      "city_id": "custom-city-1774628178338",
+      "city_label": "Jaú, SP",
+      "state_code": "SP",
+      "base_value": 607.4814184423989,
+      "manual_delta": 0,
+      "final_value": 607.4814184423989,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 54.612806304317026
+    },
+    {
+      "city_id": "custom-city-1774612401584",
+      "city_label": "Jequié, BA",
+      "state_code": "BA",
+      "base_value": 254.67327555199938,
+      "manual_delta": 0,
+      "final_value": 254.67327555199938,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 138.12005760654367
+    },
+    {
+      "city_id": "ro-ji-parana",
+      "city_label": "Ji-Paraná, RO",
+      "state_code": "RO",
+      "base_value": 800,
+      "manual_delta": 0,
+      "final_value": 800,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774706185379",
+      "city_label": "Joaçaba, SC",
+      "state_code": "SC",
+      "base_value": 3191.8128058862967,
+      "manual_delta": 0,
+      "final_value": 3191.8128058862967,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 108.59730997425014
+    },
+    {
+      "city_id": "pb-joao-pessoa",
+      "city_label": "João Pessoa, PB",
+      "state_code": "PB",
+      "base_value": 165,
+      "manual_delta": 0,
+      "final_value": 165,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sc-joinville",
+      "city_label": "Joinville, SC",
+      "state_code": "SC",
+      "base_value": 2300,
+      "manual_delta": 97.93905685065535,
+      "final_value": 2397.9390568506556,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ce-juazeiro-do-norte",
+      "city_label": "Juazeiro do Norte, CE",
+      "state_code": "CE",
+      "base_value": 240,
+      "manual_delta": 0,
+      "final_value": 240,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ba-juazeiro",
+      "city_label": "Juazeiro, BA",
+      "state_code": "BA",
+      "base_value": 350,
+      "manual_delta": 0,
+      "final_value": 350,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "mg-juiz-de-fora",
+      "city_label": "Juiz de Fora, MG",
+      "state_code": "MG",
+      "base_value": 550,
+      "manual_delta": 0,
+      "final_value": 550,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774653762337",
+      "city_label": "Jundiaí, SP",
+      "state_code": "SP",
+      "base_value": 4394.692631963765,
+      "manual_delta": 0,
+      "final_value": 4394.692631963765,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "am-labrea",
+      "city_label": "Lábrea, AM",
+      "state_code": "AM",
+      "base_value": 48,
+      "manual_delta": 0,
+      "final_value": 48,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sc-lages",
+      "city_label": "Lages, SC",
+      "state_code": "SC",
+      "base_value": 900,
+      "manual_delta": 0,
+      "final_value": 900,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774649662069",
+      "city_label": "Laguna, SC",
+      "state_code": "SC",
+      "base_value": 1029.9776677670327,
+      "manual_delta": 0,
+      "final_value": 1029.9776677670327,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 60.578931262761195
+    },
+    {
+      "city_id": "custom-city-1774616597293",
+      "city_label": "Lavras, MG",
+      "state_code": "MG",
+      "base_value": 515.3456254331171,
+      "manual_delta": 27.36400126083075,
+      "final_value": 542.7096266939478,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 78.4420186614292
+    },
+    {
+      "city_id": "custom-city-1774653782150",
+      "city_label": "Limeira, SP",
+      "state_code": "SP",
+      "base_value": 948.8650727028337,
+      "manual_delta": 33.59889554563851,
+      "final_value": 982.4639682484722,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "ce-limoeiro-do-norte",
+      "city_label": "Limoeiro do Norte, CE",
+      "state_code": "CE",
+      "base_value": 180,
+      "manual_delta": 0,
+      "final_value": 180,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pr-londrina",
+      "city_label": "Londrina, PR",
+      "state_code": "PR",
+      "base_value": 5500,
+      "manual_delta": 924.9510390251356,
+      "final_value": 6424.951039025135,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774706529461",
+      "city_label": "Lorena, SP",
+      "state_code": "SP",
+      "base_value": 1582.5536371218661,
+      "manual_delta": 0,
+      "final_value": 1582.5536371218661,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 94.43622123197592
+    },
+    {
+      "city_id": "custom-city-1774707067451",
+      "city_label": "Luís Eduardo Magalhães, BA",
+      "state_code": "BA",
+      "base_value": 1280.5125675526426,
+      "manual_delta": 0,
+      "final_value": 1280.5125675526426,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 88.00132748769957
+    },
+    {
+      "city_id": "ap-macapa",
+      "city_label": "Macapá, AP",
+      "state_code": "AP",
+      "base_value": 40,
+      "manual_delta": 0,
+      "final_value": 40,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774616385241",
+      "city_label": "Macau, RN",
+      "state_code": "RN",
+      "base_value": 121.05986803643313,
+      "manual_delta": 0,
+      "final_value": 121.05986803643313,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 79.51099594293673
+    },
+    {
+      "city_id": "al-maceio",
+      "city_label": "Maceió, AL",
+      "state_code": "AL",
+      "base_value": 730,
+      "manual_delta": 0,
+      "final_value": 730,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774908081270",
+      "city_label": "Mafra, SC",
+      "state_code": "SC",
+      "base_value": 3357.427371627287,
+      "manual_delta": 0,
+      "final_value": 3357.427371627287,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 94.04027387766251
+    },
+    {
+      "city_id": "am-manaus",
+      "city_label": "Manaus, AM",
+      "state_code": "AM",
+      "base_value": 300,
+      "manual_delta": 0,
+      "final_value": 300,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pa-maraba",
+      "city_label": "Marabá, PA",
+      "state_code": "PA",
+      "base_value": 380,
+      "manual_delta": 0,
+      "final_value": 380,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774659840078",
+      "city_label": "Maracanaú, CE",
+      "state_code": "CE",
+      "base_value": 296.56914966647184,
+      "manual_delta": 0,
+      "final_value": 296.56914966647184,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774659846142",
+      "city_label": "Maranguape, CE",
+      "state_code": "CE",
+      "base_value": 296.386468919563,
+      "manual_delta": 0,
+      "final_value": 296.386468919563,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "sp-marilia",
+      "city_label": "Marília, SP",
+      "state_code": "SP",
+      "base_value": 600,
+      "manual_delta": 199.37036060755122,
+      "final_value": 799.3703606075512,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pr-maringa",
+      "city_label": "Maringá, PR",
+      "state_code": "PR",
+      "base_value": 3250,
+      "manual_delta": 164.08876956509346,
+      "final_value": 3414.0887695650936,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774654741252",
+      "city_label": "Matão, SP",
+      "state_code": "SP",
+      "base_value": 731.6619739200383,
+      "manual_delta": 65.70388504884549,
+      "final_value": 797.3658589688838,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774654786924",
+      "city_label": "Mogi Guaçu, SP",
+      "state_code": "SP",
+      "base_value": 1603.1578542848695,
+      "manual_delta": 87.824727636876,
+      "final_value": 1690.9825819217456,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 62.90476738267064
+    },
+    {
+      "city_id": "mg-montes-claros",
+      "city_label": "Montes Claros, MG",
+      "state_code": "MG",
+      "base_value": 700,
+      "manual_delta": 0,
+      "final_value": 700,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rn-mossoro",
+      "city_label": "Mossoró, RN",
+      "state_code": "RN",
+      "base_value": 150,
+      "manual_delta": 0,
+      "final_value": 150,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rn-natal",
+      "city_label": "Natal, RN",
+      "state_code": "RN",
+      "base_value": 165,
+      "manual_delta": 0,
+      "final_value": 165,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774649897683",
+      "city_label": "Navegantes, SC",
+      "state_code": "SC",
+      "base_value": 1531.6375850289653,
+      "manual_delta": 26.592334110430432,
+      "final_value": 1558.2299191393956,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774653324221",
+      "city_label": "Niterói, RJ",
+      "state_code": "RJ",
+      "base_value": 676.5710568948982,
+      "manual_delta": 0,
+      "final_value": 676.5710568948982,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774611926079",
+      "city_label": "Nova cidade 2, ZZ",
+      "state_code": "ZZ",
+      "base_value": 3092.165702470315,
+      "manual_delta": 0,
+      "final_value": 3092.165702470315,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 67.52163208325223
+    },
+    {
+      "city_id": "custom-city-1774654380983",
+      "city_label": "Nova cidade 61, ZZ",
+      "state_code": "ZZ",
+      "base_value": 840.227139663306,
+      "manual_delta": 0,
+      "final_value": 840.227139663306,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774614131915",
+      "city_label": "Nova cidade 7, ZZ",
+      "state_code": "ZZ",
+      "base_value": 448.1133694948402,
+      "manual_delta": 0,
+      "final_value": 448.1133694948402,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 61.95371155323508
+    },
+    {
+      "city_id": "custom-city-1774653543188",
+      "city_label": "Nova Friburgo, RJ",
+      "state_code": "RJ",
+      "base_value": 387.24965927564125,
+      "manual_delta": 0,
+      "final_value": 387.24965927564125,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 72.52691221235283
+    },
+    {
+      "city_id": "ap-oiapoque",
+      "city_label": "Oiapoque, AP",
+      "state_code": "AP",
+      "base_value": 21,
+      "manual_delta": 0,
+      "final_value": 21,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774659890331",
+      "city_label": "Olinda, PE",
+      "state_code": "PE",
+      "base_value": 621.7909218993291,
+      "manual_delta": 0,
+      "final_value": 621.7909218993291,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774616875938",
+      "city_label": "Ourinhos, SP",
+      "state_code": "SP",
+      "base_value": 783.6774161860164,
+      "manual_delta": 1011.2845288211654,
+      "final_value": 1794.9619450071818,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 64.08927569411911
+    },
+    {
+      "city_id": "to-palmas-parte-araguaina",
+      "city_label": "Palmas (parte)/Araguaína, TO",
+      "state_code": "TO",
+      "base_value": 650,
+      "manual_delta": 0,
+      "final_value": 650,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "to-palmas",
+      "city_label": "Palmas, TO",
+      "state_code": "TO",
+      "base_value": 850,
+      "manual_delta": 0,
+      "final_value": 850,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774706239636",
+      "city_label": "Paranaguá, PR",
+      "state_code": "PR",
+      "base_value": 5468.4474968027425,
+      "manual_delta": 518.0543267405529,
+      "final_value": 5986.501823543295,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 74.87278565203056
+    },
+    {
+      "city_id": "custom-city-1774660061321",
+      "city_label": "Paranavaí, PR",
+      "state_code": "PR",
+      "base_value": 2713.7231787230435,
+      "manual_delta": 0,
+      "final_value": 2713.7231787230435,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 65.27910790056123
+    },
+    {
+      "city_id": "custom-city-1774653439168",
+      "city_label": "Paraty, RJ",
+      "state_code": "RJ",
+      "base_value": 385.5196330920845,
+      "manual_delta": 0,
+      "final_value": 385.5196330920845,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 101.49365725634956
+    },
+    {
+      "city_id": "custom-city-1774707141366",
+      "city_label": "Parauapebas, PA",
+      "state_code": "PA",
+      "base_value": 301.50442634045226,
+      "manual_delta": 0,
+      "final_value": 301.50442634045226,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 113.77458022017042
+    },
+    {
+      "city_id": "custom-city-1774658092861",
+      "city_label": "Parintins, AM",
+      "state_code": "AM",
+      "base_value": 60.94575469165561,
+      "manual_delta": 0,
+      "final_value": 60.94575469165561,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 198.32433572994015
+    },
+    {
+      "city_id": "pi-parnaiba",
+      "city_label": "Parnaíba, PI",
+      "state_code": "PI",
+      "base_value": 155,
+      "manual_delta": 0,
+      "final_value": 155,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rs-passo-fundo",
+      "city_label": "Passo Fundo, RS",
+      "state_code": "RS",
+      "base_value": 5000,
+      "manual_delta": 0,
+      "final_value": 5000,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774616476517",
+      "city_label": "Passos, MG",
+      "state_code": "MG",
+      "base_value": 845.4953714176548,
+      "manual_delta": 962.3073987549658,
+      "final_value": 1807.8027701726205,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 117.74607908211742
+    },
+    {
+      "city_id": "custom-city-1774793711793",
+      "city_label": "Pato Branco, PR",
+      "state_code": "PR",
+      "base_value": 4203.768688384327,
+      "manual_delta": 0,
+      "final_value": 4203.768688384327,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774611854146",
+      "city_label": "Patos de Minas, MG",
+      "state_code": "MG",
+      "base_value": 1265.325475186267,
+      "manual_delta": 0,
+      "final_value": 1265.325475186267,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 188.72708447716445
+    },
+    {
+      "city_id": "pb-patos",
+      "city_label": "Patos, PB",
+      "state_code": "PB",
+      "base_value": 90,
+      "manual_delta": 0,
+      "final_value": 90,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rs-pelotas-sul",
+      "city_label": "Pelotas (sul), RS",
+      "state_code": "RS",
+      "base_value": 2250,
+      "manual_delta": 0,
+      "final_value": 2250,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rs-pelotas",
+      "city_label": "Pelotas, RS",
+      "state_code": "RS",
+      "base_value": 3250,
+      "manual_delta": 0,
+      "final_value": 3250,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pe-petrolandia",
+      "city_label": "Petrolândia, PE",
+      "state_code": "PE",
+      "base_value": 145,
+      "manual_delta": 0,
+      "final_value": 145,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pe-petrolina",
+      "city_label": "Petrolina, PE",
+      "state_code": "PE",
+      "base_value": 180,
+      "manual_delta": 0,
+      "final_value": 180,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rj-petropolis",
+      "city_label": "Petrópolis, RJ",
+      "state_code": "RJ",
+      "base_value": 60,
+      "manual_delta": 0,
+      "final_value": 60,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pi-picos",
+      "city_label": "Picos, PI",
+      "state_code": "PI",
+      "base_value": 250,
+      "manual_delta": 0,
+      "final_value": 250,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774616697725",
+      "city_label": "Pimenta Bueno, RO",
+      "state_code": "RO",
+      "base_value": 561.0060564180453,
+      "manual_delta": 0,
+      "final_value": 561.0060564180453,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 120.89006819761467
+    },
+    {
+      "city_id": "sp-piracicaba",
+      "city_label": "Piracicaba, SP",
+      "state_code": "SP",
+      "base_value": 900,
+      "manual_delta": 1.8833135035113782,
+      "final_value": 901.8833135035114,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "mg-pocos-de-caldas",
+      "city_label": "Poços de Caldas, MG",
+      "state_code": "MG",
+      "base_value": 1150,
+      "manual_delta": 381.35749372136047,
+      "final_value": 1531.3574937213605,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pr-ponta-grossa",
+      "city_label": "Ponta Grossa, PR",
+      "state_code": "PR",
+      "base_value": 3050,
+      "manual_delta": 138.9309646958768,
+      "final_value": 3188.930964695877,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774655269354",
+      "city_label": "Ponta Porã, MS",
+      "state_code": "MS",
+      "base_value": 3146.384065866588,
+      "manual_delta": 0,
+      "final_value": 3146.384065866588,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 99.52589745614874
+    },
+    {
+      "city_id": "go-porangatu",
+      "city_label": "Porangatu, GO",
+      "state_code": "GO",
+      "base_value": 550,
+      "manual_delta": 0,
+      "final_value": 550,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rs-porto-alegre",
+      "city_label": "Porto Alegre, RS",
+      "state_code": "RS",
+      "base_value": 6000,
+      "manual_delta": 0,
+      "final_value": 6000,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "graph_node_1774578101877",
+      "city_label": "Porto de Moz, PA",
+      "state_code": "PA",
+      "base_value": 66.84800511018354,
+      "manual_delta": 0,
+      "final_value": 66.84800511018354,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 185.07693079702804
+    },
+    {
+      "city_id": "custom-city-1774613578000",
+      "city_label": "Porto Seguro, BA",
+      "state_code": "BA",
+      "base_value": 121.38415083696174,
+      "manual_delta": 0,
+      "final_value": 121.38415083696174,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 183.3043612637698
+    },
+    {
+      "city_id": "ro-porto-velho",
+      "city_label": "Porto Velho, RO",
+      "state_code": "RO",
+      "base_value": 400,
+      "manual_delta": 0,
+      "final_value": 400,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774628313824",
+      "city_label": "Pouso Alegre, MG",
+      "state_code": "MG",
+      "base_value": 1485.1426658048053,
+      "manual_delta": 48.20493517274163,
+      "final_value": 1533.347600977547,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 87.18553596132004
+    },
+    {
+      "city_id": "sp-presidente-prudente",
+      "city_label": "Presidente Prudente, SP",
+      "state_code": "SP",
+      "base_value": 650,
+      "manual_delta": 57.3306018111158,
+      "final_value": 707.3306018111158,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "mt-primavera-do-leste",
+      "city_label": "Primavera do Leste, MT",
+      "state_code": "MT",
+      "base_value": 2500,
+      "manual_delta": 1118.894036341013,
+      "final_value": 3618.894036341013,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774707013810",
+      "city_label": "Rafael Jambeiro, BA",
+      "state_code": "BA",
+      "base_value": 478.3559928230059,
+      "manual_delta": 0,
+      "final_value": 478.3559928230059,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 69.66538421609793
+    },
+    {
+      "city_id": "pe-recife",
+      "city_label": "Recife, PE",
+      "state_code": "PE",
+      "base_value": 825,
+      "manual_delta": 0,
+      "final_value": 825,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774794663969",
+      "city_label": "Redenção, PA",
+      "state_code": "PA",
+      "base_value": 195.65493727609635,
+      "manual_delta": 0,
+      "final_value": 195.65493727609635,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 307.11017804507406
+    },
+    {
+      "city_id": "custom-city-1774651976918",
+      "city_label": "Registro, SP",
+      "state_code": "SP",
+      "base_value": 3287.4153756977253,
+      "manual_delta": 462.8302723905535,
+      "final_value": 3750.245648088279,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 117.50740769454248
+    },
+    {
+      "city_id": "custom-city-1774653160563",
+      "city_label": "Resende, RJ",
+      "state_code": "RJ",
+      "base_value": 158.9291445154207,
+      "manual_delta": 0,
+      "final_value": 158.9291445154207,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774656112916",
+      "city_label": "Riacho de Santana, BA",
+      "state_code": "BA",
+      "base_value": 328.5273430231901,
+      "manual_delta": 0,
+      "final_value": 328.5273430231901,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 264.45806468130905
+    },
+    {
+      "city_id": "custom-city-1774655586224",
+      "city_label": "Ribeirão Preto, SP",
+      "state_code": "SP",
+      "base_value": 1217.8653248005878,
+      "manual_delta": 422.0418479671277,
+      "final_value": 1639.9071727677156,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774653499345",
+      "city_label": "Rio Bonito, RJ",
+      "state_code": "RJ",
+      "base_value": 691.4753850480176,
+      "manual_delta": 0,
+      "final_value": 691.4753850480176,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 60.47426655468314
+    },
+    {
+      "city_id": "ac-rio-branco",
+      "city_label": "Rio Branco, AC",
+      "state_code": "AC",
+      "base_value": 115,
+      "manual_delta": 0,
+      "final_value": 115,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rj-rio-de-janeiro",
+      "city_label": "Rio de Janeiro, RJ",
+      "state_code": "RJ",
+      "base_value": 2050,
+      "manual_delta": 0,
+      "final_value": 2050,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774655402929",
+      "city_label": "Rio Verde, GO",
+      "state_code": "GO",
+      "base_value": 6697.994532034635,
+      "manual_delta": 506.1147543734123,
+      "final_value": 7204.109286408047,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "mt-rondonopolis",
+      "city_label": "Rondonópolis, MT",
+      "state_code": "MT",
+      "base_value": 3600,
+      "manual_delta": 2274.651048344755,
+      "final_value": 5874.651048344755,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rr-rorainopolis",
+      "city_label": "Rorainópolis, RR",
+      "state_code": "RR",
+      "base_value": 45.5,
+      "manual_delta": 0,
+      "final_value": 45.5,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ba-salvador",
+      "city_label": "Salvador, BA",
+      "state_code": "BA",
+      "base_value": 750,
+      "manual_delta": 0,
+      "final_value": 750,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774659015615",
+      "city_label": "Sant'Ana do Livramento, RS",
+      "state_code": "RS",
+      "base_value": 1605.541053434623,
+      "manual_delta": 0,
+      "final_value": 1605.541053434623,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 144.5055928956719
+    },
+    {
+      "city_id": "custom-city-1774649749011",
+      "city_label": "Santa Cruz do Sul, RS",
+      "state_code": "RS",
+      "base_value": 2611.5867893168797,
+      "manual_delta": 0,
+      "final_value": 2611.5867893168797,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 122.7857964406575
+    },
+    {
+      "city_id": "rs-santa-maria",
+      "city_label": "Santa Maria, RS",
+      "state_code": "RS",
+      "base_value": 2250,
+      "manual_delta": 0,
+      "final_value": 2250,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pa-santarem",
+      "city_label": "Santarém, PA",
+      "state_code": "PA",
+      "base_value": 160,
+      "manual_delta": 0,
+      "final_value": 160,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "rj-santo-antonio-de-padua",
+      "city_label": "Santo Antônio de Pádua, RJ",
+      "state_code": "RJ",
+      "base_value": 33,
+      "manual_delta": 0,
+      "final_value": 33,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sp-santos",
+      "city_label": "Santos, SP",
+      "state_code": "SP",
+      "base_value": 6100,
+      "manual_delta": 21.968724324306557,
+      "final_value": 6121.968724324307,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774652253675",
+      "city_label": "São Bernardo do Campo, SP",
+      "state_code": "SP",
+      "base_value": 6365.990558640206,
+      "manual_delta": 20.954834811980813,
+      "final_value": 6386.945393452186,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774650023953",
+      "city_label": "São Borja, RS",
+      "state_code": "RS",
+      "base_value": 1534.1035149437116,
+      "manual_delta": 0,
+      "final_value": 1534.1035149437116,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 241.76193101347542
+    },
+    {
+      "city_id": "custom-city-1774706688274",
+      "city_label": "São Félix do Araguaia, MT",
+      "state_code": "MT",
+      "base_value": 270.65519915929656,
+      "manual_delta": 0,
+      "final_value": 270.65519915929656,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 260.68071108759995
+    },
+    {
+      "city_id": "custom-city-1774617065834",
+      "city_label": "São Gabriel da Cachoeira, AM",
+      "state_code": "AM",
+      "base_value": 6.393979729308541,
+      "manual_delta": 0,
+      "final_value": 6.393979729308541,
+      "source": "interpolated",
+      "anchor_count": 2,
+      "nearest_distance_km": 445.62632615430607
+    },
+    {
+      "city_id": "custom-city-1774653603159",
+      "city_label": "São Gonçalo, RJ",
+      "state_code": "RJ",
+      "base_value": 678.5643912526708,
+      "manual_delta": 0,
+      "final_value": 678.5643912526708,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "mg-sao-joao-del-rei",
+      "city_label": "São João del-Rei, MG",
+      "state_code": "MG",
+      "base_value": 500,
+      "manual_delta": 0,
+      "final_value": 500,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sp-sao-jose-do-rio-preto",
+      "city_label": "São José do Rio Preto, SP",
+      "state_code": "SP",
+      "base_value": 1100,
+      "manual_delta": 0,
+      "final_value": 1100,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sp-sao-jose-dos-campos",
+      "city_label": "São José dos Campos, SP",
+      "state_code": "SP",
+      "base_value": 600,
+      "manual_delta": 0,
+      "final_value": 600,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774649861879",
+      "city_label": "São José, SC",
+      "state_code": "SC",
+      "base_value": 962.4594984116032,
+      "manual_delta": 0,
+      "final_value": 962.4594984116032,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "ma-sao-luis",
+      "city_label": "São Luís, MA",
+      "state_code": "MA",
+      "base_value": 2125,
+      "manual_delta": 0,
+      "final_value": 2125,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "es-sao-mateus",
+      "city_label": "São Mateus, ES",
+      "state_code": "ES",
+      "base_value": 105,
+      "manual_delta": 0,
+      "final_value": 105,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774656204951",
+      "city_label": "São Miguel dos Campos, AL",
+      "state_code": "AL",
+      "base_value": 552.77306764994,
+      "manual_delta": 0,
+      "final_value": 552.77306764994,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "sp-sao-paulo-parte",
+      "city_label": "São Paulo (parte), SP",
+      "state_code": "SP",
+      "base_value": 6150,
+      "manual_delta": 0,
+      "final_value": 6150,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sp-sao-paulo",
+      "city_label": "São Paulo, SP",
+      "state_code": "SP",
+      "base_value": 10100,
+      "manual_delta": 0,
+      "final_value": 10100,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774660166804",
+      "city_label": "Sete Lagoas, MG",
+      "state_code": "MG",
+      "base_value": 2028.5346503728945,
+      "manual_delta": 0,
+      "final_value": 2028.5346503728945,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 60.59391371203273
+    },
+    {
+      "city_id": "mt-sinop",
+      "city_label": "Sinop, MT",
+      "state_code": "MT",
+      "base_value": 2400,
+      "manual_delta": 0,
+      "final_value": 2400,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "ce-sobral",
+      "city_label": "Sobral, CE",
+      "state_code": "CE",
+      "base_value": 175,
+      "manual_delta": 0,
+      "final_value": 175,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "sp-sorocaba",
+      "city_label": "Sorocaba, SP",
+      "state_code": "SP",
+      "base_value": 600,
+      "manual_delta": 21.40344888324478,
+      "final_value": 621.4034488832448,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774707099055",
+      "city_label": "Sorriso, MT",
+      "state_code": "MT",
+      "base_value": 2006.6891459733774,
+      "manual_delta": 0,
+      "final_value": 2006.6891459733774,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 80.43666614415713
+    },
+    {
+      "city_id": "custom-city-1774706925815",
+      "city_label": "Tauá, CE",
+      "state_code": "CE",
+      "base_value": 100.63819784998527,
+      "manual_delta": 0,
+      "final_value": 100.63819784998527,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 117.01116926118995
+    },
+    {
+      "city_id": "custom-city-1774653114332",
+      "city_label": "Taubaté, SP",
+      "state_code": "SP",
+      "base_value": 1871.7251539202855,
+      "manual_delta": 0,
+      "final_value": 1871.7251539202855,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774658434803",
+      "city_label": "Tefé, AM",
+      "state_code": "AM",
+      "base_value": 31.592366146744084,
+      "manual_delta": 0,
+      "final_value": 31.592366146744084,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774654417941",
+      "city_label": "Teixeira de Freitas, BA",
+      "state_code": "BA",
+      "base_value": 135.24634298844512,
+      "manual_delta": 0,
+      "final_value": 135.24634298844512,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 133.70601032950154
+    },
+    {
+      "city_id": "mg-teofilo-otoni",
+      "city_label": "Teófilo Otoni, MG",
+      "state_code": "MG",
+      "base_value": 300,
+      "manual_delta": 0,
+      "final_value": 300,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pi-teresina",
+      "city_label": "Teresina, PI",
+      "state_code": "PI",
+      "base_value": 300,
+      "manual_delta": 0,
+      "final_value": 300,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774653528893",
+      "city_label": "Teresópolis, RJ",
+      "state_code": "RJ",
+      "base_value": 522.0864797171236,
+      "manual_delta": 0,
+      "final_value": 522.0864797171236,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774628321636",
+      "city_label": "Três Corações, MG",
+      "state_code": "MG",
+      "base_value": 489.8002525646278,
+      "manual_delta": 41.53259348587487,
+      "final_value": 531.3328460505027,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 121.64635944887738
+    },
+    {
+      "city_id": "graph_node_1774583767044",
+      "city_label": "Três Lagoas, MS",
+      "state_code": "MS",
+      "base_value": 497.1777553237677,
+      "manual_delta": 0,
+      "final_value": 497.1777553237677,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 133.81586173667915
+    },
+    {
+      "city_id": "custom-city-1774616456546",
+      "city_label": "Ubá, MG",
+      "state_code": "MG",
+      "base_value": 283.9031169993534,
+      "manual_delta": 0,
+      "final_value": 283.9031169993534,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 82.23945584198859
+    },
+    {
+      "city_id": "custom-city-1774654678898",
+      "city_label": "Uberaba, MG",
+      "state_code": "MG",
+      "base_value": 2651.1544327434767,
+      "manual_delta": 77.93503740069211,
+      "final_value": 2729.089470144169,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 99.96007016749401
+    },
+    {
+      "city_id": "mg-uberlandia",
+      "city_label": "Uberlândia, MG",
+      "state_code": "MG",
+      "base_value": 4750,
+      "manual_delta": 13.42145457123486,
+      "final_value": 4763.421454571235,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774655221047",
+      "city_label": "Umuarama, PR",
+      "state_code": "PR",
+      "base_value": 3025.553668545439,
+      "manual_delta": 0,
+      "final_value": 3025.553668545439,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 99.40149723673791
+    },
+    {
+      "city_id": "mg-unai",
+      "city_label": "Unaí, MG",
+      "state_code": "MG",
+      "base_value": 1050,
+      "manual_delta": 0,
+      "final_value": 1050,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "pr-uniao-da-vitoria",
+      "city_label": "União da Vitória, PR",
+      "state_code": "PR",
+      "base_value": 2250,
+      "manual_delta": 0,
+      "final_value": 2250,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774628152305",
+      "city_label": "Uruaçu, GO",
+      "state_code": "GO",
+      "base_value": 609.9168926717701,
+      "manual_delta": 0,
+      "final_value": 609.9168926717701,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 87.01863254134248
+    },
+    {
+      "city_id": "custom-city-1774649795127",
+      "city_label": "Uruguaiana, RS",
+      "state_code": "RS",
+      "base_value": 891.9443996138625,
+      "manual_delta": 0,
+      "final_value": 891.9443996138625,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 316.0467338481943
+    },
+    {
+      "city_id": "custom-city-1774649965478",
+      "city_label": "Vacaria, RS",
+      "state_code": "RS",
+      "base_value": 1466.2211881068297,
+      "manual_delta": 0,
+      "final_value": 1466.2211881068297,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 75.98000754500562
+    },
+    {
+      "city_id": "custom-city-1774616708727",
+      "city_label": "Vilhena, RO",
+      "state_code": "RO",
+      "base_value": 484.3523604360376,
+      "manual_delta": 0,
+      "final_value": 484.3523604360376,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 283.52865731630175
+    },
+    {
+      "city_id": "ba-vitoria-da-conquista",
+      "city_label": "Vitória da Conquista, BA",
+      "state_code": "BA",
+      "base_value": 300,
+      "manual_delta": 0,
+      "final_value": 300,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774628198251",
+      "city_label": "Vitória do Xingu, PA",
+      "state_code": "PA",
+      "base_value": 186.95457650187015,
+      "manual_delta": 0,
+      "final_value": 186.95457650187015,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 56.399276533221865
+    },
+    {
+      "city_id": "es-vitoria",
+      "city_label": "Vitória, ES",
+      "state_code": "ES",
+      "base_value": 3100,
+      "manual_delta": 0,
+      "final_value": 3100,
+      "source": "observed",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    },
+    {
+      "city_id": "custom-city-1774706442628",
+      "city_label": "Volta Redonda, RJ",
+      "state_code": "RJ",
+      "base_value": 240.35730228244188,
+      "manual_delta": 0,
+      "final_value": 240.35730228244188,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    },
+    {
+      "city_id": "custom-city-1774793736336",
+      "city_label": "Xanxerê, SC",
+      "state_code": "SC",
+      "base_value": 6280.251831028644,
+      "manual_delta": 0,
+      "final_value": 6280.251831028644,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 45
+    }
+  ]
+}

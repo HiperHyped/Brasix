@@ -26,7 +26,7 @@
     {
       "id": "animais_vivos",
       "label": "Animais vivos",
-      "description": "Carga viva com exigencia de implemento boiadeiro.",
+      "description": "Carga viva com exigencia de implemento de carga viva.",
       "order": 3,
       "body_type_ids": [
         "truck_body_boiadeiro"

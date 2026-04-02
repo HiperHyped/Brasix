@@ -4,7 +4,7 @@
   "product_id": "ovo",
   "layer": "supply",
   "version": 1,
-  "updated_at": "2026-03-31T19:32:55.675Z",
+  "updated_at": "2026-04-01T23:28:52.011Z",
   "strokes": [
     {
       "id": "stroke_1774985567455_46965",
@@ -594,6 +594,272 @@
           "lon": -41.39655606682018
         }
       ]
+    },
+    {
+      "id": "stroke_1775086126548_47621",
+      "product_id": "ovo",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 220,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T23:28:46.548Z",
+      "points": [
+        {
+          "lat": -23.860377329546182,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.860377329546182,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.860377329546182,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.840287377423227,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.840287377423227,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.82019431201203,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.82019431201203,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.82019431201203,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.82019431201203,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -46.575025562476704
+        },
+        {
+          "lat": -23.759896455948663,
+          "lon": -46.59700215782568
+        },
+        {
+          "lat": -23.759896455948663,
+          "lon": -46.59700215782568
+        },
+        {
+          "lat": -23.759896455948663,
+          "lon": -46.64095534852361
+        },
+        {
+          "lat": -23.759896455948663,
+          "lon": -46.64095534852361
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.70688513457053
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.70688513457053
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.70688513457053
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.70688513457053
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.72886172991952
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.72886172991952
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.72886172991952
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.72886172991952
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        },
+        {
+          "lat": -23.73979095729332,
+          "lon": -46.75083832526848
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775086131001_50580",
+      "product_id": "ovo",
+      "layer": "supply",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 220,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T23:28:51.001Z",
+      "points": [
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.880464166393715,
+          "lon": -46.94862768340925
+        },
+        {
+          "lat": -23.860377329546182,
+          "lon": -46.97060427875821
+        },
+        {
+          "lat": -23.860377329546182,
+          "lon": -46.97060427875821
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -47.080487255503066
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -47.080487255503066
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -47.080487255503066
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -47.080487255503066
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -47.080487255503066
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -47.080487255503066
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -47.080487255503066
+        },
+        {
+          "lat": -23.80009813530164,
+          "lon": -47.080487255503066
+        }
+      ]
     }
   ],
   "baked_city_values": [
@@ -723,8 +989,8 @@
       "city_label": "Arujá, SP",
       "state_code": "SP",
       "base_value": 81.14921789908531,
-      "manual_delta": 0,
-      "final_value": 81.14921789908531,
+      "manual_delta": 185.84479071408563,
+      "final_value": 266.99400861317093,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -745,8 +1011,8 @@
       "city_label": "Atibaia, SP",
       "state_code": "SP",
       "base_value": 104.07947362578719,
-      "manual_delta": 0,
-      "final_value": 104.07947362578719,
+      "manual_delta": 129.7207182966248,
+      "final_value": 233.80019192241198,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 48.636406671124156
@@ -888,8 +1154,8 @@
       "city_label": "Barueri, SP",
       "state_code": "SP",
       "base_value": 89.2490735449776,
-      "manual_delta": 0,
-      "final_value": 89.2490735449776,
+      "manual_delta": 152.3199424481605,
+      "final_value": 241.56901599313812,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -998,8 +1264,8 @@
       "city_label": "Botucatu, SP",
       "state_code": "SP",
       "base_value": 90.41293804963689,
-      "manual_delta": 0,
-      "final_value": 90.41293804963689,
+      "manual_delta": -4.012554585971968,
+      "final_value": 86.40038346366492,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 83.60500051804084
@@ -1009,8 +1275,8 @@
       "city_label": "Bragança Paulista, SP",
       "state_code": "SP",
       "base_value": 106.16974743274915,
-      "manual_delta": 0,
-      "final_value": 106.16974743274915,
+      "manual_delta": 111.8460009350974,
+      "final_value": 218.01574836784653,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 57.504558090301806
@@ -1097,8 +1363,8 @@
       "city_label": "Campinas, SP",
       "state_code": "SP",
       "base_value": 154.5,
-      "manual_delta": 0,
-      "final_value": 154.5,
+      "manual_delta": 56.46913120198592,
+      "final_value": 210.96913120198593,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -1438,8 +1704,8 @@
       "city_label": "Embu das Artes, SP",
       "state_code": "SP",
       "base_value": 83.7511713391055,
-      "manual_delta": 0,
-      "final_value": 83.7511713391055,
+      "manual_delta": 153.65666817426512,
+      "final_value": 237.40783951337062,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -1614,8 +1880,8 @@
       "city_label": "Guarulhos, SP",
       "state_code": "SP",
       "base_value": 81.18388200158921,
-      "manual_delta": 0,
-      "final_value": 81.18388200158921,
+      "manual_delta": 188.35380150012116,
+      "final_value": 269.5376835017104,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -1786,6 +2052,17 @@
       "nearest_distance_km": 45
     },
     {
+      "city_id": "custom-city-1774991729696",
+      "city_label": "Itaobim, MG",
+      "state_code": "MG",
+      "base_value": 42.29408857406098,
+      "manual_delta": 0,
+      "final_value": 42.29408857406098,
+      "source": "interpolated",
+      "anchor_count": 3,
+      "nearest_distance_km": 142.85466031810938
+    },
+    {
       "city_id": "custom-city-1774706423438",
       "city_label": "Itaocara, RJ",
       "state_code": "RJ",
@@ -1801,8 +2078,8 @@
       "city_label": "Itapetininga, SP",
       "state_code": "SP",
       "base_value": 81.40274211660264,
-      "manual_delta": 0,
-      "final_value": 81.40274211660264,
+      "manual_delta": -19.82986236496302,
+      "final_value": 61.57287975163962,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 61.9492989572848
@@ -1834,8 +2111,8 @@
       "city_label": "Jacareí, SP",
       "state_code": "SP",
       "base_value": 59.892015047576386,
-      "manual_delta": 0,
-      "final_value": 59.892015047576386,
+      "manual_delta": 143.0608305639951,
+      "final_value": 202.9528456115715,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -1966,8 +2243,8 @@
       "city_label": "Jundiaí, SP",
       "state_code": "SP",
       "base_value": 111.40976159863541,
-      "manual_delta": 0,
-      "final_value": 111.40976159863541,
+      "manual_delta": 104.40365684663527,
+      "final_value": 215.81341844527068,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -2021,8 +2298,8 @@
       "city_label": "Limeira, SP",
       "state_code": "SP",
       "base_value": 132.68622406513916,
-      "manual_delta": 0,
-      "final_value": 132.68622406513916,
+      "manual_delta": 13.15467480836869,
+      "final_value": 145.84089887350785,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -2054,8 +2331,8 @@
       "city_label": "Lorena, SP",
       "state_code": "SP",
       "base_value": 29.962888933776664,
-      "manual_delta": 0,
-      "final_value": 29.962888933776664,
+      "manual_delta": 11.603759891464149,
+      "final_value": 41.56664882524081,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 94.43622123197592
@@ -2197,8 +2474,8 @@
       "city_label": "Mogi Guaçu, SP",
       "state_code": "SP",
       "base_value": 146.20498509543634,
-      "manual_delta": 0,
-      "final_value": 146.20498509543634,
+      "manual_delta": 17.70849477482088,
+      "final_value": 163.91347987025722,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 62.90476738267064
@@ -2263,8 +2540,8 @@
       "city_label": "Nova cidade 2, ZZ",
       "state_code": "ZZ",
       "base_value": 42.83683952502448,
-      "manual_delta": 0,
-      "final_value": 42.83683952502448,
+      "manual_delta": 70.05121780915596,
+      "final_value": 112.88805733418044,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 67.52163208325223
@@ -2384,8 +2661,8 @@
       "city_label": "Paraty, RJ",
       "state_code": "RJ",
       "base_value": 14.416862485756845,
-      "manual_delta": 0,
-      "final_value": 14.416862485756845,
+      "manual_delta": 8.3285883094457,
+      "final_value": 22.745450795202544,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 101.49365725634956
@@ -2560,8 +2837,8 @@
       "city_label": "Piracicaba, SP",
       "state_code": "SP",
       "base_value": 147.6,
-      "manual_delta": 0,
-      "final_value": 147.6,
+      "manual_delta": 5.935236633851119,
+      "final_value": 153.53523663385113,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -2571,8 +2848,8 @@
       "city_label": "Poços de Caldas, MG",
       "state_code": "MG",
       "base_value": 237.3,
-      "manual_delta": 0,
-      "final_value": 237.3,
+      "manual_delta": 2.3765401626102762,
+      "final_value": 239.67654016261028,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -2659,8 +2936,8 @@
       "city_label": "Pouso Alegre, MG",
       "state_code": "MG",
       "base_value": 136.39524478135755,
-      "manual_delta": 0,
-      "final_value": 136.39524478135755,
+      "manual_delta": 11.448946066455065,
+      "final_value": 147.84419084781263,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 87.18553596132004
@@ -2725,8 +3002,8 @@
       "city_label": "Registro, SP",
       "state_code": "SP",
       "base_value": 58.69852579867597,
-      "manual_delta": 0,
-      "final_value": 58.69852579867597,
+      "manual_delta": -20.666035962284298,
+      "final_value": 38.032489836391676,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 117.50740769454248
@@ -2901,8 +3178,8 @@
       "city_label": "Santos, SP",
       "state_code": "SP",
       "base_value": 41.4,
-      "manual_delta": 0,
-      "final_value": 41.4,
+      "manual_delta": 192.75909358476986,
+      "final_value": 234.15909358476986,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -2912,8 +3189,8 @@
       "city_label": "São Bernardo do Campo, SP",
       "state_code": "SP",
       "base_value": 74.6681452628532,
-      "manual_delta": 0,
-      "final_value": 74.6681452628532,
+      "manual_delta": 192.454670259797,
+      "final_value": 267.1228155226502,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45
@@ -2989,8 +3266,8 @@
       "city_label": "São José dos Campos, SP",
       "state_code": "SP",
       "base_value": 42.9,
-      "manual_delta": 0,
-      "final_value": 42.9,
+      "manual_delta": 108.80119162993297,
+      "final_value": 151.70119162993296,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -3044,8 +3321,8 @@
       "city_label": "São Paulo (parte), SP",
       "state_code": "SP",
       "base_value": 89.6,
-      "manual_delta": 0,
-      "final_value": 89.6,
+      "manual_delta": 182.74531303851316,
+      "final_value": 272.34531303851315,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -3055,8 +3332,8 @@
       "city_label": "São Paulo, SP",
       "state_code": "SP",
       "base_value": 116.6,
-      "manual_delta": 0,
-      "final_value": 116.6,
+      "manual_delta": 182.74531303851316,
+      "final_value": 299.34531303851315,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -3099,8 +3376,8 @@
       "city_label": "Sorocaba, SP",
       "state_code": "SP",
       "base_value": 75.3,
-      "manual_delta": 0,
-      "final_value": 75.3,
+      "manual_delta": 25.729289443597224,
+      "final_value": 101.02928944359722,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -3132,8 +3409,8 @@
       "city_label": "Taubaté, SP",
       "state_code": "SP",
       "base_value": 44.598718719803784,
-      "manual_delta": 0,
-      "final_value": 44.598718719803784,
+      "manual_delta": 52.49319942267204,
+      "final_value": 97.09191814247583,
       "source": "interpolated",
       "anchor_count": 3,
       "nearest_distance_km": 45

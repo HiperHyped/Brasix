@@ -1,7 +1,9 @@
 ﻿from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from datetime import datetime
+from threading import Lock
 from typing import Any
 import unicodedata
 
@@ -16,6 +18,7 @@ from app.config import (
     MAP_EDITOR_POPULATION_BANDS_PATH,
     MAP_LEAFLET_SETTINGS_PATH,
     PRODUCT_CATALOG_V2_PATH,
+    PRODUCT_OPERATIONAL_CATALOG_PATH,
     STATIC_DIR,
     TEMPLATE_DIR,
     TRUCK_BODY_CATALOG_PATH,
@@ -26,6 +29,7 @@ from app.config import (
     TRUCK_IMAGE_ASSET_REGISTRY_PATH,
     TRUCK_IMAGE_PROMPT_OVERRIDES_PATH,
     TRUCK_IMAGE_REVIEW_QUEUE_PATH,
+    TRUCK_OPERATIONAL_DATA_PATH,
 )
 from app.game import build_game_world_runtime, build_truck_product_matrix_payload
 from app.maptools import RouteGraph, RouteWorkspaceSnapshot
@@ -53,12 +57,14 @@ from app.services import (
     load_product_editor_payload,
     load_product_editor_v1_payload,
     load_product_editor_v2_payload,
+    load_product_editor_v3_payload,
     load_product_family_catalog_payload,
     load_product_field_baked_document,
     load_product_field_edit_document,
     load_product_inference_rules_payload,
     load_product_logistics_type_catalog_payload,
     load_product_master_v1_1_payload,
+    load_product_operational_catalog_payload,
     load_product_catalog_payload,
     load_reference_data,
     load_region_product_supply_matrix_payload,
@@ -75,6 +81,7 @@ from app.services import (
     load_truck_image_generation_config_payload,
     load_truck_image_prompt_overrides_payload,
     load_truck_image_review_queue_payload,
+    load_truck_operational_catalog_payload,
     load_truck_product_compatibility_overrides_payload,
     load_truck_silhouette_catalog_payload,
     load_truck_sprite_2d_catalog_payload,
@@ -88,11 +95,20 @@ from app.services import (
     save_product_field_baked_document,
     save_product_field_edit_document,
     save_product_master_v1_1_payload,
+    save_product_operational_catalog_payload,
     save_truck_product_compatibility_overrides_payload,
     save_json,
     set_active_map,
 )
 from app.services.openai_city_autofill import CityAutofillError, autofill_custom_city
+from app.services.openai_product_operational_autofill import (
+    ProductOperationalAutofillError,
+    autofill_product_operational_record,
+)
+from app.services.openai_truck_operational_autofill import (
+    TruckOperationalAutofillError,
+    autofill_truck_operational_record,
+)
 from app.ui.editor_models import (
     CityAutofillRequest,
     CityAutofillResponse,
@@ -111,6 +127,11 @@ from app.ui.editor_models import (
     ProductMasterCreateRequest,
     ProductFieldLayerSaveRequest,
     ProductEditorUpdateRequest,
+    ProductOperationalAutofillRequest,
+    ProductOperationalAutofillResponse,
+    ProductOperationalAutofillStatusResponse,
+    ProductOperationalSaveRequest,
+    ProductOperationalSaveResponse,
     RoutePlannerLegResponse,
     RoutePlannerPlanRequest,
     RoutePlannerPlanResponse,
@@ -137,8 +158,199 @@ from app.ui.editor_models import (
     TruckImageGenerateResponse,
     TruckImageReviewRequest,
     TruckImageReviewResponse,
+    TruckOperationalAutofillRequest,
+    TruckOperationalAutofillResponse,
+    TruckOperationalAutofillStatusResponse,
+    TruckOperationalSaveRequest,
+    TruckOperationalSaveResponse,
 )
 from app.services.truck_image_generation import TruckImageGenerationError, build_truck_image_prompt_defaults_payload, build_truck_prompt_items_from_classification
+
+
+_TRUCK_OPERATIONAL_AUTOFILL_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="brasix-truck-autofill")
+_TRUCK_OPERATIONAL_AUTOFILL_LOCK = Lock()
+_TRUCK_OPERATIONAL_AUTOFILL_STATUS_BY_TYPE_ID: dict[str, dict[str, Any]] = {}
+_PRODUCT_OPERATIONAL_AUTOFILL_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="brasix-product-autofill")
+_PRODUCT_OPERATIONAL_AUTOFILL_LOCK = Lock()
+_PRODUCT_OPERATIONAL_AUTOFILL_STATUS_BY_PRODUCT_ID: dict[str, dict[str, Any]] = {}
+
+
+def _truck_operational_autofill_status_defaults(truck_type_id: str) -> dict[str, Any]:
+    return {
+        "truck_type_id": truck_type_id,
+        "status": "idle",
+        "message": "",
+        "summary": "",
+        "provider": None,
+        "model": None,
+        "error": None,
+        "payload": {},
+        "started_at": None,
+        "finished_at": None,
+    }
+
+
+def _get_truck_operational_autofill_status(truck_type_id: str) -> dict[str, Any]:
+    with _TRUCK_OPERATIONAL_AUTOFILL_LOCK:
+        current = _TRUCK_OPERATIONAL_AUTOFILL_STATUS_BY_TYPE_ID.get(truck_type_id)
+        if current is None:
+            return _truck_operational_autofill_status_defaults(truck_type_id)
+        return dict(current)
+
+
+def _product_operational_autofill_status_defaults(product_id: str) -> dict[str, Any]:
+    return {
+        "product_id": product_id,
+        "status": "idle",
+        "message": "",
+        "summary": "",
+        "provider": None,
+        "model": None,
+        "error": None,
+        "payload": {},
+        "started_at": None,
+        "finished_at": None,
+    }
+
+
+def _get_product_operational_autofill_status(product_id: str) -> dict[str, Any]:
+    with _PRODUCT_OPERATIONAL_AUTOFILL_LOCK:
+        current = _PRODUCT_OPERATIONAL_AUTOFILL_STATUS_BY_PRODUCT_ID.get(product_id)
+        if current is None:
+            return _product_operational_autofill_status_defaults(product_id)
+        return dict(current)
+
+
+def _set_truck_operational_autofill_status(truck_type_id: str, **updates: Any) -> dict[str, Any]:
+    with _TRUCK_OPERATIONAL_AUTOFILL_LOCK:
+        current = dict(_TRUCK_OPERATIONAL_AUTOFILL_STATUS_BY_TYPE_ID.get(truck_type_id) or _truck_operational_autofill_status_defaults(truck_type_id))
+        current.update(updates)
+        _TRUCK_OPERATIONAL_AUTOFILL_STATUS_BY_TYPE_ID[truck_type_id] = current
+        return dict(current)
+
+
+def _set_product_operational_autofill_status(product_id: str, **updates: Any) -> dict[str, Any]:
+    with _PRODUCT_OPERATIONAL_AUTOFILL_LOCK:
+        current = dict(
+            _PRODUCT_OPERATIONAL_AUTOFILL_STATUS_BY_PRODUCT_ID.get(product_id)
+            or _product_operational_autofill_status_defaults(product_id)
+        )
+        current.update(updates)
+        _PRODUCT_OPERATIONAL_AUTOFILL_STATUS_BY_PRODUCT_ID[product_id] = current
+        return dict(current)
+
+
+def _build_truck_operational_autofill_save_request(
+    truck_type_id: str,
+    current_operational_record: dict[str, Any] | None,
+    autofill_payload: dict[str, Any],
+) -> TruckOperationalSaveRequest:
+    current = dict(current_operational_record or {})
+
+    def pick(field: str) -> Any:
+        value = autofill_payload.get(field)
+        return current.get(field) if value is None else value
+
+    return TruckOperationalSaveRequest.model_validate(
+        {
+            "truck_type_id": truck_type_id,
+            "payload_weight_kg": pick("payload_weight_kg"),
+            "cargo_volume_m3": pick("cargo_volume_m3"),
+            "overall_length_m": pick("overall_length_m"),
+            "overall_width_m": pick("overall_width_m"),
+            "overall_height_m": pick("overall_height_m"),
+            "energy_source": current.get("energy_source"),
+            "consumption_unit": current.get("consumption_unit"),
+            "empty_consumption_per_km": current.get("empty_consumption_per_km"),
+            "loaded_consumption_per_km": current.get("loaded_consumption_per_km"),
+            "truck_price_brl": pick("truck_price_brl"),
+            "base_fixed_cost_brl_per_day": pick("base_fixed_cost_brl_per_day"),
+            "base_variable_cost_brl_per_km": pick("base_variable_cost_brl_per_km"),
+            "implement_cost_brl": pick("implement_cost_brl"),
+            "urban_access_level": current.get("urban_access_level"),
+            "road_access_level": current.get("road_access_level"),
+            "supported_surface_codes": list(current.get("supported_surface_codes") or []),
+            "load_time_minutes": current.get("load_time_minutes"),
+            "unload_time_minutes": current.get("unload_time_minutes"),
+            "confidence": pick("confidence"),
+            "research_basis": pick("research_basis"),
+            "source_urls": list(autofill_payload.get("source_urls") or current.get("source_urls") or []),
+            "notes": str(autofill_payload.get("notes") or current.get("notes") or "").strip(),
+        }
+    )
+
+
+def _run_truck_operational_autofill_job(truck_type_id: str) -> None:
+    started_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    _set_truck_operational_autofill_status(
+        truck_type_id,
+        status="running",
+        message="Pesquisando dados operacionais com IA em background.",
+        error=None,
+        started_at=started_at,
+        finished_at=None,
+    )
+
+    try:
+        effective_catalog = load_effective_truck_type_catalog_payload()
+        selected_type = _find_truck_or_404(list(effective_catalog.get("types", [])), truck_type_id)
+        current_operational_record = next(
+            (
+                dict(item)
+                for item in load_truck_operational_catalog_payload(TRUCK_OPERATIONAL_DATA_PATH).get("items", [])
+                if str(item.get("truck_type_id") or "").strip() == truck_type_id
+            ),
+            None,
+        )
+        autofill_result = autofill_truck_operational_record(selected_type, current_operational_record=current_operational_record)
+        save_request = _build_truck_operational_autofill_save_request(
+            truck_type_id,
+            current_operational_record,
+            dict(autofill_result.get("payload") or {}),
+        )
+        save_response = _save_truck_operational_record(save_request)
+        finished_at = datetime.now().astimezone().isoformat(timespec="seconds")
+        _set_truck_operational_autofill_status(
+            truck_type_id,
+            status="completed",
+            message="Dados operacionais gravados automaticamente no JSON.",
+            summary=str(autofill_result.get("summary") or ""),
+            provider=str(autofill_result.get("provider") or "") or None,
+            model=str(autofill_result.get("model") or "") or None,
+            error=None,
+            payload=dict(save_response.operational_record or {}),
+            started_at=started_at,
+            finished_at=finished_at,
+        )
+    except Exception as exc:
+        finished_at = datetime.now().astimezone().isoformat(timespec="seconds")
+        _set_truck_operational_autofill_status(
+            truck_type_id,
+            status="failed",
+            message="Falha no autofill operacional em background.",
+            error=str(exc),
+            finished_at=finished_at,
+        )
+
+
+def _start_truck_operational_autofill_job(truck_type_id: str) -> dict[str, Any]:
+    current_status = _get_truck_operational_autofill_status(truck_type_id)
+    if current_status.get("status") in {"queued", "running"}:
+        return current_status
+
+    queued_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    next_status = _set_truck_operational_autofill_status(
+        truck_type_id,
+        status="queued",
+        message="Autofill operacional enviado para processamento em background.",
+        summary="",
+        error=None,
+        payload={},
+        started_at=queued_at,
+        finished_at=None,
+    )
+    _TRUCK_OPERATIONAL_AUTOFILL_EXECUTOR.submit(_run_truck_operational_autofill_job, truck_type_id)
+    return next_status
 
 
 def _city_payload(city: Any, reference_data: Any) -> dict[str, Any]:
@@ -441,6 +653,69 @@ def _build_product_editor_v2_bootstrap_payload() -> dict[str, Any]:
     }
 
 
+def _build_product_editor_v3_bootstrap_payload() -> dict[str, Any]:
+    active_map = load_active_map_bundle()
+    city_catalog = [city.model_dump(mode="json") for city in active_map.cities]
+    city_catalog.sort(key=lambda item: item["label"])
+    reference_cities = load_city_catalog_payload()
+    reference_cities.sort(key=lambda item: item["label"])
+
+    product_catalog = load_product_catalog_v2_master_payload()
+    families = load_product_family_catalog_payload()
+    logistics_types = load_product_logistics_type_catalog_payload()
+    supply_matrix = load_city_product_supply_matrix_payload()
+    demand_matrix = load_city_product_demand_matrix_payload()
+    region_supply_matrix = load_region_product_supply_matrix_payload()
+    inference_rules = load_product_inference_rules_payload()
+    product_editor_v3 = load_product_editor_v3_payload()
+    product_operational_catalog = load_product_operational_catalog_payload()
+    map_editor = load_map_editor_payload()
+
+    products = sorted(
+        product_catalog.get("products", []),
+        key=lambda item: (int(item.get("order") or 0), item.get("name", "")),
+    )
+    selected_product_id = next(
+        (item.get("id") for item in products if bool(item.get("is_active", True))),
+        products[0].get("id") if products else None,
+    )
+
+    return {
+        "ui": load_ui_payload(),
+        "product_editor_v3": product_editor_v3,
+        "map_repository": map_repository_payload(),
+        "cities": city_catalog,
+        "reference_cities": reference_cities,
+        "map_viewport": load_map_viewport_payload(),
+        "map_editor": {
+            "themes": map_editor["themes"],
+            "leaflet_settings": map_editor["leaflet_settings"],
+            "display_settings": map_editor["display_settings"],
+        },
+        "product_family_catalog": families,
+        "product_logistics_type_catalog": logistics_types,
+        "product_catalog": {
+            **product_catalog,
+            "products": products,
+        },
+        "product_operational_catalog": product_operational_catalog,
+        "product_supply_matrix": supply_matrix,
+        "product_demand_matrix": demand_matrix,
+        "region_product_supply_matrix": region_supply_matrix,
+        "product_inference_rules": inference_rules,
+        "summary": {
+            "city_count": len(city_catalog),
+            "reference_city_count": len(reference_cities),
+            "product_count": len(products),
+            "family_count": len(families.get("families", [])),
+            "logistics_type_count": len(logistics_types.get("types", [])),
+            "supply_anchor_count": len(supply_matrix.get("items", [])),
+            "operational_product_count": len(product_operational_catalog.get("items", [])),
+            "selected_product_id": selected_product_id,
+        },
+    }
+
+
 def _build_truck_gallery_bootstrap_payload() -> dict[str, Any]:
     return {
         "ui": load_ui_payload(),
@@ -458,6 +733,322 @@ def _build_truck_gallery_bootstrap_payload() -> dict[str, Any]:
         "truck_image_asset_registry": load_truck_image_asset_registry_payload(),
         "truck_image_review_queue": load_truck_image_review_queue_payload(),
     }
+
+
+def _build_truck_operational_editor_bootstrap_payload() -> dict[str, Any]:
+    gallery_payload = _build_truck_gallery_bootstrap_payload()
+    operational_catalog = load_truck_operational_catalog_payload()
+    matrix_payload = build_truck_product_matrix_payload()
+    products_by_id = {
+        str(item.get("id") or ""): dict(item)
+        for item in matrix_payload.get("products", [])
+        if str(item.get("id") or "").strip()
+    }
+    related_products_by_truck_type_id: dict[str, list[dict[str, Any]]] = {}
+    mpc_summary_by_truck_type_id: dict[str, dict[str, Any]] = {}
+
+    for truck in matrix_payload.get("trucks", []):
+        truck_id = str(truck.get("id") or "").strip()
+        if not truck_id:
+            continue
+        related_products_by_truck_type_id[truck_id] = [
+            {
+                "id": product_id,
+                "name": str(product.get("name") or product_id),
+                "short_name": str(product.get("short_name") or product.get("name") or product_id),
+                "emoji": str(product.get("emoji") or "📦"),
+                "family_label": str(product.get("family_label") or ""),
+                "logistics_type_label": str(product.get("logistics_type_label") or ""),
+                "logistics_body_labels": list(product.get("logistics_body_labels") or []),
+            }
+            for product_id in truck.get("supported_product_ids", [])
+            for product in [products_by_id.get(str(product_id).strip()) or {}]
+            if str(product.get("id") or product_id).strip()
+        ]
+        mpc_summary_by_truck_type_id[truck_id] = {
+            "supported_product_count": int(truck.get("supported_product_count") or 0),
+            "unsupported_product_count": int(truck.get("unsupported_product_count") or 0),
+        }
+
+    return {
+        **gallery_payload,
+        "truck_operational_catalog": operational_catalog,
+        "route_surface_types": load_map_editor_payload().get("route_surface_types", {"types": []}),
+        "mpc_products": [
+            {
+                "id": str(product.get("id") or ""),
+                "name": str(product.get("name") or product.get("id") or ""),
+                "short_name": str(product.get("short_name") or product.get("name") or product.get("id") or ""),
+                "emoji": str(product.get("emoji") or "📦"),
+            }
+            for product in matrix_payload.get("products", [])
+            if str(product.get("id") or "").strip()
+        ],
+        "mpc_related_products_by_truck_type_id": related_products_by_truck_type_id,
+        "mpc_summary_by_truck_type_id": mpc_summary_by_truck_type_id,
+        "generated_at": matrix_payload.get("generated_at"),
+    }
+
+
+def _save_truck_operational_record(document: TruckOperationalSaveRequest) -> TruckOperationalSaveResponse:
+    effective_catalog = load_effective_truck_type_catalog_payload()
+    saved_type = _find_truck_or_404(list(effective_catalog.get("types", [])), document.truck_type_id)
+    operational_catalog = load_truck_operational_catalog_payload(TRUCK_OPERATIONAL_DATA_PATH)
+
+    next_record = {
+        "truck_type_id": document.truck_type_id,
+        "label": str(saved_type.get("label") or document.truck_type_id),
+        "size_tier": str(saved_type.get("size_tier") or ""),
+        "base_vehicle_kind": str(saved_type.get("base_vehicle_kind") or ""),
+        "axle_config": str(saved_type.get("axle_config") or ""),
+        "preferred_body_type_id": str(saved_type.get("preferred_body_type_id") or "").strip() or None,
+        "payload_weight_kg": document.payload_weight_kg,
+        "cargo_volume_m3": document.cargo_volume_m3,
+        "overall_length_m": document.overall_length_m,
+        "overall_width_m": document.overall_width_m,
+        "overall_height_m": document.overall_height_m,
+        "energy_source": str(document.energy_source or "").strip() or None,
+        "consumption_unit": str(document.consumption_unit or "").strip() or None,
+        "empty_consumption_per_km": document.empty_consumption_per_km,
+        "loaded_consumption_per_km": document.loaded_consumption_per_km,
+        "truck_price_brl": document.truck_price_brl,
+        "base_fixed_cost_brl_per_day": document.base_fixed_cost_brl_per_day,
+        "base_variable_cost_brl_per_km": document.base_variable_cost_brl_per_km,
+        "implement_cost_brl": document.implement_cost_brl,
+        "urban_access_level": str(document.urban_access_level or "").strip() or None,
+        "road_access_level": str(document.road_access_level or "").strip() or None,
+        "supported_surface_codes": [str(item).strip() for item in document.supported_surface_codes if str(item).strip()],
+        "load_time_minutes": document.load_time_minutes,
+        "unload_time_minutes": document.unload_time_minutes,
+        "confidence": str(document.confidence or "").strip() or None,
+        "research_basis": str(document.research_basis or "").strip() or None,
+        "source_urls": [str(item).strip() for item in document.source_urls if str(item).strip()],
+        "notes": str(document.notes or "").strip(),
+    }
+
+    next_items = [
+        dict(item)
+        for item in operational_catalog.get("items", [])
+        if str(item.get("truck_type_id") or "").strip() != document.truck_type_id
+    ]
+    next_items.append(next_record)
+    next_items.sort(
+        key=lambda item: (
+            str(item.get("size_tier") or ""),
+            str(item.get("label") or "").strip().lower(),
+            str(item.get("truck_type_id") or "").strip(),
+        )
+    )
+
+    save_json(
+        TRUCK_OPERATIONAL_DATA_PATH,
+        {
+            "id": str(operational_catalog.get("id") or "truck_operational_catalog_v1"),
+            "items": next_items,
+        },
+    )
+
+    refreshed_operational_catalog = load_truck_operational_catalog_payload(TRUCK_OPERATIONAL_DATA_PATH)
+    refreshed_effective_catalog = load_effective_truck_type_catalog_payload()
+    refreshed_type = _find_truck_or_404(list(refreshed_effective_catalog.get("types", [])), document.truck_type_id)
+    refreshed_operational = next(
+        (
+            dict(item)
+            for item in refreshed_operational_catalog.get("items", [])
+            if str(item.get("truck_type_id") or "").strip() == document.truck_type_id
+        ),
+        next_record,
+    )
+    return TruckOperationalSaveResponse(type_record=refreshed_type, operational_record=refreshed_operational)
+
+
+def _product_operational_month_value(value: int | float | None, *, fallback: float = 1.0) -> float:
+    if value is None:
+        return fallback
+    return float(value)
+
+
+def _save_product_operational_record(document: ProductOperationalSaveRequest) -> ProductOperationalSaveResponse:
+    catalog_document = load_product_catalog_v2_master_payload()
+    saved_product = _find_product_or_404(list(catalog_document.get("products", [])), document.product_id)
+    operational_catalog = load_product_operational_catalog_payload(PRODUCT_OPERATIONAL_CATALOG_PATH)
+
+    seasonal = bool(document.is_seasonal)
+    next_record = {
+        "product_id": document.product_id,
+        "name": str(saved_product.get("name") or document.product_id),
+        "short_name": str(saved_product.get("short_name") or saved_product.get("name") or document.product_id),
+        "family_id": str(saved_product.get("family_id") or "").strip(),
+        "logistics_type_id": str(saved_product.get("logistics_type_id") or "").strip(),
+        "unit": str(document.unit or saved_product.get("unit") or "").strip() or None,
+        "weight_per_unit_kg": document.weight_per_unit_kg,
+        "volume_per_unit_m3": document.volume_per_unit_m3,
+        "price_reference_brl_per_unit": document.price_reference_brl_per_unit,
+        "price_min_brl_per_unit": document.price_min_brl_per_unit,
+        "price_max_brl_per_unit": document.price_max_brl_per_unit,
+        "is_seasonal": seasonal,
+        "seasonality_index_jan": _product_operational_month_value(document.seasonality_index_jan),
+        "seasonality_index_feb": _product_operational_month_value(document.seasonality_index_feb),
+        "seasonality_index_mar": _product_operational_month_value(document.seasonality_index_mar),
+        "seasonality_index_apr": _product_operational_month_value(document.seasonality_index_apr),
+        "seasonality_index_may": _product_operational_month_value(document.seasonality_index_may),
+        "seasonality_index_jun": _product_operational_month_value(document.seasonality_index_jun),
+        "seasonality_index_jul": _product_operational_month_value(document.seasonality_index_jul),
+        "seasonality_index_aug": _product_operational_month_value(document.seasonality_index_aug),
+        "seasonality_index_sep": _product_operational_month_value(document.seasonality_index_sep),
+        "seasonality_index_oct": _product_operational_month_value(document.seasonality_index_oct),
+        "seasonality_index_nov": _product_operational_month_value(document.seasonality_index_nov),
+        "seasonality_index_dec": _product_operational_month_value(document.seasonality_index_dec),
+        "confidence": str(document.confidence or "").strip() or None,
+        "research_basis": str(document.research_basis or "").strip() or None,
+        "source_urls": [str(item).strip() for item in document.source_urls if str(item).strip()],
+        "notes": str(document.notes or "").strip(),
+    }
+
+    next_items = [
+        dict(item)
+        for item in operational_catalog.get("items", [])
+        if str(item.get("product_id") or "").strip() != document.product_id
+    ]
+    next_items.append(next_record)
+    next_items.sort(
+        key=lambda item: (
+            str(item.get("name") or "").strip().lower(),
+            str(item.get("product_id") or "").strip(),
+        )
+    )
+
+    save_product_operational_catalog_payload(
+        {
+            "id": str(operational_catalog.get("id") or "product_operational_catalog_v1"),
+            "items": next_items,
+        },
+        PRODUCT_OPERATIONAL_CATALOG_PATH,
+    )
+
+    refreshed_operational_catalog = load_product_operational_catalog_payload(PRODUCT_OPERATIONAL_CATALOG_PATH)
+    refreshed_catalog_document = load_product_catalog_v2_master_payload()
+    refreshed_product = _find_product_or_404(list(refreshed_catalog_document.get("products", [])), document.product_id)
+    refreshed_operational = next(
+        (
+            dict(item)
+            for item in refreshed_operational_catalog.get("items", [])
+            if str(item.get("product_id") or "").strip() == document.product_id
+        ),
+        next_record,
+    )
+    return ProductOperationalSaveResponse(product_record=refreshed_product, operational_record=refreshed_operational)
+
+
+def _build_product_operational_autofill_save_request(
+    product_record: dict[str, Any],
+    current_operational_record: dict[str, Any] | None,
+    autofill_payload: dict[str, Any],
+) -> ProductOperationalSaveRequest:
+    current = dict(current_operational_record or {})
+    merged = {**current, **dict(autofill_payload or {})}
+    return ProductOperationalSaveRequest.model_validate(
+        {
+            "product_id": str(product_record.get("id") or "").strip(),
+            "unit": str(merged.get("unit") or product_record.get("unit") or "").strip() or None,
+            "weight_per_unit_kg": merged.get("weight_per_unit_kg"),
+            "volume_per_unit_m3": merged.get("volume_per_unit_m3"),
+            "price_reference_brl_per_unit": merged.get("price_reference_brl_per_unit"),
+            "price_min_brl_per_unit": merged.get("price_min_brl_per_unit"),
+            "price_max_brl_per_unit": merged.get("price_max_brl_per_unit"),
+            "is_seasonal": merged.get("is_seasonal"),
+            "seasonality_index_jan": merged.get("seasonality_index_jan"),
+            "seasonality_index_feb": merged.get("seasonality_index_feb"),
+            "seasonality_index_mar": merged.get("seasonality_index_mar"),
+            "seasonality_index_apr": merged.get("seasonality_index_apr"),
+            "seasonality_index_may": merged.get("seasonality_index_may"),
+            "seasonality_index_jun": merged.get("seasonality_index_jun"),
+            "seasonality_index_jul": merged.get("seasonality_index_jul"),
+            "seasonality_index_aug": merged.get("seasonality_index_aug"),
+            "seasonality_index_sep": merged.get("seasonality_index_sep"),
+            "seasonality_index_oct": merged.get("seasonality_index_oct"),
+            "seasonality_index_nov": merged.get("seasonality_index_nov"),
+            "seasonality_index_dec": merged.get("seasonality_index_dec"),
+            "confidence": str(merged.get("confidence") or "").strip() or None,
+            "research_basis": str(merged.get("research_basis") or "").strip() or None,
+            "source_urls": list(merged.get("source_urls") or []),
+            "notes": str(merged.get("notes") or "").strip(),
+        }
+    )
+
+
+def _run_product_operational_autofill_job(product_id: str) -> None:
+    started_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    _set_product_operational_autofill_status(
+        product_id,
+        status="running",
+        message="Pesquisando dados operacionais do produto...",
+        error=None,
+        payload={},
+        summary="",
+        started_at=started_at,
+        finished_at=None,
+    )
+    try:
+        catalog_document = load_product_catalog_v2_master_payload()
+        selected_product = _find_product_or_404(list(catalog_document.get("products", [])), product_id)
+        current_operational_record = next(
+            (
+                dict(item)
+                for item in load_product_operational_catalog_payload(PRODUCT_OPERATIONAL_CATALOG_PATH).get("items", [])
+                if str(item.get("product_id") or "").strip() == product_id
+            ),
+            None,
+        )
+        autofill_result = autofill_product_operational_record(
+            selected_product,
+            current_operational_record=current_operational_record,
+        )
+        save_request = _build_product_operational_autofill_save_request(
+            selected_product,
+            current_operational_record,
+            dict(autofill_result.get("payload") or {}),
+        )
+        save_response = _save_product_operational_record(save_request)
+        finished_at = datetime.now().astimezone().isoformat(timespec="seconds")
+        _set_product_operational_autofill_status(
+            product_id,
+            status="completed",
+            message="Dados operacionais do produto gravados automaticamente.",
+            summary=str(autofill_result.get("summary") or ""),
+            provider=str(autofill_result.get("provider") or "") or None,
+            model=str(autofill_result.get("model") or "") or None,
+            payload=dict(save_response.operational_record or {}),
+            error=None,
+            finished_at=finished_at,
+        )
+    except Exception as exc:
+        finished_at = datetime.now().astimezone().isoformat(timespec="seconds")
+        _set_product_operational_autofill_status(
+            product_id,
+            status="failed",
+            message="Falha ao gerar os dados operacionais do produto.",
+            error=str(exc),
+            finished_at=finished_at,
+        )
+
+
+def _start_product_operational_autofill_job(product_id: str) -> dict[str, Any]:
+    current_status = _get_product_operational_autofill_status(product_id)
+    if str(current_status.get("status") or "") in {"queued", "running"}:
+        return current_status
+    next_status = _set_product_operational_autofill_status(
+        product_id,
+        status="queued",
+        message="Autofill operacional do produto enfileirado.",
+        error=None,
+        payload={},
+        summary="",
+        started_at=None,
+        finished_at=None,
+    )
+    _PRODUCT_OPERATIONAL_AUTOFILL_EXECUTOR.submit(_run_product_operational_autofill_job, product_id)
+    return next_status
 
 
 def _slugify_product(label: str) -> str:
@@ -720,6 +1311,15 @@ def create_app() -> FastAPI:
             context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de produtos v2")},
         )
 
+    @app.get("/editor/products_v3", response_class=HTMLResponse, include_in_schema=False)
+    async def product_editor_v3(request: Request) -> HTMLResponse:
+        editor_ui = load_product_editor_v3_payload()
+        return templates.TemplateResponse(
+            request=request,
+            name="product_editor_v3.html",
+            context={"page_title": editor_ui["screen"].get("page_title", "Brasix | Editor de produtos v3")},
+        )
+
     @app.get("/viewer/trucks", response_class=HTMLResponse, include_in_schema=False)
     async def truck_gallery(request: Request) -> HTMLResponse:
         gallery_ui = load_truck_gallery_payload()
@@ -735,6 +1335,14 @@ def create_app() -> FastAPI:
             request=request,
             name="truck_product_matrix.html",
             context={"page_title": "Brasix | Matriz caminhoes x produtos"},
+        )
+
+    @app.get("/viewer/truck-operations", response_class=HTMLResponse, include_in_schema=False)
+    async def truck_operational_editor(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="truck_operational_editor.html",
+            context={"page_title": "Brasix | Editor operacional de caminhoes"},
         )
 
     @app.get("/inspector/runtime", response_class=HTMLResponse, include_in_schema=False)
@@ -798,6 +1406,10 @@ def create_app() -> FastAPI:
     async def product_editor_v2_bootstrap() -> dict[str, Any]:
         return _build_product_editor_v2_bootstrap_payload()
 
+    @app.get("/api/editor/products_v3/bootstrap")
+    async def product_editor_v3_bootstrap() -> dict[str, Any]:
+        return _build_product_editor_v3_bootstrap_payload()
+
     @app.get("/api/editor/products_v1/field")
     async def product_editor_v1_field(
         map_id: str = Query(min_length=1),
@@ -820,6 +1432,17 @@ def create_app() -> FastAPI:
             "baked": load_product_field_baked_document(product_id, layer, map_id=map_id),
         }
 
+    @app.get("/api/editor/products_v3/field")
+    async def product_editor_v3_field(
+        map_id: str = Query(min_length=1),
+        product_id: str = Query(min_length=1),
+        layer: str = Query(pattern="^(supply|demand)$"),
+    ) -> dict[str, Any]:
+        return {
+            "field": load_product_field_edit_document(product_id, layer, map_id=map_id),
+            "baked": load_product_field_baked_document(product_id, layer, map_id=map_id),
+        }
+
     @app.get("/api/viewer/trucks/bootstrap")
     async def truck_gallery_bootstrap() -> dict[str, Any]:
         return _build_truck_gallery_bootstrap_payload()
@@ -827,6 +1450,52 @@ def create_app() -> FastAPI:
     @app.get("/api/viewer/truck-product-matrix")
     async def truck_product_matrix_bootstrap() -> dict[str, Any]:
         return build_truck_product_matrix_payload()
+
+    @app.get("/api/viewer/truck-operations/bootstrap")
+    async def truck_operational_editor_bootstrap() -> dict[str, Any]:
+        return _build_truck_operational_editor_bootstrap_payload()
+
+    @app.post("/api/viewer/truck-operations/autofill", response_model=TruckOperationalAutofillResponse)
+    async def autofill_truck_operational(document: TruckOperationalAutofillRequest) -> TruckOperationalAutofillResponse:
+        effective_catalog = load_effective_truck_type_catalog_payload()
+        selected_type = _find_truck_or_404(list(effective_catalog.get("types", [])), document.truck_type_id)
+        current_operational_record = next(
+            (
+                dict(item)
+                for item in load_truck_operational_catalog_payload(TRUCK_OPERATIONAL_DATA_PATH).get("items", [])
+                if str(item.get("truck_type_id") or "").strip() == document.truck_type_id
+            ),
+            None,
+        )
+
+        try:
+            result = autofill_truck_operational_record(selected_type, current_operational_record=current_operational_record)
+        except TruckOperationalAutofillError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+        return TruckOperationalAutofillResponse(
+            truck_type_id=document.truck_type_id,
+            payload=dict(result.get("payload") or {}),
+            summary=str(result.get("summary") or ""),
+            provider=str(result.get("provider") or "") or None,
+            model=str(result.get("model") or "") or None,
+        )
+
+    @app.post("/api/viewer/truck-operations/autofill/background", response_model=TruckOperationalAutofillStatusResponse)
+    async def start_truck_operational_autofill_background(document: TruckOperationalAutofillRequest) -> TruckOperationalAutofillStatusResponse:
+        effective_catalog = load_effective_truck_type_catalog_payload()
+        _find_truck_or_404(list(effective_catalog.get("types", [])), document.truck_type_id)
+        return TruckOperationalAutofillStatusResponse.model_validate(_start_truck_operational_autofill_job(document.truck_type_id))
+
+    @app.get("/api/viewer/truck-operations/autofill/status", response_model=TruckOperationalAutofillStatusResponse)
+    async def truck_operational_autofill_status(truck_type_id: str = Query(min_length=1)) -> TruckOperationalAutofillStatusResponse:
+        effective_catalog = load_effective_truck_type_catalog_payload()
+        _find_truck_or_404(list(effective_catalog.get("types", [])), truck_type_id)
+        return TruckOperationalAutofillStatusResponse.model_validate(_get_truck_operational_autofill_status(truck_type_id))
+
+    @app.put("/api/viewer/truck-operations", response_model=TruckOperationalSaveResponse)
+    async def save_truck_operational(document: TruckOperationalSaveRequest) -> TruckOperationalSaveResponse:
+        return _save_truck_operational_record(document)
 
     @app.post("/api/viewer/truck-product-matrix/toggle")
     async def truck_product_matrix_toggle(document: TruckProductMatrixToggleRequest) -> dict[str, Any]:
@@ -1027,6 +1696,35 @@ def create_app() -> FastAPI:
         save_product_field_baked_document(document.product_id, document.layer, baked_payload, map_id=document.map_id)
         return {"field": field_payload, "baked": baked_payload}
 
+    @app.put("/api/editor/products_v3/field")
+    async def save_product_editor_v3_field(document: ProductFieldLayerSaveRequest) -> dict[str, Any]:
+        catalog_document = load_product_catalog_v2_master_payload()
+        _find_product_or_404(list(catalog_document.get("products", [])), document.product_id)
+
+        timestamp = document.updated_at or datetime.now().astimezone().isoformat(timespec="seconds")
+        field_payload = {
+            "id": f"product_field_edit::{document.map_id}::{document.product_id}::{document.layer}",
+            "map_id": document.map_id,
+            "product_id": document.product_id,
+            "layer": document.layer,
+            "version": 1,
+            "updated_at": timestamp,
+            "strokes": document.strokes,
+            "baked_city_values": document.baked_city_values,
+        }
+        baked_payload = {
+            "id": f"product_field_baked::{document.map_id}::{document.product_id}::{document.layer}",
+            "map_id": document.map_id,
+            "product_id": document.product_id,
+            "layer": document.layer,
+            "generated_at": timestamp,
+            "city_values": document.baked_city_values,
+        }
+
+        save_product_field_edit_document(document.product_id, document.layer, field_payload, map_id=document.map_id)
+        save_product_field_baked_document(document.product_id, document.layer, baked_payload, map_id=document.map_id)
+        return {"field": field_payload, "baked": baked_payload}
+
     @app.post("/api/editor/products_v2/products")
     async def create_product_v2(document: ProductMasterCreateRequest) -> dict[str, Any]:
         master_document = load_product_master_v1_1_payload()
@@ -1098,6 +1796,51 @@ def create_app() -> FastAPI:
         catalog_document = load_product_catalog_v2_master_payload()
         product = _find_product_or_404(list(catalog_document.get("products", [])), product_id)
         return {"product": product}
+
+    @app.post("/api/editor/products_v3/products")
+    async def create_product_v3(document: ProductMasterCreateRequest) -> dict[str, Any]:
+        return await create_product_v2(document)
+
+    @app.put("/api/editor/products_v3/operational", response_model=ProductOperationalSaveResponse)
+    async def save_product_operational(document: ProductOperationalSaveRequest) -> ProductOperationalSaveResponse:
+        return _save_product_operational_record(document)
+
+    @app.post("/api/editor/products_v3/operational/autofill", response_model=ProductOperationalAutofillResponse)
+    async def autofill_product_operational(document: ProductOperationalAutofillRequest) -> ProductOperationalAutofillResponse:
+        catalog_document = load_product_catalog_v2_master_payload()
+        selected_product = _find_product_or_404(list(catalog_document.get("products", [])), document.product_id)
+        current_operational_record = next(
+            (
+                dict(item)
+                for item in load_product_operational_catalog_payload(PRODUCT_OPERATIONAL_CATALOG_PATH).get("items", [])
+                if str(item.get("product_id") or "").strip() == document.product_id
+            ),
+            None,
+        )
+        try:
+            result = autofill_product_operational_record(selected_product, current_operational_record=current_operational_record)
+        except ProductOperationalAutofillError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+        return ProductOperationalAutofillResponse(
+            product_id=document.product_id,
+            payload=dict(result.get("payload") or {}),
+            summary=str(result.get("summary") or ""),
+            provider=str(result.get("provider") or "") or None,
+            model=str(result.get("model") or "") or None,
+        )
+
+    @app.post("/api/editor/products_v3/operational/autofill/background", response_model=ProductOperationalAutofillStatusResponse)
+    async def start_product_operational_autofill_background(document: ProductOperationalAutofillRequest) -> ProductOperationalAutofillStatusResponse:
+        catalog_document = load_product_catalog_v2_master_payload()
+        _find_product_or_404(list(catalog_document.get("products", [])), document.product_id)
+        return ProductOperationalAutofillStatusResponse.model_validate(_start_product_operational_autofill_job(document.product_id))
+
+    @app.get("/api/editor/products_v3/operational/autofill/status", response_model=ProductOperationalAutofillStatusResponse)
+    async def product_operational_autofill_status(product_id: str = Query(min_length=1)) -> ProductOperationalAutofillStatusResponse:
+        catalog_document = load_product_catalog_v2_master_payload()
+        _find_product_or_404(list(catalog_document.get("products", [])), product_id)
+        return ProductOperationalAutofillStatusResponse.model_validate(_get_product_operational_autofill_status(product_id))
 
     @app.post("/api/viewer/trucks/generate", response_model=TruckImageGenerateResponse)
     async def generate_truck_image(document: TruckImageGenerateRequest) -> TruckImageGenerateResponse:
@@ -1246,6 +1989,7 @@ def create_app() -> FastAPI:
                                 "size_tier": document.size_tier,
                                 "base_vehicle_kind": document.base_vehicle_kind,
                                 "axle_config": document.axle_config,
+                                "canonical_body_type_ids": [preferred_body_type_id] if preferred_body_type_id else list(item.canonical_body_type_ids),
                                 "preferred_body_type_id": preferred_body_type_id,
                                 "notes": document.notes,
                             }

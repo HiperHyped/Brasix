@@ -72,6 +72,12 @@
       "href": "/editor/map"
     },
     {
+      "id": "truck_gallery_action_operational_editor",
+      "label": "Editor operacional",
+      "icon": "tune",
+      "href": "/viewer/truck-operations"
+    },
+    {
       "id": "truck_gallery_action_toggle_theme",
       "label": "Modo noturno",
       "icon": "dark_mode",

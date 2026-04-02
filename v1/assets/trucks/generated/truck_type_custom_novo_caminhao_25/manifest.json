@@ -1,7 +1,7 @@
 {
   "truck_type_id": "truck_type_custom_novo_caminhao_25",
   "canonical_body_type_id": "truck_body_bau",
-  "status": "generated",
+  "status": "approved",
   "prompt_items": [
     "perfil lateral puro da camionete (pick-up)",
     "fundo transparente",
@@ -47,9 +47,9 @@
   "width_px": 1024,
   "height_px": 1024,
   "generated_at": "2026-04-01T08:01:50-03:00",
-  "reviewed_at": "2026-03-30T17:54:20-03:00",
-  "approved_at": "2026-03-30T17:54:20-03:00",
-  "updated_at": "2026-04-01T08:01:50-03:00",
+  "reviewed_at": "2026-04-01T13:51:57-03:00",
+  "approved_at": "2026-04-01T13:51:57-03:00",
+  "updated_at": "2026-04-01T13:51:57-03:00",
   "error_message": null,
-  "truck_type_label": "Camionete Aberta"
+  "decision": "approved"
 }

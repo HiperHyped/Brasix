@@ -1,12 +1,10 @@
 {
   "id": "truck_image_review_queue_v1",
   "pending_type_ids": [
-    "truck_type_toco_leve_eletrico_4x2",
     "truck_type_toco_semipesado_4x2",
     "truck_type_truck_pesado_6x4",
-    "truck_type_cegonheiro",
-    "truck_type_custom_novo_caminhao_25"
+    "truck_type_cegonheiro"
   ],
-  "last_reviewed_type_id": "truck_type_custom_novo_caminhao_36",
-  "updated_at": "2026-04-01T08:02:35-03:00"
+  "last_reviewed_type_id": "truck_type_toco_leve_eletrico_4x2",
+  "updated_at": "2026-04-01T14:17:20-03:00"
 }

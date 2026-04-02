@@ -43,13 +43,13 @@
     },
     {
       "truck_type_id": "truck_type_toco_semipesado_4x2",
-      "label": "Toco semipesado 4x2",
+      "label": "Toco médio aberto 4x2",
       "size_tier": "leve",
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "preferred_body_type_id": "truck_body_carga_seca",
       "notes": "",
-      "updated_at": "2026-03-31T23:26:07-03:00"
+      "updated_at": "2026-04-01T14:04:44-03:00"
     },
     {
       "truck_type_id": "truck_type_cavalo_6x4",
@@ -77,9 +77,9 @@
       "size_tier": "super_pesado",
       "base_vehicle_kind": "combinacao",
       "axle_config": "rigido_mais_dois_reboques",
-      "preferred_body_type_id": "truck_body_graneleiro",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "notes": "",
-      "updated_at": "2026-03-31T21:24:15-03:00"
+      "updated_at": "2026-04-01T14:18:28-03:00"
     },
     {
       "truck_type_id": "truck_type_offroad_6x6",
@@ -147,9 +147,9 @@
       "size_tier": "medio",
       "base_vehicle_kind": "rigido",
       "axle_config": "6x2",
-      "preferred_body_type_id": "truck_body_bau",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "notes": "",
-      "updated_at": "2026-03-31T23:16:30-03:00"
+      "updated_at": "2026-04-01T14:18:00-03:00"
     },
     {
       "truck_type_id": "truck_type_cegonheiro",
@@ -160,6 +160,26 @@
       "preferred_body_type_id": "truck_body_cegonheiro",
       "notes": "",
       "updated_at": "2026-03-31T23:23:45-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_rodotrem",
+      "label": "Rodotrem",
+      "size_tier": "super_pesado",
+      "base_vehicle_kind": "combinacao",
+      "axle_config": "cavalo_6x4",
+      "preferred_body_type_id": "truck_body_boiadeiro",
+      "notes": "",
+      "updated_at": "2026-04-01T14:07:07-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_bitrem",
+      "label": "Bitrem",
+      "size_tier": "super_pesado",
+      "base_vehicle_kind": "combinacao",
+      "axle_config": "cavalo_6x2_ou_6x4",
+      "preferred_body_type_id": "truck_body_bau",
+      "notes": "",
+      "updated_at": "2026-04-01T14:16:44-03:00"
     }
   ]
 }

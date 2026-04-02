@@ -1,0 +1,122 @@
+{
+  "id": "ui_product_editor_v3_screen_v1",
+  "page_title": "Brasix | Editor de produtos v3",
+  "components": [
+    {
+      "dom_target_id": "product-editor-v1-brand-title",
+      "text": "Brasix"
+    },
+    {
+      "dom_target_id": "product-editor-v1-brand-subtitle",
+      "text": "Editor de produtos v3"
+    },
+    {
+      "dom_target_id": "product-editor-v1-left-eyebrow",
+      "text": "Catalogo"
+    },
+    {
+      "dom_target_id": "product-editor-v1-left-title",
+      "text": "Produto, mapa e pinceis"
+    },
+    {
+      "dom_target_id": "product-editor-v1-map-eyebrow",
+      "text": "Mapa"
+    },
+    {
+      "dom_target_id": "product-editor-v1-map-title",
+      "text": "Oferta e demanda editaveis"
+    },
+    {
+      "dom_target_id": "product-editor-v1-right-eyebrow",
+      "text": "Detalhes"
+    },
+    {
+      "dom_target_id": "product-editor-v1-right-title",
+      "text": "Produto e cidade"
+    },
+    {
+      "dom_target_id": "product-editor-v1-shortcuts-eyebrow",
+      "text": "Atalhos"
+    },
+    {
+      "dom_target_id": "product-editor-v1-shortcuts-title",
+      "text": "Janela de atalhos"
+    }
+  ],
+  "header_actions": [
+    {
+      "id": "product_editor_v1_action_back_to_products",
+      "label": "Editor base",
+      "icon": "inventory_2",
+      "href": "/editor/products"
+    },
+    {
+      "id": "product_editor_v1_action_back_to_app",
+      "label": "Voltar ao app",
+      "icon": "arrow_back",
+      "href": "/"
+    },
+    {
+      "id": "product_editor_v1_action_toggle_theme",
+      "label": "Modo noturno",
+      "icon": "dark_mode",
+      "action": "toggle-theme"
+    },
+    {
+      "id": "product_editor_v1_action_open_shortcuts",
+      "label": "Atalhos",
+      "icon": "keyboard_command_key",
+      "action": "open-shortcuts"
+    }
+  ],
+  "labels": {
+    "map_select_label": "Mapa de trabalho",
+    "family_filter_label": "Familia economica",
+    "logistics_filter_label": "Tipo logistico",
+    "product_list_label": "Produtos existentes",
+    "all_option_label": "Todos",
+    "create_button_label": "Novo produto",
+    "duplicate_button_label": "Duplicar produto",
+    "list_count_label": "produtos visiveis",
+    "layer_toggle_label": "Camada",
+    "supply_layer_label": "Oferta",
+    "demand_layer_label": "Demanda",
+    "tool_toggle_label": "Ferramenta",
+    "tool_select_label": "Selecionar",
+    "tool_modify_label": "Modificar",
+    "brush_radius_label": "Grossura do pincel",
+    "brush_intensity_label": "Intensidade",
+    "save_field_label": "Salvar campo",
+    "reset_field_label": "Limpar camada",
+    "undo_label": "Desfazer",
+    "redo_label": "Refazer",
+    "product_name_label": "Nome",
+    "product_short_name_label": "Nome curto",
+    "product_family_label": "Familia",
+    "product_logistics_label": "Tipo logistico",
+    "city_panel_title": "Cidade selecionada",
+    "city_base_value_label": "Valor base",
+    "city_manual_delta_label": "Delta manual",
+    "city_final_value_label": "Valor final",
+    "city_population_label": "Populacao",
+    "city_state_label": "UF",
+    "map_legend_title": "Escala",
+    "pending_city_edit_label": "O valor final salvo e bakeado para as cidades canonicas."
+  },
+  "status_messages": {
+    "idle": "Editor pronto para edicao.",
+    "theme_day": "Modo diurno ativado.",
+    "theme_night": "Modo noturno ativado.",
+    "map_loaded": "Mapa de trabalho carregado no editor v3.",
+    "map_load_failed": "Nao foi possivel carregar o mapa selecionado.",
+    "field_saved": "Campo editado salvo com sucesso.",
+    "field_reset": "Camada manual limpa para o produto atual.",
+    "undo_applied": "Ultima operacao desfeita.",
+    "redo_applied": "Operacao refeita.",
+    "brush_ready": "Pincel pronto para editar o campo do produto."
+  },
+  "dialog": {
+    "shortcuts_copy": "Use a janela de atalhos para consultar tamanhos de pincel, intensidades e modos de edicao diretamente no mapa.",
+    "close_button_label": "Fechar"
+  }
+}

@@ -4,7 +4,7 @@
   "product_id": "feijao",
   "layer": "demand",
   "version": 1,
-  "updated_at": "2026-03-31T11:47:52.661Z",
+  "updated_at": "2026-04-01T21:10:07.481Z",
   "strokes": [
     {
       "id": "stroke_1774957610772_53164",
@@ -5519,6 +5519,457 @@
           "lon": -49.591654921787864
         }
       ]
+    },
+    {
+      "id": "stroke_1775077540707_83926",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:05:40.707Z",
+      "points": [
+        {
+          "lat": -18.201670437183616,
+          "lon": -33.92681920469831
+        },
+        {
+          "lat": -18.118174232176,
+          "lon": -33.92681920469831
+        },
+        {
+          "lat": -18.118174232176,
+          "lon": -33.92681920469831
+        },
+        {
+          "lat": -16.861040898432346,
+          "lon": -34.45412073048116
+        },
+        {
+          "lat": -16.861040898432346,
+          "lon": -34.45412073048116
+        },
+        {
+          "lat": -16.861040898432346,
+          "lon": -34.45412073048116
+        },
+        {
+          "lat": -15.25666278402716,
+          "lon": -35.33295660678582
+        },
+        {
+          "lat": -15.25666278402716,
+          "lon": -35.33295660678582
+        },
+        {
+          "lat": -15.25666278402716,
+          "lon": -35.33295660678582
+        },
+        {
+          "lat": -15.25666278402716,
+          "lon": -35.33295660678582
+        },
+        {
+          "lat": -15.25666278402716,
+          "lon": -35.33295660678582
+        },
+        {
+          "lat": -15.25666278402716,
+          "lon": -35.33295660678582
+        },
+        {
+          "lat": -15.25666278402716,
+          "lon": -35.33295660678582
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077775611_27489",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:35.611Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077776274_54260",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:36.274Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077776725_45336",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:36.726Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077777063_35510",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:37.063Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077777324_32974",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:37.324Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077777673_8619",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:37.673Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077777909_45837",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:37.909Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077778531_67584",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:38.531Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077778836_95710",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "subtract",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:09:38.836Z",
+      "points": [
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        },
+        {
+          "lat": -17.774870048725088,
+          "lon": -51.32669932298612
+        }
+      ]
+    },
+    {
+      "id": "stroke_1775077806979_7854",
+      "product_id": "feijao",
+      "layer": "demand",
+      "tool": "paint",
+      "mode": "add",
+      "radius_km": 120,
+      "intensity": 0.24,
+      "falloff": "gaussian",
+      "created_at": "2026-04-01T21:10:06.979Z",
+      "points": [
+        {
+          "lat": -13.499048772220524,
+          "lon": -50.115257254933994
+        },
+        {
+          "lat": -13.499048772220524,
+          "lon": -50.41810517788501
+        },
+        {
+          "lat": -13.499048772220524,
+          "lon": -50.41810517788501
+        },
+        {
+          "lat": -13.499048772220524,
+          "lon": -50.41810517788501
+        },
+        {
+          "lat": -13.499048772220524,
+          "lon": -52.38661667706672
+        },
+        {
+          "lat": -13.499048772220524,
+          "lon": -52.38661667706672
+        },
+        {
+          "lat": -13.499048772220524,
+          "lon": -52.38661667706672
+        },
+        {
+          "lat": -13.302666085876803,
+          "lon": -56.27316502160496
+        },
+        {
+          "lat": -13.302666085876803,
+          "lon": -56.27316502160496
+        },
+        {
+          "lat": -13.302666085876803,
+          "lon": -56.27316502160496
+        },
+        {
+          "lat": -13.007794093396997,
+          "lon": -58.039777905486
+        },
+        {
+          "lat": -13.007794093396997,
+          "lon": -58.039777905486
+        },
+        {
+          "lat": -13.007794093396997,
+          "lon": -58.039777905486
+        },
+        {
+          "lat": -13.007794093396997,
+          "lon": -58.039777905486
+        },
+        {
+          "lat": -13.007794093396997,
+          "lon": -58.039777905486
+        }
+      ]
     }
   ],
   "baked_city_values": [
@@ -5603,9 +6054,9 @@
       "city_id": "custom-city-1774656618112",
       "city_label": "Araguaína, TO",
       "state_code": "TO",
-      "base_value": 7.305095408408926,
+      "base_value": 7.614036061433577,
       "manual_delta": 0,
-      "final_value": 7.305095408408926,
+      "final_value": 7.614036061433577,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 204.09423289221937
@@ -6231,8 +6682,8 @@
       "city_label": "Crixás, GO",
       "state_code": "GO",
       "base_value": 10,
-      "manual_delta": -5.619772394117756,
-      "final_value": 4.380227605882244,
+      "manual_delta": -5.607000590906917,
+      "final_value": 4.392999409093083,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -6711,6 +7162,17 @@
       "nearest_distance_km": 45
     },
     {
+      "city_id": "custom-city-1774991729696",
+      "city_label": "Itaobim, MG",
+      "state_code": "MG",
+      "base_value": 13.671740125042149,
+      "manual_delta": -5.958528076619732,
+      "final_value": 7.713212048422417,
+      "source": "interpolated",
+      "anchor_count": 4,
+      "nearest_distance_km": 142.85466031810938
+    },
+    {
       "city_id": "custom-city-1774706423438",
       "city_label": "Itaocara, RJ",
       "state_code": "RJ",
@@ -6725,7 +7187,7 @@
       "city_id": "custom-city-1774793968551",
       "city_label": "Itapetininga, SP",
       "state_code": "SP",
-      "base_value": 8.701463424846402,
+      "base_value": 10.181882296796038,
       "manual_delta": -27.461211012684572,
       "final_value": 0,
       "source": "interpolated",
@@ -6781,8 +7243,8 @@
       "city_label": "Jataí, GO",
       "state_code": "GO",
       "base_value": 44.53903034564174,
-      "manual_delta": 0,
-      "final_value": 44.53903034564174,
+      "manual_delta": -23.558623531277046,
+      "final_value": 20.980406814364695,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 86.87586028699558
@@ -6978,9 +7440,9 @@
       "city_id": "custom-city-1774706529461",
       "city_label": "Lorena, SP",
       "state_code": "SP",
-      "base_value": 11.32422256879317,
+      "base_value": 11.324222568793168,
       "manual_delta": -6.837776034180127,
-      "final_value": 4.486446534613043,
+      "final_value": 4.486446534613041,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 94.43622123197592
@@ -7121,9 +7583,9 @@
       "city_id": "custom-city-1774654786924",
       "city_label": "Mogi Guaçu, SP",
       "state_code": "SP",
-      "base_value": 13.510503083318866,
+      "base_value": 14.787485596113664,
       "manual_delta": 6.999261276456902,
-      "final_value": 20.50976435977577,
+      "final_value": 21.786746872570568,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 62.90476738267064
@@ -7529,8 +7991,8 @@
       "city_label": "Porangatu, GO",
       "state_code": "GO",
       "base_value": 8,
-      "manual_delta": -1.3319869180920336,
-      "final_value": 6.668013081907967,
+      "manual_delta": -1.302029774261512,
+      "final_value": 6.697970225738488,
       "source": "observed",
       "anchor_count": 1,
       "nearest_distance_km": 0
@@ -7583,9 +8045,9 @@
       "city_id": "custom-city-1774628313824",
       "city_label": "Pouso Alegre, MG",
       "state_code": "MG",
-      "base_value": 17.609693261177306,
+      "base_value": 19.08766993853073,
       "manual_delta": -6.506496187124206,
-      "final_value": 11.1031970740531,
+      "final_value": 12.581173751406524,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 87.18553596132004
@@ -7727,8 +8189,8 @@
       "city_label": "Rio Verde, GO",
       "state_code": "GO",
       "base_value": 53.629730380383386,
-      "manual_delta": 0,
-      "final_value": 53.629730380383386,
+      "manual_delta": -25.399158041686377,
+      "final_value": 28.23057233869701,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 45
@@ -7858,9 +8320,9 @@
       "city_id": "custom-city-1774706688274",
       "city_label": "São Félix do Araguaia, MT",
       "state_code": "MT",
-      "base_value": 7.178988989807522,
+      "base_value": 7.178988989807523,
       "manual_delta": 0,
-      "final_value": 7.178988989807522,
+      "final_value": 7.178988989807523,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 260.68071108759995
@@ -8035,8 +8497,8 @@
       "city_label": "Sorriso, MT",
       "state_code": "MT",
       "base_value": 17.184669375621862,
-      "manual_delta": 0,
-      "final_value": 17.184669375621862,
+      "manual_delta": 0.10098942566454386,
+      "final_value": 17.285658801286406,
       "source": "interpolated",
       "anchor_count": 4,
       "nearest_distance_km": 80.43666614415713

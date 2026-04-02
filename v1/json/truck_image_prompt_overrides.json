@@ -143,7 +143,7 @@
     },
     {
       "truck_type_id": "truck_type_truck_semipesado_6x2",
-      "preferred_body_type_id": "truck_body_bau",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "prompt_items": [
         "perfil lateral puro do caminhão",
         "fundo transparente",
@@ -429,7 +429,7 @@
     },
     {
       "truck_type_id": "truck_type_bitrem",
-      "preferred_body_type_id": "truck_body_graneleiro",
+      "preferred_body_type_id": "truck_body_bau",
       "prompt_items": [
         "perfil lateral puro do caminhão",
         "fundo transparente",
@@ -463,7 +463,7 @@
     },
     {
       "truck_type_id": "truck_type_rodotrem",
-      "preferred_body_type_id": "truck_body_graneleiro",
+      "preferred_body_type_id": "truck_body_boiadeiro",
       "prompt_items": [
         "perfil lateral puro do caminhão",
         "fundo transparente",
@@ -529,7 +529,7 @@
     },
     {
       "truck_type_id": "truck_type_treminhao",
-      "preferred_body_type_id": "truck_body_graneleiro",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "prompt_items": [
         "perfil lateral puro do caminhão",
         "fundo transparente",
@@ -650,7 +650,7 @@
     },
     {
       "truck_type_id": "truck_type_custom_novo_caminhao_25",
-      "preferred_body_type_id": "truck_body_bau",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "prompt_items": [
         "perfil lateral puro da camionete (pick-up)",
         "fundo transparente",
@@ -959,6 +959,87 @@
         "não usar perspectiva"
       ],
       "reference_truck_type_id": "truck_type_truck_pesado_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_37",
+      "preferred_body_type_id": "truck_body_boiadeiro",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo toco craga viva",
+        "porte Leve",
+        "tipo Rigido",
+        "eixos 4x2",
+        "implemento: carga viva",
+        "usar poucos detalhes",
+        "observacoes importantes: Um toco para levar carga viva (boi, suino, aves)",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_toco_leve_eletrico_4x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_38",
+      "preferred_body_type_id": "truck_body_boiadeiro",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo truck carga viva",
+        "porte Medio",
+        "tipo Rigido",
+        "eixos 6x2",
+        "implemento: carga viva",
+        "usar poucos detalhes",
+        "observacoes importantes: Truck para transportar Carga Viva (Boi, suinos, aves)",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_truck_pesado_6x2",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_39",
+      "preferred_body_type_id": "truck_body_boiadeiro",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo carreta carga viva",
+        "porte Pesado",
+        "tipo Cavalo",
+        "eixos 6x2",
+        "implemento: carga viva",
+        "usar poucos detalhes",
+        "observacoes importantes: Carreta para Carga Viva (Bois, suinos, aves)",
+        "usar poucos detalhes",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_cavalo_6x2",
       "reference_aspects": [
         "cabine",
         "estilo"

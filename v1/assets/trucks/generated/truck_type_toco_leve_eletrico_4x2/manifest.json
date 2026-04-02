@@ -1,7 +1,7 @@
 {
   "truck_type_id": "truck_type_toco_leve_eletrico_4x2",
   "canonical_body_type_id": "truck_body_bau",
-  "status": "generated",
+  "status": "approved",
   "prompt_items": [
     "perfil lateral puro do caminhão",
     "fundo transparente",
@@ -46,9 +46,9 @@
   "width_px": 1024,
   "height_px": 1024,
   "generated_at": "2026-03-30T12:06:00-03:00",
-  "reviewed_at": "2026-03-30T12:05:53-03:00",
-  "approved_at": "2026-03-30T12:05:53-03:00",
-  "updated_at": "2026-03-30T12:06:00-03:00",
+  "reviewed_at": "2026-04-01T14:17:20-03:00",
+  "approved_at": "2026-04-01T14:17:20-03:00",
+  "updated_at": "2026-04-01T14:17:20-03:00",
   "error_message": null,
-  "truck_type_label": "Toco leve eletrico 4x2"
+  "decision": "approved"
 }

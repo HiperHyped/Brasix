@@ -27,6 +27,11 @@ def test_build_game_world_runtime_contains_core_snapshots() -> None:
     vuc_type = runtime.catalogs.truck_type_by_id["truck_type_vuc_4x2"]
     assert vuc_type["payload_weight_kg"] == vuc_operational["payload_weight_kg"]
     assert vuc_type["cargo_volume_m3"] == vuc_operational["cargo_volume_m3"]
+    assert vuc_type["energy_source"] == vuc_operational["energy_source"] == "diesel"
+    assert vuc_type["consumption_unit"] == vuc_operational["consumption_unit"] == "l_per_km"
+    assert vuc_type["base_fixed_cost_brl_per_day"] == vuc_operational["base_fixed_cost_brl_per_day"] == 240
+    assert vuc_type["supported_surface_codes"] == vuc_operational["supported_surface_codes"] == ["double_road", "single_road"]
+    assert vuc_type["load_time_minutes"] == vuc_operational["load_time_minutes"] == 35
     assert vuc_type["operational"]["catalog_id"] == runtime.trucks.operational_catalog["id"]
 
 

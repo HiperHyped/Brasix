@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="product-editor-shell product-editor-v1-shell product-editor-v3-shell">
+  <header class="topbar product-editor-topbar">
+    <div class="product-editor-topbar-left">
+      <div class="brand-lockup">
+        <h1 id="product-editor-v1-brand-title">Brasix</h1>
+        <span class="brand-divider"></span>
+        <p id="product-editor-v1-brand-subtitle">Editor de produtos v3</p>
+      </div>
+    </div>
+
+    <div id="product-editor-v1-header-badges" class="editor-header-badges" aria-label="Estado do editor v3"></div>
+    <div id="product-editor-v1-header-actions" class="editor-header-actions" aria-label="Acoes do editor v3"></div>
+  </header>
+
+  <section id="product-editor-v1-grid" class="product-editor-grid product-editor-v3-grid">
+    <aside class="product-editor-sidebar product-editor-sidebar-left product-editor-v1-left-sidebar">
+      <section class="editor-card product-editor-card product-editor-control-card">
+        <div class="section-head">
+          <div>
+            <p id="product-editor-v1-left-eyebrow" class="eyebrow">Catalogo</p>
+          </div>
+        </div>
+
+        <div class="product-editor-actions-row">
+          <button id="product-editor-v1-create-button" class="editor-header-action" type="button">
+            <span class="material-symbols-outlined">add</span>
+            <span id="product-editor-v1-create-label">Novo produto</span>
+          </button>
+          <button id="product-editor-v1-duplicate-button" class="secondary-button" type="button">Duplicar produto</button>
+        </div>
+
+        <div class="product-editor-filter-form">
+          <label class="field">
+            <span id="product-editor-v1-map-select-label">Mapa de trabalho</span>
+            <div class="select-shell">
+              <select id="product-editor-v1-map-select" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="product-editor-v1-family-filter-label">Familia economica</span>
+            <div class="select-shell">
+              <select id="product-editor-v1-family-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span id="product-editor-v1-logistics-filter-label">Tipo logistico</span>
+            <div class="select-shell">
+              <select id="product-editor-v1-logistics-filter" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <section class="product-editor-layer-section">
+            <span id="product-editor-v1-layer-toggle-label" class="eyebrow">Camada</span>
+            <div class="product-editor-layer-toggle" role="group" aria-label="Camada do mapa">
+              <button id="product-editor-v1-layer-supply" class="product-editor-layer-button is-active" type="button">Oferta</button>
+              <button id="product-editor-v1-layer-demand" class="product-editor-layer-button" type="button">Demanda</button>
+            </div>
+          </section>
+
+          <section class="product-editor-layer-section">
+            <span id="product-editor-v1-tool-toggle-label" class="eyebrow">Ferramenta</span>
+            <div id="product-editor-v1-tool-toggle" class="product-editor-v1-tool-grid" role="group" aria-label="Ferramentas de edicao">
+              <button class="product-editor-layer-button product-editor-icon-button is-active" type="button" data-tool="select" title="Selecionar" aria-label="Selecionar">
+                <span class="material-symbols-outlined">pan_tool_alt</span>
+              </button>
+              <button class="product-editor-layer-button product-editor-icon-button" type="button" data-tool="modify" title="Modificar com pincel" aria-label="Modificar com pincel">
+                <span class="product-editor-icon-pair" aria-hidden="true">
+                  <span class="material-symbols-outlined">add_circle</span>
+                  <span class="material-symbols-outlined">remove_circle</span>
+                </span>
+              </button>
+            </div>
+          </section>
+
+          <section class="product-editor-layer-section">
+            <span id="product-editor-v1-brush-radius-label" class="eyebrow">Grossura do pincel</span>
+            <div id="product-editor-v1-radius-presets" class="product-editor-v1-preset-grid is-five" role="group" aria-label="Grossura do pincel">
+              <button class="secondary-button" type="button" data-radius-index="0">1</button>
+              <button class="secondary-button" type="button" data-radius-index="1">2</button>
+              <button class="secondary-button is-active" type="button" data-radius-index="2">3</button>
+              <button class="secondary-button" type="button" data-radius-index="3">4</button>
+              <button class="secondary-button" type="button" data-radius-index="4">5</button>
+            </div>
+          </section>
+
+          <section class="product-editor-layer-section">
+            <span id="product-editor-v1-brush-intensity-label" class="eyebrow">Intensidade</span>
+            <div id="product-editor-v1-intensity-presets" class="product-editor-v1-preset-grid is-four" role="group" aria-label="Intensidade do pincel">
+              <button class="secondary-button" type="button" data-intensity-index="0">1</button>
+              <button class="secondary-button is-active" type="button" data-intensity-index="1">2</button>
+              <button class="secondary-button" type="button" data-intensity-index="2">3</button>
+              <button class="secondary-button" type="button" data-intensity-index="3">4</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="editor-card product-editor-card product-editor-list-card">
+        <label class="field product-editor-product-choice-field">
+          <span id="product-editor-v1-product-list-label">Produtos existentes</span>
+          <select id="product-editor-v1-product-select" class="editor-input product-editor-product-select" size="16"></select>
+        </label>
+      </section>
+    </aside>
+
+    <section class="product-editor-map-panel">
+      <section class="editor-card product-editor-card product-editor-map-card">
+        <div class="section-head">
+          <div>
+            <p id="product-editor-v1-map-eyebrow" class="eyebrow">Mapa</p>
+          </div>
+          <div id="product-editor-v1-map-selection" class="product-editor-map-selection"></div>
+        </div>
+
+        <div class="map-frame product-editor-map-frame">
+          <div id="product-editor-v1-map-stage" class="map-stage product-editor-map-stage" aria-label="Mapa editavel de produtos do Brasil"></div>
+          <div id="product-editor-v1-map-legend" class="product-editor-map-legend"></div>
+          <div id="product-editor-v1-map-summary" class="product-editor-status product-editor-map-summary"></div>
+        </div>
+      </section>
+    </section>
+
+    <aside class="product-editor-v3-column">
+      <section class="editor-card product-editor-card product-editor-detail-card product-editor-v3-column-card">
+        <div class="section-head product-editor-v3-column-title">
+          <div>
+            <p class="eyebrow">Detalhes</p>
+          </div>
+        </div>
+        <div class="product-editor-detail">
+          <section class="product-editor-city-section">
+            <div id="product-editor-v1-product-detail" class="product-editor-city-detail"></div>
+          </section>
+
+          <section class="product-editor-city-section">
+            <div id="product-editor-v1-city-detail" class="product-editor-city-detail"></div>
+          </section>
+        </div>
+      </section>
+    </aside>
+
+    <aside class="product-editor-v3-column">
+      <section class="editor-card product-editor-card product-editor-detail-card product-editor-v3-column-card">
+        <div class="section-head product-editor-v3-column-title">
+          <div>
+            <p class="eyebrow">Informacoes</p>
+          </div>
+        </div>
+        <div id="product-editor-v3-information-panel" class="product-editor-operational-panel"></div>
+      </section>
+    </aside>
+
+    <aside class="product-editor-v3-column">
+      <section class="editor-card product-editor-card product-editor-detail-card product-editor-v3-column-card">
+        <div class="section-head product-editor-v3-column-title">
+          <div>
+            <p class="eyebrow">Novo produto</p>
+          </div>
+        </div>
+        <form id="product-editor-v1-create-form" class="product-editor-form product-editor-v3-create-form">
+          <div class="product-editor-form-grid">
+            <label class="field is-span-2">
+              <span>Nome</span>
+              <input id="product-editor-v1-create-name" class="editor-input" type="text" maxlength="80" placeholder="Nome do novo produto" />
+            </label>
+
+            <label class="field is-span-2">
+              <span>Emoji</span>
+              <select id="product-editor-v1-create-emoji" class="editor-input product-editor-emoji-select" size="10"></select>
+            </label>
+
+            <label class="field">
+              <span>Status</span>
+              <div class="select-shell">
+                <select id="product-editor-v1-create-status" class="editor-input">
+                  <option value="visible">Visível</option>
+                  <option value="hidden">Oculto</option>
+                </select>
+                <span class="material-symbols-outlined">expand_more</span>
+              </div>
+            </label>
+
+            <label class="field is-span-2">
+              <span>Família</span>
+              <div class="select-shell">
+                <select id="product-editor-v1-create-family" class="editor-input"></select>
+                <span class="material-symbols-outlined">expand_more</span>
+              </div>
+            </label>
+
+            <label class="field is-span-2">
+              <span>Tipo logistico</span>
+              <div class="select-shell">
+                <select id="product-editor-v1-create-logistics" class="editor-input"></select>
+                <span class="material-symbols-outlined">expand_more</span>
+              </div>
+            </label>
+
+            <label class="field is-span-2">
+              <span>Insumos principais</span>
+              <select id="product-editor-v1-create-inputs" class="editor-input product-editor-multi-select" size="10" multiple></select>
+            </label>
+
+            <label class="field is-span-2">
+              <span>Derivações</span>
+              <select id="product-editor-v1-create-outputs" class="editor-input product-editor-multi-select" size="10" multiple></select>
+            </label>
+          </div>
+
+          <div class="product-editor-form-actions">
+            <button id="product-editor-v1-create-submit" class="editor-header-action" type="submit">
+              <span class="material-symbols-outlined">playlist_add</span>
+              <span>Incluir produto na lista</span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </aside>
+  </section>
+
+  <dialog id="product-editor-v1-shortcuts-dialog" class="editor-shortcuts-dialog" aria-labelledby="product-editor-v1-shortcuts-title">
+    <form method="dialog" class="editor-shortcuts-dialog-card">
+      <div class="editor-shortcuts-dialog-head">
+        <div class="editor-shortcuts-dialog-copy">
+          <p id="product-editor-v1-shortcuts-eyebrow" class="eyebrow">Atalhos</p>
+          <h2 id="product-editor-v1-shortcuts-title">Janela de atalhos</h2>
+          <p id="product-editor-v1-shortcuts-copy" class="editor-dialog-copy"></p>
+        </div>
+        <button id="product-editor-v1-shortcuts-close-button" class="secondary-button" type="submit">Fechar</button>
+      </div>
+      <div id="product-editor-v1-shortcuts-list" class="editor-shortcuts-list editor-shortcuts-dialog-list"></div>
+    </form>
+  </dialog>
+</main>
+
+<script type="module">
+  const productEditorV3ModuleUrl = new URL("{{ request.url_for('static', path='js/editors/product-editor-v3.js') }}", window.location.href);
+  productEditorV3ModuleUrl.searchParams.set("v", "20260402-products-v3-3");
+
+  function showProductEditorV3LoadError(error) {
+    const target = document.getElementById("product-editor-v3-information-panel") || document.getElementById("product-editor-v1-map-legend");
+    if (!target) {
+      return;
+    }
+    target.innerHTML = `<div class="editor-status-copy">Falha ao carregar o editor de produtos v3.</div><div class="editor-status-meta"><div><span>Erro</span><strong>${String(error?.message || error || "Falha desconhecida.")}</strong></div></div>`;
+    console.error("Brasix product editor v3 load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showProductEditorV3LoadError(event.reason);
+  });
+
+  import(productEditorV3ModuleUrl.href).catch(showProductEditorV3LoadError);
+</script>
+{% endblock %}

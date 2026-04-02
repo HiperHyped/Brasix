@@ -1,0 +1,14 @@
+{
+  "id": "truck_operational_autofill_config_v1",
+  "enabled": true,
+  "provider": "openai_responses_web_search",
+  "provider_label": "OpenAI Responses + Web Search",
+  "api_base_url": "https://api.openai.com/v1/responses",
+  "primary_model": "gpt-5.4",
+  "fallback_model": "gpt-4.1",
+  "request_timeout_seconds": 120,
+  "max_output_tokens": 1800,
+  "web_search_tool": {
+    "type": "web_search_preview"
+  }
+}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block body %}
+<main class="truck-gallery-shell truck-operations-shell">
+  <header class="topbar truck-gallery-topbar">
+    <div class="truck-gallery-topbar-left">
+      <div class="brand-lockup">
+        <h1 id="truck-operations-brand-title">Brasix</h1>
+        <span class="brand-divider"></span>
+        <p id="truck-operations-brand-subtitle">Editor operacional de caminhões</p>
+      </div>
+    </div>
+
+    <div id="truck-operations-header-badges" class="editor-header-badges" aria-label="Estado do editor operacional"></div>
+    <div id="truck-operations-header-actions" class="editor-header-actions" aria-label="Ações do editor operacional"></div>
+  </header>
+
+  <section id="truck-operations-grid" class="truck-gallery-grid truck-operations-grid">
+    <aside class="editor-card truck-gallery-card truck-operations-column truck-operations-filter-column">
+      <div class="truck-operations-panel-head">
+        <span>FILTRO DE CAMINHÕES</span>
+      </div>
+
+      <div class="truck-gallery-filter-form">
+        <label class="field">
+          <span id="truck-operations-search-label">Buscar modelo</span>
+          <input id="truck-operations-search-input" class="editor-input truck-gallery-text-input" type="search" />
+        </label>
+
+        <label class="field">
+          <span id="truck-operations-size-filter-label">Porte</span>
+          <div class="select-shell">
+            <select id="truck-operations-size-filter" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+
+        <label class="field">
+          <span id="truck-operations-vehicle-kind-filter-label">Estrutura</span>
+          <div class="select-shell">
+            <select id="truck-operations-vehicle-kind-filter" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+
+        <label class="field">
+          <span id="truck-operations-axle-filter-label">Eixos</span>
+          <div class="select-shell">
+            <select id="truck-operations-axle-filter" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+
+        <label class="field">
+          <span id="truck-operations-body-filter-label">Implemento</span>
+          <div class="select-shell">
+            <select id="truck-operations-body-filter" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+
+        <label class="field">
+          <span id="truck-operations-brand-filter-label">Família de marca</span>
+          <div class="select-shell">
+            <select id="truck-operations-brand-filter" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+      </div>
+    </aside>
+
+    <section class="editor-card truck-gallery-card truck-operations-column truck-operations-list-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>LISTA DE CAMINHÕES</span>
+        <div id="truck-operations-summary" class="truck-gallery-summary"></div>
+      </div>
+      <div id="truck-operations-list" class="truck-gallery-list"></div>
+    </section>
+
+    <aside class="editor-card truck-gallery-card truck-operations-column truck-operations-summary-column">
+      <div class="truck-operations-panel-head">
+        <span>RESUMO</span>
+      </div>
+      <div id="truck-operations-summary-panel" class="truck-operations-side-panel"></div>
+    </aside>
+
+    <aside class="editor-card truck-gallery-card truck-operations-column truck-operations-cost-column">
+      <div class="truck-operations-panel-head">
+        <span>INFORMAÇÕES</span>
+      </div>
+      <div id="truck-operations-costs-panel" class="truck-operations-side-panel"></div>
+    </aside>
+
+    <aside class="editor-card truck-gallery-card truck-operations-column truck-operations-products-column">
+      <div class="truck-operations-panel-head">
+        <span>PRODUTOS</span>
+      </div>
+      <div id="truck-operations-products-panel" class="truck-operations-side-panel"></div>
+    </aside>
+  </section>
+</main>
+
+<script type="module">
+  const operationsModuleUrl = new URL("{{ request.url_for('static', path='js/truck-operational-editor.js') }}", window.location.href);
+  operationsModuleUrl.searchParams.set("v", "20260401-6");
+
+  function showTruckOperationalEditorLoadError(error) {
+    const target = document.getElementById("truck-operations-list");
+    if (!target) {
+      return;
+    }
+    const message = String(error?.message || error || "Falha ao carregar o editor operacional.");
+    const wrapper = document.createElement("div");
+    wrapper.className = "truck-gallery-empty";
+    wrapper.textContent = message;
+    target.replaceChildren(wrapper);
+    console.error("Brasix truck operational editor load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showTruckOperationalEditorLoadError(event.reason);
+  });
+
+  import(operationsModuleUrl.href).catch(showTruckOperationalEditorLoadError);
+</script>
+{% endblock %}

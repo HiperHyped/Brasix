@@ -375,6 +375,7 @@ function renderHeader() {
   const toggleIcon = state.theme === "night" ? "light_mode" : "dark_mode";
   actionsTarget.innerHTML = `
     <a class="editor-header-action" href="/viewer/trucks"><span class="material-symbols-outlined">local_shipping</span><span>Caminhoes</span></a>
+    <a class="editor-header-action" href="/viewer/truck-operations"><span class="material-symbols-outlined">tune</span><span>Operacional</span></a>
     <a class="editor-header-action" href="/editor/products_v2"><span class="material-symbols-outlined">inventory_2</span><span>Produtos</span></a>
     <button class="editor-header-action" type="button" data-action-id="reload"><span class="material-symbols-outlined">refresh</span><span>Atualizar</span></button>
     <button class="editor-header-action" type="button" data-action-id="toggle-theme"><span class="material-symbols-outlined">${toggleIcon}</span><span>${escapeHtml(toggleLabel)}</span></button>

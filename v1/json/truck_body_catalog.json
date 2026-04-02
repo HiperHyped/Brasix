@@ -101,7 +101,7 @@
     {
       "id": "truck_body_boiadeiro",
       "order": 13,
-      "label": "Boiadeiro",
+      "label": "Carga viva",
       "category": "agro",
       "sprite_module_kind": "livestock",
       "cargo_role": "live_animals"

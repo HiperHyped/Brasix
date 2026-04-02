@@ -11,11 +11,13 @@ from app.services import (
     load_product_editor_payload,
     load_product_editor_v1_payload,
     load_product_editor_v2_payload,
+    load_product_editor_v3_payload,
     load_product_family_catalog_payload,
     load_product_field_baked_document,
     load_product_field_edit_document,
     load_product_inference_rules_payload,
     load_product_logistics_type_catalog_payload,
+    load_product_operational_catalog_payload,
     load_map_editor_payload,
     load_city_product_supply_matrix_payload,
     load_region_product_supply_matrix_payload,
@@ -23,6 +25,7 @@ from app.services import (
     load_truck_body_catalog_payload,
     load_truck_brand_family_catalog_payload,
     load_truck_category_catalog_payload,
+    load_truck_custom_catalog_payload,
     load_truck_gallery_payload,
     load_truck_image_asset_registry_payload,
     load_truck_image_generation_config_payload,
@@ -134,9 +137,21 @@ def test_truck_catalog_payloads_load() -> None:
     assert len(edited_vuc["canonical_body_type_ids"]) == 4
     assert edited_vuc["payload_weight_kg"] == 2250
     assert edited_vuc["cargo_volume_m3"] == 4
+    assert edited_vuc["energy_source"] == "diesel"
+    assert edited_vuc["consumption_unit"] == "l_per_km"
+    assert edited_vuc["empty_consumption_per_km"] == 0.19
+    assert edited_vuc["loaded_consumption_per_km"] == 0.24
+    assert edited_vuc["base_fixed_cost_brl_per_day"] == 240
+    assert edited_vuc["base_variable_cost_brl_per_km"] == 0.78
+    assert edited_vuc["urban_access_level"] == "urban_preferred"
+    assert edited_vuc["road_access_level"] == "standard_network"
+    assert edited_vuc["supported_surface_codes"] == ["double_road", "single_road"]
+    assert edited_vuc["load_time_minutes"] == 35
+    assert edited_vuc["unload_time_minutes"] == 30
     assert edited_vuc["operational"]["catalog_id"] == "truck_operational_catalog_v1"
 
     assert body_payload["id"] == "truck_body_catalog_v1"
+    assert any(item["id"] == "truck_body_boiadeiro" and item["label"] == "Carga viva" for item in body_payload["types"])
     assert any(item["id"] == "truck_body_canavieiro" for item in body_payload["types"])
     assert any(item["id"] == "truck_body_cegonheiro" for item in body_payload["types"])
 
@@ -162,8 +177,11 @@ def test_truck_catalog_payloads_load() -> None:
 
     assert operational_payload["id"] == "truck_operational_catalog_v1"
     assert operational_payload["source_file"] == "merged_truck_data.json"
-    assert len(operational_payload["items"]) == 34
+    assert len(operational_payload["items"]) == 37
     assert any(item["truck_type_id"] == "truck_type_vuc_4x2" for item in operational_payload["items"])
+    electric_toco = next(item for item in operational_payload["items"] if item["truck_type_id"] == "truck_type_toco_leve_eletrico_4x2")
+    assert electric_toco["energy_source"] == "electric"
+    assert electric_toco["consumption_unit"] == "kwh_per_km"
 
     assert overrides_payload["id"] == "truck_image_prompt_overrides_v1"
     assert isinstance(overrides_payload["overrides"], list)
@@ -195,6 +213,10 @@ def test_truck_catalog_payloads_load() -> None:
     assert gas_combo["canonical_body_type_ids"] == ["truck_body_custom_gás_comprimido"]
     assert gas_combo["preferred_body_type_id"] == "truck_body_custom_gás_comprimido"
 
+    live_cargo_toco = next(item for item in custom_payload["items"] if item["id"] == "truck_type_custom_novo_caminhao_37")
+    assert live_cargo_toco["canonical_body_type_ids"] == ["truck_body_boiadeiro"]
+    assert live_cargo_toco["preferred_body_type_id"] == "truck_body_boiadeiro"
+
 
 def test_normalize_truck_type_record_preserves_visual_body_outside_canonical_list() -> None:
     normalized = data_loader.normalize_truck_type_record(
@@ -212,6 +234,25 @@ def test_normalize_truck_type_record_preserves_visual_body_outside_canonical_lis
 
     assert normalized["canonical_body_type_ids"] == ["truck_body_basculante"]
     assert normalized["preferred_body_type_id"] == "truck_body_carga_seca"
+
+
+def test_normalize_truck_type_record_syncs_custom_body_to_preferred() -> None:
+    normalized = data_loader.normalize_truck_type_record(
+        {
+            "id": "truck_type_test_custom_body",
+            "label": "Teste custom",
+            "short_label": "Teste custom",
+            "size_tier": "medio",
+            "base_vehicle_kind": "rigido",
+            "axle_config": "6x2",
+            "canonical_body_type_ids": ["truck_body_bau"],
+            "preferred_body_type_id": "truck_body_tanque",
+            "is_custom": True,
+        }
+    )
+
+    assert normalized["canonical_body_type_ids"] == ["truck_body_tanque"]
+    assert normalized["preferred_body_type_id"] == "truck_body_tanque"
 
 
 def test_load_truck_product_compatibility_overrides_payload_normalizes_duplicates() -> None:
@@ -250,10 +291,12 @@ def test_product_editor_payloads_load() -> None:
     editor_payload = load_product_editor_payload()
     editor_v1_payload = load_product_editor_v1_payload()
     editor_v2_payload = load_product_editor_v2_payload()
+    editor_v3_payload = load_product_editor_v3_payload()
     family_payload = load_product_family_catalog_payload()
     logistics_payload = load_product_logistics_type_catalog_payload()
     product_catalog_payload = load_product_catalog_v2_payload()
     product_catalog_master_payload = load_product_catalog_v2_master_payload()
+    product_operational_payload = load_product_operational_catalog_payload()
     supply_payload = load_city_product_supply_matrix_payload()
     demand_payload = load_city_product_demand_matrix_payload()
     region_supply_payload = load_region_product_supply_matrix_payload()
@@ -269,6 +312,9 @@ def test_product_editor_payloads_load() -> None:
     assert editor_v2_payload["screen"]["id"] == "ui_product_editor_v2_screen_v1"
     assert editor_v2_payload["layout_desktop"]["id"] == "ui_layout_desktop_product_editor_v2"
     assert editor_v2_payload["themes"]["default_theme_id"] == "map_editor_theme_day"
+    assert editor_v3_payload["screen"]["id"] == "ui_product_editor_v3_screen_v1"
+    assert editor_v3_payload["layout_desktop"]["id"] == "ui_layout_desktop_product_editor_v3"
+    assert editor_v3_payload["themes"]["default_theme_id"] == "map_editor_theme_day"
 
     assert family_payload["id"] == "product_family_catalog_v1"
     assert [item["id"] for item in family_payload["families"]] == ["agro", "pecuaria", "florestal", "mineral", "energia", "derivado"]
@@ -302,7 +348,7 @@ def test_product_editor_payloads_load() -> None:
         for item in product_catalog_payload["products"]
     )
     assert product_catalog_master_payload["id"] == "product_catalog_v2"
-    assert len(product_catalog_master_payload["products"]) == 44
+    assert len(product_catalog_master_payload["products"]) == 46
     assert any(item["id"] == "veiculos" and item["emoji"] for item in product_catalog_master_payload["products"])
     assert any(
         item["id"] == "laranja"
@@ -318,18 +364,34 @@ def test_product_editor_payloads_load() -> None:
     )
     assert any(item["id"] == "derivado" for item in family_payload["families"])
 
-    assert supply_payload["id"] == "city_product_supply_matrix_v1"
-    assert supply_payload["seed_source"]["kind"] == "legacy_city_product_matrix"
+    assert supply_payload["id"] == "city_product_supply_matrix_v3"
+    assert supply_payload["seed_source"]["kind"] == "workbook_rewrite"
     assert len(supply_payload["items"]) >= 2800
     assert any(item["product_id"] == "soja" for item in supply_payload["items"])
 
-    assert demand_payload["id"] == "city_product_demand_matrix_v1"
-    assert demand_payload["seed_source"]["kind"] == "legacy_city_product_demand_matrix"
+    assert demand_payload["id"] == "city_product_demand_matrix_v3"
+    assert demand_payload["seed_source"]["kind"] == "workbook_rewrite"
     assert len(demand_payload["items"]) >= 2000
     assert any(item["product_id"] == "petroleo" for item in demand_payload["items"])
 
     assert region_supply_payload["id"] == "region_product_supply_matrix_v1"
     assert region_supply_payload["items"] == []
+
+    assert product_operational_payload["id"] == "product_operational_catalog_v1"
+    assert isinstance(product_operational_payload["items"], list)
+    assert len(product_operational_payload["items"]) == 46
+    assert any(
+        item["product_id"] == "soja"
+        and item["price_reference_brl_per_unit"] == 2270
+        and item["is_seasonal"] is True
+        for item in product_operational_payload["items"]
+    )
+    assert any(
+        item["product_id"] == "veiculos"
+        and item["unit"] == "unidade"
+        and item["price_reference_brl_per_unit"] == 90000
+        for item in product_operational_payload["items"]
+    )
 
     assert inference_payload["id"] == "product_inference_rules_v1"
     assert inference_payload["supply_interpolation"]["method"] == "inverse_distance_weighting"
@@ -434,6 +496,18 @@ def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
                     "overall_length_m": 6.3,
                     "overall_width_m": 2.1,
                     "overall_height_m": 2.6,
+                    "energy_source": "diesel",
+                    "consumption_unit": "l_per_km",
+                    "empty_consumption_per_km": 0.19,
+                    "loaded_consumption_per_km": 0.24,
+                    "truck_price_brl": 198000,
+                    "base_fixed_cost_brl_per_day": 240,
+                    "base_variable_cost_brl_per_km": 0.78,
+                    "urban_access_level": "urban_preferred",
+                    "road_access_level": "standard_network",
+                    "supported_surface_codes": ["double_road", "single_road"],
+                    "load_time_minutes": 35,
+                    "unload_time_minutes": 30,
                     "confidence": "high",
                     "research_basis": "test_fixture",
                     "source_urls": ["https://example.com/vuc"],
@@ -446,6 +520,18 @@ def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
                     "overall_length_m": 5.9,
                     "overall_width_m": 2.0,
                     "overall_height_m": 2.3,
+                    "energy_source": "diesel",
+                    "consumption_unit": "l_per_km",
+                    "empty_consumption_per_km": 0.15,
+                    "loaded_consumption_per_km": 0.18,
+                    "truck_price_brl": 132000,
+                    "base_fixed_cost_brl_per_day": 175,
+                    "base_variable_cost_brl_per_km": 0.55,
+                    "urban_access_level": "urban_free",
+                    "road_access_level": "standard_network",
+                    "supported_surface_codes": ["double_road", "single_road"],
+                    "load_time_minutes": 30,
+                    "unload_time_minutes": 25,
                     "confidence": "medium",
                     "research_basis": "test_fixture",
                     "source_urls": [],
@@ -459,15 +545,22 @@ def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
     types_by_id = {item["id"]: item for item in payload["types"]}
 
     assert types_by_id["truck_type_vuc_4x2"]["label"] == "VUC revisado"
-    assert types_by_id["truck_type_vuc_4x2"]["canonical_body_type_ids"] == ["truck_body_carga_seca"]
+    assert types_by_id["truck_type_vuc_4x2"]["canonical_body_type_ids"] == ["truck_body_bau"]
+    assert types_by_id["truck_type_vuc_4x2"]["preferred_body_type_id"] == "truck_body_carga_seca"
     assert types_by_id["truck_type_vuc_4x2"]["notes"] == "catalogo editado"
     assert types_by_id["truck_type_vuc_4x2"]["is_custom"] is False
     assert types_by_id["truck_type_vuc_4x2"]["payload_weight_kg"] == 2200
+    assert types_by_id["truck_type_vuc_4x2"]["energy_source"] == "diesel"
+    assert types_by_id["truck_type_vuc_4x2"]["truck_price_brl"] == 198000
+    assert types_by_id["truck_type_vuc_4x2"]["supported_surface_codes"] == ["double_road", "single_road"]
     assert types_by_id["truck_type_vuc_4x2"]["operational"]["notes"] == "operacional base"
 
     assert types_by_id["truck_type_custom_van_1"]["label"] == "Van de carga"
     assert types_by_id["truck_type_custom_van_1"]["canonical_body_type_ids"] == ["truck_body_bau"]
     assert types_by_id["truck_type_custom_van_1"]["is_custom"] is True
+    assert types_by_id["truck_type_custom_van_1"]["truck_price_brl"] == 132000
+    assert types_by_id["truck_type_custom_van_1"]["base_fixed_cost_brl_per_day"] == 175
+    assert types_by_id["truck_type_custom_van_1"]["load_time_minutes"] == 30
     assert types_by_id["truck_type_custom_van_1"]["cargo_volume_m3"] == 3
     assert types_by_id["truck_type_custom_van_1"]["operational"]["research_basis"] == "test_fixture"
 
@@ -574,3 +667,79 @@ def test_effective_truck_catalog_sorts_by_size_tier_then_label(monkeypatch) -> N
         "truck_type_pesado_zulu",
         "truck_type_super_pesado_omega",
     ]
+
+
+def test_active_truck_operational_records_are_complete() -> None:
+    effective_payload = load_effective_truck_type_catalog_payload()
+    operational_payload = load_truck_operational_catalog_payload()
+
+    active_ids = {
+        str(item.get("id") or "").strip()
+        for item in effective_payload.get("types", [])
+        if str(item.get("id") or "").strip()
+    }
+    operational_by_id = {
+        str(item.get("truck_type_id") or "").strip(): dict(item)
+        for item in operational_payload.get("items", [])
+        if str(item.get("truck_type_id") or "").strip()
+    }
+
+    required_scalar_fields = [
+        "payload_weight_kg",
+        "cargo_volume_m3",
+        "overall_length_m",
+        "overall_width_m",
+        "overall_height_m",
+        "energy_source",
+        "consumption_unit",
+        "empty_consumption_per_km",
+        "loaded_consumption_per_km",
+        "truck_price_brl",
+        "base_fixed_cost_brl_per_day",
+        "base_variable_cost_brl_per_km",
+        "implement_cost_brl",
+        "urban_access_level",
+        "road_access_level",
+        "load_time_minutes",
+        "unload_time_minutes",
+    ]
+
+    missing_records: list[str] = []
+    incomplete_fields: list[str] = []
+
+    for truck_type_id in sorted(active_ids):
+        record = operational_by_id.get(truck_type_id)
+        if record is None:
+            missing_records.append(truck_type_id)
+            continue
+
+        for field in required_scalar_fields:
+            value = record.get(field)
+            if value is None:
+                incomplete_fields.append(f"{truck_type_id}:{field}")
+                continue
+            if isinstance(value, str) and not value.strip():
+                incomplete_fields.append(f"{truck_type_id}:{field}")
+
+        supported_surface_codes = list(record.get("supported_surface_codes") or [])
+        if not supported_surface_codes:
+            incomplete_fields.append(f"{truck_type_id}:supported_surface_codes")
+
+        empty_consumption = record.get("empty_consumption_per_km")
+        loaded_consumption = record.get("loaded_consumption_per_km")
+        if (
+            empty_consumption is not None
+            and loaded_consumption is not None
+            and float(loaded_consumption) < float(empty_consumption)
+        ):
+            incomplete_fields.append(f"{truck_type_id}:consumption_order")
+
+        load_time_minutes = record.get("load_time_minutes")
+        unload_time_minutes = record.get("unload_time_minutes")
+        if load_time_minutes is not None and float(load_time_minutes) <= 0:
+            incomplete_fields.append(f"{truck_type_id}:load_time_minutes")
+        if unload_time_minutes is not None and float(unload_time_minutes) <= 0:
+            incomplete_fields.append(f"{truck_type_id}:unload_time_minutes")
+
+    assert not missing_records, f"Missing operational records for active trucks: {missing_records}"
+    assert not incomplete_fields, f"Incomplete operational fields for active trucks: {incomplete_fields}"

@@ -44,9 +44,9 @@
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "canonical_body_type_ids": [
-        "truck_body_bau"
+        "truck_body_carga_seca"
       ],
-      "preferred_body_type_id": "truck_body_bau",
+      "preferred_body_type_id": "truck_body_carga_seca",
       "canonical_sprite_profile_id": "truck_sprite_custom",
       "source_basis": "custom_manual",
       "notes": "e uma camionete",
@@ -146,7 +146,7 @@
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "canonical_body_type_ids": [
-        "truck_body_bau"
+        "truck_body_frigorifico"
       ],
       "preferred_body_type_id": "truck_body_frigorifico",
       "canonical_sprite_profile_id": "truck_sprite_custom",
@@ -163,7 +163,7 @@
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "canonical_body_type_ids": [
-        "truck_body_bau"
+        "truck_body_frigorifico"
       ],
       "preferred_body_type_id": "truck_body_frigorifico",
       "canonical_sprite_profile_id": "truck_sprite_custom",
@@ -180,7 +180,7 @@
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "canonical_body_type_ids": [
-        "truck_body_bau"
+        "truck_body_frigorifico"
       ],
       "preferred_body_type_id": "truck_body_frigorifico",
       "canonical_sprite_profile_id": "truck_sprite_custom",
@@ -197,7 +197,7 @@
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "canonical_body_type_ids": [
-        "truck_body_bau"
+        "truck_body_tanque"
       ],
       "preferred_body_type_id": "truck_body_tanque",
       "canonical_sprite_profile_id": "truck_sprite_custom",
@@ -214,7 +214,7 @@
       "base_vehicle_kind": "rigido",
       "axle_config": "6x2",
       "canonical_body_type_ids": [
-        "truck_body_bau"
+        "truck_body_tanque"
       ],
       "preferred_body_type_id": "truck_body_tanque",
       "canonical_sprite_profile_id": "truck_sprite_custom",
@@ -231,12 +231,63 @@
       "base_vehicle_kind": "rigido",
       "axle_config": "6x2",
       "canonical_body_type_ids": [
-        "truck_body_bau"
+        "truck_body_custom_gás_comprimido"
       ],
       "preferred_body_type_id": "truck_body_custom_gás_comprimido",
       "canonical_sprite_profile_id": "truck_sprite_custom",
       "source_basis": "custom_manual",
       "notes": "truck 6x2 com tanques de gas comprimido",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_37",
+      "order": 37,
+      "label": "Toco Carga Viva",
+      "short_label": "Toco Carga Viva",
+      "size_tier": "leve",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "4x2",
+      "canonical_body_type_ids": [
+        "truck_body_boiadeiro"
+      ],
+      "preferred_body_type_id": "truck_body_boiadeiro",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Um toco para levar carga viva (boi, suino, aves)",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_38",
+      "order": 38,
+      "label": "Truck Carga Viva",
+      "short_label": "Truck Carga Viva",
+      "size_tier": "medio",
+      "base_vehicle_kind": "rigido",
+      "axle_config": "6x2",
+      "canonical_body_type_ids": [
+        "truck_body_boiadeiro"
+      ],
+      "preferred_body_type_id": "truck_body_boiadeiro",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Truck para transportar Carga Viva (Boi, suinos, aves)",
+      "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_39",
+      "order": 39,
+      "label": "Carreta Carga Viva",
+      "short_label": "Carreta Carga Viva",
+      "size_tier": "pesado",
+      "base_vehicle_kind": "cavalo",
+      "axle_config": "6x2",
+      "canonical_body_type_ids": [
+        "truck_body_boiadeiro"
+      ],
+      "preferred_body_type_id": "truck_body_boiadeiro",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Carreta para Carga Viva (Bois, suinos, aves)",
       "is_custom": true
     }
   ]

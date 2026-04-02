@@ -3204,6 +3204,380 @@ html[data-editor-theme="night"] .planner-step-surface-label {
   color: #8b2e2e;
 }
 
+.truck-operations-toolbar,
+.truck-operations-tabbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.truck-operations-tab {
+  min-width: 0;
+}
+
+.truck-operations-tab.is-active {
+  background: linear-gradient(135deg, var(--green), rgba(161, 212, 148, 0.45));
+  color: var(--panel);
+}
+
+.truck-operations-summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.truck-operations-form-grid {
+  align-content: start;
+}
+
+.truck-operations-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.truck-operations-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.truck-operations-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--green);
+}
+
+.truck-operations-textarea {
+  min-height: 92px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface-lift);
+  color: var(--text);
+  padding: 10px 12px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.truck-operations-callout {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(188, 115, 41, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(188, 115, 41, 0.14);
+}
+
+.truck-operations-callout strong {
+  color: var(--accent-strong);
+  font-family: var(--font-head);
+  font-size: 0.95rem;
+}
+
+.truck-operations-callout span {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.truck-operations-products {
+  display: grid;
+  gap: 8px;
+}
+
+.truck-operations-status {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.truck-operations-empty {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.truck-operations-grid {
+  grid-template-columns: minmax(0, 15fr) minmax(0, 40fr) minmax(0, 15fr) minmax(0, 15fr) minmax(0, 15fr);
+}
+
+.truck-operations-column {
+  min-height: 0;
+  height: 100%;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.truck-operations-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(114, 121, 110, 0.12);
+}
+
+.truck-operations-panel-head span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.truck-operations-panel-head-split .truck-gallery-summary {
+  justify-content: flex-end;
+}
+
+.truck-operations-header-status {
+  background: rgba(161, 212, 148, 0.26);
+  color: var(--text);
+}
+
+.truck-operations-side-panel {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+}
+
+.truck-operations-preview-frame {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  align-items: center;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.truck-operations-preview-canvas.truck-gallery-detail-preview {
+  min-height: 176px;
+}
+
+.truck-operations-choice-stack {
+  display: grid;
+  gap: 6px;
+}
+
+.truck-operations-section-box {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.truck-operations-stack-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.truck-operations-choice,
+.truck-operations-product-item {
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.truck-operations-choice span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.truck-operations-choice strong,
+.truck-operations-product-item strong {
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.truck-operations-product-item {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.truck-operations-choice .editor-input {
+  width: 100%;
+  min-height: 36px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--surface-lift);
+  color: var(--text);
+  padding: 0 10px;
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.1);
+}
+
+.truck-operations-choice .select-shell select {
+  height: 36px;
+  border-radius: 11px;
+  padding: 0 32px 0 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.truck-operations-choice .select-shell .material-symbols-outlined {
+  top: 6px;
+}
+
+.truck-operations-products-list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.truck-operations-ai-button {
+  width: 100%;
+  justify-content: center;
+}
+
+.truck-operations-product-remove {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.truck-operations-product-picker {
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.truck-operations-product-picker-summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 14px;
+  color: var(--green);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.truck-operations-product-picker-summary::-webkit-details-marker {
+  display: none;
+}
+
+.truck-operations-product-picker-summary.is-disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+.truck-operations-product-picker[open] .truck-operations-product-picker-summary .material-symbols-outlined {
+  transform: rotate(180deg);
+}
+
+.truck-operations-product-picker-menu {
+  display: grid;
+  gap: 6px;
+  padding: 0 10px 10px;
+}
+
+.truck-operations-product-option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background: var(--surface-lift);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.truck-operations-product-option input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--green);
+}
+
+.truck-operations-product-option strong {
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+html[data-editor-theme="night"] .truck-operations-tab.is-active {
+  background: linear-gradient(135deg, rgba(161, 212, 148, 0.88), rgba(45, 90, 39, 0.82));
+  color: #102214;
+}
+
+html[data-editor-theme="night"] .truck-operations-check,
+html[data-editor-theme="night"] .truck-operations-callout {
+  background: rgba(19, 23, 20, 0.92);
+}
+
+html[data-editor-theme="night"] .truck-operations-header-status {
+  background: rgba(45, 90, 39, 0.68);
+}
+
+html[data-editor-theme="night"] .truck-operations-preview-frame,
+html[data-editor-theme="night"] .truck-operations-section-box,
+html[data-editor-theme="night"] .truck-operations-product-picker,
+html[data-editor-theme="night"] .truck-operations-choice,
+html[data-editor-theme="night"] .truck-operations-product-item {
+  background: rgba(19, 23, 20, 0.92);
+}
+
+html[data-editor-theme="night"] .truck-operations-product-option {
+  background: rgba(32, 38, 34, 0.9);
+}
+
+@media (max-width: 1100px) {
+  .truck-operations-summary-metrics,
+  .truck-operations-checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1600px) {
+  .truck-operations-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .truck-operations-products-column {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 980px) {
+  .truck-operations-grid,
+  .truck-operations-products-column {
+    grid-template-columns: 1fr;
+    grid-column: auto;
+  }
+}
+
 .truck-gallery-generation-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3860,6 +4234,12 @@ html[data-editor-theme="night"] .truck-gallery-image-placeholder-mark {
   width: min(100%, var(--product-status-width, 380px));
 }
 
+.product-editor-map-summary {
+  width: fit-content;
+  min-width: 0;
+  max-width: min(100%, 214px);
+}
+
 .product-editor-legend-card {
   padding: 12px;
   border: 1px solid var(--border);
@@ -3966,15 +4346,22 @@ html[data-editor-theme="night"] .truck-gallery-image-placeholder-mark {
 .product-editor-city-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .product-editor-city-detail {
   min-height: 0;
-  overflow-y: auto;
-  padding-right: 4px;
+  overflow-y: visible;
+  padding-right: 0;
+}
+
+.product-editor-stack-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
 
 .product-editor-city-grid {
@@ -4009,6 +4396,409 @@ html[data-editor-theme="night"] .truck-gallery-image-placeholder-mark {
   font-size: 0.84rem;
 }
 
+.product-editor-v3-grid {
+  grid-template-columns: minmax(240px, 15fr) minmax(520px, 40fr) repeat(3, minmax(240px, 15fr));
+}
+
+.product-editor-v3-grid .product-editor-sidebar,
+.product-editor-v3-grid .product-editor-map-panel,
+.product-editor-v3-grid .product-editor-v3-column {
+  min-width: 0;
+  min-height: 0;
+}
+
+.product-editor-v3-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-editor-v3-column-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.product-editor-v3-column-title {
+  align-items: center;
+}
+
+.product-editor-column-head {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--green), #35692f);
+  color: #fef9eb;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.product-editor-v3-column-card .product-editor-detail,
+.product-editor-v3-create-form,
+.product-editor-operational-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+}
+
+.product-editor-v3-column-card .product-editor-detail {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.product-editor-v3-create-form,
+.product-editor-operational-panel,
+.product-editor-v3-column-card .product-editor-detail {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 90, 39, 0.45) rgba(231, 226, 212, 0.65);
+}
+
+.product-editor-v3-create-form::-webkit-scrollbar,
+.product-editor-operational-panel::-webkit-scrollbar,
+.product-editor-v3-column-card .product-editor-detail::-webkit-scrollbar {
+  width: 10px;
+}
+
+.product-editor-v3-create-form::-webkit-scrollbar-track,
+.product-editor-operational-panel::-webkit-scrollbar-track,
+.product-editor-v3-column-card .product-editor-detail::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(231, 226, 212, 0.65);
+}
+
+.product-editor-v3-create-form::-webkit-scrollbar-thumb,
+.product-editor-operational-panel::-webkit-scrollbar-thumb,
+.product-editor-v3-column-card .product-editor-detail::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(45, 90, 39, 0.45);
+}
+
+.product-editor-operational-panel {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.product-editor-section-head {
+  display: grid;
+  gap: 4px;
+}
+
+.product-editor-section-copy {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.product-editor-operational-box,
+.product-editor-operational-metric {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-card);
+}
+
+.product-editor-operational-box {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.product-editor-operational-box-summary {
+  gap: 12px;
+}
+
+.product-editor-operational-summary-box {
+  gap: 12px;
+}
+
+.product-editor-operational-toolbar,
+.product-editor-operational-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.product-editor-operational-section-head strong {
+  color: var(--green);
+  font-family: var(--font-head);
+  font-size: 0.98rem;
+}
+
+.product-editor-operational-section-head span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.product-editor-operational-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.product-editor-operational-autofill-button {
+  min-height: 34px;
+}
+
+.product-editor-operational-panel .truck-operations-choice .select-shell {
+  width: 100%;
+}
+
+.product-editor-operational-panel .truck-operations-choice textarea.editor-input {
+  min-height: 78px;
+  padding: 8px 10px;
+}
+
+.product-editor-operational-panel .truck-operations-choice textarea.editor-input.is-compact {
+  min-height: 60px;
+}
+
+.product-editor-operational-toggle-row {
+  gap: 10px;
+}
+
+.product-editor-operational-toggle-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.product-editor-operational-toggle-control strong {
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.product-editor-operational-toggle-control input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--green);
+}
+
+.product-editor-operational-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.product-editor-operational-metric {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-editor-operational-metric span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.product-editor-operational-metric strong {
+  color: var(--text);
+  font-size: 0.92rem;
+  word-break: break-word;
+}
+
+.product-editor-operational-status {
+  display: grid;
+  gap: 4px;
+}
+
+.product-editor-operational-status strong {
+  color: var(--text);
+  font-size: 0.86rem;
+}
+
+.product-editor-operational-status span,
+.product-editor-operational-summary-text {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.product-editor-operational-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.product-editor-operational-choice {
+  display: grid;
+  gap: 6px;
+}
+
+.product-editor-operational-grid .product-editor-operational-choice.is-span-2 {
+  grid-column: span 2;
+}
+
+.product-editor-operational-choice.is-readonly {
+  padding: 10px 12px;
+  border: 1px dashed rgba(45, 90, 39, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.product-editor-operational-choice.is-readonly strong {
+  color: var(--green);
+  font-family: var(--font-head);
+  font-size: 1rem;
+}
+
+.product-editor-operational-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.product-editor-operational-toggle span {
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.product-editor-seasonality-chart {
+  height: 136px;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 6px;
+  align-items: end;
+  padding: 10px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(79, 133, 147, 0.08), rgba(45, 90, 39, 0.02));
+  position: relative;
+}
+
+.product-editor-seasonality-chart::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  border-top: 1px dashed rgba(79, 133, 147, 0.45);
+  pointer-events: none;
+}
+
+.product-editor-seasonality-choice {
+  gap: 10px;
+}
+
+.product-editor-seasonality-bar-wrap {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  gap: 4px;
+}
+
+.product-editor-seasonality-bar-area {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+.product-editor-seasonality-bar {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  border-radius: 999px 999px 4px 4px;
+  background: linear-gradient(180deg, rgba(79, 133, 147, 0.96), rgba(45, 90, 39, 0.88));
+  box-shadow: 0 10px 20px rgba(45, 90, 39, 0.16);
+}
+
+.product-editor-seasonality-bar.is-negative {
+  border-radius: 4px 4px 999px 999px;
+}
+
+.product-editor-seasonality-bar-wrap span {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.product-editor-map-summary-card {
+  padding: 8px 9px;
+  gap: 6px;
+}
+
+.product-editor-map-summary-row {
+  display: grid;
+  gap: 0;
+}
+
+.product-editor-map-summary-row span {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.product-editor-map-summary-row strong {
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.product-editor-seasonality-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.product-editor-seasonality-field {
+  min-width: 0;
+}
+
+.product-editor-operational-textarea {
+  min-height: 88px;
+  resize: vertical;
+  padding: 10px 12px;
+}
+
+.product-editor-operational-textarea.is-compact {
+  min-height: 68px;
+}
+
+.product-editor-v3-create-form .product-editor-form-grid {
+  align-content: start;
+}
+
+.product-editor-v3-grid .product-editor-map-frame,
+.product-editor-v3-grid .product-editor-map-stage {
+  min-height: 680px;
+}
+
 html[data-editor-theme="night"] .product-editor-list-item,
 html[data-editor-theme="night"] .product-editor-empty,
 html[data-editor-theme="night"] .product-editor-city-metric,
@@ -4037,6 +4827,64 @@ html[data-editor-theme="night"] .product-editor-resizer::before {
   background: rgba(255, 183, 123, 0.32);
 }
 
+html[data-editor-theme="night"] .product-editor-column-head {
+  background: linear-gradient(135deg, #2d5a27, rgba(161, 212, 148, 0.36));
+  color: var(--text);
+}
+
+html[data-editor-theme="night"] .product-editor-operational-box,
+html[data-editor-theme="night"] .product-editor-operational-metric,
+html[data-editor-theme="night"] .product-editor-operational-toggle,
+html[data-editor-theme="night"] .product-editor-seasonality-chart,
+html[data-editor-theme="night"] .product-editor-operational-choice.is-readonly {
+  background: rgba(30, 32, 29, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(137, 146, 146, 0.12), var(--shadow-card);
+}
+
+html[data-editor-theme="night"] .product-editor-operational-badge {
+  background: rgba(51, 53, 50, 0.88);
+}
+
+html[data-editor-theme="night"] .product-editor-seasonality-bar {
+  background: linear-gradient(180deg, rgba(161, 212, 148, 0.84), rgba(79, 133, 147, 0.84));
+}
+
+html[data-editor-theme="night"] .product-editor-seasonality-chart::before {
+  border-top-color: rgba(161, 212, 148, 0.38);
+}
+
+html[data-editor-theme="night"] .product-editor-v3-create-form,
+html[data-editor-theme="night"] .product-editor-operational-panel,
+html[data-editor-theme="night"] .product-editor-v3-column-card .product-editor-detail {
+  scrollbar-color: rgba(161, 212, 148, 0.4) rgba(51, 53, 50, 0.72);
+}
+
+html[data-editor-theme="night"] .product-editor-v3-create-form::-webkit-scrollbar-track,
+html[data-editor-theme="night"] .product-editor-operational-panel::-webkit-scrollbar-track,
+html[data-editor-theme="night"] .product-editor-v3-column-card .product-editor-detail::-webkit-scrollbar-track {
+  background: rgba(51, 53, 50, 0.72);
+}
+
+html[data-editor-theme="night"] .product-editor-v3-create-form::-webkit-scrollbar-thumb,
+html[data-editor-theme="night"] .product-editor-operational-panel::-webkit-scrollbar-thumb,
+html[data-editor-theme="night"] .product-editor-v3-column-card .product-editor-detail::-webkit-scrollbar-thumb {
+  background: rgba(161, 212, 148, 0.4);
+}
+
+@media (max-width: 1680px) {
+  .product-editor-v3-grid {
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 1.6fr);
+  }
+
+  .product-editor-v3-grid .product-editor-map-panel {
+    grid-column: 1 / -1;
+  }
+
+  .product-editor-v3-grid .product-editor-v3-column {
+    min-height: 420px;
+  }
+}
+
 @media (max-width: 1480px) {
   .product-editor-grid {
     grid-template-columns: 1fr;
@@ -4049,6 +4897,20 @@ html[data-editor-theme="night"] .product-editor-resizer::before {
   .product-editor-map-frame,
   .product-editor-map-stage {
     min-height: 520px;
+  }
+
+  .product-editor-operational-metrics,
+  .product-editor-operational-grid,
+  .product-editor-seasonality-grid,
+  .product-editor-form-grid,
+  .product-editor-city-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-editor-operational-grid .product-editor-operational-choice.is-span-2,
+  .product-editor-form-grid .field.is-span-2,
+  .product-editor-city-metric.is-span-2 {
+    grid-column: span 1;
   }
 }
 

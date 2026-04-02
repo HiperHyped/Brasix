@@ -70,7 +70,7 @@ BODY_KIND_HINT_FALLBACKS = {
     "mixer": "betoneira",
     "crane_flatbed": "plataforma com munck compacto",
     "garbage_compactor": "compactador de lixo",
-    "livestock": "boiadeiro",
+    "livestock": "carga viva",
     "sugarcane": "canavieiro com fueiros",
     "logs": "madeireiro com toras",
     "vehicle_carrier": "cegonheiro com dois niveis",

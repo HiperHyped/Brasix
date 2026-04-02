@@ -6,6 +6,7 @@ from typing import Any
 
 from app.config import (
     AI_CITY_AUTOFILL_CONFIG_PATH,
+    AI_PRODUCT_OPERATIONAL_AUTOFILL_CONFIG_PATH,
     CITY_CATALOG_PATH,
     CITY_USER_CATALOG_PATH,
     CITY_PRODUCT_DEMAND_MATRIX_PATH,
@@ -22,6 +23,7 @@ from app.config import (
     PRODUCT_FAMILY_CATALOG_PATH,
     PRODUCT_CATALOG_PATH,
     PRODUCT_CATALOG_V2_PATH,
+    PRODUCT_OPERATIONAL_CATALOG_PATH,
     PRODUCT_INFERENCE_RULES_PATH,
     PRODUCT_MASTER_V1_1_PATH,
     PRODUCT_LOGISTICS_TYPE_CATALOG_PATH,
@@ -60,6 +62,7 @@ from app.config import (
     UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_PATH,
     UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V1_PATH,
     UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V2_PATH,
+    UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V3_PATH,
     UI_LAYOUT_DESKTOP_ROUTE_PLANNER_PATH,
     UI_LAYOUT_DESKTOP_TRUCK_GALLERY_PATH,
     UI_MAP_EDITOR_SCREEN_PATH,
@@ -67,6 +70,7 @@ from app.config import (
     UI_PRODUCT_EDITOR_SCREEN_PATH,
     UI_PRODUCT_EDITOR_V1_SCREEN_PATH,
     UI_PRODUCT_EDITOR_V2_SCREEN_PATH,
+    UI_PRODUCT_EDITOR_V3_SCREEN_PATH,
     UI_MAP_REPOSITORY_CONTROLS_PATH,
     UI_SHORTCUTS_ROUTE_PLANNER_PATH,
     UI_SHORTCUTS_MAP_EDITOR_PATH,
@@ -111,7 +115,7 @@ DEFAULT_PRODUCT_LOGISTICS_TYPE_DOCUMENT = {
         {
             "id": "animais_vivos",
             "label": "Animais vivos",
-            "description": "Carga viva em boiadeiro.",
+            "description": "Carga viva em implemento de carga viva.",
             "order": 3,
             "body_type_ids": ["truck_body_boiadeiro"],
         },
@@ -189,6 +193,11 @@ DEFAULT_TRUCK_PRODUCT_COMPATIBILITY_OVERRIDES_DOCUMENT = {
 DEFAULT_TRUCK_OPERATIONAL_CATALOG_DOCUMENT = {
     "id": "truck_operational_catalog_v1",
     "source_file": "",
+    "items": [],
+}
+
+DEFAULT_PRODUCT_OPERATIONAL_CATALOG_DOCUMENT = {
+    "id": "product_operational_catalog_v1",
     "items": [],
 }
 
@@ -635,13 +644,22 @@ def _normalize_truck_operational_record(raw_item: dict[str, Any]) -> dict[str, A
         "overall_length_m": _coerce_optional_number(raw_item.get("overall_length_m")),
         "overall_width_m": _coerce_optional_number(raw_item.get("overall_width_m")),
         "overall_height_m": _coerce_optional_number(raw_item.get("overall_height_m")),
+        "energy_source": str(raw_item.get("energy_source") or "").strip() or None,
+        "consumption_unit": str(raw_item.get("consumption_unit") or "").strip() or None,
+        "empty_consumption_per_km": _coerce_optional_number(raw_item.get("empty_consumption_per_km")),
+        "loaded_consumption_per_km": _coerce_optional_number(raw_item.get("loaded_consumption_per_km")),
+        "truck_price_brl": _coerce_optional_number(raw_item.get("truck_price_brl")),
+        "base_fixed_cost_brl_per_day": _coerce_optional_number(raw_item.get("base_fixed_cost_brl_per_day")),
+        "base_variable_cost_brl_per_km": _coerce_optional_number(raw_item.get("base_variable_cost_brl_per_km")),
+        "implement_cost_brl": _coerce_optional_number(raw_item.get("implement_cost_brl")),
+        "urban_access_level": str(raw_item.get("urban_access_level") or "").strip() or None,
+        "road_access_level": str(raw_item.get("road_access_level") or "").strip() or None,
+        "supported_surface_codes": _normalize_string_list(raw_item.get("supported_surface_codes")),
+        "load_time_minutes": _coerce_optional_number(raw_item.get("load_time_minutes")),
+        "unload_time_minutes": _coerce_optional_number(raw_item.get("unload_time_minutes")),
         "confidence": str(raw_item.get("confidence") or "").strip() or None,
         "research_basis": str(raw_item.get("research_basis") or "").strip() or None,
-        "source_urls": [
-            str(item).strip()
-            for item in raw_item.get("source_urls", [])
-            if str(item).strip()
-        ],
+        "source_urls": _normalize_string_list(raw_item.get("source_urls")),
         "notes": str(_maybe_fix_mojibake(raw_item.get("notes") or "")).strip(),
     }
 
@@ -695,10 +713,30 @@ def _merge_truck_operational_fields(
         "overall_length_m",
         "overall_width_m",
         "overall_height_m",
+        "empty_consumption_per_km",
+        "loaded_consumption_per_km",
+        "truck_price_brl",
+        "base_fixed_cost_brl_per_day",
+        "base_variable_cost_brl_per_km",
+        "implement_cost_brl",
+        "load_time_minutes",
+        "unload_time_minutes",
     ):
         value = operational_record.get(field)
         if value is not None:
             merged[field] = value
+    for field in (
+        "energy_source",
+        "consumption_unit",
+        "urban_access_level",
+        "road_access_level",
+    ):
+        value = str(operational_record.get(field) or "").strip()
+        if value:
+            merged[field] = value
+    supported_surface_codes = _normalize_string_list(operational_record.get("supported_surface_codes"))
+    if supported_surface_codes:
+        merged["supported_surface_codes"] = supported_surface_codes
     merged["operational"] = {
         "catalog_id": catalog_id,
         "confidence": operational_record.get("confidence"),
@@ -902,6 +940,25 @@ def load_product_master_v1_1_payload(path: Path | None = None) -> dict[str, Any]
 
 def save_product_master_v1_1_payload(payload: dict[str, Any], path: Path | None = None) -> dict[str, Any]:
     return save_json(path or PRODUCT_MASTER_V1_1_PATH, payload)
+
+
+def load_product_operational_catalog_payload(path: Path | None = None) -> dict[str, Any]:
+    target = path or PRODUCT_OPERATIONAL_CATALOG_PATH
+    if not target.exists():
+        return dict(DEFAULT_PRODUCT_OPERATIONAL_CATALOG_DOCUMENT)
+    payload = load_json(target)
+    if isinstance(payload, dict):
+        payload.setdefault("id", DEFAULT_PRODUCT_OPERATIONAL_CATALOG_DOCUMENT["id"])
+        payload.setdefault("items", [])
+        return payload
+    return {
+        "id": DEFAULT_PRODUCT_OPERATIONAL_CATALOG_DOCUMENT["id"],
+        "items": list(payload),
+    }
+
+
+def save_product_operational_catalog_payload(payload: dict[str, Any], path: Path | None = None) -> dict[str, Any]:
+    return save_json(path or PRODUCT_OPERATIONAL_CATALOG_PATH, payload)
 
 
 def _family_color_lookup() -> dict[str, str]:
@@ -1139,6 +1196,18 @@ def load_product_editor_v2_payload() -> dict[str, Any]:
     return {
         "screen": load_json(UI_PRODUCT_EDITOR_V2_SCREEN_PATH),
         "layout_desktop": load_json(UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V2_PATH),
+        "themes": load_json(UI_MAP_EDITOR_THEMES_PATH),
+        "shortcuts": shortcuts,
+    }
+
+
+def load_product_editor_v3_payload() -> dict[str, Any]:
+    shortcuts = dict(DEFAULT_PRODUCT_EDITOR_V1_SHORTCUTS)
+    if UI_SHORTCUTS_PRODUCT_EDITOR_V2_PATH.exists():
+        shortcuts = load_json(UI_SHORTCUTS_PRODUCT_EDITOR_V2_PATH)
+    return {
+        "screen": load_json(UI_PRODUCT_EDITOR_V3_SCREEN_PATH),
+        "layout_desktop": load_json(UI_LAYOUT_DESKTOP_PRODUCT_EDITOR_V3_PATH),
         "themes": load_json(UI_MAP_EDITOR_THEMES_PATH),
         "shortcuts": shortcuts,
     }
@@ -1428,6 +1497,18 @@ def _normalize_truck_body_type_ids(raw_ids: list[Any] | tuple[Any, ...] | None) 
     return normalized
 
 
+def _normalize_string_list(raw_values: list[Any] | tuple[Any, ...] | None) -> list[str]:
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for raw_value in raw_values or []:
+        value = str(raw_value or "").strip()
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        normalized.append(value)
+    return normalized
+
+
 def truck_type_sort_key(raw_item: dict[str, Any]) -> tuple[int, str, str]:
     size_tier = _normalize_truck_size_tier(raw_item.get("size_tier"))
     label = str(raw_item.get("label") or raw_item.get("short_label") or raw_item.get("id") or "").strip().casefold()
@@ -1461,6 +1542,9 @@ def normalize_truck_type_record(raw_item: dict[str, Any]) -> dict[str, Any]:
         or (body_ids[0] if body_ids else "")
         or ""
     ).strip()
+    if item.get("is_custom") and preferred_body_type_id:
+        body_ids = [preferred_body_type_id]
+        item["canonical_body_type_ids"] = body_ids
     if preferred_body_type_id:
         item["preferred_body_type_id"] = preferred_body_type_id
     else:

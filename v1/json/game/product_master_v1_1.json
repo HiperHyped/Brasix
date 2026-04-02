@@ -603,6 +603,21 @@
         "suinos",
         "bovinos"
       ]
+    },
+    {
+      "id": "batata",
+      "name": "Batata",
+      "emoji": "🥔",
+      "family_id": "agro",
+      "logistics_type_id": "granel_seco",
+      "visible": true,
+      "legacy_source_product_id": null,
+      "inputs": [
+        "fertilizante"
+      ],
+      "outputs": [
+        "pao"
+      ]
     }
   ]
 }
