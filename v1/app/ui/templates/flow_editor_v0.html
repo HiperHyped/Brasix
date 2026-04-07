@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script>
+  (function applyFlowEditorThemeEarly() {
+    const root = document.documentElement;
+    root.classList.add("flow-editor-page");
+    try {
+      root.dataset.editorTheme = window.localStorage.getItem("brasix:v1:flow-editor-theme") === "night" ? "night" : "day";
+    } catch (_error) {
+      root.dataset.editorTheme = "day";
+    }
+  })();
+</script>
+{% endblock %}
+
+{% block body %}
+<main class="truck-gallery-shell flow-editor-shell">
+  <header class="topbar truck-gallery-topbar">
+    <div class="truck-gallery-topbar-left">
+      <div class="brand-lockup">
+        <h1>Brasix</h1>
+        <span class="brand-divider"></span>
+        <p>Editor de fluxos O/D v0</p>
+      </div>
+    </div>
+
+    <div id="flow-editor-header-badges" class="editor-header-badges" aria-label="Estado do editor de fluxos"></div>
+
+    <div class="editor-header-actions" aria-label="Ações do editor de fluxos">
+      <button id="flow-editor-save-button" class="secondary-button" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">save</span>
+        <span>Salvar sessão</span>
+      </button>
+      <button id="flow-editor-generate-top" class="editor-header-action" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">conversion_path</span>
+        <span>Gerar tudo</span>
+      </button>
+      <button id="flow-editor-theme-toggle" class="secondary-button" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        <span>Modo noturno</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="truck-gallery-grid flow-editor-grid">
+    <aside class="editor-card truck-gallery-card flow-editor-column flow-editor-products-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>PRODUTOS</span>
+        <div id="flow-editor-products-summary" class="truck-gallery-summary"></div>
+      </div>
+
+      <div class="truck-gallery-filter-form">
+        <label class="field">
+          <span>Buscar produto</span>
+          <input id="flow-editor-product-search" class="editor-input truck-gallery-text-input" type="search" placeholder="Milho, arroz, leite" />
+        </label>
+      </div>
+
+      <div id="flow-editor-products-list" class="truck-gallery-list" aria-label="Lista de produtos"></div>
+    </aside>
+
+    <section class="editor-card truck-gallery-card flow-editor-column flow-editor-map-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>MAPA</span>
+        <div id="flow-editor-map-summary" class="truck-gallery-summary"></div>
+      </div>
+
+      <div class="flow-editor-map-body">
+        <div id="flow-editor-mode-toggle" class="flow-editor-mode-toggle" role="group" aria-label="Modo de leitura do mapa">
+          <button class="flow-editor-mode-button is-active" type="button" data-mode="selected">Selecionados</button>
+          <button class="flow-editor-mode-button" type="button" data-mode="coverage">Cobertura</button>
+          <button class="flow-editor-mode-button" type="button" data-mode="supply">Oferta</button>
+          <button class="flow-editor-mode-button" type="button" data-mode="demand">Demanda</button>
+        </div>
+
+        <div id="flow-editor-map-stage" class="flow-editor-map-stage" aria-label="Mapa de fluxos do produto selecionado">
+          <svg id="flow-editor-map-svg" class="flow-editor-map-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div id="flow-editor-map-nodes" class="flow-editor-map-nodes"></div>
+
+          <div class="flow-editor-map-overlay flow-editor-map-overlay-top">
+            <strong id="flow-editor-map-overlay-title">Fluxos selecionados</strong>
+          </div>
+        </div>
+
+        <div id="flow-editor-funnel-metrics" class="flow-editor-funnel-grid" aria-label="Resumo do funil de seleção"></div>
+      </div>
+    </section>
+
+    <aside class="editor-card truck-gallery-card flow-editor-column flow-editor-controls-column">
+      <div class="truck-operations-panel-head">
+        <span>PARÂMETROS</span>
+      </div>
+
+      <div class="truck-operations-side-panel">
+        <section class="truck-operations-section-box flow-editor-parameter-box">
+          <label class="field">
+            <span>Algoritmo</span>
+            <div class="select-shell">
+              <select id="flow-editor-algorithm" class="editor-input">
+                <option value="balanceado">Balanceado</option>
+                <option value="relevancia">Maior relevância</option>
+                <option value="disperso">Disperso</option>
+              </select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Cobertura</span>
+            <div class="select-shell">
+              <select id="flow-editor-coverage" class="editor-input">
+                <option value="90">90%</option>
+                <option value="95">95%</option>
+              </select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Fluxos</span>
+            <input id="flow-editor-flow-count" class="editor-input" type="number" min="4" max="48" step="1" />
+          </label>
+
+          <label class="field">
+            <span>Quantidades</span>
+            <div class="select-shell">
+              <select id="flow-editor-quantity-mode" class="editor-input">
+                <option value="proporcional">Proporcional</option>
+                <option value="equilibrada">Equilibrada</option>
+                <option value="concentrada">Concentrada</option>
+              </select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+
+          <div class="flow-editor-action-row">
+            <button id="flow-editor-generate-side" class="editor-header-action" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">conversion_path</span>
+              <span>Gerar produto</span>
+            </button>
+            <button id="flow-editor-reset-product" class="secondary-button" type="button">Restaurar</button>
+          </div>
+        </section>
+
+        <section class="truck-operations-section-box flow-editor-status-box">
+          <div id="flow-editor-status-summary" class="flow-editor-note"></div>
+          <div id="flow-editor-base-summary" class="flow-editor-note"></div>
+        </section>
+      </div>
+    </aside>
+
+    <aside class="editor-card truck-gallery-card flow-editor-column flow-editor-flows-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>FRETES SELECIONADOS</span>
+        <div id="flow-editor-flows-summary" class="truck-gallery-summary"></div>
+      </div>
+
+      <div id="flow-editor-flows-list" class="truck-gallery-list" aria-label="Lista de fretes selecionados"></div>
+
+      <section class="truck-operations-section-box flow-editor-detail-box">
+        <p class="truck-operations-stack-label">Fluxo selecionado</p>
+        <div id="flow-editor-detail" class="flow-editor-detail"></div>
+      </section>
+    </aside>
+  </section>
+</main>
+
+<script type="module">
+  const flowEditorModuleUrl = new URL("{{ request.url_for('static', path='js/flow-editor-v0.js') }}", window.location.href);
+  flowEditorModuleUrl.searchParams.set("v", "20260407-od-v0-2");
+
+  function showFlowEditorLoadError(error) {
+    const target = document.getElementById("flow-editor-flows-list");
+    if (!target) {
+      return;
+    }
+    const wrapper = document.createElement("div");
+    wrapper.className = "truck-gallery-empty";
+    wrapper.textContent = String(error?.message || error || "Falha ao carregar o editor de fluxos O/D.");
+    target.replaceChildren(wrapper);
+    console.error("Brasix flow editor load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showFlowEditorLoadError(event.reason);
+  });
+
+  import(flowEditorModuleUrl.href).catch(showFlowEditorLoadError);
+</script>
+{% endblock %}

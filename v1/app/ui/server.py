@@ -6,6 +6,7 @@ from datetime import datetime
 from threading import Lock
 from typing import Any
 import unicodedata
+from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
@@ -1290,6 +1291,14 @@ def create_app() -> FastAPI:
             request=request,
             name="route_planner.html",
             context={"page_title": planner_ui["screen"].get("page_title", "Brasix | Planejador de rota")},
+        )
+
+    @app.get("/editor/fluxos_od_v0", response_class=HTMLResponse, include_in_schema=False)
+    async def flow_editor_v0(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="flow_editor_v0.html",
+            context={"page_title": "Brasix | Editor de fluxos O/D v0"},
         )
 
     @app.get("/editor/products", response_class=HTMLResponse, include_in_schema=False)
