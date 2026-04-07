@@ -69,6 +69,7 @@ from app.services.map_repository import (
     save_maps_registry,
     set_active_map,
 )
+from app.services.freight_editor import build_freight_editor_bootstrap_payload
 from app.services.route_auto_osrm import AutoRouteError, generate_auto_route_preview, load_route_auto_engine_config
 from app.services.route_planner import RoutePlannerError, build_route_plan
 from app.services.truck_image_generation import (
@@ -143,6 +144,7 @@ __all__ = [
     "save_maps_registry",
     "save_json",
     "set_active_map",
+    "build_freight_editor_bootstrap_payload",
     "AutoRouteError",
     "generate_auto_route_preview",
     "load_route_auto_engine_config",

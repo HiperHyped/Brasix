@@ -3818,9 +3818,28 @@ html[data-editor-theme="night"] .truck-operations-product-option {
   color: var(--text);
 }
 
-.flow-editor-product-item.is-active,
-.flow-editor-flow-item.is-active {
+.flow-editor-product-item.is-active {
   box-shadow: inset 0 0 0 2px rgba(45, 90, 39, 0.24), var(--shadow-card);
+}
+
+.flow-editor-flow-item {
+  position: relative;
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+.flow-editor-flow-item:hover {
+  transform: translateY(-1px);
+}
+
+.flow-editor-flow-item.is-active {
+  background: linear-gradient(135deg, rgba(255, 245, 232, 0.98), rgba(255, 255, 255, 0.92));
+  box-shadow: inset 0 0 0 2px rgba(212, 116, 31, 0.34), 0 14px 28px rgba(63, 52, 30, 0.12);
+}
+
+.flow-editor-flow-item.is-active .flow-editor-flow-top strong,
+.flow-editor-flow-item.is-active .flow-editor-flow-meta span,
+.flow-editor-flow-item.is-active .flow-editor-flow-rank {
+  color: #7a4310;
 }
 
 .flow-editor-product-top,
@@ -3942,26 +3961,226 @@ html[data-editor-theme="night"] .truck-operations-product-option {
   color: #173717;
 }
 
-.flow-editor-map-stage {
-  position: relative;
-  min-height: 430px;
-  overflow: hidden;
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 17% 24%, rgba(79, 133, 147, 0.13), transparent 22%),
-    radial-gradient(circle at 82% 18%, rgba(140, 79, 16, 0.12), transparent 26%),
-    linear-gradient(180deg, rgba(248, 243, 229, 0.96), rgba(238, 232, 217, 0.96));
+.flow-editor-range-shell {
+  display: grid;
+  gap: 4px;
+}
+
+.flow-editor-parameter-groups {
+  display: grid;
+  gap: 6px;
+}
+
+.flow-editor-parameter-group {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.58);
   box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
 }
 
-.flow-editor-map-stage::before {
-  content: "";
+.flow-editor-parameter-group-title {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--green);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.flow-editor-parameter-group-grid,
+.flow-editor-parameter-field {
+  display: grid;
+  gap: 4px;
+}
+
+.flow-editor-parameter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.flow-editor-help {
+  display: inline-grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  background: rgba(107, 125, 46, 0.14);
+  color: var(--green);
+  font-size: 0.58rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: inset 0 0 0 1px rgba(107, 125, 46, 0.16);
+  cursor: help;
+  outline: none;
+}
+
+.flow-editor-help::before,
+.flow-editor-help::after {
+  content: none;
+}
+
+.flow-editor-floating-tooltip {
+  position: fixed;
+  z-index: 5000;
+  max-width: min(220px, calc(100vw - 24px));
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.97);
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.32;
+  box-shadow: 0 16px 30px rgba(63, 52, 30, 0.18);
+  pointer-events: none;
+}
+
+.flow-editor-floating-tooltip[hidden] {
+  display: none;
+}
+
+.flow-editor-range-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.flow-editor-range-track-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 16px;
+}
+
+.flow-editor-range-default-marker {
+  position: absolute;
+  left: calc(var(--default-ratio, 0) * 100%);
+  top: 50%;
+  width: 3px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(79, 133, 147, 0.72);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.flow-editor-range {
+  width: 100%;
+  margin: 0;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(107, 125, 46, 0.2), rgba(140, 79, 16, 0.34));
+  outline: none;
+  position: relative;
+  z-index: 2;
+}
+
+.flow-editor-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(107, 125, 46, 0.2), rgba(140, 79, 16, 0.34));
+}
+
+.flow-editor-range::-moz-range-track {
+  height: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(107, 125, 46, 0.2), rgba(140, 79, 16, 0.34));
+}
+
+.flow-editor-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6b7d2e, #8c4f10);
+  box-shadow: 0 4px 12px rgba(63, 52, 30, 0.22);
+  cursor: pointer;
+}
+
+.flow-editor-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6b7d2e, #8c4f10);
+  box-shadow: 0 4px 12px rgba(63, 52, 30, 0.22);
+  cursor: pointer;
+}
+
+.flow-editor-range-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+}
+
+.flow-editor-map-stage {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(114, 121, 110, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(114, 121, 110, 0.035) 1px, transparent 1px);
-  background-size: 62px 62px;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(248, 243, 229, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(114, 121, 110, 0.08);
+  isolation: isolate;
+}
+
+.flow-editor-map-frame {
+  position: relative;
+  min-height: 620px;
+  overflow: hidden;
+  border-radius: 22px;
+  isolation: isolate;
+}
+
+.flow-editor-map-frame::before {
+  content: none;
+}
+
+.flow-editor-map-stage .leaflet-container,
+.flow-editor-map-stage .leaflet-pane,
+.flow-editor-map-stage .leaflet-tile-pane,
+.flow-editor-map-stage .leaflet-map-pane,
+.flow-editor-map-stage canvas {
+  border-radius: 18px;
+}
+
+.flow-editor-map-stage .leaflet-container {
+  background: rgba(248, 243, 229, 0.96);
+}
+
+.flow-editor-map-stage canvas {
+  pointer-events: auto !important;
+}
+
+.flow-editor-map-stage .leaflet-marker-icon,
+.flow-editor-map-stage .leaflet-marker-shadow {
+  pointer-events: none !important;
+}
+
+.flow-editor-map-stage::before {
+  content: none;
 }
 
 .flow-editor-map-base {
@@ -4020,7 +4239,7 @@ html[data-editor-theme="night"] .truck-operations-product-option {
 
 .flow-editor-map-overlay {
   position: absolute;
-  left: 12px;
+  right: 12px;
   display: inline-flex;
   align-items: center;
   min-height: 30px;
@@ -4118,6 +4337,17 @@ html[data-editor-theme="night"] .truck-operations-product-option {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.flow-editor-action-row .primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+}
+
 .flow-editor-check-grid {
   grid-template-columns: 1fr;
 }
@@ -4141,6 +4371,12 @@ html[data-editor-theme="night"] .truck-operations-product-option {
   gap: 8px;
 }
 
+.flow-editor-controls-column .truck-operations-side-panel {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
 .flow-editor-detail-box .truck-operations-stack-label {
   margin: 0;
 }
@@ -4149,6 +4385,7 @@ html[data-editor-theme="night"] .flow-editor-summary-pill,
 html[data-editor-theme="night"] .flow-editor-product-item,
 html[data-editor-theme="night"] .flow-editor-flow-item,
 html[data-editor-theme="night"] .flow-editor-funnel-metric,
+html[data-editor-theme="night"] .flow-editor-parameter-group,
 html[data-editor-theme="night"] .flow-editor-note,
 html[data-editor-theme="night"] .flow-editor-detail-metric,
 html[data-editor-theme="night"] .flow-editor-map-overlay,
@@ -4161,11 +4398,40 @@ html[data-editor-theme="night"] .flow-editor-mode-button.is-active {
   color: #102214;
 }
 
+html[data-editor-theme="night"] .flow-editor-range,
+html[data-editor-theme="night"] .flow-editor-range::-webkit-slider-runnable-track,
+html[data-editor-theme="night"] .flow-editor-range::-moz-range-track {
+  background: linear-gradient(90deg, rgba(161, 212, 148, 0.22), rgba(233, 187, 130, 0.3));
+}
+
+html[data-editor-theme="night"] .flow-editor-range-value {
+  background: rgba(19, 23, 20, 0.92);
+  color: #d5e8d1;
+}
+
+html[data-editor-theme="night"] .flow-editor-range-default-marker {
+  background: rgba(233, 187, 130, 0.86);
+  box-shadow: 0 0 0 1px rgba(19, 23, 20, 0.96);
+}
+
+html[data-editor-theme="night"] .flow-editor-help {
+  background: rgba(161, 212, 148, 0.14);
+  color: #d5e8d1;
+  box-shadow: inset 0 0 0 1px rgba(161, 212, 148, 0.14);
+}
+
+html[data-editor-theme="night"] .flow-editor-floating-tooltip {
+  background: rgba(19, 23, 20, 0.96);
+  color: #f4f2ea;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+}
+
 html[data-editor-theme="night"] .flow-editor-map-stage {
-  background:
-    radial-gradient(circle at 17% 24%, rgba(79, 133, 147, 0.16), transparent 22%),
-    radial-gradient(circle at 82% 18%, rgba(140, 79, 16, 0.18), transparent 26%),
-    linear-gradient(180deg, rgba(17, 20, 18, 0.98), rgba(22, 25, 23, 0.98));
+  background: rgba(17, 20, 18, 0.98);
+}
+
+html[data-editor-theme="night"] .flow-editor-map-stage .leaflet-container {
+  background: rgba(17, 20, 18, 0.98);
 }
 
 html[data-editor-theme="night"] .flow-editor-map-land {
@@ -4181,12 +4447,6 @@ html[data-editor-theme="night"] .flow-editor-map-coast {
   stroke: rgba(79, 133, 147, 0.18);
 }
 
-html[data-editor-theme="night"] .flow-editor-map-stage::before {
-  background-image:
-    linear-gradient(rgba(114, 121, 110, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(114, 121, 110, 0.08) 1px, transparent 1px);
-}
-
 html[data-editor-theme="night"] .flow-editor-flow-path[data-kind="selected"] {
   stroke: rgba(188, 240, 174, 0.48);
 }
@@ -4197,6 +4457,17 @@ html[data-editor-theme="night"] .flow-editor-flow-path[data-kind="candidate"] {
 
 html[data-editor-theme="night"] .flow-editor-flow-path.is-active {
   stroke: rgba(233, 187, 130, 0.88);
+}
+
+html[data-editor-theme="night"] .flow-editor-flow-item.is-active {
+  background: linear-gradient(135deg, rgba(62, 42, 23, 0.96), rgba(25, 29, 24, 0.96));
+  box-shadow: inset 0 0 0 2px rgba(233, 187, 130, 0.34), 0 16px 30px rgba(0, 0, 0, 0.28);
+}
+
+html[data-editor-theme="night"] .flow-editor-flow-item.is-active .flow-editor-flow-top strong,
+html[data-editor-theme="night"] .flow-editor-flow-item.is-active .flow-editor-flow-meta span,
+html[data-editor-theme="night"] .flow-editor-flow-item.is-active .flow-editor-flow-rank {
+  color: #f1c58a;
 }
 
 html[data-editor-theme="night"] .flow-editor-product-top strong,

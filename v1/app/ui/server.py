@@ -38,6 +38,7 @@ from app.services import (
     AutoRouteError,
     RoutePlannerError,
     build_reference_data_from_city_catalog_payload,
+    build_freight_editor_bootstrap_payload,
     build_user_city_catalog_payload,
     build_route_plan,
     create_map_bundle,
@@ -1293,12 +1294,13 @@ def create_app() -> FastAPI:
             context={"page_title": planner_ui["screen"].get("page_title", "Brasix | Planejador de rota")},
         )
 
+    @app.get("/editor/fretes", response_class=HTMLResponse, include_in_schema=False)
     @app.get("/editor/fluxos_od_v0", response_class=HTMLResponse, include_in_schema=False)
-    async def flow_editor_v0(request: Request) -> HTMLResponse:
+    async def freight_editor(request: Request) -> HTMLResponse:
         return templates.TemplateResponse(
             request=request,
             name="flow_editor_v0.html",
-            context={"page_title": "Brasix | Editor de fluxos O/D v0"},
+            context={"page_title": "Brasix | Editor de fretes"},
         )
 
     @app.get("/editor/products", response_class=HTMLResponse, include_in_schema=False)
@@ -1426,6 +1428,10 @@ def create_app() -> FastAPI:
     @app.get("/api/editor/products_v3/bootstrap")
     async def product_editor_v3_bootstrap() -> dict[str, Any]:
         return _build_product_editor_v3_bootstrap_payload()
+
+    @app.get("/api/editor/fretes/bootstrap")
+    async def freight_editor_bootstrap() -> dict[str, Any]:
+        return build_freight_editor_bootstrap_payload()
 
     @app.get("/api/editor/products_v1/field")
     async def product_editor_v1_field(

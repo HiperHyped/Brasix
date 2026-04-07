@@ -21,13 +21,13 @@
       <div class="brand-lockup">
         <h1>Brasix</h1>
         <span class="brand-divider"></span>
-        <p>Editor de fluxos O/D v0</p>
+        <p>Editor de fretes</p>
       </div>
     </div>
 
-    <div id="flow-editor-header-badges" class="editor-header-badges" aria-label="Estado do editor de fluxos"></div>
+    <div id="flow-editor-header-badges" class="editor-header-badges" aria-label="Estado do editor de fretes"></div>
 
-    <div class="editor-header-actions" aria-label="Ações do editor de fluxos">
+    <div class="editor-header-actions" aria-label="Ações do editor de fretes">
       <button id="flow-editor-save-button" class="secondary-button" type="button">
         <span class="material-symbols-outlined" aria-hidden="true">save</span>
         <span>Salvar sessão</span>
@@ -68,18 +68,16 @@
 
       <div class="flow-editor-map-body">
         <div id="flow-editor-mode-toggle" class="flow-editor-mode-toggle" role="group" aria-label="Modo de leitura do mapa">
-          <button class="flow-editor-mode-button is-active" type="button" data-mode="selected">Selecionados</button>
-          <button class="flow-editor-mode-button" type="button" data-mode="coverage">Cobertura</button>
+          <button class="flow-editor-mode-button is-active" type="button" data-mode="contracts">Fretes</button>
           <button class="flow-editor-mode-button" type="button" data-mode="supply">Oferta</button>
           <button class="flow-editor-mode-button" type="button" data-mode="demand">Demanda</button>
+          <button class="flow-editor-mode-button" type="button" data-mode="cities">Cidades</button>
         </div>
 
-        <div id="flow-editor-map-stage" class="flow-editor-map-stage" aria-label="Mapa de fluxos do produto selecionado">
-          <svg id="flow-editor-map-svg" class="flow-editor-map-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true"></svg>
-          <div id="flow-editor-map-nodes" class="flow-editor-map-nodes"></div>
-
+        <div class="map-frame product-editor-map-frame flow-editor-map-frame">
+          <div id="flow-editor-map-stage" class="map-stage flow-editor-map-stage" aria-label="Mapa de fretes do produto selecionado"></div>
           <div class="flow-editor-map-overlay flow-editor-map-overlay-top">
-            <strong id="flow-editor-map-overlay-title">Fluxos selecionados</strong>
+            <strong id="flow-editor-map-overlay-title">Fretes</strong>
           </div>
         </div>
 
@@ -94,72 +92,32 @@
 
       <div class="truck-operations-side-panel">
         <section class="truck-operations-section-box flow-editor-parameter-box">
-          <label class="field">
-            <span>Algoritmo</span>
-            <div class="select-shell">
-              <select id="flow-editor-algorithm" class="editor-input">
-                <option value="balanceado">Balanceado</option>
-                <option value="relevancia">Maior relevância</option>
-                <option value="disperso">Disperso</option>
-              </select>
-              <span class="material-symbols-outlined">expand_more</span>
-            </div>
-          </label>
-
-          <label class="field">
-            <span>Cobertura</span>
-            <div class="select-shell">
-              <select id="flow-editor-coverage" class="editor-input">
-                <option value="90">90%</option>
-                <option value="95">95%</option>
-              </select>
-              <span class="material-symbols-outlined">expand_more</span>
-            </div>
-          </label>
-
-          <label class="field">
-            <span>Fluxos</span>
-            <input id="flow-editor-flow-count" class="editor-input" type="number" min="4" max="48" step="1" />
-          </label>
-
-          <label class="field">
-            <span>Quantidades</span>
-            <div class="select-shell">
-              <select id="flow-editor-quantity-mode" class="editor-input">
-                <option value="proporcional">Proporcional</option>
-                <option value="equilibrada">Equilibrada</option>
-                <option value="concentrada">Concentrada</option>
-              </select>
-              <span class="material-symbols-outlined">expand_more</span>
-            </div>
-          </label>
+          <div id="flow-editor-parameter-groups" class="flow-editor-parameter-groups" aria-label="Variáveis do algoritmo de fretes"></div>
 
           <div class="flow-editor-action-row">
-            <button id="flow-editor-generate-side" class="editor-header-action" type="button">
+            <button id="flow-editor-generate-side" class="primary-button" type="button">
               <span class="material-symbols-outlined" aria-hidden="true">conversion_path</span>
-              <span>Gerar produto</span>
+              <span>Gerar</span>
             </button>
-            <button id="flow-editor-reset-product" class="secondary-button" type="button">Restaurar</button>
+            <button id="flow-editor-reset-product" class="primary-button" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+              <span>Restaurar</span>
+            </button>
           </div>
-        </section>
-
-        <section class="truck-operations-section-box flow-editor-status-box">
-          <div id="flow-editor-status-summary" class="flow-editor-note"></div>
-          <div id="flow-editor-base-summary" class="flow-editor-note"></div>
         </section>
       </div>
     </aside>
 
     <aside class="editor-card truck-gallery-card flow-editor-column flow-editor-flows-column">
       <div class="truck-operations-panel-head truck-operations-panel-head-split">
-        <span>FRETES SELECIONADOS</span>
+        <span>FRETES GERADOS</span>
         <div id="flow-editor-flows-summary" class="truck-gallery-summary"></div>
       </div>
 
-      <div id="flow-editor-flows-list" class="truck-gallery-list" aria-label="Lista de fretes selecionados"></div>
+      <div id="flow-editor-flows-list" class="truck-gallery-list" aria-label="Lista de fretes gerados"></div>
 
       <section class="truck-operations-section-box flow-editor-detail-box">
-        <p class="truck-operations-stack-label">Fluxo selecionado</p>
+        <p class="truck-operations-stack-label">Frete selecionado</p>
         <div id="flow-editor-detail" class="flow-editor-detail"></div>
       </section>
     </aside>
@@ -167,8 +125,8 @@
 </main>
 
 <script type="module">
-  const flowEditorModuleUrl = new URL("{{ request.url_for('static', path='js/flow-editor-v0.js') }}", window.location.href);
-  flowEditorModuleUrl.searchParams.set("v", "20260407-od-v0-2");
+  const flowEditorModuleUrl = new URL("{{ request.url_for('static', path='js/freight-editor-v0.js') }}", window.location.href);
+  flowEditorModuleUrl.searchParams.set("v", "20260407-fretes-v1-10");
 
   function showFlowEditorLoadError(error) {
     const target = document.getElementById("flow-editor-flows-list");
@@ -177,9 +135,9 @@
     }
     const wrapper = document.createElement("div");
     wrapper.className = "truck-gallery-empty";
-    wrapper.textContent = String(error?.message || error || "Falha ao carregar o editor de fluxos O/D.");
+    wrapper.textContent = String(error?.message || error || "Falha ao carregar o editor de fretes.");
     target.replaceChildren(wrapper);
-    console.error("Brasix flow editor load failure:", error);
+    console.error("Brasix freight editor load failure:", error);
   }
 
   window.addEventListener("unhandledrejection", (event) => {
