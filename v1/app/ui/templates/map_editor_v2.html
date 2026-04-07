@@ -103,7 +103,7 @@
 
 <script type="module">
   const editorModuleUrl = new URL("{{ request.url_for('static', path='js/editors/map-editor-v2.js') }}", window.location.href);
-  editorModuleUrl.searchParams.set("v", "20260327-v2-1");
+  editorModuleUrl.searchParams.set("v", "20260405-route-auto-1");
   import(editorModuleUrl.href).then((module) => module.initMapEditorV2()).catch((error) => {
     const statusBox = document.getElementById("editor-v2-status");
     if (statusBox) {

@@ -91,6 +91,63 @@ def _surface_type_by_id(route_surface_types: list[dict[str, Any]], surface_type_
     raise AutoRouteError(f"Tipo de rota nao encontrado: {surface_type_id}.")
 
 
+def _should_retry_osrm_exception(exc: Exception) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code in {408, 425, 429, 500, 502, 503, 504}
+    return isinstance(exc, (urllib.error.URLError, TimeoutError))
+
+
+def _load_osrm_route_payload(url: str, *, max_attempts: int, retry_backoff_seconds: float) -> dict[str, Any]:
+    attempts = max(1, int(max_attempts))
+    last_error: Exception | None = None
+    for attempt_index in range(attempts):
+        try:
+            return _http_json(url)
+        except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as exc:
+            last_error = exc
+            if attempt_index + 1 >= attempts or not _should_retry_osrm_exception(exc):
+                raise
+            time.sleep(max(0.0, float(retry_backoff_seconds)) * (attempt_index + 1))
+
+    if last_error is not None:
+        raise last_error
+    raise AutoRouteError("Falha inesperada ao consultar o OSRM.")
+
+
+def _osrm_route_url(
+    base_url: str,
+    *,
+    profile_id: str,
+    coordinates: str,
+    route_options: dict[str, Any],
+) -> str:
+    return (
+        f"{base_url.rstrip('/')}/route/v1/{profile_id}/{coordinates}"
+        f"?{urllib.parse.urlencode(route_options)}"
+    )
+
+
+def _is_known_public_osrm(base_url: str, config: dict[str, Any]) -> bool:
+    hostname = urllib.parse.urlparse(base_url).netloc.lower()
+    known_hosts = {
+        str(item).strip().lower()
+        for item in config.get("public_demo_hosts", ["router.project-osrm.org"])
+        if str(item).strip()
+    }
+    return hostname in known_hosts
+
+
+def _auto_route_error_message(config: dict[str, Any], base_url: str) -> str:
+    if _is_known_public_osrm(base_url, config):
+        local_base_url = str(config.get("local_base_url") or "http://127.0.0.1:5000").strip()
+        return (
+            "O Brasix esta usando o demo publico do OSRM e ele falhou nesta consulta. "
+            f"Para restaurar o roteamento automatico de forma confiavel, suba um OSRM local em {local_base_url} "
+            "ou aponte BRASIX_OSRM_BASE_URL para um servidor privado."
+        )
+    return "Nao foi possivel consultar o OSRM. Verifique BRASIX_OSRM_BASE_URL e se o servidor esta no ar."
+
+
 def _waypoint_payload(
     simplified_points: list[tuple[float, float]],
     from_endpoint: dict[str, Any],
@@ -114,6 +171,140 @@ def _waypoint_payload(
         }
         for index, point in enumerate(points)
     ]
+
+
+def _build_preview_result(
+    *,
+    engine: str,
+    profile_id: str,
+    surface_type: dict[str, Any],
+    resolution_km: int,
+    raw_point_count: int,
+    simplified_points: list[tuple[float, float]],
+    distance_km: float,
+    from_node_id: str,
+    to_node_id: str,
+    from_endpoint: dict[str, Any],
+    to_endpoint: dict[str, Any],
+    city_ids: set[str] | None,
+    notes: str,
+) -> AutoRoutePreviewResult:
+    timestamp = int(time.time() * 1000)
+    city_id_set = set(city_ids or [])
+    edge = RouteEdgeRecord.model_validate(
+        {
+            "id": f"edge-auto-{from_node_id}-{to_node_id}-{timestamp}",
+            "from_node_id": from_node_id,
+            "to_node_id": to_node_id,
+            "from_city_id": from_node_id if from_node_id in city_id_set else None,
+            "to_city_id": to_node_id if to_node_id in city_id_set else None,
+            "mode": surface_type.get("mode", "road"),
+            "surface_type_id": surface_type["id"],
+            "surface_code": surface_type.get("code", "single_road"),
+            "geometry_type_id": "route_geometry_polycurve",
+            "geometry_code": "polycurve",
+            "render_smoothing_enabled": False,
+            "status": "active",
+            "bidirectional": True,
+            "distance_km": float(distance_km or 0),
+            "notes": notes,
+            "waypoints": _waypoint_payload(simplified_points, from_endpoint, to_endpoint, timestamp),
+        }
+    )
+
+    return AutoRoutePreviewResult(
+        engine=engine,
+        profile_id=profile_id,
+        surface_type_id=surface_type["id"],
+        resolution_km=resolution_km,
+        raw_point_count=max(2, int(raw_point_count)),
+        simplified_point_count=max(2, len(simplified_points)),
+        distance_km=float(edge.distance_km or 0),
+        edge=edge,
+    )
+
+
+def _fallback_preview_result(
+    *,
+    config: dict[str, Any],
+    profile_id: str,
+    surface_type: dict[str, Any],
+    resolution_km: int,
+    from_node_id: str,
+    to_node_id: str,
+    from_endpoint: dict[str, Any],
+    to_endpoint: dict[str, Any],
+    city_ids: set[str] | None,
+) -> AutoRoutePreviewResult:
+    direct_points = [
+        (float(from_endpoint["latitude"]), float(from_endpoint["longitude"])),
+        (float(to_endpoint["latitude"]), float(to_endpoint["longitude"])),
+    ]
+    distance_km = _haversine_km(direct_points[0], direct_points[1])
+    return _build_preview_result(
+        engine=str(config.get("fallback_engine") or "osrm fallback"),
+        profile_id=profile_id,
+        surface_type=surface_type,
+        resolution_km=resolution_km,
+        raw_point_count=len(direct_points),
+        simplified_points=direct_points,
+        distance_km=distance_km,
+        from_node_id=from_node_id,
+        to_node_id=to_node_id,
+        from_endpoint=from_endpoint,
+        to_endpoint=to_endpoint,
+        city_ids=city_ids,
+        notes=(
+            "OSRM indisponivel no momento; rota auxiliar em linha reta gerada automaticamente. "
+            "Revise e ajuste a geometria manualmente se precisar de maior fidelidade."
+        ),
+    )
+
+
+def _load_primary_or_local_osrm_payload(
+    *,
+    config: dict[str, Any],
+    base_url: str,
+    profile_id: str,
+    coordinates: str,
+    route_options: dict[str, Any],
+    max_attempts: int,
+    retry_backoff_seconds: float,
+) -> dict[str, Any]:
+    primary_url = _osrm_route_url(
+        base_url,
+        profile_id=profile_id,
+        coordinates=coordinates,
+        route_options=route_options,
+    )
+    try:
+        return _load_osrm_route_payload(
+            primary_url,
+            max_attempts=max_attempts,
+            retry_backoff_seconds=retry_backoff_seconds,
+        )
+    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
+        local_base_url = str(config.get("local_base_url") or "http://127.0.0.1:5000").strip()
+        prefer_local_on_public_failure = bool(config.get("prefer_local_on_public_failure", True))
+        if (
+            not prefer_local_on_public_failure
+            or not local_base_url
+            or local_base_url.rstrip("/") == base_url.rstrip("/")
+            or not _is_known_public_osrm(base_url, config)
+        ):
+            raise
+
+        local_url = _osrm_route_url(
+            local_base_url,
+            profile_id=profile_id,
+            coordinates=coordinates,
+            route_options=route_options,
+        )
+        return _load_osrm_route_payload(
+            local_url,
+            max_attempts=1,
+            retry_backoff_seconds=0,
+        )
 
 
 def generate_auto_route_preview(
@@ -155,60 +346,95 @@ def generate_auto_route_preview(
         f"{float(from_endpoint['longitude'])},{float(from_endpoint['latitude'])};"
         f"{float(to_endpoint['longitude'])},{float(to_endpoint['latitude'])}"
     )
-    url = (
-        f"{base_url.rstrip('/')}/route/v1/{profile_id}/{coordinates}"
-        f"?{urllib.parse.urlencode(route_options)}"
-    )
+    request_attempts = int(config.get("request_retry_attempts") or 2)
+    retry_backoff_seconds = float(config.get("request_retry_backoff_seconds") or 0.75)
+    linear_fallback_enabled = bool(config.get("linear_fallback_enabled", True))
 
     try:
-        payload = _http_json(url)
-    except urllib.error.URLError as exc:
-        raise AutoRouteError(
-            "Nao foi possivel consultar o OSRM. Verifique BRASIX_OSRM_BASE_URL e se o servidor esta no ar."
-        ) from exc
+        payload = _load_primary_or_local_osrm_payload(
+            config=config,
+            base_url=base_url,
+            profile_id=profile_id,
+            coordinates=coordinates,
+            route_options=route_options,
+            max_attempts=request_attempts,
+            retry_backoff_seconds=retry_backoff_seconds,
+        )
+    except (urllib.error.URLError, TimeoutError) as exc:
+        if linear_fallback_enabled:
+            return _fallback_preview_result(
+                config=config,
+                profile_id=profile_id,
+                surface_type=surface_type,
+                resolution_km=resolution_km,
+                from_node_id=from_node_id,
+                to_node_id=to_node_id,
+                from_endpoint=from_endpoint,
+                to_endpoint=to_endpoint,
+                city_ids=city_ids,
+            )
+        raise AutoRouteError(_auto_route_error_message(config, base_url)) from exc
     except json.JSONDecodeError as exc:
-        raise AutoRouteError("O OSRM respondeu em um formato invalido para o Brasix.") from exc
+        if linear_fallback_enabled:
+            return _fallback_preview_result(
+                config=config,
+                profile_id=profile_id,
+                surface_type=surface_type,
+                resolution_km=resolution_km,
+                from_node_id=from_node_id,
+                to_node_id=to_node_id,
+                from_endpoint=from_endpoint,
+                to_endpoint=to_endpoint,
+                city_ids=city_ids,
+            )
+        raise AutoRouteError(_auto_route_error_message(config, base_url)) from exc
 
     if payload.get("code") != "Ok" or not payload.get("routes"):
+        if linear_fallback_enabled:
+            return _fallback_preview_result(
+                config=config,
+                profile_id=profile_id,
+                surface_type=surface_type,
+                resolution_km=resolution_km,
+                from_node_id=from_node_id,
+                to_node_id=to_node_id,
+                from_endpoint=from_endpoint,
+                to_endpoint=to_endpoint,
+                city_ids=city_ids,
+            )
         raise AutoRouteError(payload.get("message") or "O OSRM nao conseguiu gerar uma rota para esse par de cidades.")
 
     route = payload["routes"][0]
     raw_coordinates = route.get("geometry", {}).get("coordinates", [])
     if len(raw_coordinates) < 2:
+        if linear_fallback_enabled:
+            return _fallback_preview_result(
+                config=config,
+                profile_id=profile_id,
+                surface_type=surface_type,
+                resolution_km=resolution_km,
+                from_node_id=from_node_id,
+                to_node_id=to_node_id,
+                from_endpoint=from_endpoint,
+                to_endpoint=to_endpoint,
+                city_ids=city_ids,
+            )
         raise AutoRouteError("O OSRM retornou uma geometria vazia para essa rota.")
 
     raw_points = [(float(lat), float(lon)) for lon, lat in raw_coordinates]
     simplified_points = _simplify_route_points(raw_points, resolution_km)
-    timestamp = int(time.time() * 1000)
-    city_id_set = set(city_ids or [])
-    edge = RouteEdgeRecord.model_validate(
-        {
-            "id": f"edge-auto-{from_node_id}-{to_node_id}-{timestamp}",
-            "from_node_id": from_node_id,
-            "to_node_id": to_node_id,
-            "from_city_id": from_node_id if from_node_id in city_id_set else None,
-            "to_city_id": to_node_id if to_node_id in city_id_set else None,
-            "mode": surface_type.get("mode", "road"),
-            "surface_type_id": surface_type["id"],
-            "surface_code": surface_type.get("code", "single_road"),
-            "geometry_type_id": "route_geometry_polycurve",
-            "geometry_code": "polycurve",
-            "render_smoothing_enabled": False,
-            "status": "active",
-            "bidirectional": True,
-            "distance_km": float(route.get("distance", 0)) / 1000,
-            "notes": f"Gerada automaticamente por OSRM com resolucao de {resolution_km} km no editor de mapa.",
-            "waypoints": _waypoint_payload(simplified_points, from_endpoint, to_endpoint, timestamp),
-        }
-    )
-
-    return AutoRoutePreviewResult(
-        engine=config.get("provider", "osrm"),
+    return _build_preview_result(
+        engine=str(config.get("provider", "osrm")),
         profile_id=profile_id,
-        surface_type_id=surface_type["id"],
+        surface_type=surface_type,
         resolution_km=resolution_km,
         raw_point_count=len(raw_points),
-        simplified_point_count=len(simplified_points),
-        distance_km=float(edge.distance_km or 0),
-        edge=edge,
+        simplified_points=simplified_points,
+        distance_km=float(route.get("distance", 0)) / 1000,
+        from_node_id=from_node_id,
+        to_node_id=to_node_id,
+        from_endpoint=from_endpoint,
+        to_endpoint=to_endpoint,
+        city_ids=city_ids,
+        notes=f"Gerada automaticamente por OSRM com resolucao de {resolution_km} km no editor de mapa.",
     )

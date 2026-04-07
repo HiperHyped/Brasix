@@ -64,6 +64,38 @@ def test_lookup_ibge_municipality_prefers_exact_name(monkeypatch) -> None:
     assert result.name == "Carmo"
 
 
+def test_lookup_ibge_municipality_without_state_uses_national_dataset(monkeypatch) -> None:
+    monkeypatch.setattr(
+        autofill_service,
+        "_http_json",
+        lambda *args, **kwargs: [
+            {
+                "id": 3202306,
+                "nome": "Guaçuí",
+                "regiao-imediata": {
+                    "nome": "Alegre",
+                    "regiao-intermediaria": {
+                        "nome": "Cachoeiro de Itapemirim",
+                        "UF": {"sigla": "ES", "nome": "Espírito Santo"},
+                    },
+                },
+            }
+        ],
+    )
+
+    result = autofill_service.lookup_ibge_municipality(
+        {"municipality_lookup": {"all_path_template": "https://example/municipios"}},
+        "Guaçuí",
+        "",
+        "Região Geográfica Intermediária de Cachoeiro de Itapemirim",
+    )
+
+    assert result.municipality_id == "3202306"
+    assert result.name == "Guaçuí"
+    assert result.state_code == "ES"
+    assert result.state_name == "Espírito Santo"
+
+
 def test_autofill_custom_city_uses_reverse_geocoder_and_ibge(monkeypatch) -> None:
     city = _city()
 
@@ -112,3 +144,53 @@ def test_autofill_custom_city_uses_reverse_geocoder_and_ibge(monkeypatch) -> Non
     assert result.autofill is not None
     assert result.autofill.provider == "Nominatim + IBGE"
     assert result.autofill.confidence == "high"
+
+
+def test_autofill_custom_city_recovers_missing_state_from_ibge(monkeypatch) -> None:
+    city = _city()
+
+    monkeypatch.setattr(
+        autofill_service,
+        "load_city_autofill_config",
+        lambda: {
+            "enabled": True,
+            "provider_label": "Nominatim + IBGE",
+        },
+    )
+    monkeypatch.setattr(
+        autofill_service,
+        "reverse_geocode_city_candidate",
+        lambda _config, _city: autofill_service.ReverseGeocoderCandidate(
+            name="Guaçuí",
+            state_name="",
+            state_code="",
+            region_name="Região Geográfica Intermediária de Cachoeiro de Itapemirim",
+            display_name="Guaçuí, Região Geográfica Imediata de Alegre, Região Geográfica Intermediária de Cachoeiro de Itapemirim, Brasil",
+            provider="Nominatim",
+        ),
+    )
+    monkeypatch.setattr(
+        autofill_service,
+        "lookup_ibge_municipality",
+        lambda _config, _city_name, _state_code, _region_name: autofill_service.MunicipalityLookupRecord(
+            municipality_id="3202306",
+            name="Guaçuí",
+            state_code="ES",
+            state_name="Espírito Santo",
+            region_name="Alegre",
+            region_names=("Alegre", "Cachoeiro de Itapemirim"),
+        ),
+    )
+    monkeypatch.setattr(
+        autofill_service,
+        "lookup_ibge_population",
+        lambda _config, _municipality_id: 30119,
+    )
+
+    result = autofill_service.autofill_custom_city(city)
+
+    assert result.name == "Guaçuí"
+    assert result.label == "Guaçuí, ES"
+    assert result.state_code == "ES"
+    assert result.state_name == "Espírito Santo"
+    assert result.population_thousands == 30.119

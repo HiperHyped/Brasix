@@ -1046,6 +1046,35 @@
       ],
       "extra_instructions": "",
       "enabled": true
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_40",
+      "preferred_body_type_id": "truck_body_tanque",
+      "prompt_items": [
+        "perfil lateral puro do caminhão",
+        "fundo transparente",
+        "veículo inteiro em preto sólido",
+        "desenho técnico simples",
+        "sem cenário, sem texto e sem sombra",
+        "veiculo de carga brasileiro do tipo bitrem tanque",
+        "porte Super-pesado",
+        "tipo Especial",
+        "eixos estilo bitrem em anexo",
+        "implemento: tanque cilindrico",
+        "usar poucos detalhes",
+        "observacoes importantes: Quero um bitrem com dois tanques",
+        "usar poucos detalhes",
+        "não usar carroceria branca ou cinza",
+        "não usar contorno preto com miolo branco",
+        "não usar perspectiva"
+      ],
+      "reference_truck_type_id": "truck_type_bitrem",
+      "reference_aspects": [
+        "cabine",
+        "estilo"
+      ],
+      "extra_instructions": "",
+      "enabled": true
     }
   ]
 }

@@ -19,6 +19,7 @@
     "provider": "ibge_localidades",
     "provider_label": "IBGE Localidades",
     "path_template": "https://servicodados.ibge.gov.br/api/v1/localidades/estados/{state_code}/municipios",
+    "all_path_template": "https://servicodados.ibge.gov.br/api/v1/localidades/municipios",
     "request_timeout_seconds": 10,
     "user_agent": "Brasix/0.1"
   },

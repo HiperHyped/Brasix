@@ -1,58 +1,87 @@
-# Brasix
+# Brasix v1
 
-Mapa interativo de cidades representativas da producao de commodities do Brasil.
+Brasix v1 e a linha ativa de desenvolvimento do jogo. Aqui ficam as ferramentas de suporte, o runtime consolidado e os catalogos versionados que sustentam mapa, produtos, frota e regras operacionais do Brasix.
 
-O projeto segue a mesma linha estrutural do `RdM`: FastAPI, Jinja2, JSON versionado, JavaScript modular e uma camada separada para grafo de rotas.
+## O Que Ja Existe
 
-## Requisitos
+### Ferramentas principais
 
-- Python 3.12 ou superior
-- Navegador moderno
+- `/editores`: central de acesso das telas mais importantes
+- `/editor/map_v1_1`: autoria do mapa ativo, cidades manuais, nos e rotas
+- `/editor/map-v2`: fluxo avancado de mapa e roteamento
+- `/planner/route`: planejamento de caminho sobre a rede ativa
+- `/editor/products_v3`: editor atual de produtos e informacoes operacionais
+- `/viewer/trucks`: biblioteca de caminhoes
+- `/viewer/truck-product-matrix`: matriz de compatibilidade
+- `/viewer/truck-operations`: editor operacional de frota
+- `/inspector/runtime`: visualizacao tecnica do runtime do jogo
 
-## Instalacao
+### Capacidades das ferramentas de suporte
+
+- mapas persistidos como bundles em `v1/maps`
+- catalogos e configuracoes versionados em `v1/json`
+- runtime consolidado em `v1/app/game`
+- roteamento automatico de rodovias via OSRM
+- autofill de cidades manuais com Nominatim + IBGE
+- autofill operacional de caminhoes
+- autofill operacional de produtos no products v3
+
+### Dados consolidados
+
+- catalogo efetivo de caminhoes composto por base + custom + hidden + edits
+- dados operacionais da frota concentrados em `v1/data/truck/merged_truck_data.json`
+- catalogo operacional de produtos em `v1/json/game/product_operational_catalog.json`
+- validacoes iniciais de runtime expostas em `/api/game/runtime/validation`
+
+## Como Rodar
 
 ```powershell
 python -m pip install -e .[dev]
-```
-
-## Gerando a base de referencia
-
-Os arquivos brutos ficam em `dados/`. Para converter a planilha e o arquivo de icones em JSON:
-
-```powershell
-python scripts\build_reference_data.py
-```
-
-Arquivos gerados:
-
-- `data/commodities.json`
-- `data/cities.json`
-- `data/map_config.json`
-- `data/routes.json`
-
-## Como rodar
-
-```powershell
 python run.py
 ```
 
-Depois abra:
+Depois abra uma das rotas abaixo:
 
-- `http://127.0.0.1:8000/`
+- `http://127.0.0.1:8000/editores`
+- `http://127.0.0.1:8000/editor/map_v1_1`
+- `http://127.0.0.1:8000/editor/map-v2`
+- `http://127.0.0.1:8000/planner/route`
+- `http://127.0.0.1:8000/editor/products_v3`
+- `http://127.0.0.1:8000/viewer/trucks`
+- `http://127.0.0.1:8000/viewer/truck-product-matrix`
+- `http://127.0.0.1:8000/viewer/truck-operations`
+- `http://127.0.0.1:8000/inspector/runtime`
 
 ## Estrutura
 
-- `app/domain`: modelos centrais do projeto
-- `app/services`: carga e preparacao dos dados
-- `app/maptools`: base para rotas e calculo de caminhos
-- `app/ui`: paginas e APIs
-- `data`: JSON pronto para o mapa e para a futura engine de jogo
-- `scripts`: pipeline de importacao
+- `app/ui`: rotas FastAPI, templates e APIs das ferramentas de suporte do jogo
+- `app/services`: carga de dados, roteamento, autofill e integracoes
+- `app/game`: modelos, builder e validadores do runtime
+- `json`: catalogos, layouts, textos de tela e matrizes
+- `maps`: mapas ativos e bundles de autoria
+- `data`: dados operacionais consolidados
+- `scripts`: apoio operacional, incluindo trilha de OSRM local
+- `tests`: cobertura de servicos e integracoes centrais
 
-## Proximo passo natural
+## Improvements Ja Entregues nesta linha
 
-Depois do mapa inicial, a base ideal e:
+- central de editores com navegacao limpa e tema diurno/noturno
+- runtime inspector com visualizacao estruturada do mundo jogavel
+- products v3 como base atual para edicao economica e operacional de produtos
+- truck operations como base atual para dados operacionais da frota
+- matriz produto x caminhao como camada canonica de compatibilidade
+- ampliacao da cobertura do autofill geografico e operacional
 
-1. criar um editor de rotas entre cidades
-2. salvar essas rotas em `data/routes.json`
-3. usar o grafo para contratos, deslocamento e custo logistico
+## O Que Falta
+
+1. consolidar o pacote oficial de mundo jogavel
+2. concluir auditoria e preenchimento da frota operacional
+3. criar motor de custo e frete integrado ao planner
+4. gerar contratos e mercado a partir das matrizes economicas
+5. introduzir empresa, save e simulacao de viagem
+6. abrir a primeira tela jogavel de despacho
+
+## Referencias
+
+- `ROADMAP_JOGO.md`
+- `scripts/osrm/README.md`

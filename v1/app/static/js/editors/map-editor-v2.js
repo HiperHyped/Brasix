@@ -441,7 +441,11 @@ async function generatePreview() {
     state.preview = data;
     renderPreviewCard();
     renderMap();
-    setStatus(messages().preview_ready || messages().idle);
+    setStatus(
+      String(data.engine || "").toLowerCase() === "osrm"
+        ? (messages().preview_ready || messages().idle)
+        : (messages().preview_ready_fallback || messages().preview_ready || messages().idle),
+    );
   } catch (error) {
     state.preview = null;
     renderPreviewCard();
@@ -455,6 +459,7 @@ async function savePreview() {
     return;
   }
   try {
+    const previewEngine = String(state.preview.engine || "").toLowerCase();
     const response = await fetch("/api/editor/map-v2/route-save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -472,7 +477,11 @@ async function savePreview() {
     state.preview = null;
     renderPreviewCard();
     renderMap();
-    setStatus(messages().preview_saved || messages().idle);
+    setStatus(
+      previewEngine === "osrm"
+        ? (messages().preview_saved || messages().idle)
+        : (messages().preview_saved_fallback || messages().preview_saved || messages().idle),
+    );
   } catch (error) {
     setStatus(error?.message || messages().save_error || "Nao foi possivel salvar a rota.");
   }

@@ -3340,7 +3340,7 @@ async function requestAutoRoutePreviewForDraft() {
       || "Nao foi possivel gerar a rota automatica pelo OSRM.",
     );
   }
-  return data.edge;
+  return data;
 }
 
 async function confirmDraftRoute() {
@@ -3364,11 +3364,20 @@ async function confirmDraftRoute() {
         autoRouteUi().route_loading
         || "Consultando o OSRM para gerar a rota automatica...",
       );
-      const edge = await requestAutoRoutePreviewForDraft();
+      const preview = await requestAutoRoutePreviewForDraft();
+      const edge = preview.edge;
+      const routeSavedMessage = String(preview?.engine || "").toLowerCase() === "osrm"
+        ? (
+          autoRouteUi().route_saved
+          || editorState.screen.status_messages.route_saved
+        )
+        : (
+          autoRouteUi().route_saved_fallback
+          || "OSRM indisponivel; a rota foi salva com um tracado auxiliar em linha reta para voce ajustar depois."
+        );
       editorState.routeNetwork.edges.push(edge);
       const saved = await saveRouteNetwork(
-        autoRouteUi().route_saved
-        || editorState.screen.status_messages.route_saved,
+        routeSavedMessage,
       );
       if (!saved) {
         editorState.routeNetwork.edges = editorState.routeNetwork.edges.filter((item) => item.id !== edge.id);
@@ -3380,7 +3389,7 @@ async function confirmDraftRoute() {
       editorState.selectedNodeId = null;
       resetDraft(editorState.draft);
       editorState.draft.activeToolId = "tool_route_draw";
-      setDraftStatus(autoRouteUi().route_saved || editorState.screen.status_messages.route_saved);
+      setDraftStatus(routeSavedMessage);
       renderSelectionPanel();
       renderMap();
       return;

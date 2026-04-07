@@ -289,6 +289,23 @@
       "source_basis": "custom_manual",
       "notes": "Carreta para Carga Viva (Bois, suinos, aves)",
       "is_custom": true
+    },
+    {
+      "id": "truck_type_custom_novo_caminhao_40",
+      "order": 40,
+      "label": "Bitrem Tanque",
+      "short_label": "Bitrem Tanque",
+      "size_tier": "super_pesado",
+      "base_vehicle_kind": "especial",
+      "axle_config": "specialized",
+      "canonical_body_type_ids": [
+        "truck_body_tanque"
+      ],
+      "preferred_body_type_id": "truck_body_tanque",
+      "canonical_sprite_profile_id": "truck_sprite_custom",
+      "source_basis": "custom_manual",
+      "notes": "Quero um bitrem com dois tanques",
+      "is_custom": true
     }
   ]
 }

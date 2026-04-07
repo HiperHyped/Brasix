@@ -4,7 +4,16 @@
   "provider_label": "OSRM",
   "base_url_env": "BRASIX_OSRM_BASE_URL",
   "default_base_url": "https://router.project-osrm.org",
+  "local_base_url": "http://127.0.0.1:5000",
+  "prefer_local_on_public_failure": true,
+  "public_demo_hosts": [
+    "router.project-osrm.org"
+  ],
   "default_profile_id": "driving",
+  "request_retry_attempts": 2,
+  "request_retry_backoff_seconds": 0.75,
+  "linear_fallback_enabled": true,
+  "fallback_engine": "osrm fallback",
   "supported_surface_codes": [
     "double_road",
     "single_road",
@@ -40,6 +49,7 @@
     "manual_only_hint": "Hidrovia e ferrovia continuam manuais por enquanto.",
     "route_loading": "Consultando o OSRM para gerar a rota automatica...",
     "route_saved": "Rota automatica gerada e salva no mapa.",
+    "route_saved_fallback": "OSRM indisponivel; a rota foi salva com um tracado auxiliar em linha reta para voce ajustar depois.",
     "route_error": "Nao foi possivel gerar a rota automatica. Continue desenhando manualmente."
   }
 }

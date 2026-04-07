@@ -1244,6 +1244,14 @@ def create_app() -> FastAPI:
             context={"page_title": "Brasix | Cidades e Commodities"},
         )
 
+    @app.get("/editores", response_class=HTMLResponse, include_in_schema=False)
+    async def editors_hub(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="editors_hub.html",
+            context={"page_title": "Brasix | Central de editores"},
+        )
+
     @app.get("/editor/map", response_class=HTMLResponse, include_in_schema=False)
     async def map_editor(request: Request) -> HTMLResponse:
         active_map = load_active_map_bundle()

@@ -33,6 +33,9 @@ class MunicipalityLookupRecord:
     municipality_id: str
     name: str
     state_code: str
+    state_name: str = ""
+    region_name: str = ""
+    region_names: tuple[str, ...] = ()
 
 
 BRAZIL_STATE_CODE_BY_NAME = {
@@ -64,6 +67,8 @@ BRAZIL_STATE_CODE_BY_NAME = {
     "sergipe": "SE",
     "tocantins": "TO",
 }
+
+BRAZIL_STATE_CODES = set(BRAZIL_STATE_CODE_BY_NAME.values())
 
 
 def _emit_autofill_log(event: str, **payload: Any) -> None:
@@ -111,6 +116,11 @@ def _normalized_label(name: str, state_code: str) -> str:
     trimmed_name = str(name or "").strip() or "Nova cidade"
     trimmed_state_code = str(state_code or "").strip().upper()[:3] or "ZZ"
     return f"{trimmed_name}, {trimmed_state_code}"
+
+
+def _normalized_state_code(value: Any) -> str:
+    code = str(value or "").strip().upper()
+    return code if code in BRAZIL_STATE_CODES else ""
 
 
 def _decode_json_payload(body: bytes, content_encoding: str | None = None) -> Any:
@@ -186,15 +196,15 @@ def reverse_geocode_city_candidate(config: dict[str, Any], city: CustomCityRecor
 
     city_name = _pick_address_city_name(address, payload)
     state_name = str(address.get("state") or "").strip()
-    state_code = _extract_state_code_from_address(address, state_name) or city.state_code
+    state_code = _normalized_state_code(_extract_state_code_from_address(address, state_name)) or _normalized_state_code(city.state_code)
     region_name = (
         str(address.get("state_district") or "").strip()
         or str(address.get("municipality") or "").strip()
         or str(address.get("county") or "").strip()
         or f"Região de {city_name}"
     )
-    if not city_name or not state_name:
-        raise CityAutofillError("O Nominatim nao conseguiu identificar municipio e estado para este ponto.")
+    if not city_name:
+        raise CityAutofillError("O Nominatim nao conseguiu identificar o municipio para este ponto.")
 
     candidate = ReverseGeocoderCandidate(
         name=city_name,
@@ -229,13 +239,115 @@ def _municipality_id_from_record(record: dict[str, Any]) -> str:
     return ""
 
 
-def lookup_ibge_municipality(config: dict[str, Any], city_name: str, state_code: str) -> MunicipalityLookupRecord:
-    municipality_config = dict(config.get("municipality_lookup") or {})
-    path_template = str(
-        municipality_config.get("path_template")
-        or "https://servicodados.ibge.gov.br/api/v1/localidades/estados/{state_code}/municipios"
+def _nested_mapping_value(record: dict[str, Any], path: tuple[str, ...]) -> dict[str, Any] | None:
+    current: Any = record
+    for key in path:
+        if not isinstance(current, dict):
+            return None
+        current = current.get(key)
+    return current if isinstance(current, dict) else None
+
+
+def _municipality_state_from_record(record: dict[str, Any]) -> tuple[str, str]:
+    for path in (
+        ("regiao-imediata", "regiao-intermediaria", "UF"),
+        ("microrregiao", "mesorregiao", "UF"),
+    ):
+        uf_payload = _nested_mapping_value(record, path)
+        if not uf_payload:
+            continue
+        state_code = _normalized_state_code(uf_payload.get("sigla"))
+        state_name = str(uf_payload.get("nome") or "").strip()
+        if state_code or state_name:
+            return state_code, state_name
+    return "", ""
+
+
+def _municipality_region_names_from_record(record: dict[str, Any]) -> tuple[str, ...]:
+    raw_values = [
+        str((_nested_mapping_value(record, ("regiao-imediata",)) or {}).get("nome") or "").strip(),
+        str((_nested_mapping_value(record, ("regiao-imediata", "regiao-intermediaria")) or {}).get("nome") or "").strip(),
+        str((_nested_mapping_value(record, ("microrregiao",)) or {}).get("nome") or "").strip(),
+        str((_nested_mapping_value(record, ("microrregiao", "mesorregiao")) or {}).get("nome") or "").strip(),
+    ]
+    seen: set[str] = set()
+    normalized: list[str] = []
+    for value in raw_values:
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        normalized.append(value)
+    return tuple(normalized)
+
+
+def _resolve_municipality_candidate(
+    candidates: list[MunicipalityLookupRecord],
+    *,
+    city_name: str,
+    state_code: str,
+    region_name: str,
+) -> MunicipalityLookupRecord | None:
+    if not candidates:
+        return None
+    if len(candidates) == 1:
+        return candidates[0]
+
+    normalized_region = _normalized_key(region_name)
+    narrowed = list(candidates)
+    if normalized_region:
+        region_matches = [
+            candidate
+            for candidate in narrowed
+            if any(
+                _normalized_key(region_value)
+                and (
+                    normalized_region in _normalized_key(region_value)
+                    or _normalized_key(region_value) in normalized_region
+                )
+                for region_value in candidate.region_names
+            )
+        ]
+        if len(region_matches) == 1:
+            return region_matches[0]
+        if region_matches:
+            narrowed = region_matches
+
+    normalized_state = _normalized_state_code(state_code)
+    if normalized_state:
+        state_matches = [candidate for candidate in narrowed if candidate.state_code == normalized_state]
+        if len(state_matches) == 1:
+            return state_matches[0]
+        if state_matches:
+            narrowed = state_matches
+
+    if len(narrowed) == 1:
+        return narrowed[0]
+
+    options = ", ".join(sorted({f"{candidate.name}/{candidate.state_code or '??'}" for candidate in narrowed}))
+    raise CityAutofillError(
+        f"O IBGE encontrou mais de um municipio para '{city_name}'. Ajuste o ponto manualmente ou informe uma UF valida. Opcoes: {options}."
     )
-    url = path_template.format(state_code=state_code)
+
+
+def lookup_ibge_municipality(
+    config: dict[str, Any],
+    city_name: str,
+    state_code: str,
+    region_name: str = "",
+) -> MunicipalityLookupRecord:
+    municipality_config = dict(config.get("municipality_lookup") or {})
+    normalized_state_code = _normalized_state_code(state_code)
+    if normalized_state_code:
+        path_template = str(
+            municipality_config.get("path_template")
+            or "https://servicodados.ibge.gov.br/api/v1/localidades/estados/{state_code}/municipios"
+        )
+        url = path_template.format(state_code=normalized_state_code)
+    else:
+        url = str(
+            municipality_config.get("all_path_template")
+            or "https://servicodados.ibge.gov.br/api/v1/localidades/municipios"
+        )
     payload = _http_json(
         url,
         headers={
@@ -247,8 +359,8 @@ def lookup_ibge_municipality(config: dict[str, Any], city_name: str, state_code:
     )
 
     normalized_target = _normalized_key(city_name)
-    exact_match: MunicipalityLookupRecord | None = None
-    fuzzy_match: MunicipalityLookupRecord | None = None
+    exact_matches: list[MunicipalityLookupRecord] = []
+    fuzzy_matches: list[MunicipalityLookupRecord] = []
     for record in payload if isinstance(payload, list) else []:
         if not isinstance(record, dict):
             continue
@@ -257,25 +369,38 @@ def lookup_ibge_municipality(config: dict[str, Any], city_name: str, state_code:
         if not record_name or not record_id:
             continue
         normalized_record_name = _normalized_key(record_name)
+        record_state_code, record_state_name = _municipality_state_from_record(record)
+        if not record_state_code:
+            record_state_code = normalized_state_code
+        region_names = _municipality_region_names_from_record(record)
         candidate = MunicipalityLookupRecord(
             municipality_id=record_id,
             name=record_name,
-            state_code=state_code,
+            state_code=record_state_code,
+            state_name=record_state_name,
+            region_name=region_names[0] if region_names else "",
+            region_names=region_names,
         )
         if normalized_record_name == normalized_target:
-            exact_match = candidate
-            break
+            exact_matches.append(candidate)
+            continue
         if normalized_target in normalized_record_name or normalized_record_name in normalized_target:
-            fuzzy_match = fuzzy_match or candidate
+            fuzzy_matches.append(candidate)
 
-    resolved = exact_match or fuzzy_match
+    resolved = _resolve_municipality_candidate(
+        exact_matches or fuzzy_matches,
+        city_name=city_name,
+        state_code=normalized_state_code,
+        region_name=region_name,
+    )
     if resolved is None:
-        raise CityAutofillError(f"O IBGE nao encontrou o municipio '{city_name}/{state_code}'.")
+        state_hint = normalized_state_code or "BR"
+        raise CityAutofillError(f"O IBGE nao encontrou o municipio '{city_name}/{state_hint}'.")
 
     _emit_autofill_log(
         "ibge_municipality_match",
         city_name=city_name,
-        state_code=state_code,
+        state_code=resolved.state_code,
         municipality_id=resolved.municipality_id,
         municipality_name=resolved.name,
     )
@@ -346,8 +471,30 @@ def autofill_custom_city(city: CustomCityRecord) -> CustomCityRecord:
         raise CityAutofillError("O autofill de cidades esta desativado no JSON do editor.")
 
     reverse_candidate = reverse_geocode_city_candidate(config, city)
-    municipality = lookup_ibge_municipality(config, reverse_candidate.name, reverse_candidate.state_code)
+    municipality = lookup_ibge_municipality(
+        config,
+        reverse_candidate.name,
+        reverse_candidate.state_code,
+        reverse_candidate.region_name,
+    )
     population = lookup_ibge_population(config, municipality.municipality_id)
+
+    resolved_state_code = (
+        _normalized_state_code(reverse_candidate.state_code)
+        or _normalized_state_code(municipality.state_code)
+        or _normalized_state_code(city.state_code)
+        or "ZZ"
+    )
+    resolved_state_name = (
+        str(reverse_candidate.state_name or "").strip()
+        or str(municipality.state_name or "").strip()
+        or str(city.state_name or "").strip()
+    )
+    resolved_region_name = (
+        str(reverse_candidate.region_name or "").strip()
+        or str(municipality.region_name or "").strip()
+        or str(city.source_region_name or "").strip()
+    )
 
     population_thousands = float(city.population_thousands)
     if population is not None:
@@ -364,10 +511,10 @@ def autofill_custom_city(city: CustomCityRecord) -> CustomCityRecord:
     return city.model_copy(
         update={
             "name": reverse_candidate.name,
-            "label": _normalized_label(reverse_candidate.name, reverse_candidate.state_code),
-            "state_code": reverse_candidate.state_code,
-            "state_name": reverse_candidate.state_name,
-            "source_region_name": reverse_candidate.region_name,
+            "label": _normalized_label(reverse_candidate.name, resolved_state_code),
+            "state_code": resolved_state_code,
+            "state_name": resolved_state_name,
+            "source_region_name": resolved_region_name,
             "population_thousands": population_thousands,
             "autofill": CustomCityAutofillRecord(
                 provider=str(config.get("provider_label") or "Nominatim + IBGE"),

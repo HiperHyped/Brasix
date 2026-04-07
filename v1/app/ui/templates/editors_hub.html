@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script>
+  (function applyEditorsHubThemeEarly() {
+    const root = document.documentElement;
+    root.classList.add("editors-hub-page");
+    try {
+      root.dataset.editorTheme = window.localStorage.getItem("brasix:v1:editors-hub-theme") === "night" ? "night" : "day";
+    } catch (_error) {
+      root.dataset.editorTheme = "day";
+    }
+  })();
+</script>
+{% endblock %}
+
+{% block body %}
+<main class="editor-hub-shell">
+  <header class="topbar editor-hub-topbar">
+    <div class="editor-hub-topbar-left">
+      <div class="brand-lockup">
+        <h1>Brasix</h1>
+        <span class="brand-divider"></span>
+        <p>Editores</p>
+      </div>
+    </div>
+
+    <div class="editor-header-actions" aria-label="Acoes da central de editores">
+      <button id="editors-hub-theme-toggle" class="editor-header-action" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        <span>Modo noturno</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="editor-hub-main" aria-label="Central de editores do Brasix">
+    <section class="editor-hub-grid" aria-label="Lista de editores e telas principais">
+      <a class="editor-card editor-hub-link" href="/editor/map_v1_1" target="_blank" rel="noopener noreferrer" style="--hub-accent: #2d5a27; --hub-accent-soft: rgba(45, 90, 39, 0.16); --hub-accent-strong: #23471f;">
+        <div class="editor-hub-card-top">
+          <span class="editor-hub-icon-shell">
+            <span class="material-symbols-outlined" aria-hidden="true">map</span>
+          </span>
+          <span class="editor-hub-kind">Mapa</span>
+        </div>
+        <div class="editor-hub-card-copy">
+          <h3>Editor de mapa</h3>
+          <p>Malha principal, cidades, nós, rotas e organização espacial do mapa ativo.</p>
+        </div>
+        <div class="editor-hub-card-footer">
+          <span class="editor-hub-path">/editor/map_v1_1</span>
+          <span class="editor-hub-open">Nova guia</span>
+        </div>
+      </a>
+
+      <a class="editor-card editor-hub-link" href="/planner/route" target="_blank" rel="noopener noreferrer" style="--hub-accent: #8c4f10; --hub-accent-soft: rgba(140, 79, 16, 0.16); --hub-accent-strong: #6e3d0b;">
+        <div class="editor-hub-card-top">
+          <span class="editor-hub-icon-shell">
+            <span class="material-symbols-outlined" aria-hidden="true">alt_route</span>
+          </span>
+          <span class="editor-hub-kind">Rotas</span>
+        </div>
+        <div class="editor-hub-card-copy">
+          <h3>Editor de rota</h3>
+          <p>Planejamento entre cidades, análise de trajeto e leitura da rede logística do mapa.</p>
+        </div>
+        <div class="editor-hub-card-footer">
+          <span class="editor-hub-path">/planner/route</span>
+          <span class="editor-hub-open">Nova guia</span>
+        </div>
+      </a>
+
+      <a class="editor-card editor-hub-link" href="/editor/products_v3" target="_blank" rel="noopener noreferrer" style="--hub-accent: #4f8593; --hub-accent-soft: rgba(79, 133, 147, 0.18); --hub-accent-strong: #38636f;">
+        <div class="editor-hub-card-top">
+          <span class="editor-hub-icon-shell">
+            <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+          </span>
+          <span class="editor-hub-kind">Produtos</span>
+        </div>
+        <div class="editor-hub-card-copy">
+          <h3>Editor de produtos</h3>
+          <p>Cadastro mestre, matriz de oferta e demanda, dados operacionais e sazonalidade.</p>
+        </div>
+        <div class="editor-hub-card-footer">
+          <span class="editor-hub-path">/editor/products_v3</span>
+          <span class="editor-hub-open">Nova guia</span>
+        </div>
+      </a>
+
+      <a class="editor-card editor-hub-link" href="/viewer/trucks" target="_blank" rel="noopener noreferrer" style="--hub-accent: #5f6558; --hub-accent-soft: rgba(95, 101, 88, 0.18); --hub-accent-strong: #42473d;">
+        <div class="editor-hub-card-top">
+          <span class="editor-hub-icon-shell">
+            <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+          </span>
+          <span class="editor-hub-kind">Frota</span>
+        </div>
+        <div class="editor-hub-card-copy">
+          <h3>Editor de caminhões</h3>
+          <p>Biblioteca visual da frota, famílias, estruturas, carrocerias e catálogo de modelos.</p>
+        </div>
+        <div class="editor-hub-card-footer">
+          <span class="editor-hub-path">/viewer/trucks</span>
+          <span class="editor-hub-open">Nova guia</span>
+        </div>
+      </a>
+
+      <a class="editor-card editor-hub-link" href="/viewer/truck-product-matrix" target="_blank" rel="noopener noreferrer" style="--hub-accent: #8c4f10; --hub-accent-soft: rgba(140, 79, 16, 0.15); --hub-accent-strong: #6f3f0d;">
+        <div class="editor-hub-card-top">
+          <span class="editor-hub-icon-shell">
+            <span class="material-symbols-outlined" aria-hidden="true">table_chart</span>
+          </span>
+          <span class="editor-hub-kind">Compatibilidade</span>
+        </div>
+        <div class="editor-hub-card-copy">
+          <h3>Editor de Matriz caminhões x produtos</h3>
+          <p>Relações entre implementos, classes de caminhão e grupos de produtos transportáveis.</p>
+        </div>
+        <div class="editor-hub-card-footer">
+          <span class="editor-hub-path">/viewer/truck-product-matrix</span>
+          <span class="editor-hub-open">Nova guia</span>
+        </div>
+      </a>
+
+      <a class="editor-card editor-hub-link" href="/viewer/truck-operations" target="_blank" rel="noopener noreferrer" style="--hub-accent: #2d5a27; --hub-accent-soft: rgba(45, 90, 39, 0.14); --hub-accent-strong: #244a20;">
+        <div class="editor-hub-card-top">
+          <span class="editor-hub-icon-shell">
+            <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+          </span>
+          <span class="editor-hub-kind">Operacional</span>
+        </div>
+        <div class="editor-hub-card-copy">
+          <h3>Editor operacional de caminhões</h3>
+          <p>Custos, desempenho, consumo, pneus, manutenção e parâmetros operacionais da frota.</p>
+        </div>
+        <div class="editor-hub-card-footer">
+          <span class="editor-hub-path">/viewer/truck-operations</span>
+          <span class="editor-hub-open">Nova guia</span>
+        </div>
+      </a>
+    </section>
+  </section>
+</main>
+
+<script>
+  (function setupEditorsHubThemeToggle() {
+    const THEME_KEY = "brasix:v1:editors-hub-theme";
+    const root = document.documentElement;
+    const toggleButton = document.getElementById("editors-hub-theme-toggle");
+
+    function restoreTheme() {
+      try {
+        return window.localStorage.getItem(THEME_KEY) === "night" ? "night" : "day";
+      } catch (_error) {
+        return "day";
+      }
+    }
+
+    function persistTheme(theme) {
+      try {
+        window.localStorage.setItem(THEME_KEY, theme);
+      } catch (_error) {
+        // Persistencia opcional.
+      }
+    }
+
+    function renderToggle(theme) {
+      if (!toggleButton) {
+        return;
+      }
+      const nextThemeLabel = theme === "night" ? "Modo diurno" : "Modo noturno";
+      const nextThemeIcon = theme === "night" ? "light_mode" : "dark_mode";
+      toggleButton.innerHTML = "<span class=\"material-symbols-outlined\" aria-hidden=\"true\">" + nextThemeIcon + "</span><span>" + nextThemeLabel + "</span>";
+    }
+
+    function applyTheme(theme) {
+      const nextTheme = theme === "night" ? "night" : "day";
+      root.dataset.editorTheme = nextTheme;
+      persistTheme(nextTheme);
+      renderToggle(nextTheme);
+    }
+
+    if (toggleButton) {
+      toggleButton.addEventListener("click", () => {
+        applyTheme(root.dataset.editorTheme === "night" ? "day" : "night");
+      });
+    }
+
+    applyTheme(restoreTheme());
+  })();
+</script>
+{% endblock %}
