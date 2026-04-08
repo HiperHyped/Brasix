@@ -760,6 +760,17 @@ class ProductFieldLayerSaveRequest(BaseModel):
     updated_at: str | None = None
 
 
+class DieselCostSaveRequest(BaseModel):
+    map_id: str = Field(min_length=1)
+    observations: list[dict[str, Any]] = Field(default_factory=list)
+    overrides: list[dict[str, Any]] = Field(default_factory=list)
+    updated_at: str | None = None
+
+
+class DieselCostSaveResponse(BaseModel):
+    document: dict[str, Any]
+
+
 class ProductOperationalSaveRequest(BaseModel):
     product_id: str = Field(min_length=1)
     unit: str | None = None

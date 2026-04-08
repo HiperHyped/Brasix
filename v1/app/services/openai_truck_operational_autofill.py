@@ -108,6 +108,10 @@ def _schema() -> dict[str, Any]:
             "overall_length_m": {"type": ["number", "null"]},
             "overall_width_m": {"type": ["number", "null"]},
             "overall_height_m": {"type": ["number", "null"]},
+            "energy_source": {"type": ["string", "null"], "enum": ["diesel", "electric", "gas", "hybrid", "other", None]},
+            "consumption_unit": {"type": ["string", "null"], "enum": ["l_per_km", "kwh_per_km", "m3_per_km", "kg_per_km", None]},
+            "empty_consumption_per_km": {"type": ["number", "null"]},
+            "loaded_consumption_per_km": {"type": ["number", "null"]},
             "truck_price_brl": {"type": ["number", "null"]},
             "implement_cost_brl": {"type": ["number", "null"]},
             "base_fixed_cost_brl_per_day": {"type": ["number", "null"]},
@@ -129,6 +133,10 @@ def _schema() -> dict[str, Any]:
             "overall_length_m",
             "overall_width_m",
             "overall_height_m",
+            "energy_source",
+            "consumption_unit",
+            "empty_consumption_per_km",
+            "loaded_consumption_per_km",
             "truck_price_brl",
             "implement_cost_brl",
             "base_fixed_cost_brl_per_day",
@@ -156,7 +164,7 @@ def build_truck_operational_autofill_prompt(
 
     return f"""Você é um pesquisador de dados operacionais de frota para o projeto Brasix.
 
-Sua tarefa é pesquisar somente os dados de dimensões e custos do caminhão selecionado abaixo e devolver apenas um JSON válido, sem texto extra.
+Sua tarefa é pesquisar somente os dados de dimensões, consumo e custos do caminhão selecionado abaixo e devolver apenas um JSON válido, sem texto extra.
 
 Você NÃO tem acesso direto ao workspace do VS Code. Use apenas o contexto estruturado enviado abaixo e, quando isso não for suficiente, complemente com pesquisa web em fontes públicas confiáveis.
 
@@ -175,15 +183,16 @@ current_project_context: {current_notes}
 Regras obrigatórias:
 1. Considere primeiro o contexto estruturado já fornecido para este caminhão.
 2. Se o contexto fornecido não for suficiente, pesquise na web em fontes públicas confiáveis.
-3. Preencha somente estes campos: payload_weight_kg, cargo_volume_m3, overall_length_m, overall_width_m, overall_height_m, truck_price_brl, implement_cost_brl, base_fixed_cost_brl_per_day, base_variable_cost_brl_per_km, confidence, research_basis, source_urls, notes.
+3. Preencha somente estes campos: payload_weight_kg, cargo_volume_m3, overall_length_m, overall_width_m, overall_height_m, energy_source, consumption_unit, empty_consumption_per_km, loaded_consumption_per_km, truck_price_brl, implement_cost_brl, base_fixed_cost_brl_per_day, base_variable_cost_brl_per_km, confidence, research_basis, source_urls, notes.
 4. Considere sempre o tipo de caminhão selecionado e o implemento preferido ao estimar implement_cost_brl.
 5. Se encontrar valor exato em fonte confiável, use esse valor.
 6. Se houver apenas faixa, média de mercado ou aproximação técnica, escolha um valor representativo do mercado brasileiro atual e explique a decisão em notes.
 7. Não invente precisão falsa. Se não houver evidência suficiente para um campo, retorne null nesse campo e explique a lacuna em notes.
 8. Em confidence use apenas: low, medium ou high.
 9. Em research_basis use apenas: manufacturer_sheet, market_estimate ou derived_estimate.
-10. Em source_urls retorne somente URLs realmente usadas.
-11. Responda somente com JSON válido neste formato:
+10. Use energy_source e consumption_unit coerentes entre si. Para caminhões a diesel, prefira consumption_unit = l_per_km.
+11. Em source_urls retorne somente URLs realmente usadas.
+12. Responda somente com JSON válido neste formato:
 
 {{
   "payload_weight_kg": number ou null,
@@ -191,6 +200,10 @@ Regras obrigatórias:
   "overall_length_m": number ou null,
   "overall_width_m": number ou null,
   "overall_height_m": number ou null,
+    "energy_source": "diesel|electric|gas|hybrid|other" ou null,
+    "consumption_unit": "l_per_km|kwh_per_km|m3_per_km|kg_per_km" ou null,
+    "empty_consumption_per_km": number ou null,
+    "loaded_consumption_per_km": number ou null,
   "truck_price_brl": number ou null,
   "implement_cost_brl": number ou null,
   "base_fixed_cost_brl_per_day": number ou null,
@@ -275,6 +288,12 @@ def _string_list(value: Any) -> list[str]:
 
 
 def _normalize_payload(raw_payload: dict[str, Any]) -> dict[str, Any]:
+    energy_source = str(raw_payload.get("energy_source") or "").strip() or None
+    if energy_source not in {None, "diesel", "electric", "gas", "hybrid", "other"}:
+        energy_source = None
+    consumption_unit = str(raw_payload.get("consumption_unit") or "").strip() or None
+    if consumption_unit not in {None, "l_per_km", "kwh_per_km", "m3_per_km", "kg_per_km"}:
+        consumption_unit = None
     confidence = str(raw_payload.get("confidence") or "").strip() or None
     if confidence not in {None, "low", "medium", "high"}:
         confidence = None
@@ -287,6 +306,10 @@ def _normalize_payload(raw_payload: dict[str, Any]) -> dict[str, Any]:
         "overall_length_m": _optional_number(raw_payload.get("overall_length_m")),
         "overall_width_m": _optional_number(raw_payload.get("overall_width_m")),
         "overall_height_m": _optional_number(raw_payload.get("overall_height_m")),
+        "energy_source": energy_source,
+        "consumption_unit": consumption_unit,
+        "empty_consumption_per_km": _optional_number(raw_payload.get("empty_consumption_per_km")),
+        "loaded_consumption_per_km": _optional_number(raw_payload.get("loaded_consumption_per_km")),
         "truck_price_brl": _optional_number(raw_payload.get("truck_price_brl")),
         "implement_cost_brl": _optional_number(raw_payload.get("implement_cost_brl")),
         "base_fixed_cost_brl_per_day": _optional_number(raw_payload.get("base_fixed_cost_brl_per_day")),

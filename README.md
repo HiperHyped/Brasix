@@ -11,6 +11,7 @@ Hoje o projeto ja possui um conjunto funcional de ferramentas de suporte ao dese
 - central de navegacao em `/editores`
 - editor de mapa v1.1 em `/editor/map_v1_1`
 - editor de mapa v2 em `/editor/map-v2`
+- editor de fretes em `/editor/fretes`
 - planejador de rotas em `/planner/route`
 - editores de produtos v1, v2 e v3
 - biblioteca de caminhoes em `/viewer/trucks`
@@ -39,6 +40,7 @@ Hoje o projeto ja possui um conjunto funcional de ferramentas de suporte ao dese
 
 - linha evolutiva de editores `products`, `products_v1`, `products_v2` e `products_v3`
 - products v3 reorganizado em colunas fixas de detalhes, informacoes e criacao
+- editor de fretes para gerar, calibrar e visualizar fretes representativos a partir das matrizes de oferta e demanda
 - catalogo operacional de produtos em `v1/json/game/product_operational_catalog.json`
 - autosave e autofill assistido para dados operacionais e sazonalidade
 
@@ -60,8 +62,8 @@ Os proximos passos principais ja estao claros:
 
 1. concluir a consolidacao do runtime unico do jogo
 2. fechar a cobertura operacional da frota com restricoes, tempos e auditoria final dos dados
-3. ligar rota, frota e produto a um motor de custo e frete
-4. gerar mercado, clientes e contratos a partir da economia editada
+3. ligar rota, frota, produto e fretes a um motor de custo e frete
+4. transformar os fretes gerados em mercado, clientes e contratos jogaveis
 5. introduzir empresa, caixa, disponibilidade e save do jogador
 6. abrir a primeira tela jogavel de despacho e simulacao
 
@@ -81,6 +83,7 @@ Depois abra:
 
 - `http://127.0.0.1:8000/editores`
 - `http://127.0.0.1:8000/editor/map_v1_1`
+- `http://127.0.0.1:8000/editor/fretes`
 - `http://127.0.0.1:8000/editor/products_v3`
 - `http://127.0.0.1:8000/viewer/truck-operations`
 - `http://127.0.0.1:8000/inspector/runtime`

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script>
+  (function applyDieselEditorThemeEarly() {
+    const root = document.documentElement;
+    root.classList.add("diesel-editor-page");
+    try {
+      root.dataset.editorTheme = window.localStorage.getItem("brasix:v1:diesel-editor-theme") === "night" ? "night" : "day";
+    } catch (_error) {
+      root.dataset.editorTheme = "day";
+    }
+  })();
+</script>
+{% endblock %}
+
+{% block body %}
+<main class="truck-gallery-shell flow-editor-shell diesel-editor-shell">
+  <header class="topbar truck-gallery-topbar">
+    <div class="truck-gallery-topbar-left">
+      <div class="brand-lockup">
+        <h1>Brasix</h1>
+        <span class="brand-divider"></span>
+        <p>Editor de Diesel</p>
+      </div>
+    </div>
+
+    <div id="diesel-editor-header-badges" class="editor-header-badges" aria-label="Estado do editor de Diesel"></div>
+
+    <div class="editor-header-actions" aria-label="Acoes do editor de Diesel">
+      <button id="diesel-editor-theme-toggle" class="secondary-button" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        <span>Modo noturno</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="truck-gallery-grid flow-editor-grid diesel-editor-grid">
+    <aside class="editor-card truck-gallery-card flow-editor-column diesel-editor-column diesel-editor-cities-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>CIDADES</span>
+        <div id="diesel-editor-cities-summary" class="truck-gallery-summary"></div>
+      </div>
+
+      <div class="truck-gallery-filter-form diesel-editor-filter-form">
+        <label class="field">
+          <span>Buscar cidade</span>
+          <input id="diesel-editor-search" class="editor-input truck-gallery-text-input" type="search" placeholder="Goiania, Cuiaba, Belem" />
+        </label>
+
+        <label class="field">
+          <span>UF</span>
+          <div class="select-shell">
+            <select id="diesel-editor-state-filter" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+      </div>
+
+      <div id="diesel-editor-cities-list" class="truck-gallery-list diesel-editor-city-list" aria-label="Lista de cidades"></div>
+    </aside>
+
+    <section class="editor-card truck-gallery-card flow-editor-column diesel-editor-column diesel-editor-map-column">
+      <div class="flow-editor-map-body diesel-editor-map-body">
+        <div id="diesel-editor-mode-toggle" class="flow-editor-mode-toggle" role="group" aria-label="Camada de Diesel no mapa">
+          <button class="flow-editor-mode-button" type="button" data-mode="observed">Observado</button>
+          <button class="flow-editor-mode-button" type="button" data-mode="estimated">Estimado</button>
+          <button class="flow-editor-mode-button is-active" type="button" data-mode="final">Final</button>
+        </div>
+
+        <div class="map-frame product-editor-map-frame flow-editor-map-frame diesel-editor-map-frame">
+          <div id="diesel-editor-map-stage" class="map-stage flow-editor-map-stage" aria-label="Mapa de Diesel do mapa ativo"></div>
+          <div class="flow-editor-map-overlay flow-editor-map-overlay-top">
+            <strong id="diesel-editor-map-overlay-title">Final</strong>
+          </div>
+        </div>
+
+        <div id="diesel-editor-metrics" class="flow-editor-funnel-grid diesel-editor-metrics-grid" aria-label="Resumo do Diesel"></div>
+      </div>
+    </section>
+
+    <aside class="editor-card truck-gallery-card flow-editor-column diesel-editor-column diesel-editor-controls-column">
+      <div class="truck-operations-panel-head">
+        <span>AJUSTES</span>
+      </div>
+
+      <div id="diesel-editor-controls-panel" class="truck-operations-side-panel">
+        <section class="truck-operations-section-box">
+          <p class="truck-operations-stack-label">Cidade</p>
+          <div id="diesel-editor-city-summary"></div>
+        </section>
+
+        <section class="truck-operations-section-box">
+          <p class="truck-operations-stack-label">Observado</p>
+          <label class="truck-operations-choice">
+            <span>Diesel</span>
+            <input id="diesel-editor-observed-input" class="editor-input" type="number" min="0" step="0.001" inputmode="decimal" />
+          </label>
+          <div class="flow-editor-action-row">
+            <button id="diesel-editor-apply-observed" class="primary-button" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">push_pin</span>
+              <span>Fixar</span>
+            </button>
+            <button id="diesel-editor-clear-observed" class="secondary-button" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">close</span>
+              <span>Limpar</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="truck-operations-section-box">
+          <p class="truck-operations-stack-label">Override final</p>
+          <label class="truck-operations-choice">
+            <span>Diesel</span>
+            <input id="diesel-editor-override-input" class="editor-input" type="number" min="0" step="0.001" inputmode="decimal" />
+          </label>
+          <div class="flow-editor-action-row">
+            <button id="diesel-editor-apply-override" class="primary-button" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">edit_location_alt</span>
+              <span>Fixar</span>
+            </button>
+            <button id="diesel-editor-clear-override" class="secondary-button" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+              <span>Limpar</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="truck-operations-section-box">
+          <p class="truck-operations-stack-label">Estado</p>
+          <label class="truck-operations-choice">
+            <span>UF</span>
+            <div class="select-shell">
+              <select id="diesel-editor-batch-state" class="editor-input"></select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+          <label class="truck-operations-choice">
+            <span>Modo</span>
+            <div class="select-shell">
+              <select id="diesel-editor-batch-mode" class="editor-input">
+                <option value="delta">Delta</option>
+                <option value="factor">Fator</option>
+              </select>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </label>
+          <label class="truck-operations-choice">
+            <span>Valor</span>
+            <input id="diesel-editor-batch-value" class="editor-input" type="number" step="0.001" inputmode="decimal" value="0.100" />
+          </label>
+          <div id="diesel-editor-state-summary"></div>
+          <div class="flow-editor-action-row">
+            <button id="diesel-editor-apply-state" class="primary-button" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">area_chart</span>
+              <span>Aplicar</span>
+            </button>
+            <button id="diesel-editor-clear-state" class="secondary-button" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">ink_eraser</span>
+              <span>Limpar UF</span>
+            </button>
+          </div>
+        </section>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<script type="module">
+  const dieselEditorModuleUrl = new URL("{{ request.url_for('static', path='js/diesel-cost-editor.js') }}", window.location.href);
+  dieselEditorModuleUrl.searchParams.set("v", "20260407-diesel-editor-2");
+
+  function showDieselEditorLoadError(error) {
+    const target = document.getElementById("diesel-editor-cities-list") || document.getElementById("diesel-editor-city-summary");
+    if (!target) {
+      return;
+    }
+    const wrapper = document.createElement("div");
+    wrapper.className = "truck-gallery-empty";
+    wrapper.textContent = String(error?.message || error || "Falha ao carregar o editor de Diesel.");
+    target.replaceChildren(wrapper);
+    console.error("Brasix Diesel editor load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showDieselEditorLoadError(event.reason);
+  });
+
+  import(dieselEditorModuleUrl.href).catch(showDieselEditorLoadError);
+</script>
+{% endblock %}

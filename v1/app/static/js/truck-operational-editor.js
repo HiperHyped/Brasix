@@ -972,6 +972,25 @@ function inputChoiceMarkup(field, label, value, { type = "text", step = "any", p
   `;
 }
 
+function selectChoiceMarkup(field, label, value, options) {
+  return `
+    <label class="truck-operations-choice is-editable">
+      <span>${escapeHtml(label)}</span>
+      <div class="select-shell">
+        <select class="editor-input" data-operational-field="${escapeHtml(field)}">
+          ${optionMarkup(options, String(value || ""))}
+        </select>
+        <span class="material-symbols-outlined">expand_more</span>
+      </div>
+    </label>
+  `;
+}
+
+function consumptionUnitLabel(unitId) {
+  const option = CONSUMPTION_UNIT_OPTIONS.find((item) => item.id === String(unitId || ""));
+  return option?.label || "L/km";
+}
+
 function summaryPanelMarkup(type, draft, entry) {
   const familyLabels = familiesForType(type.id).map((family) => family.label).filter(Boolean).join(", ") || "-";
   const preferredBodyLabel = state.bodiesById[type.preferred_body_type_id]?.label || compatibleBodySummary(type);
@@ -1008,6 +1027,7 @@ function sectionBoxMarkup(title, innerMarkup) {
 
 function informationPanelMarkup(typeId, draft) {
   const autofillPending = state.pendingAutofillTypeId === typeId;
+  const unitLabel = consumptionUnitLabel(draft.consumption_unit);
   return `
     <button class="editor-header-action truck-operations-ai-button" type="button" data-detail-action="generate-ai" ${autofillPending ? "disabled" : ""}>
       <span class="material-symbols-outlined">auto_awesome</span>
@@ -1021,6 +1041,15 @@ function informationPanelMarkup(typeId, draft) {
         inputChoiceMarkup("overall_length_m", "Comprimento (m)", draft.overall_length_m, { type: "number", step: "0.01" }),
         inputChoiceMarkup("overall_width_m", "Largura (m)", draft.overall_width_m, { type: "number", step: "0.01" }),
         inputChoiceMarkup("overall_height_m", "Altura (m)", draft.overall_height_m, { type: "number", step: "0.01" }),
+      ].join(""),
+    )}
+    ${sectionBoxMarkup(
+      "Energia e consumo",
+      [
+        selectChoiceMarkup("energy_source", "Energia", draft.energy_source, ENERGY_OPTIONS),
+        selectChoiceMarkup("consumption_unit", "Unidade", draft.consumption_unit, CONSUMPTION_UNIT_OPTIONS),
+        inputChoiceMarkup("empty_consumption_per_km", `Consumo vazio (${unitLabel})`, draft.empty_consumption_per_km, { type: "number", step: "0.01" }),
+        inputChoiceMarkup("loaded_consumption_per_km", `Consumo carregado (${unitLabel})`, draft.loaded_consumption_per_km, { type: "number", step: "0.01" }),
       ].join(""),
     )}
     ${sectionBoxMarkup(
@@ -1099,6 +1128,10 @@ function applyAutofillPayloadToDraft(typeId, payload) {
     "overall_length_m",
     "overall_width_m",
     "overall_height_m",
+    "energy_source",
+    "consumption_unit",
+    "empty_consumption_per_km",
+    "loaded_consumption_per_km",
     "truck_price_brl",
     "implement_cost_brl",
     "base_fixed_cost_brl_per_day",

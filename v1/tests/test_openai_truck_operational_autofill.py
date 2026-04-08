@@ -33,6 +33,8 @@ def test_build_prompt_describes_real_context_limits(monkeypatch) -> None:
     assert "NÃO tem acesso direto ao workspace do VS Code" in prompt
     assert "Considere primeiro o contexto estruturado já fornecido" in prompt
     assert "current_project_context:" in prompt
+    assert "empty_consumption_per_km" in prompt
+    assert "loaded_consumption_per_km" in prompt
 
 
 def test_autofill_truck_operational_record_normalizes_ai_payload(monkeypatch) -> None:
@@ -69,6 +71,10 @@ def test_autofill_truck_operational_record_normalizes_ai_payload(monkeypatch) ->
                     "overall_length_m": 6.2,
                     "overall_width_m": 2.2,
                     "overall_height_m": 2.8,
+                    "energy_source": "diesel",
+                    "consumption_unit": "l_per_km",
+                    "empty_consumption_per_km": 0.19,
+                    "loaded_consumption_per_km": 0.24,
                     "truck_price_brl": 285000,
                     "implement_cost_brl": 42000,
                     "base_fixed_cost_brl_per_day": 260,
@@ -91,6 +97,10 @@ def test_autofill_truck_operational_record_normalizes_ai_payload(monkeypatch) ->
     assert result["provider"] == "OpenAI Responses + Web Search"
     assert result["model"] == "gpt-4.1"
     assert result["payload"]["payload_weight_kg"] == 3500
+    assert result["payload"]["energy_source"] == "diesel"
+    assert result["payload"]["consumption_unit"] == "l_per_km"
+    assert result["payload"]["empty_consumption_per_km"] == 0.19
+    assert result["payload"]["loaded_consumption_per_km"] == 0.24
     assert result["payload"]["truck_price_brl"] == 285000
     assert result["payload"]["implement_cost_brl"] == 42000
     assert result["payload"]["confidence"] == "medium"

@@ -2,16 +2,18 @@
 
 ## Contexto
 
-O projeto ja possui quatro ferramentas de autoria que formam a base do jogo:
+O projeto ja possui cinco ferramentas de autoria e calibracao que formam a base do jogo:
 
 - `http://127.0.0.1:8000/editor/map_v1_1` para mapa e rede base.
+- `http://127.0.0.1:8000/editor/fretes` para gerar e calibrar fretes representativos a partir da matriz O/D.
 - `http://127.0.0.1:8000/planner/route` para planejamento de rotas.
 - `http://127.0.0.1:8000/viewer/trucks` para catalogo e classificacao de caminhoes.
-- `http://127.0.0.1:8000/editor/products_v2` para produtos e matrizes de oferta e demanda.
+- `http://127.0.0.1:8000/editor/products_v3` para produtos e matrizes de oferta e demanda.
 
 A decisao desta fase e simples:
 
-- O editor de produtos v2 passa a ser a base economica da versao atual.
+- O editor de produtos atual passa a ser a base economica da versao.
+- O editor de fretes passa a ser a ponte entre matriz economica e trabalho jogavel.
 - Os antigos Blocos B e C deixam de ser caminho critico do MVP.
 - O jogo passa a ser construido sobre o loop operacional minimo.
 
@@ -20,6 +22,7 @@ A decisao desta fase e simples:
 O jogo comeca a existir quando o seguinte ciclo estiver fechado:
 
 1. Um produto gera uma oportunidade de carga.
+	A camada intermediaria agora passa pelos fretes representativos gerados e calibrados no editor de fretes.
 2. Um contrato e ofertado ao jogador.
 3. O jogador escolhe um caminhao compativel.
 4. O sistema escolhe ou valida uma rota viavel.
@@ -270,11 +273,13 @@ Ao fim do bloco, o planner nao mostra apenas km e horas. Ele passa a mostrar cus
 
 Gerar trabalho jogavel a partir da economia ja definida no editor de produtos.
 
+O editor de fretes em `/editor/fretes` ja cobre a etapa de gerar, calibrar e visualizar fretes representativos a partir da matriz de oferta e demanda. O restante deste bloco transforma esses fretes em entidades de mercado, clientes e contratos do runtime.
+
 ### Tarefas
 
 - 3.1 [P0] Criar catalogo de tipos de cliente.
 - 3.2 [P0] Criar catalogo de tipos de contrato.
-- 3.3 [P0] Gerar oportunidades de carga a partir da matriz de oferta e demanda.
+- 3.3 [P0] Transformar fretes gerados em oportunidades de carga do runtime.
 - 3.4 [P0] Definir origem, destino, produto, volume, prazo, janela e pagamento.
 - 3.5 [P0] Definir SLA, multa, urgencia e restricoes operacionais.
 - 3.6 [P0] Filtrar contratos inviaveis por rota ou por frota.

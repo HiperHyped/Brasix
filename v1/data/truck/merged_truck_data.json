@@ -83,8 +83,8 @@
       "base_vehicle_kind": "rigido",
       "axle_config": "4x2",
       "preferred_body_type_id": "truck_body_bau",
-      "payload_weight_kg": 3850,
-      "cargo_volume_m3": 10,
+      "payload_weight_kg": 6300,
+      "cargo_volume_m3": 20,
       "overall_length_m": 7.9,
       "overall_width_m": 2.45,
       "overall_height_m": 3.125,
@@ -92,7 +92,7 @@
       "consumption_unit": "kwh_per_km",
       "empty_consumption_per_km": 0.68,
       "loaded_consumption_per_km": 0.82,
-      "truck_price_brl": 320000,
+      "truck_price_brl": 780000,
       "base_fixed_cost_brl_per_day": 320,
       "base_variable_cost_brl_per_km": 0.7,
       "implement_cost_brl": 22000,
@@ -107,12 +107,11 @@
       "confidence": "medium",
       "research_basis": "market_estimate",
       "source_urls": [
-        "https://bsoft.com.br/blog/capacidade-de-carga",
-        "https://blog.brasilautostransportes.com.br/caminhao-cegonha-conheca-6-curiosidades-sobre-o-veiculo-de-transporte/",
-        "https://guiadotrc.com.br/lei/",
-        "https://blog.automaxfiat.com.br/montana-ou-strada/"
+        "https://vwtbpress.vwco.com.br/noticia/vwco-estreia-nova-geracao-do-e-delivery",
+        "https://vwtbpress.vwco.com.br/press/e-delivery",
+        "https://insideevs.uol.com.br/news/606289/jac-caminhao-eletrico-trucado-brasil/"
       ],
-      "notes": "Toco leve com baú (box). Capacidade útil ~4,5 t; volume estimado 20 m³; dimensões aproximadas de 7×2.4×3.5 m. | Light rigid 4x2 with box body."
+      "notes": "Baseado no VW e-Delivery 11t 4x2 como referência nacional mais próxima para toco leve elétrico com baú. A VW informa carga útil de até 6.300 kg e autonomia de até 250 km; fonte secundária cita preço de lançamento a partir de R$ 780 mil para o e-Delivery 11. Dimensões externas, volume do baú, consumo e custos operacionais/fixos foram mantidos como estimativa representativa do contexto do projeto por falta de ficha pública consolidada com essas medidas já implementadas com baú no mercado brasileiro atual."
     },
     {
       "truck_type_id": "truck_type_custom_novo_caminhao_32",
@@ -1272,6 +1271,42 @@
         "https://blog.automaxfiat.com.br/montana-ou-strada/"
       ],
       "notes": "Bitrem (cavalo mecânico 6x2 ou 6x4 com dois semirreboques). Guia do TRC indica PBTC 57 t【765514088521308†L291-L297】. Assumindo tara 19 t, carga útil ~38 t. Comprimento máximo 19.8 m; largura 2.6 m; altura 4.4 m."
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_40",
+      "label": "Bitrem Tanque",
+      "size_tier": "super_pesado",
+      "base_vehicle_kind": "especial",
+      "axle_config": "specialized",
+      "preferred_body_type_id": "truck_body_tanque",
+      "payload_weight_kg": 51146,
+      "cargo_volume_m3": 45,
+      "overall_length_m": 19.8,
+      "overall_width_m": 2.6,
+      "overall_height_m": 4.4,
+      "energy_source": "diesel",
+      "consumption_unit": "l_per_km",
+      "empty_consumption_per_km": 0.38,
+      "loaded_consumption_per_km": 0.45,
+      "truck_price_brl": 950000,
+      "base_fixed_cost_brl_per_day": 850,
+      "base_variable_cost_brl_per_km": 4.6,
+      "implement_cost_brl": 650000,
+      "urban_access_level": null,
+      "road_access_level": null,
+      "supported_surface_codes": [],
+      "load_time_minutes": null,
+      "unload_time_minutes": null,
+      "confidence": "medium",
+      "research_basis": "derived_estimate",
+      "source_urls": [
+        "https://www.facchini.com.br/produto/bitrem-tanquecombustivel",
+        "https://www.facchini.com.br/clic?area=produtos&arquivo=bit_tq-2025-br.pdf",
+        "https://www.scania.com/content/dam/scanianoe/market/br/pdfs/especifica%C3%A7%C3%B5es/g/G440_CA6X4_RBP835_RP835_tcm253-416806.pdf",
+        "https://www.moura.com.br/blog/tipos-de-caminhao",
+        "https://www.transp.net/blog/posts/aumento-diesel-icms-2026-impacto-custos-frete/"
+      ],
+      "notes": "Bitrem tanque de 2 tanques considerado como conjunto 6x4 cavalo + 2 semirreboques tanque. Fonte direta do implemento Facchini informa tara aproximada do conjunto implemento de 13.100 kg e capacidade nominal 22.000 + 23.000 L; volume convertido para 45 m3. PBTC legal de 74 t obtido na ficha Scania 6x4; payload derivado por 74.000 - 13.100 - 9.754 = 51.146 kg, usando massa em ordem de marcha do cavalo Scania G440 6x4 como proxy. Dimensões externas completas do tanque não foram localizadas em ficha pública; usei medidas regulatórias/típicas de bitrem brasileiro: 19,8 m de comprimento, 2,6 m de largura e 4,4 m de altura. Consumo estimado para operação bitrem tanque diesel no mercado brasileiro: ~2,6 km/l vazio e ~2,2 km/l carregado, resultando em 0,38 e 0,45 l/km. Preço do cavalo e do implemento são estimativas de mercado brasileiro atual para conjunto novo; custos fixo/dia e variável/km também são estimativas operacionais representativas, sem cotação oficial pública."
     },
     {
       "truck_type_id": "truck_type_rodotrem",

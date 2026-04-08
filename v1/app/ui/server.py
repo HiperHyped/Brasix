@@ -38,6 +38,7 @@ from app.services import (
     AutoRouteError,
     RoutePlannerError,
     build_reference_data_from_city_catalog_payload,
+    build_diesel_cost_editor_bootstrap_payload,
     build_freight_editor_bootstrap_payload,
     build_user_city_catalog_payload,
     build_route_plan,
@@ -93,6 +94,7 @@ from app.services import (
     review_truck_image_asset,
     save_active_map,
     save_active_map_as,
+    save_diesel_cost_editor_document,
     save_map_bundle,
     save_product_field_baked_document,
     save_product_field_edit_document,
@@ -118,6 +120,8 @@ from app.ui.editor_models import (
     AutoRoutePreviewRequest,
     AutoRoutePreviewResponse,
     AutoRouteSaveRequest,
+    DieselCostSaveRequest,
+    DieselCostSaveResponse,
     MapCityCatalogDocument,
     MapActivateRequest,
     MapCreateRequest,
@@ -261,10 +265,10 @@ def _build_truck_operational_autofill_save_request(
             "overall_length_m": pick("overall_length_m"),
             "overall_width_m": pick("overall_width_m"),
             "overall_height_m": pick("overall_height_m"),
-            "energy_source": current.get("energy_source"),
-            "consumption_unit": current.get("consumption_unit"),
-            "empty_consumption_per_km": current.get("empty_consumption_per_km"),
-            "loaded_consumption_per_km": current.get("loaded_consumption_per_km"),
+            "energy_source": pick("energy_source"),
+            "consumption_unit": pick("consumption_unit"),
+            "empty_consumption_per_km": pick("empty_consumption_per_km"),
+            "loaded_consumption_per_km": pick("loaded_consumption_per_km"),
             "truck_price_brl": pick("truck_price_brl"),
             "base_fixed_cost_brl_per_day": pick("base_fixed_cost_brl_per_day"),
             "base_variable_cost_brl_per_km": pick("base_variable_cost_brl_per_km"),
@@ -1303,6 +1307,14 @@ def create_app() -> FastAPI:
             context={"page_title": "Brasix | Editor de fretes"},
         )
 
+    @app.get("/editor/custos", response_class=HTMLResponse, include_in_schema=False)
+    async def diesel_cost_editor(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="diesel_cost_editor.html",
+            context={"page_title": "Brasix | Editor de Diesel"},
+        )
+
     @app.get("/editor/products", response_class=HTMLResponse, include_in_schema=False)
     async def product_editor(request: Request) -> HTMLResponse:
         editor_ui = load_product_editor_payload()
@@ -1432,6 +1444,10 @@ def create_app() -> FastAPI:
     @app.get("/api/editor/fretes/bootstrap")
     async def freight_editor_bootstrap() -> dict[str, Any]:
         return build_freight_editor_bootstrap_payload()
+
+    @app.get("/api/editor/custos/bootstrap")
+    async def diesel_cost_editor_bootstrap() -> dict[str, Any]:
+        return build_diesel_cost_editor_bootstrap_payload()
 
     @app.get("/api/editor/products_v1/field")
     async def product_editor_v1_field(
@@ -1689,6 +1705,16 @@ def create_app() -> FastAPI:
         save_product_field_edit_document(document.product_id, document.layer, field_payload, map_id=document.map_id)
         save_product_field_baked_document(document.product_id, document.layer, baked_payload, map_id=document.map_id)
         return {"field": field_payload, "baked": baked_payload}
+
+    @app.put("/api/editor/custos/document", response_model=DieselCostSaveResponse)
+    async def save_diesel_cost_editor(document: DieselCostSaveRequest) -> DieselCostSaveResponse:
+        saved_document = save_diesel_cost_editor_document(
+            map_id=document.map_id,
+            observations=list(document.observations or []),
+            overrides=list(document.overrides or []),
+            updated_at=document.updated_at,
+        )
+        return DieselCostSaveResponse(document=saved_document)
 
     @app.put("/api/editor/products_v2/field")
     async def save_product_editor_v2_field(document: ProductFieldLayerSaveRequest) -> dict[str, Any]:
