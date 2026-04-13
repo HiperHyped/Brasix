@@ -22,6 +22,10 @@ def test_build_game_world_runtime_contains_core_snapshots() -> None:
     assert runtime.catalogs.truck_type_by_id
     assert runtime.catalogs.truck_operational_by_id
     assert runtime.source_summary.truck_operational_catalog_id == runtime.trucks.operational_catalog["id"]
+    assert runtime.pricing.document
+    assert runtime.pricing.map_id == runtime.map.active_map_id
+    assert runtime.source_summary.pricing_document_id == runtime.pricing.document_id
+    assert runtime.pricing.document.get("freight")
 
     vuc_operational = runtime.catalogs.truck_operational_by_id["truck_type_vuc_4x2"]
     vuc_type = runtime.catalogs.truck_type_by_id["truck_type_vuc_4x2"]

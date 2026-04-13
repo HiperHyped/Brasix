@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script>
+  (function applyCityEditorThemeEarly() {
+    const root = document.documentElement;
+    root.classList.add("city-editor-page");
+    try {
+      root.dataset.editorTheme = window.localStorage.getItem("brasix:v1:city-editor-theme") === "night" ? "night" : "day";
+    } catch (_error) {
+      root.dataset.editorTheme = "day";
+    }
+  })();
+</script>
+{% endblock %}
+
+{% block body %}
+<main class="editor-shell truck-gallery-shell flow-editor-shell city-editor-shell">
+  <header class="topbar truck-gallery-topbar city-editor-topbar">
+    <div class="truck-gallery-topbar-left">
+      <div class="brand-lockup">
+        <h1>Brasix</h1>
+        <span class="brand-divider"></span>
+        <p>Editor de cidade</p>
+      </div>
+    </div>
+
+    <div id="city-editor-header-badges" class="editor-header-badges" aria-label="Estado do editor de cidade"></div>
+
+    <div class="editor-header-actions" aria-label="Acoes do editor de cidade">
+      <a class="ghost-button" href="/resumo" target="_blank" rel="noopener noreferrer">
+        <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
+        <span>Resumo</span>
+      </a>
+      <button id="city-editor-map-reset" class="editor-header-action" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span>
+        <span>Recentrar</span>
+      </button>
+      <button id="city-editor-theme-toggle" class="editor-header-action" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        <span>Modo noturno</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="truck-gallery-grid flow-editor-grid city-editor-grid" aria-label="Editor de cidade do Brasix">
+    <section class="editor-card truck-gallery-card city-editor-map-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>MAPA</span>
+        <div id="city-editor-map-status" class="truck-gallery-summary"></div>
+      </div>
+
+      <div class="city-editor-map-body">
+        <div class="map-frame product-editor-map-frame flow-editor-map-frame city-editor-map-frame">
+          <div id="city-editor-map-stage" class="map-stage flow-editor-map-stage city-editor-map-stage" aria-label="Mapa do editor de cidade"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="editor-card truck-gallery-card city-editor-info-column">
+      <div class="truck-operations-panel-head">
+        <span>INFORMACOES</span>
+      </div>
+
+      <div id="city-editor-info-panel" class="city-editor-panel-scroll" aria-label="Informacoes da cidade selecionada"></div>
+    </aside>
+
+    <aside class="editor-card truck-gallery-card city-editor-products-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>PRODUTOS</span>
+        <div id="city-editor-products-status" class="truck-gallery-summary"></div>
+      </div>
+
+      <div id="city-editor-products-panel" class="city-editor-panel-scroll" aria-label="Produtos da cidade selecionada"></div>
+    </aside>
+
+    <aside class="editor-card truck-gallery-card city-editor-freights-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>FRETES</span>
+        <div id="city-editor-freights-status" class="truck-gallery-summary"></div>
+      </div>
+
+      <div id="city-editor-freights-panel" class="city-editor-panel-scroll" aria-label="Fretes da cidade selecionada"></div>
+    </aside>
+  </section>
+</main>
+
+<script type="module">
+  const cityEditorModuleUrl = new URL("{{ request.url_for('static', path='js/city-editor.js') }}", window.location.href);
+  cityEditorModuleUrl.searchParams.set("v", "20260409-city-editor-2");
+
+  function showCityEditorLoadError(error) {
+    const message = String(error?.message || error || "Falha ao carregar o editor de cidade.");
+    const targets = [
+      document.getElementById("city-editor-info-panel"),
+      document.getElementById("city-editor-products-panel"),
+      document.getElementById("city-editor-freights-panel"),
+    ].filter(Boolean);
+    targets.forEach((target) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "truck-gallery-empty";
+      wrapper.textContent = message;
+      target.replaceChildren(wrapper);
+    });
+    console.error("Brasix city editor load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showCityEditorLoadError(event.reason);
+  });
+
+  import(cityEditorModuleUrl.href).catch(showCityEditorLoadError);
+</script>
+{% endblock %}

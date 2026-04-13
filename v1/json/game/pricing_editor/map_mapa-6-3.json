@@ -1,0 +1,64 @@
+{
+  "id": "pricing_editor::map_mapa-6-3",
+  "map_id": "map_mapa-6-3",
+  "version": 1,
+  "updated_at": "2026-04-13T17:51:35-03:00",
+  "scenario": {
+    "selected_difficulty": "standard",
+    "sort_mode": "opening_desc"
+  },
+  "opening": {
+    "band_base_prices_brl": {
+      "population_band_up_to_250k": 70000.0,
+      "population_band_250k_to_500k": 115000.0,
+      "population_band_500k_to_1m": 175000.0,
+      "population_band_1m_to_2m": 230000.0,
+      "population_band_2m_plus": 345000.0,
+      "population_band_custom_1774572109092": 470000.0,
+      "population_band_custom_1774572109875": 620000.0
+    },
+    "population_weight": 0.4,
+    "outbound_weight": 0.35,
+    "inbound_weight": 0.25,
+    "market_count_weight": 0.35,
+    "market_volume_weight": 0.65,
+    "city_multiplier_max": 0.45
+  },
+  "freight": {
+    "base_rate_brl_per_tkm": 0.32,
+    "floor_margin_multiplier": 1.14,
+    "short_haul_markup_max": 0.14,
+    "long_haul_discount_max": 0.12,
+    "short_haul_reference_km": 160.0,
+    "long_haul_reference_km": 1750.0,
+    "handling_base_brl": 200.0,
+    "handling_per_t_brl": 8.0,
+    "cycle_distance_multiplier": 1.35,
+    "driver_daily_km": 400.0,
+    "hq_origin_bonus": 0.04,
+    "hq_destination_bonus": 0.05,
+    "hq_bonus_cap": 0.08,
+    "specialization_bulk_multiplier": 0.93,
+    "specialization_general_multiplier": 0.98,
+    "specialization_palletized_multiplier": 1.08,
+    "specialization_refrigerated_multiplier": 1.28,
+    "specialization_tank_multiplier": 1.26,
+    "specialization_live_multiplier": 1.35,
+    "specialization_hazardous_multiplier": 1.32,
+    "value_class_medium_multiplier": 1.05,
+    "value_class_high_multiplier": 1.12,
+    "perishable_multiplier": 1.08,
+    "fragile_multiplier": 1.06,
+    "temperature_control_multiplier": 1.1,
+    "hazardous_multiplier": 1.12,
+    "diesel_origin_weight": 0.7,
+    "diesel_destination_weight": 0.3
+  },
+  "capital": {
+    "reserve_days": 60.0,
+    "buffer_percent": 0.5,
+    "hard_liquidity_factor": 1.15,
+    "standard_liquidity_factor": 1.8,
+    "sandbox_liquidity_factor": 3.0
+  }
+}

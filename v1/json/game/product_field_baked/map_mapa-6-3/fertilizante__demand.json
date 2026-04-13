@@ -1,0 +1,20 @@
+{
+  "id": "product_field_baked::map_mapa-6-3::fertilizante::demand",
+  "map_id": "map_mapa-6-3",
+  "product_id": "fertilizante",
+  "layer": "demand",
+  "city_values": [
+    {
+      "city_id": "ba-salvador",
+      "city_label": "Salvador, BA",
+      "state_code": "BA",
+      "base_value": 0,
+      "manual_delta": 100.0,
+      "final_value": 100.0,
+      "source": "manual",
+      "anchor_count": 1,
+      "nearest_distance_km": 0
+    }
+  ],
+  "generated_at": "2026-04-09T18:57:30-03:00"
+}

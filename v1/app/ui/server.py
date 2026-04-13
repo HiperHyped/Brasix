@@ -37,9 +37,11 @@ from app.maptools import RouteGraph, RouteWorkspaceSnapshot
 from app.services import (
     AutoRouteError,
     RoutePlannerError,
+    build_city_editor_bootstrap_payload,
     build_reference_data_from_city_catalog_payload,
     build_diesel_cost_editor_bootstrap_payload,
     build_freight_editor_bootstrap_payload,
+    build_pricing_editor_bootstrap_payload,
     build_user_city_catalog_payload,
     build_route_plan,
     create_map_bundle,
@@ -92,9 +94,12 @@ from app.services import (
     load_ui_payload,
     map_repository_payload,
     review_truck_image_asset,
+    remove_city_editor_freight_value,
+    remove_city_editor_product_value,
     save_active_map,
     save_active_map_as,
     save_diesel_cost_editor_document,
+    save_pricing_editor_document,
     save_map_bundle,
     save_product_field_baked_document,
     save_product_field_edit_document,
@@ -103,6 +108,8 @@ from app.services import (
     save_truck_product_compatibility_overrides_payload,
     save_json,
     set_active_map,
+    update_city_editor_freight_value,
+    update_city_editor_product_value,
 )
 from app.services.openai_city_autofill import CityAutofillError, autofill_custom_city
 from app.services.openai_product_operational_autofill import (
@@ -116,12 +123,18 @@ from app.services.openai_truck_operational_autofill import (
 from app.ui.editor_models import (
     CityAutofillRequest,
     CityAutofillResponse,
+    CityEditorFreightRemoveRequest,
+    CityEditorFreightValueSaveRequest,
+    CityEditorProductRemoveRequest,
+    CityEditorProductValueSaveRequest,
     CustomCityCatalogDocument,
     AutoRoutePreviewRequest,
     AutoRoutePreviewResponse,
     AutoRouteSaveRequest,
     DieselCostSaveRequest,
     DieselCostSaveResponse,
+    PricingEditorSaveRequest,
+    PricingEditorSaveResponse,
     MapCityCatalogDocument,
     MapActivateRequest,
     MapCreateRequest,
@@ -796,6 +809,123 @@ def _build_truck_operational_editor_bootstrap_payload() -> dict[str, Any]:
     }
 
 
+def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
+    city_payload = build_city_editor_bootstrap_payload()
+    truck_matrix_payload = build_truck_product_matrix_payload()
+    runtime = build_game_world_runtime(include_validation=False)
+    operational_by_truck_id = runtime.catalogs.truck_operational_by_id
+
+    def _normalize_market_items(raw_items: Any) -> list[dict[str, Any]]:
+        normalized: list[dict[str, Any]] = []
+        for item in raw_items or []:
+            product_id = str(item.get("product_id") or "").strip()
+            if not product_id:
+                continue
+            normalized.append(
+                {
+                    "product_id": product_id,
+                    "product_name": str(item.get("product_name") or product_id),
+                    "product_emoji": str(item.get("product_emoji") or "📦"),
+                    "product_color": str(item.get("product_color") or "#2d5a27"),
+                    "value": float(item.get("value") or 0),
+                }
+            )
+        normalized.sort(key=lambda item: (-float(item["value"]), str(item["product_name"])))
+        return normalized
+
+    trucks: list[dict[str, Any]] = []
+    for truck in truck_matrix_payload.get("trucks", []):
+        truck_id = str(truck.get("id") or "").strip()
+        if not truck_id:
+            continue
+        operational = operational_by_truck_id.get(truck_id) or {}
+        truck_price_brl = float(operational.get("truck_price_brl") or 0)
+        implement_cost_brl = float(operational.get("implement_cost_brl") or 0)
+        trucks.append(
+            {
+                "id": truck_id,
+                "label": str(truck.get("label") or truck_id),
+                "short_label": str(truck.get("short_label") or truck.get("label") or truck_id),
+                "size_tier": str(truck.get("size_tier") or ""),
+                "base_vehicle_kind": str(truck.get("base_vehicle_kind") or ""),
+                "axle_config": str(truck.get("axle_config") or ""),
+                "body_labels": list(truck.get("body_labels") or []),
+                "supported_product_ids": [
+                    str(product_id).strip()
+                    for product_id in truck.get("supported_product_ids", [])
+                    if str(product_id).strip()
+                ],
+                "supported_product_count": int(truck.get("supported_product_count") or 0),
+                "preview_image_url_path": str(truck.get("preview_image_url_path") or ""),
+                "preview_image_version": str(truck.get("preview_image_version") or ""),
+                "payload_weight_kg": float(operational.get("payload_weight_kg") or 0),
+                "cargo_volume_m3": float(operational.get("cargo_volume_m3") or 0),
+                "loaded_consumption_per_km": float(operational.get("loaded_consumption_per_km") or 0),
+                "truck_price_brl": truck_price_brl,
+                "implement_cost_brl": implement_cost_brl,
+                "purchase_price_brl": round(truck_price_brl + implement_cost_brl, 2),
+                "base_fixed_cost_brl_per_day": float(operational.get("base_fixed_cost_brl_per_day") or 0),
+                "base_variable_cost_brl_per_km": float(operational.get("base_variable_cost_brl_per_km") or 0),
+            }
+        )
+
+    cities = [
+        {
+            "id": str(city.get("id") or ""),
+            "label": str(city.get("label") or city.get("id") or ""),
+            "state_code": str(city.get("state_code") or ""),
+            "state_name": str(city.get("state_name") or ""),
+            "source_region_name": str(city.get("source_region_name") or ""),
+            "population_thousands": float(city.get("population_thousands") or 0),
+            "latitude": float(city.get("latitude") or 0),
+            "longitude": float(city.get("longitude") or 0),
+            "dominant_product_id": city.get("dominant_product_id"),
+            "supply_total_t": float(city.get("supply_total_t") or 0),
+            "demand_total_t": float(city.get("demand_total_t") or 0),
+            "supply_items": _normalize_market_items(city.get("supply_items")),
+            "demand_items": _normalize_market_items(city.get("demand_items")),
+        }
+        for city in city_payload.get("cities", [])
+        if str(city.get("id") or "").strip()
+    ]
+
+    freight_flows = [
+        {
+            "id": str(flow.get("id") or ""),
+            "product_id": str(flow.get("product_id") or ""),
+            "product_name": str(flow.get("product_name") or ""),
+            "product_emoji": str(flow.get("product_emoji") or "📦"),
+            "product_color": str(flow.get("product_color") or "#2d5a27"),
+            "origin_id": str(flow.get("origin_id") or ""),
+            "origin_label": str(flow.get("origin_label") or ""),
+            "destination_id": str(flow.get("destination_id") or ""),
+            "destination_label": str(flow.get("destination_label") or ""),
+            "distance_km": float(flow.get("distance_km") or 0),
+            "quantity_t": float(flow.get("quantity_t") or 0),
+            "custom": bool(flow.get("custom")),
+        }
+        for flow in city_payload.get("freight_flows", [])
+        if str(flow.get("id") or "").strip()
+    ]
+
+    return {
+        "ui": load_ui_payload(),
+        "active_map": city_payload.get("active_map", {}),
+        "map_viewport": city_payload.get("map_viewport", {}),
+        "map_editor": city_payload.get("map_editor", {}),
+        "products": list(city_payload.get("products", [])),
+        "cities": cities,
+        "freight_flows": freight_flows,
+        "trucks": trucks,
+        "summary": {
+            "selected_city_id": city_payload.get("summary", {}).get("selected_city_id"),
+            "city_count": len(cities),
+            "truck_count": len(trucks),
+            "freight_flow_count": len(freight_flows),
+        },
+    }
+
+
 def _save_truck_operational_record(document: TruckOperationalSaveRequest) -> TruckOperationalSaveResponse:
     effective_catalog = load_effective_truck_type_catalog_payload()
     saved_type = _find_truck_or_404(list(effective_catalog.get("types", [])), document.truck_type_id)
@@ -1250,12 +1380,38 @@ def create_app() -> FastAPI:
             context={"page_title": "Brasix | Cidades e Commodities"},
         )
 
+    @app.get("/resumo", response_class=HTMLResponse, include_in_schema=False)
+    async def summary(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="index.html",
+            context={"page_title": "Brasix | Resumo"},
+        )
+
     @app.get("/editores", response_class=HTMLResponse, include_in_schema=False)
     async def editors_hub(request: Request) -> HTMLResponse:
         return templates.TemplateResponse(
             request=request,
             name="editors_hub.html",
             context={"page_title": "Brasix | Central de editores"},
+        )
+
+    @app.get("/editor/cidade", response_class=HTMLResponse, include_in_schema=False)
+    @app.get("/editor/cidades", response_class=HTMLResponse, include_in_schema=False)
+    async def city_editor(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="city_editor.html",
+            context={"page_title": "Brasix | Editor de cidade"},
+        )
+
+    @app.get("/jogo/preparacao", response_class=HTMLResponse, include_in_schema=False)
+    @app.get("/game/setup", response_class=HTMLResponse, include_in_schema=False)
+    async def game_setup(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="game_setup.html",
+            context={"page_title": "Brasix | Preparacao da empresa"},
         )
 
     @app.get("/editor/map", response_class=HTMLResponse, include_in_schema=False)
@@ -1313,6 +1469,14 @@ def create_app() -> FastAPI:
             request=request,
             name="diesel_cost_editor.html",
             context={"page_title": "Brasix | Editor de Diesel"},
+        )
+
+    @app.get("/editor/precos", response_class=HTMLResponse, include_in_schema=False)
+    async def pricing_editor(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="pricing_editor.html",
+            context={"page_title": "Brasix | Editor de precos"},
         )
 
     @app.get("/editor/products", response_class=HTMLResponse, include_in_schema=False)
@@ -1445,9 +1609,22 @@ def create_app() -> FastAPI:
     async def freight_editor_bootstrap() -> dict[str, Any]:
         return build_freight_editor_bootstrap_payload()
 
+    @app.get("/api/editor/cidade/bootstrap")
+    async def city_editor_bootstrap() -> dict[str, Any]:
+        return build_city_editor_bootstrap_payload()
+
+    @app.get("/api/jogo/preparacao/bootstrap")
+    @app.get("/api/game/setup/bootstrap")
+    async def game_setup_bootstrap() -> dict[str, Any]:
+        return _build_game_setup_bootstrap_payload()
+
     @app.get("/api/editor/custos/bootstrap")
     async def diesel_cost_editor_bootstrap() -> dict[str, Any]:
         return build_diesel_cost_editor_bootstrap_payload()
+
+    @app.get("/api/editor/precos/bootstrap")
+    async def pricing_editor_bootstrap() -> dict[str, Any]:
+        return build_pricing_editor_bootstrap_payload()
 
     @app.get("/api/editor/products_v1/field")
     async def product_editor_v1_field(
@@ -1716,6 +1893,15 @@ def create_app() -> FastAPI:
         )
         return DieselCostSaveResponse(document=saved_document)
 
+    @app.put("/api/editor/precos/document", response_model=PricingEditorSaveResponse)
+    async def save_pricing_editor(document: PricingEditorSaveRequest) -> PricingEditorSaveResponse:
+        saved_document = save_pricing_editor_document(
+            map_id=document.map_id,
+            document=dict(document.document or {}),
+            updated_at=document.updated_at,
+        )
+        return PricingEditorSaveResponse(document=saved_document)
+
     @app.put("/api/editor/products_v2/field")
     async def save_product_editor_v2_field(document: ProductFieldLayerSaveRequest) -> dict[str, Any]:
         catalog_document = load_product_catalog_v2_master_payload()
@@ -1773,6 +1959,59 @@ def create_app() -> FastAPI:
         save_product_field_edit_document(document.product_id, document.layer, field_payload, map_id=document.map_id)
         save_product_field_baked_document(document.product_id, document.layer, baked_payload, map_id=document.map_id)
         return {"field": field_payload, "baked": baked_payload}
+
+    @app.put("/api/editor/cidade/products/value")
+    async def save_city_editor_product_value(document: CityEditorProductValueSaveRequest) -> dict[str, Any]:
+        catalog_document = load_product_catalog_v2_master_payload()
+        _find_product_or_404(list(catalog_document.get("products", [])), document.product_id)
+
+        try:
+            return update_city_editor_product_value(
+                map_id=document.map_id,
+                city_id=document.city_id,
+                product_id=document.product_id,
+                layer=document.layer,
+                value=document.value,
+            )
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=f"Cidade nao encontrada: {error.args[0]}") from error
+
+    @app.post("/api/editor/cidade/products/remove")
+    async def remove_city_editor_product(document: CityEditorProductRemoveRequest) -> dict[str, Any]:
+        catalog_document = load_product_catalog_v2_master_payload()
+        _find_product_or_404(list(catalog_document.get("products", [])), document.product_id)
+        return remove_city_editor_product_value(
+            map_id=document.map_id,
+            city_id=document.city_id,
+            product_id=document.product_id,
+            layer=document.layer,
+        )
+
+    @app.put("/api/editor/cidade/fretes/value")
+    async def save_city_editor_freight(document: CityEditorFreightValueSaveRequest) -> dict[str, Any]:
+        try:
+            return update_city_editor_freight_value(
+                map_id=document.map_id,
+                flow_id=document.flow_id,
+                product_id=document.product_id,
+                origin_id=document.origin_id,
+                destination_id=document.destination_id,
+                quantity_t=document.quantity_t,
+            )
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=f"Cidade nao encontrada: {error.args[0]}") from error
+        except ValueError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/editor/cidade/fretes/remove")
+    async def remove_city_editor_freight(document: CityEditorFreightRemoveRequest) -> dict[str, Any]:
+        return remove_city_editor_freight_value(
+            map_id=document.map_id,
+            flow_id=document.flow_id,
+            product_id=document.product_id,
+            origin_id=document.origin_id,
+            destination_id=document.destination_id,
+        )
 
     @app.post("/api/editor/products_v2/products")
     async def create_product_v2(document: ProductMasterCreateRequest) -> dict[str, Any]:

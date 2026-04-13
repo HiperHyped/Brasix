@@ -34,7 +34,13 @@
   </header>
 
   <section class="editor-hub-main" aria-label="Central de editores do Brasix">
-    <section class="editor-hub-grid" aria-label="Lista de editores e telas principais">
+    <section class="editor-hub-section" aria-label="Lista de editores">
+      <header class="editor-hub-section-head">
+        <span class="editor-hub-section-kicker">Editores</span>
+        <p>Ferramentas de configuracao e analise do Brasix.</p>
+      </header>
+
+      <section class="editor-hub-grid" aria-label="Lista de editores e telas principais">
       <a class="editor-card editor-hub-link" href="/editor/map_v1_1" target="_blank" rel="noopener noreferrer" style="--hub-accent: #2d5a27; --hub-accent-soft: rgba(45, 90, 39, 0.16); --hub-accent-strong: #23471f;">
         <div class="editor-hub-card-top">
           <span class="editor-hub-icon-shell">
@@ -69,6 +75,23 @@
         </div>
       </a>
 
+      <a class="editor-card editor-hub-link" href="/editor/cidade" target="_blank" rel="noopener noreferrer" style="--hub-accent: #356d63; --hub-accent-soft: rgba(53, 109, 99, 0.16); --hub-accent-strong: #27534c;">
+        <div class="editor-hub-card-top">
+          <span class="editor-hub-icon-shell">
+            <span class="material-symbols-outlined" aria-hidden="true">location_city</span>
+          </span>
+          <span class="editor-hub-kind">Cidades</span>
+        </div>
+        <div class="editor-hub-card-copy">
+          <h3>Editor de cidade</h3>
+          <p>Mapa dominante com informacoes, produtos locais e fretes de entrada e saida por cidade.</p>
+        </div>
+        <div class="editor-hub-card-footer">
+          <span class="editor-hub-path">/editor/cidade</span>
+          <span class="editor-hub-open">Nova guia</span>
+        </div>
+      </a>
+
       <a class="editor-card editor-hub-link" href="/editor/fretes" target="_blank" rel="noopener noreferrer" style="--hub-accent: #6b7d2e; --hub-accent-soft: rgba(107, 125, 46, 0.16); --hub-accent-strong: #536121;">
         <div class="editor-hub-card-top">
           <span class="editor-hub-icon-shell">
@@ -99,6 +122,23 @@
         </div>
         <div class="editor-hub-card-footer">
           <span class="editor-hub-path">/editor/custos</span>
+          <span class="editor-hub-open">Nova guia</span>
+        </div>
+      </a>
+
+      <a class="editor-card editor-hub-link" href="/editor/precos" target="_blank" rel="noopener noreferrer" style="--hub-accent: #9b5b2d; --hub-accent-soft: rgba(155, 91, 45, 0.16); --hub-accent-strong: #74411d;">
+        <div class="editor-hub-card-top">
+          <span class="editor-hub-icon-shell">
+            <span class="material-symbols-outlined" aria-hidden="true">price_change</span>
+          </span>
+          <span class="editor-hub-kind">Precos</span>
+        </div>
+        <div class="editor-hub-card-copy">
+          <h3>Editor de precos</h3>
+          <p>Formula de abertura da empresa, precificacao dos fretes e capital inicial por porte e dificuldade.</p>
+        </div>
+        <div class="editor-hub-card-footer">
+          <span class="editor-hub-path">/editor/precos</span>
           <span class="editor-hub-open">Nova guia</span>
         </div>
       </a>
@@ -170,6 +210,35 @@
           <span class="editor-hub-open">Nova guia</span>
         </div>
       </a>
+
+      </section>
+    </section>
+
+    <section class="editor-hub-section" aria-label="Lista de funcionalidades do jogo">
+      <div class="editor-hub-section-divider" aria-hidden="true"></div>
+      <header class="editor-hub-section-head">
+        <span class="editor-hub-section-kicker">Funcionalidades</span>
+        <p>Telas do fluxo inicial do jogo separadas dos editores.</p>
+      </header>
+
+      <section class="editor-hub-grid editor-hub-grid-functionalities" aria-label="Lista de funcionalidades do jogo">
+        <a class="editor-card editor-hub-link" href="/jogo/preparacao" target="_blank" rel="noopener noreferrer" style="--hub-accent: #446b8d; --hub-accent-soft: rgba(68, 107, 141, 0.16); --hub-accent-strong: #304e67;">
+          <div class="editor-hub-card-top">
+            <span class="editor-hub-icon-shell">
+              <span class="material-symbols-outlined" aria-hidden="true">apartment</span>
+            </span>
+            <span class="editor-hub-kind">Jogo</span>
+          </div>
+          <div class="editor-hub-card-copy">
+            <h3>Preparacao da empresa</h3>
+            <p>Tela de abertura com pop-ups de empresa, frota inicial e carteira de fretes por cidade-sede.</p>
+          </div>
+          <div class="editor-hub-card-footer">
+            <span class="editor-hub-path">/jogo/preparacao</span>
+            <span class="editor-hub-open">Nova guia</span>
+          </div>
+        </a>
+      </section>
     </section>
   </section>
 </main>

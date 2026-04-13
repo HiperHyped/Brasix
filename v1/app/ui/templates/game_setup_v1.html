@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script>
+  (function applyGameSetupThemeEarly() {
+    const root = document.documentElement;
+    root.classList.add("game-setup-page");
+    try {
+      root.dataset.editorTheme = window.localStorage.getItem("brasix:v1:game-setup-theme") === "night" ? "night" : "day";
+    } catch (_error) {
+      root.dataset.editorTheme = "day";
+    }
+  })();
+</script>
+{% endblock %}
+
+{% block body %}
+<main class="editor-hub-shell game-setup-shell">
+  <header class="topbar editor-hub-topbar game-setup-topbar">
+    <div class="editor-hub-topbar-left game-setup-topbar-left">
+      <div class="brand-lockup">
+        <h1>Brasix</h1>
+        <span class="brand-divider"></span>
+        <p>Preparacao da empresa</p>
+      </div>
+    </div>
+
+    <div id="game-setup-header-badges" class="editor-header-badges" aria-label="Estado da preparacao inicial"></div>
+
+    <div class="editor-header-actions" aria-label="Acoes da preparacao inicial">
+      <a class="ghost-button" href="/editores" target="_blank" rel="noopener noreferrer">
+        <span class="material-symbols-outlined" aria-hidden="true">widgets</span>
+        <span>Editores</span>
+      </a>
+      <a class="ghost-button" href="/resumo" target="_blank" rel="noopener noreferrer">
+        <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
+        <span>Resumo</span>
+      </a>
+      <button id="game-setup-theme-toggle" class="editor-header-action" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        <span>Modo noturno</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="game-setup-main" aria-label="Sala de abertura do jogo">
+    <section class="editor-card game-setup-hero-card">
+      <div class="game-setup-hero-copy">
+        <span class="eyebrow">Abertura da operacao</span>
+        <h2>Monte a empresa antes do primeiro km.</h2>
+        <p>Defina identidade visual, escolha a cidade-sede no mapa, monte a frota inicial e selecione os contratos de saida da base escolhida.</p>
+      </div>
+      <div id="game-setup-quick-metrics" class="game-setup-quick-metrics" aria-label="Indicadores rapidos da sala de abertura"></div>
+    </section>
+
+    <section class="game-setup-launch-grid" aria-label="Janelas principais da abertura">
+      <article class="editor-card game-setup-launch-card" style="--setup-accent:#2d5a27; --setup-accent-soft:rgba(45, 90, 39, 0.16);">
+        <div class="game-setup-launch-head">
+          <span class="game-setup-launch-icon material-symbols-outlined" aria-hidden="true">apartment</span>
+          <span class="game-setup-launch-kind">Empresa</span>
+        </div>
+        <div class="game-setup-launch-copy">
+          <h3>Criador de empresa</h3>
+          <p>Nome, cor, emblema e sede escolhida diretamente no mapa ativo.</p>
+        </div>
+        <button class="editor-header-action game-setup-launch-button" type="button" data-open-modal="company">
+          <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+          <span>Abrir janela</span>
+        </button>
+      </article>
+
+      <article class="editor-card game-setup-launch-card" style="--setup-accent:#8c4f10; --setup-accent-soft:rgba(140, 79, 16, 0.14);">
+        <div class="game-setup-launch-head">
+          <span class="game-setup-launch-icon material-symbols-outlined" aria-hidden="true">local_shipping</span>
+          <span class="game-setup-launch-kind">Frota</span>
+        </div>
+        <div class="game-setup-launch-copy">
+          <h3>Seletor de caminhoes</h3>
+          <p>Rolo horizontal controlado pelo scroll do mouse, com imagens, compra, capacidade e consumo.</p>
+        </div>
+        <button class="editor-header-action game-setup-launch-button" type="button" data-open-modal="fleet">
+          <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+          <span>Abrir janela</span>
+        </button>
+      </article>
+
+      <article class="editor-card game-setup-launch-card" style="--setup-accent:#446b8d; --setup-accent-soft:rgba(68, 107, 141, 0.16);">
+        <div class="game-setup-launch-head">
+          <span class="game-setup-launch-icon material-symbols-outlined" aria-hidden="true">receipt_long</span>
+          <span class="game-setup-launch-kind">Contratos</span>
+        </div>
+        <div class="game-setup-launch-copy">
+          <h3>Seletor de fretes</h3>
+          <p>Cartoes horizontais de fretes de origem da cidade-sede, prontos para compor a carteira inicial.</p>
+        </div>
+        <button class="editor-header-action game-setup-launch-button" type="button" data-open-modal="freights">
+          <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+          <span>Abrir janela</span>
+        </button>
+      </article>
+    </section>
+
+    <section class="game-setup-preview-grid" aria-label="Resumo atual da abertura">
+      <article class="editor-card game-setup-preview-card">
+        <div class="game-setup-preview-head">
+          <span class="eyebrow">Empresa</span>
+          <button class="ghost-button game-setup-mini-action" type="button" data-open-modal="company">
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+            <span>Editar</span>
+          </button>
+        </div>
+        <div id="game-setup-company-summary" class="game-setup-preview-body"></div>
+      </article>
+
+      <article class="editor-card game-setup-preview-card">
+        <div class="game-setup-preview-head">
+          <span class="eyebrow">Frota inicial</span>
+          <button class="ghost-button game-setup-mini-action" type="button" data-open-modal="fleet">
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+            <span>Editar</span>
+          </button>
+        </div>
+        <div id="game-setup-fleet-summary" class="game-setup-preview-body"></div>
+      </article>
+
+      <article class="editor-card game-setup-preview-card">
+        <div class="game-setup-preview-head">
+          <span class="eyebrow">Carteira de fretes</span>
+          <button class="ghost-button game-setup-mini-action" type="button" data-open-modal="freights">
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+            <span>Editar</span>
+          </button>
+        </div>
+        <div id="game-setup-freight-summary" class="game-setup-preview-body"></div>
+      </article>
+    </section>
+  </section>
+
+  <div id="game-setup-modal-root" class="game-setup-modal-root" hidden>
+    <button class="game-setup-modal-backdrop" type="button" aria-label="Fechar janela" data-close-modal="true"></button>
+
+    <section class="editor-card game-setup-modal game-setup-modal-company" data-modal="company" hidden>
+      <header class="game-setup-modal-head">
+        <div>
+          <h2>Criador de empresa</h2>
+        </div>
+        <button class="editor-header-action game-setup-close-button" type="button" data-close-modal="true">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          <span>Fechar</span>
+        </button>
+      </header>
+
+      <div class="game-setup-modal-body game-setup-company-layout">
+        <section class="game-setup-form-column">
+          <label class="field">
+            <span>Nome da empresa</span>
+            <input id="game-setup-company-name" class="editor-input" type="text" maxlength="48" placeholder="Ex.: Vitoria Sul Logistica" />
+          </label>
+
+          <div class="game-setup-color-row">
+            <label class="field game-setup-color-picker-field">
+              <span>Cor principal</span>
+              <input id="game-setup-company-color" class="game-setup-color-picker" type="color" value="#2d5a27" />
+            </label>
+            <label class="field game-setup-color-text-field">
+              <span>Hex</span>
+              <input id="game-setup-company-color-text" class="editor-input" type="text" maxlength="7" value="#2d5a27" />
+            </label>
+          </div>
+
+          <div class="field">
+            <span>Logo</span>
+            <div id="game-setup-logo-grid" class="game-setup-logo-grid" aria-label="Lista de logos disponiveis"></div>
+          </div>
+
+          <div class="field">
+            <span>Preview</span>
+            <div id="game-setup-company-preview" class="game-setup-company-preview"></div>
+          </div>
+
+          <div class="game-setup-modal-actions">
+            <button class="editor-header-action" type="button" data-close-modal="true">
+              <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+              <span>Concluir identidade</span>
+            </button>
+            <button class="ghost-button" type="button" data-open-modal="fleet">
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+              <span>Ir para frota</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="game-setup-map-column">
+          <div class="map-frame city-editor-map-frame game-setup-map-frame">
+            <div id="game-setup-company-map-stage" class="map-stage game-setup-map-stage" aria-label="Mapa para definir a sede"></div>
+          </div>
+
+          <div class="game-setup-market-grid" aria-label="Mercado da cidade selecionada">
+            <div id="game-setup-company-top-offers" class="game-setup-market-panel" aria-label="Top ofertas da cidade selecionada"></div>
+            <div id="game-setup-company-top-demands" class="game-setup-market-panel" aria-label="Top demandas da cidade selecionada"></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="editor-card game-setup-modal game-setup-modal-fleet" data-modal="fleet" hidden>
+      <header class="game-setup-modal-head">
+        <div>
+          <h2>Seletor de caminhoes</h2>
+        </div>
+        <button class="editor-header-action game-setup-close-button" type="button" data-close-modal="true">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          <span>Fechar</span>
+        </button>
+      </header>
+
+      <div class="game-setup-modal-body game-setup-selector-layout">
+        <section class="game-setup-rail-panel">
+          <div class="game-setup-rail-head">
+            <div>
+              <span class="eyebrow">Rolo horizontal</span>
+              <h3>Role com o mouse para percorrer a frota</h3>
+            </div>
+            <div id="game-setup-truck-rail-meta" class="truck-gallery-summary"></div>
+          </div>
+          <div id="game-setup-truck-rail" class="game-setup-horizontal-rail" data-wheel-rail="trucks" aria-label="Selecao inicial de caminhoes"></div>
+        </section>
+
+        <aside id="game-setup-truck-selection" class="game-setup-selector-summary" aria-label="Resumo da frota inicial"></aside>
+      </div>
+    </section>
+
+    <section class="editor-card game-setup-modal game-setup-modal-freights" data-modal="freights" hidden>
+      <header class="game-setup-modal-head">
+        <div>
+          <h2>Seletor de fretes</h2>
+        </div>
+        <button class="editor-header-action game-setup-close-button" type="button" data-close-modal="true">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          <span>Fechar</span>
+        </button>
+      </header>
+
+      <div class="game-setup-modal-body game-setup-selector-layout">
+        <section class="game-setup-rail-panel">
+          <div class="game-setup-rail-head">
+            <div>
+              <span class="eyebrow">Carteira inicial</span>
+              <h3 id="game-setup-freight-rail-title">Fretes de saida da sede</h3>
+            </div>
+            <div id="game-setup-freight-rail-meta" class="truck-gallery-summary"></div>
+          </div>
+          <div id="game-setup-freight-rail" class="game-setup-horizontal-rail" data-wheel-rail="freights" aria-label="Selecao inicial de fretes"></div>
+        </section>
+
+        <aside id="game-setup-freight-selection" class="game-setup-selector-summary" aria-label="Resumo da carteira inicial"></aside>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script type="module">
+  const gameSetupModuleUrl = new URL("{{ request.url_for('static', path='js/game-setup.js') }}", window.location.href);
+  gameSetupModuleUrl.searchParams.set("v", "20260413-game-setup-11");
+
+  function showGameSetupLoadError(error) {
+    const message = String(error?.message || error || "Falha ao carregar a preparacao inicial.");
+    const targets = [
+      document.getElementById("game-setup-quick-metrics"),
+      document.getElementById("game-setup-company-summary"),
+      document.getElementById("game-setup-fleet-summary"),
+      document.getElementById("game-setup-freight-summary"),
+    ].filter(Boolean);
+    targets.forEach((target) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "truck-gallery-empty";
+      wrapper.textContent = message;
+      target.replaceChildren(wrapper);
+    });
+    console.error("Brasix game setup load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showGameSetupLoadError(event.reason);
+  });
+
+  import(gameSetupModuleUrl.href).catch(showGameSetupLoadError);
+</script>
+{% endblock %}

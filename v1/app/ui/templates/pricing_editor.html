@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script>
+  (function applyPricingEditorThemeEarly() {
+    const root = document.documentElement;
+    root.classList.add("pricing-editor-page");
+    try {
+      root.dataset.editorTheme = window.localStorage.getItem("brasix:v1:pricing-editor-theme") === "night" ? "night" : "day";
+    } catch (_error) {
+      root.dataset.editorTheme = "day";
+    }
+  })();
+</script>
+{% endblock %}
+
+{% block body %}
+<main class="truck-gallery-shell flow-editor-shell pricing-editor-shell">
+  <header class="topbar truck-gallery-topbar pricing-editor-topbar">
+    <div class="truck-gallery-topbar-left">
+      <div class="brand-lockup">
+        <h1>Brasix</h1>
+        <span class="brand-divider"></span>
+        <p>Editor de precos</p>
+      </div>
+    </div>
+
+    <div id="pricing-editor-header-badges" class="editor-header-badges" aria-label="Estado do editor de precos"></div>
+
+    <div class="editor-header-actions" aria-label="Acoes do editor de precos">
+      <button id="pricing-editor-save-button" class="secondary-button" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">save</span>
+        <span>Salvar</span>
+      </button>
+      <button id="pricing-editor-reset-button" class="editor-header-action" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+        <span>Restaurar padrao</span>
+      </button>
+      <button id="pricing-editor-theme-toggle" class="secondary-button" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        <span>Modo noturno</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="truck-gallery-grid flow-editor-grid pricing-editor-grid" aria-label="Editor de precificacao do Brasix">
+    <aside class="editor-card truck-gallery-card flow-editor-column pricing-editor-column pricing-editor-cities-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>CIDADES</span>
+        <div id="pricing-editor-cities-summary" class="truck-gallery-summary"></div>
+      </div>
+
+      <div class="truck-gallery-filter-form pricing-editor-filter-form">
+        <label class="field">
+          <span>Estado</span>
+          <div class="select-shell">
+            <select id="pricing-editor-state" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Faixa da cidade</span>
+          <div class="select-shell">
+            <select id="pricing-editor-band" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Ordenar</span>
+          <div class="select-shell">
+            <select id="pricing-editor-sort" class="editor-input"></select>
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Buscar cidade</span>
+          <input id="pricing-editor-search" class="editor-input truck-gallery-text-input" type="search" placeholder="Brasilia, Uberlandia, Recife" />
+        </label>
+      </div>
+
+      <div id="pricing-editor-cities-list" class="truck-gallery-list pricing-editor-cities-list" aria-label="Lista de cidades e custo de abertura"></div>
+    </aside>
+
+    <section class="editor-card truck-gallery-card flow-editor-column pricing-editor-map-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>MAPA</span>
+        <div id="pricing-editor-map-summary" class="truck-gallery-summary"></div>
+      </div>
+
+      <div class="flow-editor-map-body pricing-editor-map-body">
+        <div class="map-frame product-editor-map-frame flow-editor-map-frame pricing-editor-map-frame">
+          <div id="pricing-editor-map-stage" class="map-stage flow-editor-map-stage pricing-editor-map-stage" aria-label="Mapa de custo de abertura"></div>
+          <div class="flow-editor-map-overlay flow-editor-map-overlay-top">
+            <strong id="pricing-editor-map-overlay-title">Custo de abertura</strong>
+          </div>
+        </div>
+
+        <div id="pricing-editor-metrics" class="flow-editor-funnel-grid pricing-editor-metrics-grid" aria-label="Metricas da cidade selecionada"></div>
+      </div>
+    </section>
+
+    <aside class="editor-card truck-gallery-card flow-editor-column pricing-editor-column pricing-editor-parameters-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>PARAMETROS</span>
+        <div id="pricing-editor-parameters-summary" class="truck-gallery-summary"></div>
+      </div>
+
+      <div id="pricing-editor-parameters-panel" class="truck-operations-side-panel pricing-editor-parameters-panel" aria-label="Parametros da precificacao"></div>
+    </aside>
+
+    <aside class="editor-card truck-gallery-card flow-editor-column pricing-editor-column pricing-editor-preview-column">
+      <div class="truck-operations-panel-head truck-operations-panel-head-split">
+        <span>PREVIEWS</span>
+        <div id="pricing-editor-preview-summary" class="truck-gallery-summary"></div>
+      </div>
+
+      <div class="pricing-editor-preview-stack">
+        <div id="pricing-editor-preview-tabs" class="pricing-editor-parameter-tabs pricing-editor-preview-tabs" role="tablist" aria-label="Grupos de preview">
+          <button id="pricing-editor-preview-tab-city" class="pricing-editor-parameter-tab pricing-editor-preview-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="pricing-editor-preview-city-panel" data-preview-tab="city">Sede</button>
+          <button id="pricing-editor-preview-tab-freight" class="pricing-editor-parameter-tab pricing-editor-preview-tab" type="button" role="tab" aria-selected="false" aria-controls="pricing-editor-preview-freight-panel" data-preview-tab="freight">Fretes</button>
+          <button id="pricing-editor-preview-tab-capital" class="pricing-editor-parameter-tab pricing-editor-preview-tab" type="button" role="tab" aria-selected="false" aria-controls="pricing-editor-preview-capital-panel" data-preview-tab="capital">Capital</button>
+        </div>
+
+        <section id="pricing-editor-preview-city-panel" class="pricing-editor-preview-panel" role="tabpanel" aria-labelledby="pricing-editor-preview-tab-city">
+          <section id="pricing-editor-preview-city-section" class="truck-operations-section-box">
+            <p class="truck-operations-stack-label">Cidade / sede</p>
+            <div id="pricing-editor-city-preview"></div>
+          </section>
+        </section>
+
+        <section id="pricing-editor-preview-freight-panel" class="pricing-editor-preview-panel" role="tabpanel" aria-labelledby="pricing-editor-preview-tab-freight" hidden>
+          <section id="pricing-editor-preview-freights-section" class="truck-operations-section-box">
+            <div class="truck-operations-panel-head truck-operations-panel-head-split pricing-editor-inline-head">
+              <span>FRETES DA ORIGEM</span>
+              <div id="pricing-editor-freights-summary" class="truck-gallery-summary"></div>
+            </div>
+            <div id="pricing-editor-freights-list" class="truck-gallery-list pricing-editor-freights-list" aria-label="Fretes da cidade selecionada"></div>
+          </section>
+
+          <section id="pricing-editor-preview-freight-detail-section" class="truck-operations-section-box">
+            <p class="truck-operations-stack-label">Frete selecionado</p>
+            <div id="pricing-editor-freight-detail"></div>
+          </section>
+        </section>
+
+        <section id="pricing-editor-preview-capital-panel" class="pricing-editor-preview-panel" role="tabpanel" aria-labelledby="pricing-editor-preview-tab-capital" hidden>
+          <section id="pricing-editor-preview-capital-section" class="truck-operations-section-box">
+            <p class="truck-operations-stack-label">Capital inicial</p>
+            <div id="pricing-editor-capital-panel"></div>
+          </section>
+
+          <div class="pricing-editor-section-divider" aria-hidden="true"></div>
+
+          <section id="pricing-editor-preview-starter-section" class="truck-operations-section-box">
+            <p class="truck-operations-stack-label">Frota starter</p>
+            <div id="pricing-editor-starter-panel"></div>
+          </section>
+        </section>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<script type="module">
+  const pricingEditorModuleUrl = new URL("{{ request.url_for('static', path='js/pricing-editor.js') }}", window.location.href);
+  pricingEditorModuleUrl.searchParams.set("v", "20260413-pricing-editor-8");
+
+  function showPricingEditorLoadError(error) {
+    const message = String(error?.message || error || "Falha ao carregar o editor de precos.");
+    const targets = [
+      document.getElementById("pricing-editor-cities-list"),
+      document.getElementById("pricing-editor-city-preview"),
+      document.getElementById("pricing-editor-freight-detail"),
+      document.getElementById("pricing-editor-capital-panel"),
+      document.getElementById("pricing-editor-starter-panel"),
+    ].filter(Boolean);
+    targets.forEach((target) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "truck-gallery-empty";
+      wrapper.textContent = message;
+      target.replaceChildren(wrapper);
+    });
+    console.error("Brasix pricing editor load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showPricingEditorLoadError(event.reason);
+  });
+
+  import(pricingEditorModuleUrl.href).catch(showPricingEditorLoadError);
+</script>
+{% endblock %}

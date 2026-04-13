@@ -36,6 +36,8 @@ class GameWorldSourceSummary(BaseModel):
     truck_body_catalog_id: str
     truck_category_catalog_id: str
     truck_operational_catalog_id: str | None = None
+    pricing_document_id: str | None = None
+    pricing_document_updated_at: str | None = None
 
 
 class GameWorldMetadata(BaseModel):
@@ -87,6 +89,14 @@ class GameWorldTruckSnapshot(BaseModel):
     truck_type_count: int = Field(ge=0)
 
 
+class GameWorldPricingSnapshot(BaseModel):
+    document_id: str | None = None
+    map_id: str | None = None
+    version: int | None = None
+    updated_at: str | None = None
+    document: dict[str, Any] = Field(default_factory=dict)
+
+
 class GameWorldCatalogSnapshot(BaseModel):
     city_by_id: dict[str, dict[str, Any]] = Field(default_factory=dict)
     product_by_id: dict[str, dict[str, Any]] = Field(default_factory=dict)
@@ -105,5 +115,6 @@ class GameWorldRuntimeDocument(BaseModel):
     map: GameWorldMapSnapshot
     products: GameWorldProductSnapshot
     trucks: GameWorldTruckSnapshot
+    pricing: GameWorldPricingSnapshot = Field(default_factory=GameWorldPricingSnapshot)
     catalogs: GameWorldCatalogSnapshot
     validation: GameWorldValidationReport = Field(default_factory=GameWorldValidationReport)

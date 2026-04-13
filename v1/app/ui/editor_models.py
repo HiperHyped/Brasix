@@ -771,6 +771,48 @@ class DieselCostSaveResponse(BaseModel):
     document: dict[str, Any]
 
 
+class PricingEditorSaveRequest(BaseModel):
+    map_id: str = Field(min_length=1)
+    document: dict[str, Any] = Field(default_factory=dict)
+    updated_at: str | None = None
+
+
+class PricingEditorSaveResponse(BaseModel):
+    document: dict[str, Any]
+
+
+class CityEditorProductValueSaveRequest(BaseModel):
+    map_id: str = Field(min_length=1)
+    city_id: str = Field(min_length=1)
+    product_id: str = Field(min_length=1)
+    layer: Literal["supply", "demand"]
+    value: int | float = Field(ge=0)
+
+
+class CityEditorProductRemoveRequest(BaseModel):
+    map_id: str = Field(min_length=1)
+    city_id: str = Field(min_length=1)
+    product_id: str = Field(min_length=1)
+    layer: Literal["supply", "demand"]
+
+
+class CityEditorFreightValueSaveRequest(BaseModel):
+    map_id: str = Field(min_length=1)
+    flow_id: str = Field(min_length=1)
+    product_id: str = Field(min_length=1)
+    origin_id: str = Field(min_length=1)
+    destination_id: str = Field(min_length=1)
+    quantity_t: int | float = Field(gt=0)
+
+
+class CityEditorFreightRemoveRequest(BaseModel):
+    map_id: str = Field(min_length=1)
+    flow_id: str = Field(min_length=1)
+    product_id: str = Field(min_length=1)
+    origin_id: str = Field(min_length=1)
+    destination_id: str = Field(min_length=1)
+
+
 class ProductOperationalSaveRequest(BaseModel):
     product_id: str = Field(min_length=1)
     unit: str | None = None

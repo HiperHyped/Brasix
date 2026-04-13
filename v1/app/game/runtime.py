@@ -6,12 +6,15 @@ from app.game.models import (
     GameWorldCatalogSnapshot,
     GameWorldMapSnapshot,
     GameWorldMetadata,
+    GameWorldPricingSnapshot,
     GameWorldProductSnapshot,
     GameWorldRuntimeDocument,
     GameWorldSourceSummary,
     GameWorldTruckSnapshot,
 )
 from app.game.validators import validate_game_world_runtime
+from app.services.data_loader import load_map_editor_payload
+from app.services.pricing_editor import load_pricing_editor_document
 from app.services import (
     load_active_map_bundle,
     load_city_product_demand_matrix_payload,
@@ -36,6 +39,8 @@ def build_game_world_runtime(*, include_validation: bool = True) -> GameWorldRun
     active_map = load_active_map_bundle()
     cities = [city.model_dump(mode="json") for city in active_map.cities]
     route_network = active_map.route_network.model_dump(mode="json")
+    map_editor = load_map_editor_payload()
+    pricing_document = load_pricing_editor_document(active_map.id, map_editor.get("population_bands"))
 
     product_catalog = load_product_catalog_v2_master_payload()
     product_family_catalog = load_product_family_catalog_payload()
@@ -106,6 +111,8 @@ def build_game_world_runtime(*, include_validation: bool = True) -> GameWorldRun
             truck_body_catalog_id=str(truck_body_catalog.get("id") or "truck_body_catalog_v1"),
             truck_category_catalog_id=str(truck_category_catalog.get("id") or "truck_category_catalog_v1"),
             truck_operational_catalog_id=str(truck_operational_catalog.get("id") or "truck_operational_catalog_v1"),
+            pricing_document_id=pricing_document.get("id") if isinstance(pricing_document, dict) else None,
+            pricing_document_updated_at=pricing_document.get("updated_at") if isinstance(pricing_document, dict) else None,
         ),
         map=GameWorldMapSnapshot(
             active_map_id=active_map.id,
@@ -137,6 +144,13 @@ def build_game_world_runtime(*, include_validation: bool = True) -> GameWorldRun
             active_truck_type_ids=active_truck_type_ids,
             body_type_ids=body_type_ids,
             truck_type_count=len(truck_type_ids),
+        ),
+        pricing=GameWorldPricingSnapshot(
+            document_id=pricing_document.get("id") if isinstance(pricing_document, dict) else None,
+            map_id=pricing_document.get("map_id") if isinstance(pricing_document, dict) else active_map.id,
+            version=pricing_document.get("version") if isinstance(pricing_document, dict) else None,
+            updated_at=pricing_document.get("updated_at") if isinstance(pricing_document, dict) else None,
+            document=pricing_document if isinstance(pricing_document, dict) else {},
         ),
         catalogs=GameWorldCatalogSnapshot(
             city_by_id={item["id"]: item for item in cities if str(item.get("id") or "").strip()},
