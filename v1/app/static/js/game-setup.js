@@ -10,6 +10,7 @@ import { escapeHtml, numberFormatter, roundNumber } from "./shared/formatters.js
 import { buildOpeningContextState } from "./shared/opening-pricing.js?v=20260413-opening-2";
 
 const THEME_KEY = "brasix:v1:game-setup-theme";
+const GAME_SESSION_SNAPSHOT_KEY = "brasix:v1:game-session-snapshot";
 const COMPANY_LOGO_OPTIONS = [
   { id: "local_shipping", icon: "local_shipping", label: "Carga" },
   { id: "apartment", icon: "apartment", label: "Sede" },
@@ -210,6 +211,165 @@ function formatVolumeM3(value) {
 
 function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function normalizeDifficultyId(value) {
+  return ["hard", "standard", "sandbox"].includes(String(value || "").trim())
+    ? String(value || "").trim()
+    : "standard";
+}
+
+function readGameSetupSnapshot() {
+  try {
+    const rawSnapshot = window.localStorage.getItem(GAME_SESSION_SNAPSHOT_KEY);
+    if (!rawSnapshot) {
+      return null;
+    }
+    const parsed = JSON.parse(rawSnapshot);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (_error) {
+    return null;
+  }
+}
+
+function buildGameSetupSnapshot() {
+  const headquarters = currentHqCity();
+  const capital = currentCapitalSnapshot();
+  const selectedFreights = selectedFreightEntries().map((flow) => {
+    const pricingEntry = pricedFreightEntryById(flow.id, state.company.hqCityId) || freightPricingForFlow(flow);
+    const assignedTruckUnitId = selectedFreightAssignmentForFlow(flow.id);
+    const assignedTruckUnit = selectedTruckUnitById(assignedTruckUnitId);
+    return {
+      flow_id: flow.id,
+      truck_instance_id: assignedTruckUnitId,
+      truck_id: String(assignedTruckUnit?.truck?.id || assignedTruckUnit?.truck_id || "").trim(),
+      origin_id: String(flow.origin_id || "").trim(),
+      destination_id: String(flow.destination_id || "").trim(),
+      product_id: String(flow.product_id || "").trim(),
+      product_name: String(flow.product_name || "").trim(),
+      product_emoji: String(flow.product_emoji || "📦"),
+      distance_km: Number(flow.distance_km || 0),
+      quantity_t: Number(flow.quantity_t || 0),
+      contract_payload_tons: Number(pricingEntry?.contractPayloadTons || 0),
+      contract_revenue_brl: Number(pricingEntry?.contractRevenue || 0),
+      unit_revenue_per_ton_brl: Number(pricingEntry?.unitRevenuePerTon || 0),
+    };
+  });
+
+  return {
+    version: 1,
+    saved_at: new Date().toISOString(),
+    difficulty: currentDifficultyId(),
+    company: {
+      name: String(state.company.name || "Brasix").trim() || "Brasix",
+      color: String(state.company.color || "#356d63").trim() || "#356d63",
+      logoId: String(state.company.logoId || COMPANY_LOGO_OPTIONS[0].id).trim() || COMPANY_LOGO_OPTIONS[0].id,
+      hqCityId: String(state.company.hqCityId || "").trim(),
+      hqPurchased: Boolean(state.company.hqPurchased),
+      fleetPurchased: Boolean(state.company.fleetPurchased),
+    },
+    selectedTruckInstances: selectedTruckUnits().map((instance) => ({
+      id: String(instance.id || "").trim(),
+      display_number: Number(instance.display_number || 0),
+      current_city_id: String(instance.current_city_id || state.company.hqCityId || "").trim(),
+      truck_id: String(instance.truck?.id || instance.truck_id || "").trim(),
+    })),
+    selectedFreightAssignments: Object.fromEntries(
+      Object.entries(state.selectedFreightAssignments || {})
+        .map(([flowId, truckInstanceId]) => [String(flowId || "").trim(), String(truckInstanceId || "").trim()])
+        .filter(([flowId, truckInstanceId]) => flowId && truckInstanceId),
+    ),
+    selectedFreights,
+    economy: {
+      initial_cash_brl: Number(capital.initialCash || 0),
+      headquarters_cost_brl: Number(headquartersOpeningCost(headquarters) || 0),
+      fleet_investment_brl: Number(selectedFleetInvestmentTotal() || 0),
+      remaining_cash_brl: Number(remainingCapitalAfterSelections(headquarters) || 0),
+      daily_fixed_cost_brl: selectedTruckEntries().reduce(
+        (total, entry) => total + (Number(entry?.truck?.base_fixed_cost_brl_per_day || 0) * fleetEntryUnits(entry)),
+        0,
+      ),
+    },
+  };
+}
+
+function persistGameSetupSnapshot() {
+  try {
+    window.localStorage.setItem(GAME_SESSION_SNAPSHOT_KEY, JSON.stringify(buildGameSetupSnapshot()));
+  } catch (_error) {
+    // Persistencia opcional.
+  }
+}
+
+function restoreGameSetupSnapshot() {
+  const snapshot = readGameSetupSnapshot();
+  if (!snapshot) {
+    return;
+  }
+
+  const snapshotCompany = snapshot.company && typeof snapshot.company === "object" ? snapshot.company : {};
+  const normalizedDifficulty = normalizeDifficultyId(snapshot.difficulty);
+  const snapshotColor = /^#[0-9a-fA-F]{6}$/.test(String(snapshotCompany.color || "").trim())
+    ? String(snapshotCompany.color || "").trim().toLowerCase()
+    : state.company.color;
+  const snapshotLogoId = COMPANY_LOGO_OPTIONS.some((option) => option.id === snapshotCompany.logoId)
+    ? snapshotCompany.logoId
+    : state.company.logoId;
+  const snapshotHqCityId = state.citiesById[String(snapshotCompany.hqCityId || "").trim()]
+    ? String(snapshotCompany.hqCityId || "").trim()
+    : state.company.hqCityId;
+
+  state.selectedDifficulty = normalizedDifficulty;
+  state.company.name = String(snapshotCompany.name || state.company.name || "Brasix").trim() || "Brasix";
+  state.company.color = snapshotColor;
+  state.company.logoId = snapshotLogoId;
+  state.company.hqCityId = snapshotHqCityId;
+  state.company.hqPurchased = Boolean(snapshotCompany.hqPurchased && snapshotHqCityId);
+  state.company.fleetPurchased = Boolean(snapshotCompany.fleetPurchased);
+
+  const nextTruckInstances = (Array.isArray(snapshot.selectedTruckInstances) ? snapshot.selectedTruckInstances : [])
+    .map((instance, index) => {
+      const truckId = String(instance?.truck_id || "").trim();
+      if (!truckId || !state.trucksById[truckId]) {
+        return null;
+      }
+      const fallbackDisplayNumber = index + 1;
+      const displayNumber = Number(instance?.display_number || 0) > 0
+        ? Number(instance.display_number)
+        : fallbackDisplayNumber;
+      const truckInstanceId = String(instance?.id || "").trim() || buildTruckGameId();
+      const currentCityId = state.citiesById[String(instance?.current_city_id || "").trim()]
+        ? String(instance.current_city_id || "").trim()
+        : snapshotHqCityId;
+      return {
+        id: truckInstanceId,
+        display_number: displayNumber,
+        current_city_id: String(currentCityId || snapshotHqCityId || "").trim(),
+        truck_id: truckId,
+      };
+    })
+    .filter(Boolean);
+
+  state.selectedTruckInstances = nextTruckInstances;
+  state.nextTruckDisplayNumber = nextTruckInstances.length
+    ? Math.max(...nextTruckInstances.map((instance) => Number(instance.display_number || 0)), 0) + 1
+    : 1;
+
+  state.selectedFreightAssignments = Object.fromEntries(
+    Object.entries(snapshot.selectedFreightAssignments || {})
+      .map(([flowId, truckInstanceId]) => [String(flowId || "").trim(), String(truckInstanceId || "").trim()])
+      .filter(([flowId, truckInstanceId]) => {
+        if (!flowId || !truckInstanceId) {
+          return false;
+        }
+        return Boolean(state.freightFlowsById[flowId] && nextTruckInstances.some((instance) => instance.id === truckInstanceId));
+      }),
+  );
+
+  if (!state.selectedTruckInstances.length) {
+    state.company.fleetPurchased = false;
+  }
+  pruneFreightSelection();
 }
 
 function formatConsumption(value) {
@@ -2472,6 +2632,7 @@ function renderAll() {
   renderCompanyModal();
   renderFleetModal();
   renderFreightModal();
+  persistGameSetupSnapshot();
 }
 
 function updateModalVisibility() {
@@ -2684,6 +2845,7 @@ function handleInputs(event) {
     renderHeaderBadges();
     renderCompanySummary();
     renderCompanyPreview();
+    persistGameSetupSnapshot();
     return;
   }
 
@@ -2746,6 +2908,7 @@ async function initialize() {
     mergeCityMarketData(cityPayload);
   }
   mergeTruckCompatibility(matrixPayload);
+  restoreGameSetupSnapshot();
   bindEvents();
   renderAll();
 }

@@ -6880,6 +6880,583 @@ html[data-editor-theme="night"] .runtime-severity-badge.is-error {
   justify-content: center;
 }
 
+html.game-runtime-page {
+  --game-runtime-panel-bg: rgba(255, 250, 241, 0.94);
+  --game-runtime-panel-border: rgba(114, 121, 110, 0.18);
+  --game-runtime-panel-shadow: 0 18px 36px rgba(51, 41, 23, 0.14);
+  --game-runtime-muted: #586055;
+  --game-runtime-map-bg:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.26), transparent 34%),
+    linear-gradient(180deg, rgba(247, 243, 233, 0.94), rgba(227, 221, 205, 0.92));
+}
+
+html.game-runtime-page[data-editor-theme="night"] {
+  --game-runtime-panel-bg: rgba(26, 33, 35, 0.92);
+  --game-runtime-panel-border: rgba(126, 156, 162, 0.18);
+  --game-runtime-panel-shadow: 0 18px 36px rgba(0, 0, 0, 0.34);
+  --game-runtime-muted: #a3b3b5;
+  --game-runtime-map-bg:
+    radial-gradient(circle at top left, rgba(92, 123, 129, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(18, 24, 26, 0.96), rgba(23, 29, 31, 0.94));
+}
+
+.game-runtime-shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.game-runtime-topbar {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: var(--header-h);
+  gap: 16px;
+  background: color-mix(in srgb, var(--game-runtime-panel-bg) 90%, transparent);
+}
+
+.game-runtime-topbar-left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.game-runtime-status {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-runtime-status-pill {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid rgba(114, 121, 110, 0.18);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.game-runtime-status-pill.is-ready {
+  border-color: rgba(45, 90, 39, 0.26);
+  color: var(--green);
+}
+
+.game-runtime-status-pill.is-draft {
+  border-color: rgba(140, 79, 16, 0.28);
+  color: var(--copper);
+}
+
+.game-runtime-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.game-runtime-speed-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid rgba(114, 121, 110, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.game-runtime-speed-button {
+  min-width: 42px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.game-runtime-speed-button.is-active {
+  background: rgba(53, 109, 99, 0.12);
+  color: var(--green);
+}
+
+.game-runtime-clock {
+  min-width: 138px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(114, 121, 110, 0.18);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.game-runtime-main {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.game-runtime-map-frame,
+.game-runtime-map-stage {
+  width: 100%;
+  height: 100%;
+}
+
+.game-runtime-map-frame {
+  border-radius: 0;
+  background: var(--game-runtime-map-bg);
+}
+
+.game-runtime-overlay,
+.game-runtime-drawer,
+.game-runtime-player-card {
+  border: 1px solid var(--game-runtime-panel-border);
+  background: var(--game-runtime-panel-bg);
+  box-shadow: var(--game-runtime-panel-shadow);
+  backdrop-filter: blur(16px);
+}
+
+.game-runtime-overlay {
+  position: absolute;
+  z-index: 401;
+}
+
+.game-runtime-human-hud {
+  top: 18px;
+  left: 18px;
+  width: min(360px, calc(100vw - 36px));
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.game-runtime-log-panel {
+  top: 18px;
+  right: 18px;
+  width: min(340px, calc(100vw - 36px));
+  max-height: min(52vh, 460px);
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  overflow: auto;
+}
+
+.game-runtime-panel-head,
+.game-runtime-drawer-head,
+.game-runtime-drawer-section-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.game-runtime-panel-title {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.game-runtime-panel-title strong,
+.game-runtime-drawer-section-head strong,
+.game-runtime-player-card strong,
+.game-runtime-contract-row strong,
+.game-runtime-truck-row strong,
+.game-runtime-summary-box strong,
+.game-runtime-contract-chip strong,
+.game-runtime-log-line strong {
+  margin: 0;
+  font-family: var(--font-head);
+  color: var(--text);
+}
+
+.game-runtime-panel-title span,
+.game-runtime-drawer-section-head span,
+.game-runtime-contract-row small,
+.game-runtime-contract-row span,
+.game-runtime-truck-row span,
+.game-runtime-summary-box span,
+.game-runtime-contract-chip small,
+.game-runtime-log-line span,
+.game-runtime-player-card span,
+.game-runtime-player-card small,
+.game-runtime-inline-alert span:last-child {
+  color: var(--game-runtime-muted);
+}
+
+.game-runtime-mini-action,
+.game-runtime-mini-link {
+  min-height: 32px;
+}
+
+.game-runtime-metric-grid,
+.game-runtime-drawer-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.game-runtime-metric-card,
+.game-runtime-summary-box {
+  padding: 10px 12px;
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  border-radius: 14px;
+  display: grid;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.game-runtime-summary-box strong.is-positive {
+  color: var(--green);
+}
+
+.game-runtime-summary-box strong.is-negative {
+  color: #8b2e2e;
+}
+
+.game-runtime-inline-stack,
+.game-runtime-drawer-stack,
+.game-runtime-log-list {
+  display: grid;
+  gap: 8px;
+}
+
+.game-runtime-contract-chip,
+.game-runtime-truck-row,
+.game-runtime-contract-row,
+.game-runtime-log-line {
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.game-runtime-contract-chip,
+.game-runtime-truck-row,
+.game-runtime-contract-row,
+.game-runtime-log-line {
+  padding: 10px 12px;
+}
+
+.game-runtime-contract-chip {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
+  border-left: 4px solid var(--player-color, var(--green));
+}
+
+.game-runtime-inline-alert {
+  padding: 10px 12px;
+  border: 1px solid rgba(140, 79, 16, 0.18);
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  background: rgba(140, 79, 16, 0.1);
+}
+
+.game-runtime-inline-alert strong {
+  color: var(--copper);
+}
+
+.game-runtime-panel-footer {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.game-runtime-log-line {
+  border-left: 4px solid rgba(114, 121, 110, 0.26);
+}
+
+.game-runtime-log-line.is-positive {
+  border-left-color: rgba(45, 90, 39, 0.62);
+}
+
+.game-runtime-log-line.is-negative {
+  border-left-color: rgba(139, 46, 46, 0.62);
+}
+
+.game-runtime-bottom {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  left: 18px;
+  z-index: 405;
+  display: grid;
+  gap: 10px;
+}
+
+.game-runtime-drawer {
+  padding: 14px;
+}
+
+.game-runtime-drawer[hidden] {
+  display: none;
+}
+
+.game-runtime-drawer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-runtime-drawer-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.game-runtime-drawer-section {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.game-runtime-player-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.game-runtime-player-card {
+  min-height: 84px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  display: grid;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+}
+
+.game-runtime-player-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  border-radius: 18px 18px 0 0;
+  background: var(--player-color, var(--green));
+}
+
+.game-runtime-player-card.is-active,
+.game-runtime-player-card.is-focused {
+  transform: translateY(-4px);
+}
+
+.game-runtime-player-card-top,
+.game-runtime-player-card-metrics,
+.game-runtime-contract-row-top,
+.game-runtime-contract-row-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.game-runtime-player-card-top {
+  align-items: start;
+}
+
+.game-runtime-player-card-top div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.game-runtime-player-card-metrics {
+  color: var(--game-runtime-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.game-runtime-truck-row,
+.game-runtime-contract-row {
+  display: grid;
+  gap: 8px;
+}
+
+.game-runtime-truck-row {
+  border-left: 4px solid var(--player-color, transparent);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.game-runtime-truck-row.is-idle {
+  border-left-color: rgba(114, 121, 110, 0.18);
+}
+
+.game-runtime-contract-row-meta {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  color: var(--game-runtime-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.game-runtime-progress {
+  height: 7px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(114, 121, 110, 0.16);
+}
+
+.game-runtime-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--player-color, var(--green)) 62%, white), var(--player-color, var(--green)));
+}
+
+.game-runtime-vehicle-icon-shell {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.game-runtime-vehicle-icon {
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  background: var(--player-color, var(--green));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  color: #ffffff;
+}
+
+.game-runtime-vehicle-icon.is-loading,
+.game-runtime-vehicle-icon.is-unloading {
+  background: color-mix(in srgb, var(--player-color, var(--green)) 74%, #8c4f10);
+}
+
+.game-runtime-vehicle-icon.is-returning {
+  background: color-mix(in srgb, var(--player-color, var(--green)) 74%, #4f8593);
+}
+
+.game-runtime-vehicle-icon .material-symbols-outlined {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.game-runtime-vehicle-icon small {
+  position: absolute;
+  right: -6px;
+  bottom: -7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 28, 30, 0.92);
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-status-pill,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-speed-controls,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-clock,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-metric-card,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-summary-box,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-contract-chip,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-truck-row,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-contract-row,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-log-line {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 1220px) {
+  .game-runtime-topbar {
+    grid-template-columns: 1fr;
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .game-runtime-topbar-left,
+  .game-runtime-header-actions {
+    flex-wrap: wrap;
+  }
+
+  .game-runtime-drawer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .game-runtime-player-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 920px) {
+  .game-runtime-human-hud,
+  .game-runtime-log-panel {
+    width: calc(100vw - 28px);
+    left: 14px;
+    right: 14px;
+  }
+
+  .game-runtime-log-panel {
+    top: auto;
+    bottom: 222px;
+    max-height: 28vh;
+  }
+
+  .game-runtime-bottom {
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+  }
+
+  .game-runtime-drawer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .game-runtime-main {
+    overflow: auto;
+  }
+
+  .game-runtime-human-hud,
+  .game-runtime-log-panel,
+  .game-runtime-bottom {
+    position: static;
+    width: auto;
+  }
+
+  .game-runtime-main {
+    display: grid;
+    grid-template-rows: minmax(56vh, 56vh) auto auto auto;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .game-runtime-map-frame {
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .game-runtime-player-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
 .city-editor-map-tooltip {
   padding: 8px 10px;
   border-radius: 12px;
@@ -7072,17 +7649,23 @@ body.game-setup-page {
 }
 
 .game-setup-shell {
+  --editor-button-height: 32px;
+  height: 100vh;
   min-height: 100vh;
   display: grid;
-  grid-template-rows: var(--header-h) 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
   position: relative;
 }
 
 .game-setup-topbar {
+  height: auto;
+  min-height: var(--header-h);
   grid-template-columns: auto 1fr auto;
   position: sticky;
   top: 0;
   z-index: 30;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .game-setup-topbar-left {
@@ -7094,14 +7677,19 @@ body.game-setup-page {
 .game-setup-main {
   min-height: 0;
   display: grid;
-  gap: 14px;
-  padding: 14px;
+  align-content: start;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  overflow: hidden;
 }
 
 .game-setup-hero-card {
+  --editor-card-padding: 8px;
+  --editor-card-gap: 6px;
   display: grid;
-  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
   overflow: hidden;
   position: relative;
   background:
@@ -7121,88 +7709,148 @@ body.game-setup-page {
   pointer-events: none;
 }
 
-.game-setup-hero-copy {
+.game-setup-hero-intro {
+  --setup-accent: #2d5a27;
+  --setup-accent-soft: rgba(45, 90, 39, 0.16);
   position: relative;
   z-index: 1;
   display: grid;
-  align-content: center;
-  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(45, 90, 39, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
-.game-setup-hero-copy h2 {
+.game-setup-hero-intro-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 14px;
+  font-size: 1.16rem;
+}
+
+.game-setup-hero-intro-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.game-setup-hero-intro-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.game-setup-hero-intro-copy h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.12rem;
   line-height: 1;
   color: var(--text);
+}
+
+.game-setup-hero-intro-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.08;
+  max-width: none;
+}
+
+.game-setup-hero-intro .game-setup-launch-kind {
+  margin-left: 0;
+  flex: 0 0 auto;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
 }
 
 .game-setup-hero-side {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  align-items: stretch;
-  gap: 14px;
+  grid-template-columns: minmax(200px, 220px) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
 }
 
 .game-setup-difficulty-field {
   display: grid;
-  align-content: start;
-  gap: 8px;
-  padding: 14px 16px;
-  border-radius: 18px;
+  align-content: center;
+  gap: 4px;
+  min-height: 100%;
+  padding: 10px 12px;
+  border-radius: 16px;
   border: 1px solid rgba(45, 90, 39, 0.12);
   background: rgba(255, 255, 255, 0.76);
 }
 
 .game-setup-difficulty-field > span {
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.game-setup-difficulty-select {
+  height: 30px;
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 0.78rem;
 }
 
 .game-setup-quick-metrics {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .game-setup-metric-card {
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid rgba(45, 90, 39, 0.12);
   background: rgba(255, 255, 255, 0.78);
-  padding: 16px 18px;
+  padding: 10px 12px;
   display: grid;
-  gap: 8px;
+  align-content: center;
+  gap: 2px;
 }
 
 .game-setup-metric-card span {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .game-setup-metric-card strong {
   color: var(--text);
-  font-size: 1.24rem;
+  font-size: 0.98rem;
+  line-height: 1.05;
+}
+
+.game-setup-metric-card.is-placeholder strong {
+  color: var(--muted);
 }
 
 .game-setup-launch-grid,
 .game-setup-preview-grid {
   display: grid;
-  gap: 14px;
+  gap: 10px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .game-setup-launch-card,
 .game-setup-preview-card {
+  --editor-card-padding: 10px;
+  --editor-card-gap: 8px;
   display: grid;
-  gap: 16px;
+  gap: 10px;
 }
 
 .game-setup-launch-card {
@@ -7225,19 +7873,19 @@ body.game-setup-page {
 }
 
 .game-setup-launch-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   display: inline-grid;
   place-items: center;
   background: var(--setup-accent-soft, rgba(45, 90, 39, 0.14));
   color: var(--setup-accent, var(--green));
-  font-size: 1.42rem;
+  font-size: 1.18rem;
 }
 
 .game-setup-launch-kind {
   margin-left: auto;
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -7253,10 +7901,17 @@ body.game-setup-page {
   color: var(--text);
 }
 
+.game-setup-launch-copy h3 {
+  font-size: 1.02rem;
+  line-height: 1.04;
+}
+
 .game-setup-launch-copy p,
 .game-setup-rail-copy p {
   margin: 0;
   color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.12;
 }
 
 .game-setup-map-head {
@@ -7291,22 +7946,25 @@ body.game-setup-page {
 
 .game-setup-launch-button {
   justify-self: start;
+  height: 30px;
+  padding-inline: 10px;
+  font-size: 0.72rem;
 }
 
 .game-setup-preview-body {
-  min-height: 140px;
+  min-height: 96px;
   display: grid;
   align-content: start;
-  gap: 14px;
+  gap: 10px;
 }
 
 .game-setup-company-badge,
 .game-setup-company-preview-card {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 14px;
+  gap: 10px;
   align-items: center;
-  padding: 14px;
+  padding: 10px 12px;
   border-radius: 18px;
   background: color-mix(in srgb, var(--company-color, var(--green)) 10%, white);
   border: 1px solid color-mix(in srgb, var(--company-color, var(--green)) 18%, rgba(45, 90, 39, 0.14));
@@ -7314,9 +7972,9 @@ body.game-setup-page {
 
 .game-setup-company-badge .material-symbols-outlined,
 .game-setup-company-preview-mark {
-  width: 58px;
-  height: 58px;
-  border-radius: 18px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: inline-grid;
   place-items: center;
   background: color-mix(in srgb, var(--company-color, var(--green)) 20%, white);
@@ -7347,7 +8005,7 @@ body.game-setup-page {
 
 .game-setup-summary-metrics {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .game-setup-summary-metrics article,
@@ -7355,11 +8013,11 @@ body.game-setup-page {
   border-radius: 14px;
   border: 1px solid rgba(114, 121, 110, 0.14);
   background: rgba(255, 255, 255, 0.74);
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 .game-setup-selection-list {
@@ -8205,6 +8863,12 @@ html[data-editor-theme="night"] .game-setup-hero-card {
     linear-gradient(180deg, rgba(22, 26, 24, 0.96), rgba(17, 21, 19, 0.94));
 }
 
+html[data-editor-theme="night"] .game-setup-hero-intro {
+  --setup-accent: #98d8cb;
+  --setup-accent-soft: rgba(88, 178, 161, 0.18);
+}
+
+html[data-editor-theme="night"] .game-setup-hero-intro,
 html[data-editor-theme="night"] .game-setup-difficulty-field,
 html[data-editor-theme="night"] .game-setup-company-economy-card {
   background: rgba(30, 35, 32, 0.94);
@@ -8274,8 +8938,6 @@ html[data-editor-theme="night"] .game-setup-compatibility-note.is-active {
 
 @media (max-width: 1220px) {
   .game-setup-hero-card,
-  .game-setup-launch-grid,
-  .game-setup-preview-grid,
   .game-setup-company-layout,
   .game-setup-selector-layout {
     grid-template-columns: 1fr;
@@ -8283,6 +8945,14 @@ html[data-editor-theme="night"] .game-setup-compatibility-note.is-active {
 
   .game-setup-hero-side {
     grid-template-columns: 1fr;
+  }
+
+  .game-setup-hero-intro {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .game-setup-quick-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .game-setup-modal {
@@ -8311,9 +8981,101 @@ html[data-editor-theme="night"] .game-setup-compatibility-note.is-active {
   }
 }
 
+@media (max-height: 920px) {
+  .game-setup-shell {
+    --editor-button-height: 30px;
+  }
+
+  .game-setup-topbar {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .game-setup-main {
+    gap: 6px;
+    padding: 8px 10px 10px;
+  }
+
+  .game-setup-hero-card {
+    --editor-card-padding: 6px;
+    gap: 6px;
+  }
+
+  .game-setup-launch-grid,
+  .game-setup-preview-grid {
+    gap: 8px;
+  }
+
+  .game-setup-launch-card,
+  .game-setup-preview-card {
+    --editor-card-padding: 8px;
+    gap: 8px;
+  }
+
+  .game-setup-launch-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.04rem;
+  }
+
+  .game-setup-launch-copy h3 {
+    font-size: 0.96rem;
+  }
+
+  .game-setup-launch-copy p,
+  .game-setup-rail-copy p,
+  .game-setup-hero-intro-copy p {
+    font-size: 0.78rem;
+    line-height: 1.08;
+  }
+
+  .game-setup-preview-body {
+    min-height: 84px;
+    gap: 8px;
+  }
+
+  .game-setup-company-badge,
+  .game-setup-company-preview-card {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .game-setup-company-badge .material-symbols-outlined,
+  .game-setup-company-preview-mark {
+    width: 42px;
+    height: 42px;
+  }
+
+  .game-setup-summary-metrics article,
+  .game-setup-selection-line {
+    padding: 7px 9px;
+  }
+}
+
 @media (max-width: 840px) {
   .game-setup-main {
     padding: 12px;
+  }
+
+  .game-setup-launch-grid,
+  .game-setup-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-setup-hero-intro {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .game-setup-hero-intro-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+
+  .game-setup-hero-intro-topline {
+    align-items: start;
+    flex-direction: column;
   }
 
   .game-setup-topbar {

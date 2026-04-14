@@ -28,6 +28,10 @@
     <div id="game-setup-header-badges" class="editor-header-badges" aria-label="Estado da preparacao inicial"></div>
 
     <div class="editor-header-actions" aria-label="Acoes da preparacao inicial">
+      <a class="ghost-button" href="/jogo" target="_blank" rel="noopener noreferrer">
+        <span class="material-symbols-outlined" aria-hidden="true">play_circle</span>
+        <span>Jogo</span>
+      </a>
       <a class="ghost-button" href="/editores" target="_blank" rel="noopener noreferrer">
         <span class="material-symbols-outlined" aria-hidden="true">widgets</span>
         <span>Editores</span>
@@ -45,19 +49,43 @@
 
   <section class="game-setup-main" aria-label="Sala de abertura do jogo">
     <section class="editor-card game-setup-hero-card">
-      <div class="game-setup-hero-copy">
-        <h2>Abertura</h2>
-      </div>
+      <article class="game-setup-hero-intro">
+        <span class="game-setup-launch-icon game-setup-hero-intro-icon material-symbols-outlined" aria-hidden="true">play_circle</span>
+        <div class="game-setup-hero-intro-copy">
+          <div class="game-setup-hero-intro-topline">
+            <h2>Abertura</h2>
+            <span class="game-setup-launch-kind">Inicio</span>
+          </div>
+          <p>Dificuldade, capital inicial, sede, frota e saldo da largada.</p>
+        </div>
+      </article>
       <div class="game-setup-hero-side">
         <label class="field game-setup-difficulty-field">
           <span>Nivel de dificuldade</span>
-          <select id="game-setup-difficulty-select" class="editor-input" aria-label="Nivel de dificuldade inicial">
+          <select id="game-setup-difficulty-select" class="editor-input game-setup-difficulty-select" aria-label="Nivel de dificuldade inicial">
             <option value="hard">Dificil</option>
             <option value="standard" selected>Padrao</option>
             <option value="sandbox">Sandbox</option>
           </select>
         </label>
-        <div id="game-setup-quick-metrics" class="game-setup-quick-metrics" aria-label="Indicadores rapidos da sala de abertura"></div>
+        <div id="game-setup-quick-metrics" class="game-setup-quick-metrics" aria-label="Indicadores rapidos da sala de abertura">
+          <article class="game-setup-metric-card is-placeholder">
+            <span>Capital inicial</span>
+            <strong>--</strong>
+          </article>
+          <article class="game-setup-metric-card is-placeholder">
+            <span>Sede</span>
+            <strong>--</strong>
+          </article>
+          <article class="game-setup-metric-card is-placeholder">
+            <span>Caminhoes</span>
+            <strong>--</strong>
+          </article>
+          <article class="game-setup-metric-card is-placeholder">
+            <span>Saldo</span>
+            <strong>--</strong>
+          </article>
+        </div>
       </div>
     </section>
 

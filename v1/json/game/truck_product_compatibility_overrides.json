@@ -105,6 +105,12 @@
     },
     {
       "truck_type_id": "truck_type_bitruck_vocacional_8x4",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:59:07-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_bitruck_vocacional_8x4",
       "product_id": "cafe",
       "compatible": false,
       "updated_at": "2026-03-31T23:21:34-03:00"
@@ -555,6 +561,12 @@
     },
     {
       "truck_type_id": "truck_type_custom_novo_caminhao_22",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:59:19-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_22",
       "product_id": "cafe",
       "compatible": false,
       "updated_at": "2026-03-31T23:21:21-03:00"
@@ -618,6 +630,12 @@
       "product_id": "acucar",
       "compatible": true,
       "updated_at": "2026-04-01T17:33:32-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_24",
+      "product_id": "batata",
+      "compatible": true,
+      "updated_at": "2026-04-13T23:58:12-03:00"
     },
     {
       "truck_type_id": "truck_type_custom_novo_caminhao_24",
@@ -687,6 +705,12 @@
     },
     {
       "truck_type_id": "truck_type_custom_novo_caminhao_25",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:59:24-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_25",
       "product_id": "celulose",
       "compatible": true,
       "updated_at": "2026-04-01T17:05:47-03:00"
@@ -738,6 +762,12 @@
       "product_id": "algodao",
       "compatible": false,
       "updated_at": "2026-03-31T22:58:43-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_custom_novo_caminhao_26",
+      "product_id": "batata",
+      "compatible": true,
+      "updated_at": "2026-04-13T23:58:09-03:00"
     },
     {
       "truck_type_id": "truck_type_custom_novo_caminhao_29",
@@ -1491,6 +1521,12 @@
     },
     {
       "truck_type_id": "truck_type_offroad_6x6",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:58:41-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_offroad_6x6",
       "product_id": "cafe",
       "compatible": false,
       "updated_at": "2026-03-31T23:21:41-03:00"
@@ -1785,6 +1821,12 @@
     },
     {
       "truck_type_id": "truck_type_toco_leve_4x2",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:59:13-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_toco_leve_4x2",
       "product_id": "bebida",
       "compatible": false,
       "updated_at": "2026-03-31T22:34:15-03:00"
@@ -2046,6 +2088,12 @@
       "product_id": "arroz",
       "compatible": false,
       "updated_at": "2026-03-31T22:44:30-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_toco_semipesado_4x2",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:59:04-03:00"
     },
     {
       "truck_type_id": "truck_type_toco_semipesado_4x2",
@@ -2427,6 +2475,12 @@
     },
     {
       "truck_type_id": "truck_type_truck_pesado_6x4",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:59:39-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_truck_pesado_6x4",
       "product_id": "bebida",
       "compatible": false,
       "updated_at": "2026-03-31T23:50:57-03:00"
@@ -2568,6 +2622,12 @@
       "product_id": "arroz",
       "compatible": false,
       "updated_at": "2026-03-31T23:27:23-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_truck_semipesado_6x2",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:59:47-03:00"
     },
     {
       "truck_type_id": "truck_type_truck_semipesado_6x2",

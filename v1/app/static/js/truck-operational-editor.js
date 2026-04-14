@@ -2,6 +2,7 @@ import { escapeHtml } from "./shared/formatters.js";
 
 const LAYOUT_KEY = "brasix:v1:truck-operations-layout";
 const THEME_KEY = "brasix:v1:truck-operations-theme";
+const OPERATIONAL_AUTOSAVE_DELAY_MS = 900;
 
 const ENUM_LABELS = {
   size_tier: {
@@ -118,6 +119,8 @@ const state = {
   selectedTypeId: "",
   activeTab: "technical",
   draftByTypeId: {},
+  dirtyOperationalTypeIds: {},
+  queuedSaveTypeIds: {},
   filters: {
     search: "",
     sizeTier: "",
@@ -128,6 +131,8 @@ const state = {
   },
   controlsBound: false,
   pendingSaveTypeId: null,
+  autoSaveTimerId: null,
+  autoSaveTypeId: "",
   pendingProductTypeId: null,
   pendingAutofillTypeId: null,
   autofillPollTimerId: null,
@@ -139,7 +144,7 @@ const state = {
 
 function loadBootstrap() {
   const url = new URL("/api/viewer/truck-operations/bootstrap", window.location.origin);
-  url.searchParams.set("v", "20260413-truck-tanque-2");
+  url.searchParams.set("v", "20260414-truck-autosave-1");
   return fetch(url, { cache: "no-store" }).then((response) => response.json());
 }
 
@@ -714,6 +719,131 @@ function resetOperationalDraft(typeId) {
   delete state.draftByTypeId[typeId];
 }
 
+function operationalPayloadFingerprint(payload) {
+  return JSON.stringify(payload);
+}
+
+function hasDirtyOperationalDraft(typeId) {
+  return Boolean(state.dirtyOperationalTypeIds[typeId]);
+}
+
+function markOperationalDraftDirty(typeId) {
+  if (!typeId) {
+    return;
+  }
+  state.dirtyOperationalTypeIds[typeId] = true;
+  if (state.transientStatus?.typeId === typeId) {
+    state.transientStatus = null;
+  }
+}
+
+function clearOperationalDraftDirty(typeId) {
+  delete state.dirtyOperationalTypeIds[typeId];
+}
+
+function clearScheduledOperationalAutosave(typeId = "") {
+  if (typeId && state.autoSaveTypeId && state.autoSaveTypeId !== typeId) {
+    return;
+  }
+  if (state.autoSaveTimerId) {
+    window.clearTimeout(state.autoSaveTimerId);
+  }
+  state.autoSaveTimerId = null;
+  state.autoSaveTypeId = "";
+}
+
+function scheduleOperationalAutosave(typeId, { delay = OPERATIONAL_AUTOSAVE_DELAY_MS } = {}) {
+  if (!typeId) {
+    return;
+  }
+  if (state.autoSaveTimerId && state.autoSaveTypeId && state.autoSaveTypeId !== typeId && hasDirtyOperationalDraft(state.autoSaveTypeId)) {
+    state.queuedSaveTypeIds[state.autoSaveTypeId] = true;
+  }
+  clearScheduledOperationalAutosave();
+  state.autoSaveTypeId = typeId;
+  state.autoSaveTimerId = window.setTimeout(() => {
+    state.autoSaveTimerId = null;
+    state.autoSaveTypeId = "";
+    void saveOperationalRecord(typeId, { source: "auto" });
+  }, delay);
+}
+
+function scheduleQueuedOperationalSave() {
+  if (state.autoSaveTimerId || state.pendingSaveTypeId) {
+    return;
+  }
+  const nextTypeId = Object.keys(state.queuedSaveTypeIds).find((typeId) => hasDirtyOperationalDraft(typeId));
+  if (!nextTypeId) {
+    return;
+  }
+  delete state.queuedSaveTypeIds[nextTypeId];
+  scheduleOperationalAutosave(nextTypeId, { delay: 200 });
+}
+
+function shouldPreserveOperationalFieldFocus(typeId) {
+  if (state.selectedTypeId !== typeId) {
+    return false;
+  }
+  const activeElement = document.activeElement;
+  if (!activeElement || typeof activeElement.closest !== "function") {
+    return false;
+  }
+  return Boolean(activeElement.closest("[data-operational-field]"));
+}
+
+function compareOperationalCatalogItems(left, right) {
+  const leftTier = String(left?.size_tier || "");
+  const rightTier = String(right?.size_tier || "");
+  if (leftTier !== rightTier) {
+    return leftTier.localeCompare(rightTier, "pt-BR");
+  }
+  const leftLabel = String(left?.label || "").trim().toLowerCase();
+  const rightLabel = String(right?.label || "").trim().toLowerCase();
+  if (leftLabel !== rightLabel) {
+    return leftLabel.localeCompare(rightLabel, "pt-BR");
+  }
+  return String(left?.truck_type_id || "").localeCompare(String(right?.truck_type_id || ""), "pt-BR");
+}
+
+function applySavedOperationalResponse(typeId, response) {
+  const nextTypeRecord = response?.type_record;
+  if (nextTypeRecord?.id) {
+    state.types = sortTruckTypesForViewer([
+      ...state.types.filter((item) => item.id !== nextTypeRecord.id),
+      nextTypeRecord,
+    ]);
+    state.typesById = Object.fromEntries(state.types.map((item) => [item.id, item]));
+  }
+
+  const nextOperationalRecord = response?.operational_record;
+  const resolvedTypeId = String(nextOperationalRecord?.truck_type_id || typeId || "").trim();
+  if (!resolvedTypeId || !nextOperationalRecord) {
+    return;
+  }
+  const nextItems = [
+    ...((state.operationalCatalog?.items || []).filter((item) => String(item?.truck_type_id || "").trim() !== resolvedTypeId)),
+    nextOperationalRecord,
+  ].sort(compareOperationalCatalogItems);
+  state.operationalCatalog = {
+    ...(state.operationalCatalog || {}),
+    items: nextItems,
+  };
+  state.operationalByTypeId = Object.fromEntries(nextItems.map((item) => [item.truck_type_id, item]));
+}
+
+function updateOperationalDraftField(typeId, fieldName, value) {
+  if (!typeId || !fieldName) {
+    return;
+  }
+  const draft = operationalDraft(typeId);
+  if (!draft) {
+    return;
+  }
+  draft[fieldName] = value;
+  markOperationalDraftDirty(typeId);
+  scheduleOperationalAutosave(typeId);
+}
+
 function hasOperationalRecord(typeId) {
   return Boolean(state.operationalByTypeId[typeId]);
 }
@@ -821,6 +951,12 @@ function headerStatusMessage() {
   if (state.pendingProductTypeId === state.selectedTypeId) {
     return "Atualizando produtos da MPC...";
   }
+  if (hasDirtyOperationalDraft(state.selectedTypeId)) {
+    if (state.autoSaveTypeId === state.selectedTypeId || state.queuedSaveTypeIds[state.selectedTypeId]) {
+      return "Alterações pendentes. Salvando automaticamente...";
+    }
+    return "Alterações pendentes.";
+  }
   if (state.transientStatus?.typeId === state.selectedTypeId) {
     return state.transientStatus.message;
   }
@@ -845,8 +981,8 @@ function renderHeader() {
 
   const toggleLabel = state.activeThemeId === "night" ? "Modo diurno" : "Modo noturno";
   const toggleIcon = state.activeThemeId === "night" ? "light_mode" : "dark_mode";
-  const saveDisabled = !type || state.pendingSaveTypeId === type.id || state.pendingProductTypeId === type.id || state.pendingAutofillTypeId === type.id;
-  const saveLabel = state.pendingSaveTypeId === type?.id ? "Salvando..." : "Salvar ficha";
+  const saveDisabled = !type || Boolean(state.pendingSaveTypeId) || state.pendingProductTypeId === type.id || state.pendingAutofillTypeId === type.id;
+  const saveLabel = !state.pendingSaveTypeId ? "Salvar ficha" : (state.pendingSaveTypeId === type?.id ? "Salvando..." : "Aguarde...");
   actionsTarget.innerHTML = `
     <a class="editor-header-action" href="/viewer/trucks"><span class="material-symbols-outlined">local_shipping</span><span>Caminhões</span></a>
     <a class="editor-header-action" href="/viewer/truck-product-matrix"><span class="material-symbols-outlined">table_chart</span><span>Matriz MPC</span></a>
@@ -1204,34 +1340,58 @@ function serializeOperationalDraft(typeId) {
   };
 }
 
-async function saveOperationalRecord() {
-  const type = selectedType();
-  if (!type) {
-    return;
+async function saveOperationalRecord(typeId = selectedType()?.id, { source = "manual" } = {}) {
+  const resolvedTypeId = String(typeId || "").trim();
+  const type = state.typesById[resolvedTypeId] || null;
+  if (!resolvedTypeId || !type) {
+    return false;
   }
-  state.pendingSaveTypeId = type.id;
-  renderAll();
+  clearScheduledOperationalAutosave(resolvedTypeId);
+  if (state.pendingSaveTypeId) {
+    state.queuedSaveTypeIds[resolvedTypeId] = true;
+    renderHeader();
+    return false;
+  }
+  const payload = serializeOperationalDraft(resolvedTypeId);
+  const payloadFingerprint = operationalPayloadFingerprint(payload);
+  let hasNewerChanges = false;
+  state.pendingSaveTypeId = resolvedTypeId;
+  delete state.queuedSaveTypeIds[resolvedTypeId];
+  renderHeader();
   try {
     const response = await callJson("/api/viewer/truck-operations", {
       method: "PUT",
-      body: JSON.stringify(serializeOperationalDraft(type.id)),
+      body: JSON.stringify(payload),
     });
-    await refreshBootstrap({ preserveDrafts: false });
-    state.selectedTypeId = type.id;
-    state.draftByTypeId[type.id] = buildOperationalDraft(state.typesById[type.id] || type, response.operational_record || {});
+    applySavedOperationalResponse(resolvedTypeId, response);
+    hasNewerChanges = operationalPayloadFingerprint(serializeOperationalDraft(resolvedTypeId)) !== payloadFingerprint;
+    if (!hasNewerChanges) {
+      state.draftByTypeId[resolvedTypeId] = buildOperationalDraft(state.typesById[resolvedTypeId] || type, response.operational_record || {});
+      clearOperationalDraftDirty(resolvedTypeId);
+    } else {
+      markOperationalDraftDirty(resolvedTypeId);
+      state.queuedSaveTypeIds[resolvedTypeId] = true;
+    }
     state.transientStatus = {
-      typeId: type.id,
-      message: "Ficha operacional salva em merged_truck_data.json.",
+      typeId: resolvedTypeId,
+      message: source === "auto" ? "Alterações salvas automaticamente." : "Ficha operacional salva em merged_truck_data.json.",
     };
   } catch (error) {
+    markOperationalDraftDirty(resolvedTypeId);
     state.transientStatus = {
-      typeId: type.id,
+      typeId: resolvedTypeId,
       message: String(error?.message || error || "Falha ao salvar a ficha operacional."),
     };
   } finally {
     state.pendingSaveTypeId = null;
-    renderAll();
+    scheduleQueuedOperationalSave();
+    if (source === "manual" || !shouldPreserveOperationalFieldFocus(resolvedTypeId)) {
+      renderAll();
+    } else {
+      renderHeader();
+    }
   }
+  return !hasNewerChanges;
 }
 
 async function toggleProductCompatibility(productId, { keepPickerOpen = false, successMessage = "Produto atualizado na matriz MPC." } = {}) {
@@ -1465,10 +1625,20 @@ function bindControls() {
     renderAll();
   });
 
-  document.getElementById("truck-operations-list").addEventListener("click", (event) => {
+  document.getElementById("truck-operations-list").addEventListener("click", async (event) => {
     const card = event.target.closest("[data-type-id]");
     if (!card) {
       return;
+    }
+    const nextTypeId = String(card.dataset.typeId || "").trim();
+    const previousTypeId = state.selectedTypeId;
+    if (previousTypeId && previousTypeId !== nextTypeId) {
+      clearScheduledOperationalAutosave(previousTypeId);
+      if (hasDirtyOperationalDraft(previousTypeId) && !state.pendingSaveTypeId) {
+        await saveOperationalRecord(previousTypeId, { source: "auto" });
+      } else if (hasDirtyOperationalDraft(previousTypeId) && state.pendingSaveTypeId) {
+        state.queuedSaveTypeIds[previousTypeId] = true;
+      }
     }
     state.selectedTypeId = card.dataset.typeId;
     state.productPickerOpenTypeId = "";
@@ -1513,8 +1683,8 @@ function bindControls() {
     if (!field) {
       return;
     }
-    const draft = operationalDraft(type.id);
-    draft[field.dataset.operationalField] = field.value;
+    updateOperationalDraftField(type.id, field.dataset.operationalField, field.value);
+    renderHeader();
   });
 
   document.getElementById("truck-operations-grid").addEventListener("change", (event) => {
@@ -1536,8 +1706,11 @@ function bindControls() {
     if (!field) {
       return;
     }
-    const draft = operationalDraft(type.id);
-    draft[field.dataset.operationalField] = field.value;
+    updateOperationalDraftField(type.id, field.dataset.operationalField, field.value);
+    if (field.dataset.operationalField === "consumption_unit") {
+      renderPanels();
+    }
+    renderHeader();
   });
 
   state.controlsBound = true;

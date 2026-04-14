@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script>
+  (function applyGameRuntimeThemeEarly() {
+    const root = document.documentElement;
+    root.classList.add("game-runtime-page");
+    try {
+      const runtimeTheme = window.localStorage.getItem("brasix:v1:game-runtime-theme");
+      const setupTheme = window.localStorage.getItem("brasix:v1:game-setup-theme");
+      const storedTheme = runtimeTheme || setupTheme;
+      root.dataset.editorTheme = storedTheme === "night" ? "night" : "day";
+    } catch (_error) {
+      root.dataset.editorTheme = "day";
+    }
+  })();
+</script>
+{% endblock %}
+
+{% block body %}
+<main class="game-runtime-shell">
+  <header class="topbar editor-hub-topbar game-runtime-topbar">
+    <div class="editor-hub-topbar-left game-runtime-topbar-left">
+      <div class="brand-lockup">
+        <h1>Brasix</h1>
+        <span class="brand-divider"></span>
+        <p>Jogo 1.0</p>
+      </div>
+      <div id="game-runtime-status" class="game-runtime-status" aria-live="polite"></div>
+    </div>
+
+    <div class="editor-header-actions game-runtime-header-actions" aria-label="Acoes do jogo">
+      <a class="ghost-button" href="/jogo/preparacao" target="_blank" rel="noopener noreferrer">
+        <span class="material-symbols-outlined" aria-hidden="true">apartment</span>
+        <span>Preparacao</span>
+      </a>
+      <a class="ghost-button" href="/editores" target="_blank" rel="noopener noreferrer">
+        <span class="material-symbols-outlined" aria-hidden="true">widgets</span>
+        <span>Editores</span>
+      </a>
+
+      <div id="game-runtime-speed-controls" class="game-runtime-speed-controls" role="group" aria-label="Velocidade do tempo">
+        <button class="game-runtime-speed-button" type="button" data-speed-id="pause">||</button>
+        <button class="game-runtime-speed-button" type="button" data-speed-id="x1">1x</button>
+        <button class="game-runtime-speed-button is-active" type="button" data-speed-id="x4">4x</button>
+        <button class="game-runtime-speed-button" type="button" data-speed-id="x12">12x</button>
+      </div>
+
+      <div id="game-runtime-clock" class="game-runtime-clock" aria-live="polite"></div>
+
+      <button id="game-runtime-theme-toggle" class="editor-header-action" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+        <span>Modo noturno</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="game-runtime-main" aria-label="Mapa e operacao principal do jogo Brasix">
+    <div class="map-frame game-runtime-map-frame">
+      <div id="game-runtime-map-stage" class="map-stage game-runtime-map-stage" aria-label="Mapa principal do jogo"></div>
+    </div>
+
+    <aside id="game-runtime-human-hud" class="editor-card game-runtime-overlay game-runtime-human-hud" aria-live="polite"></aside>
+    <aside id="game-runtime-log-panel" class="editor-card game-runtime-overlay game-runtime-log-panel" aria-live="polite"></aside>
+
+    <section class="game-runtime-bottom" aria-label="Jogadores ativos">
+      <div id="game-runtime-drawer" class="editor-card game-runtime-drawer" hidden></div>
+      <div id="game-runtime-player-bar" class="game-runtime-player-bar"></div>
+    </section>
+  </section>
+</main>
+
+<script type="module">
+  const gameRuntimeModuleUrl = new URL("{{ request.url_for('static', path='js/game-runtime-v1.js') }}", window.location.href);
+  gameRuntimeModuleUrl.searchParams.set("v", "20260414-game-runtime-1");
+
+  function showGameRuntimeLoadError(error) {
+    const message = String(error?.message || error || "Falha ao carregar o jogo.");
+    const targets = [
+      document.getElementById("game-runtime-human-hud"),
+      document.getElementById("game-runtime-log-panel"),
+      document.getElementById("game-runtime-drawer"),
+      document.getElementById("game-runtime-player-bar"),
+    ].filter(Boolean);
+    targets.forEach((target) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "truck-gallery-empty";
+      wrapper.textContent = message;
+      target.replaceChildren(wrapper);
+      target.hidden = false;
+    });
+    console.error("Brasix game runtime load failure:", error);
+  }
+
+  window.addEventListener("unhandledrejection", (event) => {
+    showGameRuntimeLoadError(event.reason);
+  });
+
+  import(gameRuntimeModuleUrl.href).catch(showGameRuntimeLoadError);
+</script>
+{% endblock %}

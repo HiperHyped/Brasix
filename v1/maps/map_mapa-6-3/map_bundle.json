@@ -4,7 +4,7 @@
   "slug": "mapa-6-3",
   "description": "",
   "created_at": "2026-03-30T19:02:08-03:00",
-  "updated_at": "2026-04-13T23:35:44-03:00",
+  "updated_at": "2026-04-14T06:35:43-03:00",
   "source_options": {
     "include_base_cities": true,
     "include_created_cities": true,
@@ -64788,70 +64788,6 @@
             "id": "route_point_auto_1774660115214_4",
             "latitude": -19.9142,
             "longitude": -44.08699
-          }
-        ]
-      },
-      {
-        "id": "edge-auto-custom-city-1774660103748-mg-belo-horizonte-1774660148018",
-        "from_node_id": "custom-city-1774660103748",
-        "to_node_id": "mg-belo-horizonte",
-        "from_city_id": "custom-city-1774660103748",
-        "to_city_id": "mg-belo-horizonte",
-        "mode": "road",
-        "surface_type_id": "route_surface_double_road",
-        "surface_code": "double_road",
-        "geometry_type_id": "route_geometry_polycurve",
-        "geometry_code": "polycurve",
-        "render_smoothing_enabled": false,
-        "status": "active",
-        "bidirectional": true,
-        "distance_km": 21.2331,
-        "notes": "Gerada automaticamente por OSRM com resolucao de 2 km no editor de mapa.",
-        "waypoints": [
-          {
-            "id": "route_point_auto_1774660148018_1",
-            "latitude": -19.92808,
-            "longitude": -44.06894
-          },
-          {
-            "id": "route_point_auto_1774660148018_2",
-            "latitude": -19.91851,
-            "longitude": -44.05263
-          },
-          {
-            "id": "route_point_auto_1774660148018_3",
-            "latitude": -19.93138,
-            "longitude": -44.03867
-          },
-          {
-            "id": "route_point_auto_1774660148018_4",
-            "latitude": -19.93165,
-            "longitude": -44.01791
-          },
-          {
-            "id": "route_point_auto_1774660148018_5",
-            "latitude": -19.93635,
-            "longitude": -43.9991
-          },
-          {
-            "id": "route_point_auto_1774660148018_6",
-            "latitude": -19.92451,
-            "longitude": -43.98442
-          },
-          {
-            "id": "route_point_auto_1774660148018_7",
-            "latitude": -19.9183,
-            "longitude": -43.96612
-          },
-          {
-            "id": "route_point_auto_1774660148018_8",
-            "latitude": -19.91776,
-            "longitude": -43.9469
-          },
-          {
-            "id": "route_point_auto_1774660148018_9",
-            "latitude": -19.9057,
-            "longitude": -43.93213
           }
         ]
       },
@@ -292029,6 +291965,232 @@
             "id": "route_point_1776134143299_6",
             "latitude": -21.46697,
             "longitude": -50.18394
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1775090185173-graph_node_1775091494828-1776159289505",
+        "from_node_id": "graph_node_1775090185173",
+        "to_node_id": "graph_node_1775091494828",
+        "from_city_id": null,
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 21.8,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1776159289505_1",
+            "latitude": -20.14685,
+            "longitude": -43.95939
+          },
+          {
+            "id": "route_point_1776159289505_2",
+            "latitude": -20.11494,
+            "longitude": -43.97072
+          },
+          {
+            "id": "route_point_1776159289505_3",
+            "latitude": -20.10365,
+            "longitude": -43.97449
+          },
+          {
+            "id": "route_point_1776159289505_4",
+            "latitude": -20.08818,
+            "longitude": -43.97518
+          },
+          {
+            "id": "route_point_1776159289505_5",
+            "latitude": -20.07206,
+            "longitude": -43.98342
+          },
+          {
+            "id": "route_point_1776159289505_6",
+            "latitude": -20.05561,
+            "longitude": -43.97243
+          },
+          {
+            "id": "route_point_1776159289505_7",
+            "latitude": -20.05013,
+            "longitude": -43.96454
+          },
+          {
+            "id": "route_point_1776159289505_8",
+            "latitude": -20.04013,
+            "longitude": -43.96694
+          },
+          {
+            "id": "route_point_1776159289505_9",
+            "latitude": -20.03077,
+            "longitude": -43.96797
+          },
+          {
+            "id": "route_point_1776159289505_10",
+            "latitude": -20.024,
+            "longitude": -43.96935
+          },
+          {
+            "id": "route_point_1776159289505_11",
+            "latitude": -20.01916,
+            "longitude": -43.97175
+          },
+          {
+            "id": "route_point_1776159289505_12",
+            "latitude": -20.00658,
+            "longitude": -43.9642
+          },
+          {
+            "id": "route_point_1776159289505_13",
+            "latitude": -20.00013,
+            "longitude": -43.9642
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1775091494828-mg-belo-horizonte-1776159318038",
+        "from_node_id": "graph_node_1775091494828",
+        "to_node_id": "mg-belo-horizonte",
+        "from_city_id": null,
+        "to_city_id": "mg-belo-horizonte",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 8.2,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1776159318038_1",
+            "latitude": -19.96555,
+            "longitude": -43.94004
+          },
+          {
+            "id": "route_point_1776159318038_2",
+            "latitude": -19.95726,
+            "longitude": -43.94094
+          },
+          {
+            "id": "route_point_1776159318038_3",
+            "latitude": -19.94462,
+            "longitude": -43.93526
+          },
+          {
+            "id": "route_point_1776159318038_4",
+            "latitude": -19.92945,
+            "longitude": -43.93018
+          },
+          {
+            "id": "route_point_1776159318038_5",
+            "latitude": -19.91666,
+            "longitude": -43.92555
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1775091195663-graph_node_1775091494828-1776159327975",
+        "from_node_id": "custom-city-1775091195663",
+        "to_node_id": "graph_node_1775091494828",
+        "from_city_id": "custom-city-1775091195663",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 11.7,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1776159327975_1",
+            "latitude": -19.99755,
+            "longitude": -43.8715
+          },
+          {
+            "id": "route_point_1776159327975_2",
+            "latitude": -20.00142,
+            "longitude": -43.89347
+          },
+          {
+            "id": "route_point_1776159327975_3",
+            "latitude": -19.99593,
+            "longitude": -43.91579
+          },
+          {
+            "id": "route_point_1776159327975_4",
+            "latitude": -19.98787,
+            "longitude": -43.93158
+          },
+          {
+            "id": "route_point_1776159327975_5",
+            "latitude": -19.98916,
+            "longitude": -43.94257
+          }
+        ]
+      },
+      {
+        "id": "edge-custom-city-1774660103748-mg-belo-horizonte-1776159342628",
+        "from_node_id": "custom-city-1774660103748",
+        "to_node_id": "mg-belo-horizonte",
+        "from_city_id": "custom-city-1774660103748",
+        "to_city_id": "mg-belo-horizonte",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 17.2,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1776159342628_1",
+            "latitude": -19.92204,
+            "longitude": -44.05415
+          },
+          {
+            "id": "route_point_1776159342628_2",
+            "latitude": -19.93333,
+            "longitude": -44.03732
+          },
+          {
+            "id": "route_point_1776159342628_3",
+            "latitude": -19.93495,
+            "longitude": -44.02222
+          },
+          {
+            "id": "route_point_1776159342628_4",
+            "latitude": -19.93204,
+            "longitude": -44.00539
+          },
+          {
+            "id": "route_point_1776159342628_5",
+            "latitude": -19.92268,
+            "longitude": -43.98067
+          },
+          {
+            "id": "route_point_1776159342628_6",
+            "latitude": -19.91816,
+            "longitude": -43.96454
+          },
+          {
+            "id": "route_point_1776159342628_7",
+            "latitude": -19.91493,
+            "longitude": -43.94222
           }
         ]
       }

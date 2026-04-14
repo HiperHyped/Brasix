@@ -1,8 +1,8 @@
 {
   "id": "pricing_editor::map_mapa-6-3",
   "map_id": "map_mapa-6-3",
-  "version": 2,
-  "updated_at": "2026-04-13T23:10:00-03:00",
+  "version": 1,
+  "updated_at": "2026-04-14T00:02:11-03:00",
   "scenario": {
     "selected_difficulty": "standard",
     "sort_mode": "opening_desc"
@@ -30,7 +30,7 @@
     "short_haul_markup_max": 0.14,
     "long_haul_discount_max": 0.06,
     "short_haul_reference_km": 160.0,
-    "long_haul_reference_km": 2300.0,
+    "long_haul_reference_km": 2200.0,
     "handling_base_brl": 150.0,
     "handling_per_t_brl": 7.5,
     "cycle_distance_multiplier": 1.6,

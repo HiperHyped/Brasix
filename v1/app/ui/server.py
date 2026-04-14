@@ -814,6 +814,7 @@ def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
     pricing_payload = build_pricing_editor_bootstrap_payload()
     truck_matrix_payload = build_truck_product_matrix_payload()
     runtime = build_game_world_runtime(include_validation=False)
+    map_editor_payload = load_map_editor_payload()
     operational_by_truck_id = runtime.catalogs.truck_operational_by_id
 
     def _normalize_market_items(raw_items: Any) -> list[dict[str, Any]]:
@@ -915,7 +916,11 @@ def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
         "ui": load_ui_payload(),
         "active_map": pricing_payload.get("active_map", {}),
         "map_viewport": pricing_payload.get("map_viewport", {}),
-        "map_editor": pricing_payload.get("map_editor", {}),
+        "map_editor": {
+            **pricing_payload.get("map_editor", {}),
+            "display_settings": map_editor_payload.get("display_settings", {}),
+            "route_surface_types": map_editor_payload.get("route_surface_types", {"types": []}),
+        },
         "products": list(pricing_payload.get("products", [])),
         "product_operational_catalog": pricing_payload.get("product_operational_catalog", {}),
         "diesel_document": pricing_payload.get("diesel_document", {}),
@@ -1420,6 +1425,15 @@ def create_app() -> FastAPI:
             request=request,
             name="game_setup.html",
             context={"page_title": "Brasix | Preparacao da empresa"},
+        )
+
+    @app.get("/jogo", response_class=HTMLResponse, include_in_schema=False)
+    @app.get("/game", response_class=HTMLResponse, include_in_schema=False)
+    async def game_runtime_v1(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="game_runtime_v1.html",
+            context={"page_title": "Brasix | Jogo 1.0"},
         )
 
     @app.get("/editor/map", response_class=HTMLResponse, include_in_schema=False)
