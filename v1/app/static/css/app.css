@@ -7189,6 +7189,28 @@ html.game-runtime-page[data-editor-theme="night"] {
 .game-runtime-panel-footer {
   display: flex;
   justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.game-runtime-dispatch-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.game-runtime-dispatch-map-frame {
+  min-height: 220px !important;
+  height: 220px;
+  padding: 10px;
+}
+
+.game-runtime-dispatch-map-frame::before {
+  inset: 10px;
+}
+
+.game-runtime-dispatch-map-stage {
+  min-height: 0 !important;
 }
 
 .game-runtime-log-line {

@@ -862,6 +862,8 @@ def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
                 "preview_image_version": str(truck.get("preview_image_version") or ""),
                 "payload_weight_kg": float(operational.get("payload_weight_kg") or 0),
                 "cargo_volume_m3": float(operational.get("cargo_volume_m3") or 0),
+                "energy_source": str(operational.get("energy_source") or "diesel"),
+                "consumption_unit": str(operational.get("consumption_unit") or "l_per_km"),
                 "fuel_tank_l": float(operational.get("fuel_tank_l") or 0),
                 "empty_consumption_per_km": float(operational.get("empty_consumption_per_km") or 0),
                 "loaded_consumption_per_km": float(operational.get("loaded_consumption_per_km") or 0),
@@ -870,6 +872,8 @@ def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
                 "purchase_price_brl": round(truck_price_brl + implement_cost_brl, 2),
                 "base_fixed_cost_brl_per_day": float(operational.get("base_fixed_cost_brl_per_day") or 0),
                 "base_variable_cost_brl_per_km": float(operational.get("base_variable_cost_brl_per_km") or 0),
+                "load_time_minutes": float(operational.get("load_time_minutes") or 45),
+                "unload_time_minutes": float(operational.get("unload_time_minutes") or 45),
             }
         )
 
@@ -1443,6 +1447,15 @@ def create_app() -> FastAPI:
             request=request,
             name="game_runtime_v1_1.html",
             context={"page_title": "Brasix | Jogo 1.1"},
+        )
+
+    @app.get("/jogo/v1-2", response_class=HTMLResponse, include_in_schema=False)
+    @app.get("/game/v1-2", response_class=HTMLResponse, include_in_schema=False)
+    async def game_runtime_v1_2(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="game_runtime_v1_2.html",
+            context={"page_title": "Brasix | Jogo 1.2"},
         )
 
     @app.get("/editor/map", response_class=HTMLResponse, include_in_schema=False)

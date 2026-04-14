@@ -3,8 +3,12 @@
 {% block head_extra %}
 <script>
   window.__BRASIX_GAME_RUNTIME_CONFIG__ = {
-    version: "1.1",
+    version: "1.2",
     openingWizard: true,
+    fuelSystem: true,
+    advancedDispatch: true,
+    exclusiveFreights: true,
+    runtimeTruckMarket: true,
   };
 
   (function applyGameRuntimeThemeEarly() {
@@ -29,15 +33,15 @@
       <div class="brand-lockup">
         <h1>Brasix</h1>
         <span class="brand-divider"></span>
-        <p>Jogo 1.1</p>
+        <p>Jogo 1.2</p>
       </div>
       <div id="game-runtime-status" class="game-runtime-status" aria-live="polite"></div>
     </div>
 
     <div class="editor-header-actions game-runtime-header-actions" aria-label="Acoes do jogo">
-      <a class="ghost-button" href="/jogo" target="_blank" rel="noopener noreferrer">
-        <span class="material-symbols-outlined" aria-hidden="true">play_circle</span>
-        <span>Jogo 1.0</span>
+      <a class="ghost-button" href="/jogo/v1-1" target="_blank" rel="noopener noreferrer">
+        <span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
+        <span>Jogo 1.1</span>
       </a>
       <a class="ghost-button" href="/jogo/preparacao" target="_blank" rel="noopener noreferrer">
         <span class="material-symbols-outlined" aria-hidden="true">apartment</span>

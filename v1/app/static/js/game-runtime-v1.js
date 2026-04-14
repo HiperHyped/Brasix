@@ -15,6 +15,10 @@ import { buildOpeningContextState } from "./shared/opening-pricing.js?v=20260413
 const RUNTIME_CONFIG = {
   version: "1.0",
   openingWizard: false,
+  fuelSystem: false,
+  advancedDispatch: false,
+  exclusiveFreights: false,
+  runtimeTruckMarket: false,
   ...(window.__BRASIX_GAME_RUNTIME_CONFIG__ && typeof window.__BRASIX_GAME_RUNTIME_CONFIG__ === "object"
     ? window.__BRASIX_GAME_RUNTIME_CONFIG__
     : {}),
@@ -117,6 +121,7 @@ const state = {
   pinsById: {},
   freightFlows: [],
   freightFlowsById: {},
+  completedFreightAssignmentsById: {},
   outboundFreightsByCityId: {},
   inboundFreightsByCityId: {},
   cityMarketStatsById: {},
@@ -153,6 +158,11 @@ const state = {
     openingMarkersByCityId: {},
     pendingHumanAssignments: [],
     activeHumanAssignment: null,
+    activePurchase: null,
+    dispatchSelectedCityId: "",
+    dispatchMap: null,
+    dispatchMarkerLayer: null,
+    dispatchMarkersByCityId: {},
   },
   simulation: {
     currentTime: initialSimulationDate(),
@@ -252,6 +262,12 @@ function formatCurrencyPerTon(value) {
   return `R$ ${numberFormat(digits).format(roundNumber(numericValue, 1))}/t`;
 }
 
+function formatLiters(value) {
+  const numericValue = Math.max(0, Number(value || 0));
+  const digits = numericValue >= 100 ? 0 : 1;
+  return `${numberFormat(digits).format(roundNumber(numericValue, 1))} L`;
+}
+
 function formatWeightKg(value) {
   const numericValue = Number(value || 0);
   if (numericValue >= 1000) {
@@ -308,8 +324,42 @@ function openingWizardEnabled() {
   return Boolean(state.setup.openingWizard);
 }
 
+function fuelSystemEnabled() {
+  return Boolean(RUNTIME_CONFIG.fuelSystem);
+}
+
+function advancedDispatchEnabled() {
+  return Boolean(RUNTIME_CONFIG.advancedDispatch);
+}
+
+function exclusiveFreightsEnabled() {
+  return Boolean(RUNTIME_CONFIG.exclusiveFreights);
+}
+
+function runtimeTruckMarketEnabled() {
+  return Boolean(RUNTIME_CONFIG.runtimeTruckMarket);
+}
+
 function setupCompany() {
   return state.setup.company;
+}
+
+function purchaseFlowActive() {
+  return Boolean(state.setup.activePurchase);
+}
+
+function activePurchasePlayer() {
+  return purchaseFlowActive() ? state.playersById[state.setup.activePurchase?.playerId || ""] || null : null;
+}
+
+function currentSelectionHqCityId() {
+  return purchaseFlowActive()
+    ? String(activePurchasePlayer()?.hqCityId || setupCompany().hqCityId || "").trim()
+    : String(setupCompany().hqCityId || "").trim();
+}
+
+function currentSelectionCity() {
+  return state.citiesById[currentSelectionHqCityId()] || null;
 }
 
 function setupCurrentHqCity() {
@@ -607,7 +657,7 @@ function createSetupSelectedTruckInstance(truckId) {
   return {
     id: setupBuildTruckGameId(),
     display_number: nextDisplayNumber,
-    current_city_id: String(setupCompany().hqCityId || "").trim(),
+    current_city_id: currentSelectionHqCityId(),
     truck_id: truckId,
   };
 }
@@ -742,7 +792,7 @@ function setupAssignedTruckUnitIdSet(excludeFlowId = "") {
 }
 
 function setupTruckUnitIsAtFlowOrigin(instance, flow) {
-  const truckCityId = String(instance?.current_city_id || setupCompany().hqCityId || "").trim();
+  const truckCityId = String(instance?.current_city_id || currentSelectionHqCityId() || "").trim();
   const originCityId = String(flow?.origin_id || "").trim();
   return Boolean(truckCityId && originCityId && truckCityId === originCityId);
 }
@@ -791,7 +841,7 @@ function preferredSetupTruckUnitForFlow(flow, options = {}) {
 function setupSelectedFreightEntries() {
   const supportedProductIds = setupSelectedTruckSupportedProductIds();
   const allowed = new Set(
-    (state.outboundFreightsByCityId[setupCompany().hqCityId] || [])
+    (state.outboundFreightsByCityId[currentSelectionHqCityId()] || [])
       .filter((flow) => {
         const productId = String(flow?.product_id || "").trim();
         return Boolean(productId && supportedProductIds.size && supportedProductIds.has(productId));
@@ -808,7 +858,7 @@ function setupSelectedFreightEntries() {
 function setupPruneFreightSelection() {
   const supportedProductIds = setupSelectedTruckSupportedProductIds();
   const allowedIds = new Set(
-    (state.outboundFreightsByCityId[setupCompany().hqCityId] || [])
+    (state.outboundFreightsByCityId[currentSelectionHqCityId()] || [])
       .filter((flow) => {
         const productId = String(flow?.product_id || "").trim();
         return Boolean(productId && supportedProductIds.size && supportedProductIds.has(productId));
@@ -1039,10 +1089,16 @@ function setupCurrentCapitalSnapshot(difficultyId = setupCurrentDifficultyId()) 
 }
 
 function setupHeadquartersOpeningCost(city = setupCurrentHqCity()) {
+  if (purchaseFlowActive()) {
+    return 0;
+  }
   return Number(openingContextForCity(city)?.openingPrice || 0);
 }
 
 function setupBalanceAfterHeadquarters(city = setupCurrentHqCity()) {
+  if (purchaseFlowActive()) {
+    return Number(activePurchasePlayer()?.cashBrl || 0);
+  }
   return Number(setupCurrentCapitalSnapshot().initialCash || 0) - setupHeadquartersOpeningCost(city);
 }
 
@@ -1104,8 +1160,9 @@ function bestOperationForFlow(flow) {
 }
 
 function setupHqBonusForFlow(flow) {
-  const originBonus = flow.origin_id === setupCompany().hqCityId ? pricingNumber("freight.hq_origin_bonus", 0.06) : 0;
-  const destinationBonus = flow.destination_id === setupCompany().hqCityId ? pricingNumber("freight.hq_destination_bonus", 0.03) : 0;
+  const hqCityId = currentSelectionHqCityId();
+  const originBonus = flow.origin_id === hqCityId ? pricingNumber("freight.hq_origin_bonus", 0.06) : 0;
+  const destinationBonus = flow.destination_id === hqCityId ? pricingNumber("freight.hq_destination_bonus", 0.03) : 0;
   return Math.min(pricingNumber("freight.hq_bonus_cap", 0.08), originBonus + destinationBonus);
 }
 
@@ -1128,6 +1185,13 @@ function setupFreightPricingForFlow(flow) {
     excludeFlowId: flow.id,
   });
   const contractTruck = contractTruckUnit?.truck || null;
+  const availability = freightFlowAvailability(flow.id);
+  const executionPlan = contractTruckUnit
+    ? buildTruckFlowExecutionPlan(contractTruckUnit, flow, {
+      currentCityId: contractTruckUnit.current_city_id || contractTruckUnit.currentCityId || currentSelectionHqCityId(),
+      startingFuelLiters: contractTruckUnit.fuelLevelLiters,
+    })
+    : null;
   const contractPayloadTons = contractTruck ? Math.min(quantityT, payloadTonsForTruck(contractTruck)) : 0;
   const contractRevenue = unitRevenuePerTon * contractPayloadTons;
   return {
@@ -1137,6 +1201,9 @@ function setupFreightPricingForFlow(flow) {
     contractTruck,
     contractPayloadTons,
     contractRevenue,
+    availability,
+    fuelFeasible: executionPlan ? executionPlan.feasible : true,
+    executionPlan,
   };
 }
 
@@ -1147,6 +1214,7 @@ function setupPricedFreightsForCity(cityId) {
   }
   const hasSelectedFleet = setupSelectedTruckEntries().length > 0;
   return (state.outboundFreightsByCityId[nextCityId] || [])
+    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).state !== "completed")
     .map((flow) => setupFreightPricingForFlow(flow))
     .sort((left, right) => {
       const leftPrimary = hasSelectedFleet ? Number(left.contractRevenue || 0) : Number(left.unitRevenuePerTon || 0);
@@ -1157,14 +1225,14 @@ function setupPricedFreightsForCity(cityId) {
     });
 }
 
-function setupPricedFreightEntryById(flowId, cityId = setupCompany().hqCityId) {
+function setupPricedFreightEntryById(flowId, cityId = currentSelectionHqCityId()) {
   return setupPricedFreightsForCity(cityId).find((entry) => entry.flow.id === flowId) || null;
 }
 
 function setupRecommendedPricedFreights(limit = RECOMMENDED_FREIGHT_LIMIT) {
   const supportedProductIds = setupReferenceSupportedProductIds();
   const hasSelectedFleet = setupSelectedTruckEntries().length > 0;
-  return setupPricedFreightsForCity(setupCompany().hqCityId)
+  return setupPricedFreightsForCity(currentSelectionHqCityId())
     .filter((entry) => !supportedProductIds.size || supportedProductIds.has(entry.flow.product_id))
     .filter((entry) => !hasSelectedFleet || Boolean(entry.contractTruckUnit))
     .slice(0, limit);
@@ -1172,7 +1240,7 @@ function setupRecommendedPricedFreights(limit = RECOMMENDED_FREIGHT_LIMIT) {
 
 function setupSelectedPricedFreightEntries() {
   return setupSelectedFreightEntries()
-    .map((flow) => setupPricedFreightEntryById(flow.id, setupCompany().hqCityId) || setupFreightPricingForFlow(flow))
+    .map((flow) => setupPricedFreightEntryById(flow.id, currentSelectionHqCityId()) || setupFreightPricingForFlow(flow))
     .filter(Boolean);
 }
 
@@ -1200,6 +1268,7 @@ function normalizeBootstrap(bootstrapPayload, runtimePayload) {
   state.bootstrap = bootstrapPayload;
   state.runtime = runtimePayload;
   state.snapshot = readGameSessionSnapshot();
+  state.completedFreightAssignmentsById = {};
 
   state.cities = Array.isArray(bootstrapPayload?.cities)
     ? bootstrapPayload.cities
@@ -1273,6 +1342,9 @@ function normalizeBootstrap(bootstrapPayload, runtimePayload) {
   state.setup.nextTruckGameSequence = 1;
   state.setup.pendingHumanAssignments = [];
   state.setup.activeHumanAssignment = null;
+  state.setup.activePurchase = null;
+  state.setup.dispatchSelectedCityId = "";
+  state.setup.dispatchMarkersByCityId = {};
   state.trackCache = {};
   buildGraphAdjacency();
 }
@@ -1661,21 +1733,269 @@ function distanceMultiplier(flow) {
     - (longShare * pricingNumber("freight.long_haul_discount_max", 0.12));
 }
 
-function weightedDieselFactor(flow) {
+function averageDieselPrice() {
   const dieselValues = Object.values(state.dieselByCityId).filter((value) => Number(value) > 0);
-  const averageDieselPrice = dieselValues.length
+  return dieselValues.length
     ? dieselValues.reduce((total, value) => total + Number(value), 0) / dieselValues.length
     : 0;
-  if (!averageDieselPrice) {
+}
+
+function dieselPriceForCity(cityId) {
+  const averagePrice = averageDieselPrice();
+  return Number(state.dieselByCityId[String(cityId || "").trim()] || averagePrice || 0);
+}
+
+function truckUsesDiesel(truck) {
+  if (!fuelSystemEnabled()) {
+    return false;
+  }
+  const energySource = String(truck?.energy_source || "diesel").trim().toLowerCase();
+  const consumptionUnit = String(truck?.consumption_unit || "l_per_km").trim().toLowerCase();
+  return energySource === "diesel"
+    && consumptionUnit === "l_per_km"
+    && Number(truck?.fuel_tank_l || 0) > 0;
+}
+
+function truckFuelTankLiters(truck) {
+  return Math.max(0, Number(truck?.fuel_tank_l || 0));
+}
+
+function truckConsumptionLitersPerKm(truck, { loaded = false } = {}) {
+  const loadedValue = Math.max(0, Number(truck?.loaded_consumption_per_km || 0));
+  const emptyValue = Math.max(0, Number(truck?.empty_consumption_per_km || 0));
+  if (loaded) {
+    return loadedValue || emptyValue;
+  }
+  return emptyValue || loadedValue;
+}
+
+function nonFuelVariableCostPerKm(truck, { loaded = false, dieselPrice = averageDieselPrice() } = {}) {
+  const baseVariableCost = Math.max(0, Number(truck?.base_variable_cost_brl_per_km || 0));
+  if (!truckUsesDiesel(truck) || !(dieselPrice > 0)) {
+    return baseVariableCost;
+  }
+  return Math.max(0, baseVariableCost - (truckConsumptionLitersPerKm(truck, { loaded }) * dieselPrice));
+}
+
+function buildTrackCityStops(track) {
+  const nodeIds = Array.isArray(track?.nodeIds) ? track.nodeIds : [];
+  if (!nodeIds.length) {
+    return [];
+  }
+  const nodeKilometers = [0];
+  if (Array.isArray(track?.edgeIds) && track.edgeIds.length) {
+    let cumulativeKm = 0;
+    track.edgeIds.forEach((edgeId, index) => {
+      cumulativeKm += edgeDistanceKm(state.edgesById[edgeId]);
+      nodeKilometers[index + 1] = cumulativeKm;
+    });
+    const scaleFactor = cumulativeKm > 0 && Number(track.distanceKm || 0) > 0 ? Number(track.distanceKm || 0) / cumulativeKm : 1;
+    for (let index = 0; index < nodeKilometers.length; index += 1) {
+      nodeKilometers[index] *= scaleFactor;
+    }
+  } else if (nodeIds.length > 1 && Number(track?.distanceKm || 0) > 0) {
+    const stepDistanceKm = Number(track.distanceKm || 0) / Math.max(1, nodeIds.length - 1);
+    for (let index = 1; index < nodeIds.length; index += 1) {
+      nodeKilometers[index] = stepDistanceKm * index;
+    }
+  }
+
+  const stops = [];
+  nodeIds.forEach((nodeId, index) => {
+    const city = state.citiesById[nodeId] || null;
+    const isBoundary = index === 0 || index === nodeIds.length - 1;
+    if (!city && !isBoundary) {
+      return;
+    }
+    const previousStop = stops[stops.length - 1] || null;
+    const nextStop = {
+      nodeId,
+      cityId: city?.id || String(nodeId || "").trim(),
+      cityLabel: city?.label || nodeId,
+      kmFromStart: Number(nodeKilometers[index] || 0),
+    };
+    if (previousStop?.cityId === nextStop.cityId) {
+      previousStop.kmFromStart = nextStop.kmFromStart;
+      return;
+    }
+    stops.push(nextStop);
+  });
+
+  if (stops.length > 1) {
+    stops[stops.length - 1].kmFromStart = Number(track?.distanceKm || stops[stops.length - 1].kmFromStart || 0);
+  }
+  return stops;
+}
+
+function buildTravelFuelPlan({ track, truck, loaded = false, startingFuelLiters } = {}) {
+  const tankLiters = truckFuelTankLiters(truck);
+  const initialFuelLiters = clamp(Number(startingFuelLiters ?? tankLiters), 0, Math.max(tankLiters, 0));
+  const distanceKm = Math.max(0, Number(track?.distanceKm || 0));
+  if (!distanceKm || !truckUsesDiesel(truck)) {
+    return {
+      feasible: true,
+      distanceKm,
+      tankLiters,
+      loaded,
+      segments: [],
+      totalFuelLiters: 0,
+      totalFuelCostBrl: 0,
+      endFuelLiters: initialFuelLiters,
+    };
+  }
+
+  const consumptionPerKm = truckConsumptionLitersPerKm(truck, { loaded });
+  if (!(consumptionPerKm > 0)) {
+    return {
+      feasible: true,
+      distanceKm,
+      tankLiters,
+      loaded,
+      segments: [],
+      totalFuelLiters: 0,
+      totalFuelCostBrl: 0,
+      endFuelLiters: initialFuelLiters,
+    };
+  }
+
+  const stops = buildTrackCityStops(track);
+  if (stops.length < 2) {
+    const fuelNeededLiters = distanceKm * consumptionPerKm;
+    return {
+      feasible: fuelNeededLiters <= tankLiters + 0.0001,
+      distanceKm,
+      tankLiters,
+      loaded,
+      segments: [],
+      totalFuelLiters: 0,
+      totalFuelCostBrl: 0,
+      endFuelLiters: Math.max(0, initialFuelLiters - fuelNeededLiters),
+      blockedStartCityId: track?.fromNodeId || null,
+      blockedEndCityId: track?.toNodeId || null,
+      blockedDistanceKm: distanceKm,
+    };
+  }
+
+  let fuelLevelLiters = initialFuelLiters;
+  let totalFuelLiters = 0;
+  let totalFuelCostBrl = 0;
+  const segments = [];
+  const durationScale = distanceKm > 0 ? Number(track?.durationHours || 0) / distanceKm : 0;
+
+  for (let index = 0; index < stops.length - 1; index += 1) {
+    const startStop = stops[index];
+    const endStop = stops[index + 1];
+    const segmentDistanceKm = Math.max(0, Number(endStop.kmFromStart || 0) - Number(startStop.kmFromStart || 0));
+    if (!segmentDistanceKm) {
+      continue;
+    }
+    const fuelNeededLiters = segmentDistanceKm * consumptionPerKm;
+    if (fuelNeededLiters > tankLiters + 0.0001) {
+      return {
+        feasible: false,
+        distanceKm,
+        tankLiters,
+        loaded,
+        segments,
+        totalFuelLiters,
+        totalFuelCostBrl,
+        endFuelLiters: fuelLevelLiters,
+        blockedStartCityId: startStop.cityId,
+        blockedEndCityId: endStop.cityId,
+        blockedDistanceKm: segmentDistanceKm,
+      };
+    }
+    const refuelLiters = fuelLevelLiters + 0.0001 >= fuelNeededLiters
+      ? 0
+      : Math.min(tankLiters - fuelLevelLiters, fuelNeededLiters - fuelLevelLiters);
+    if (fuelLevelLiters + refuelLiters + 0.0001 < fuelNeededLiters) {
+      return {
+        feasible: false,
+        distanceKm,
+        tankLiters,
+        loaded,
+        segments,
+        totalFuelLiters,
+        totalFuelCostBrl,
+        endFuelLiters: fuelLevelLiters,
+        blockedStartCityId: startStop.cityId,
+        blockedEndCityId: endStop.cityId,
+        blockedDistanceKm: segmentDistanceKm,
+      };
+    }
+    const dieselPrice = dieselPriceForCity(startStop.cityId);
+    const fuelAfterRefuelLiters = fuelLevelLiters + refuelLiters;
+    const fuelAfterSegmentLiters = Math.max(0, fuelAfterRefuelLiters - fuelNeededLiters);
+    const segment = {
+      index,
+      startCityId: startStop.cityId,
+      startCityLabel: startStop.cityLabel,
+      endCityId: endStop.cityId,
+      endCityLabel: endStop.cityLabel,
+      startKm: Number(startStop.kmFromStart || 0),
+      endKm: Number(endStop.kmFromStart || 0),
+      distanceKm: segmentDistanceKm,
+      fuelNeededLiters,
+      refuelLiters,
+      dieselPrice,
+      refuelCostBrl: refuelLiters * dieselPrice,
+      fuelBeforeRefuelLiters: fuelLevelLiters,
+      fuelAfterRefuelLiters,
+      fuelAfterSegmentLiters,
+      startHours: Number(startStop.kmFromStart || 0) * durationScale,
+      endHours: Number(endStop.kmFromStart || 0) * durationScale,
+    };
+    segments.push(segment);
+    totalFuelLiters += refuelLiters;
+    totalFuelCostBrl += segment.refuelCostBrl;
+    fuelLevelLiters = fuelAfterSegmentLiters;
+  }
+
+  return {
+    feasible: true,
+    distanceKm,
+    tankLiters,
+    loaded,
+    consumptionPerKm,
+    segments,
+    totalFuelLiters: roundNumber(totalFuelLiters, 2),
+    totalFuelCostBrl: roundNumber(totalFuelCostBrl, 2),
+    endFuelLiters: roundNumber(fuelLevelLiters, 2),
+  };
+}
+
+function fuelBlockedMessage(travelPlan) {
+  if (!travelPlan || travelPlan.feasible) {
+    return "Autonomia disponivel";
+  }
+  if (travelPlan.blockedStartCityId && travelPlan.blockedEndCityId) {
+    return `Autonomia insuficiente entre ${cityLabel(travelPlan.blockedStartCityId)} e ${cityLabel(travelPlan.blockedEndCityId)} (${formatDistanceKm(travelPlan.blockedDistanceKm || 0)} sem cidade para abastecer)`;
+  }
+  return "Autonomia insuficiente para a rota selecionada";
+}
+
+function estimatedFuelCostForTrack(track, truck, { loaded = false } = {}) {
+  const plan = buildTravelFuelPlan({
+    track,
+    truck,
+    loaded,
+    startingFuelLiters: truckFuelTankLiters(truck),
+  });
+  return plan.feasible ? Number(plan.totalFuelCostBrl || 0) : Number.POSITIVE_INFINITY;
+}
+
+function weightedDieselFactor(flow) {
+  const averageCityDieselPrice = averageDieselPrice();
+  if (!averageCityDieselPrice) {
     return 1;
   }
   const originWeight = pricingNumber("freight.diesel_origin_weight", 0.7);
   const destinationWeight = pricingNumber("freight.diesel_destination_weight", 0.3);
   const totalWeight = Math.max(originWeight + destinationWeight, 0.0001);
-  const originDiesel = Number(state.dieselByCityId[flow.origin_id] || averageDieselPrice);
-  const destinationDiesel = Number(state.dieselByCityId[flow.destination_id] || averageDieselPrice);
+  const originDiesel = Number(state.dieselByCityId[flow.origin_id] || averageCityDieselPrice);
+  const destinationDiesel = Number(state.dieselByCityId[flow.destination_id] || averageCityDieselPrice);
   const weighted = ((originDiesel * originWeight) + (destinationDiesel * destinationWeight)) / totalWeight;
-  return Math.max(0.75, Math.min(1.35, weighted / averageDieselPrice));
+  return Math.max(0.75, Math.min(1.35, weighted / averageCityDieselPrice));
 }
 
 function flowQuantityBaseTons(flow) {
@@ -1712,6 +2032,15 @@ function estimateCycleCost(flow, truck, payloadTons, trackDistanceKm) {
   const handlingCost = pricingNumber("freight.handling_base_brl", 120)
     + (payloadTons * pricingNumber("freight.handling_per_t_brl", 4));
   return roundNumber(variableCost + fixedCost + handlingCost, 2);
+}
+
+function estimateDispatchCycleCost(track, truck) {
+  const distanceKm = Math.max(1, Number(track?.distanceKm || 0));
+  const variableCost = distanceKm * nonFuelVariableCostPerKm(truck, { loaded: false, dieselPrice: averageDieselPrice() });
+  const routeDays = Math.max(1, Math.ceil(distanceKm / Math.max(1, pricingNumber("freight.driver_daily_km", 650))));
+  const fixedCost = routeDays * Number(truck?.base_fixed_cost_brl_per_day || 0);
+  const estimatedFuelCostBrl = estimatedFuelCostForTrack(track, truck, { loaded: false });
+  return roundNumber(variableCost + fixedCost + (Number.isFinite(estimatedFuelCostBrl) ? estimatedFuelCostBrl : 0), 2);
 }
 
 function estimateDeliveryRevenue(flow, truck, player, preparedEntry, trackDistanceKm) {
@@ -1770,6 +2099,21 @@ function buildTruckUnit(playerId, truck, displayNumber, currentCityId) {
     currentCityId,
     truckId: truck.id,
     truck,
+  };
+}
+
+function hydrateTruckUnitState(truckUnit) {
+  const tankLiters = truckFuelTankLiters(truckUnit?.truck);
+  const defaultFuelLiters = truckUsesDiesel(truckUnit?.truck) ? tankLiters : 0;
+  return {
+    ...truckUnit,
+    odometerKm: Math.max(0, Number(truckUnit?.odometerKm || 0)),
+    fuelTankLiters: tankLiters,
+    fuelLevelLiters: clamp(
+      Number.isFinite(Number(truckUnit?.fuelLevelLiters)) ? Number(truckUnit.fuelLevelLiters) : defaultFuelLiters,
+      0,
+      Math.max(tankLiters, 0),
+    ),
   };
 }
 
@@ -1836,8 +2180,146 @@ function buildContractSpecsFromSnapshot(snapshot, truckUnits, hqCityId) {
     .filter(Boolean);
 }
 
-function autoAssignContractsForTruckUnits(playerId, hqCityId, truckUnits, limit = truckUnits.length) {
+function activeContractEntryByFlowId(flowId) {
+  const normalizedFlowId = String(flowId || "").trim();
+  if (!normalizedFlowId) {
+    return null;
+  }
+  for (const player of state.players) {
+    const contract = (player.contracts || []).find((item) => !item.isCompleted && item.flowId === normalizedFlowId);
+    if (contract) {
+      return { player, contract };
+    }
+  }
+  return null;
+}
+
+function completedFreightAssignment(flowId) {
+  return state.completedFreightAssignmentsById[String(flowId || "").trim()] || null;
+}
+
+function freightOwnerLabel(player, contract) {
+  if (!player || !contract) {
+    return "outra operacao";
+  }
+  const truckLabel = contract.truckUnit
+    ? `${truckUnitNumberLabel(contract.truckUnit)} · ${contract.truckUnit.truck?.short_label || contract.truckUnit.truck?.label || "caminhao"}`
+    : "caminhao";
+  return `${player.label} · ${truckLabel}`;
+}
+
+function freightFlowAvailability(flowId) {
+  const normalizedFlowId = String(flowId || "").trim();
+  const activeEntry = activeContractEntryByFlowId(normalizedFlowId);
+  if (activeEntry) {
+    return {
+      state: "active",
+      available: false,
+      player: activeEntry.player,
+      contract: activeEntry.contract,
+      message: `Em execucao por ${freightOwnerLabel(activeEntry.player, activeEntry.contract)}`,
+    };
+  }
+  const completedEntry = completedFreightAssignment(normalizedFlowId);
+  if (completedEntry) {
+    return {
+      state: "completed",
+      available: false,
+      message: `Contrato ja encerrado por ${completedEntry.playerLabel || "outra operacao"}`,
+    };
+  }
+  return {
+    state: "available",
+    available: true,
+    message: "Contrato disponivel",
+  };
+}
+
+function markFreightFlowCompleted(player, contract) {
+  const flowId = String(contract?.flowId || "").trim();
+  if (!flowId) {
+    return;
+  }
+  state.completedFreightAssignmentsById[flowId] = {
+    flowId,
+    playerId: player?.id || null,
+    playerLabel: player?.label || "Operacao",
+    truckUnitId: contract?.truckUnitId || null,
+    completedAt: state.simulation.currentTime.toISOString(),
+  };
+}
+
+function buildTruckFlowExecutionPlan(truckUnit, flow, options = {}) {
+  const truck = truckUnit?.truck || null;
+  if (!truck || !flow) {
+    return { feasible: false, repositionPlan: null, outboundPlan: null };
+  }
+  const currentCityId = String(options?.currentCityId || truckUnit?.currentCityId || flow.origin_id || "").trim();
+  const startingFuelLiters = Number.isFinite(Number(options?.startingFuelLiters))
+    ? Number(options.startingFuelLiters)
+    : truckFuelTankLiters(truck);
+  if (!fuelSystemEnabled() || !truckUsesDiesel(truck)) {
+    return {
+      feasible: true,
+      repositionPlan: null,
+      outboundPlan: null,
+      endingFuelLiters: startingFuelLiters,
+    };
+  }
+  let fuelAfterReposition = startingFuelLiters;
+  const repositionTrack = currentCityId && currentCityId !== flow.origin_id
+    ? getTrack(currentCityId, flow.origin_id, "fastest")
+    : null;
+  const repositionPlan = repositionTrack
+    ? buildTravelFuelPlan({
+      track: repositionTrack,
+      truck,
+      loaded: false,
+      startingFuelLiters,
+    })
+    : null;
+  if (repositionPlan && !repositionPlan.feasible) {
+    return {
+      feasible: false,
+      repositionPlan,
+      outboundPlan: null,
+      endingFuelLiters: startingFuelLiters,
+    };
+  }
+  if (repositionPlan) {
+    fuelAfterReposition = Number(repositionPlan.endFuelLiters || 0);
+  }
+  const outboundTrack = getTrack(flow.origin_id, flow.destination_id, "fastest");
+  const outboundPlan = buildTravelFuelPlan({
+    track: outboundTrack,
+    truck,
+    loaded: options.loadedOutbound !== false,
+    startingFuelLiters: fuelAfterReposition,
+  });
+  if (!outboundPlan.feasible) {
+    return {
+      feasible: false,
+      repositionPlan,
+      outboundPlan,
+      endingFuelLiters: fuelAfterReposition,
+    };
+  }
+  return {
+    feasible: true,
+    repositionPlan,
+    outboundPlan,
+    endingFuelLiters: Number(outboundPlan.endFuelLiters || fuelAfterReposition || 0),
+  };
+}
+
+function truckCanExecuteFlow(truckUnit, flow, options = {}) {
+  return buildTruckFlowExecutionPlan(truckUnit, flow, options).feasible;
+}
+
+function autoAssignContractsForTruckUnits(playerId, hqCityId, truckUnits, limit = truckUnits.length, blockedFlowIds = new Set()) {
   const availableFlows = [...(state.outboundFreightsByCityId[hqCityId] || [])]
+    .filter((flow) => !blockedFlowIds.has(flow.id))
+    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
     .filter((flow) => getTrack(flow.origin_id, flow.destination_id)?.points?.length)
     .sort((left, right) => flowScore(right) - flowScore(left));
   const usedFlowIds = new Set();
@@ -1847,7 +2329,9 @@ function autoAssignContractsForTruckUnits(playerId, hqCityId, truckUnits, limit 
     if (specs.length >= limit) {
       return;
     }
-    const nextFlow = availableFlows.find((flow) => !usedFlowIds.has(flow.id) && truckSupportsFlow(truckUnit.truck, flow));
+    const nextFlow = availableFlows.find((flow) => !usedFlowIds.has(flow.id)
+      && truckSupportsFlow(truckUnit.truck, flow)
+      && truckCanExecuteFlow(truckUnit, flow));
     if (!nextFlow) {
       return;
     }
@@ -1872,6 +2356,9 @@ function autoAssignContractsForTruckUnits(playerId, hqCityId, truckUnits, limit 
     }
     const displayNumber = truckUnits.length + 1;
     const truckUnit = buildTruckUnit(playerId, truck, displayNumber, hqCityId);
+    if (!truckCanExecuteFlow(truckUnit, flow)) {
+      return;
+    }
     truckUnits.push(truckUnit);
     usedFlowIds.add(flow.id);
     specs.push({ flow, truckUnit, preparedEntry: null });
@@ -1890,6 +2377,12 @@ function buildContractSpecsFromSetup(truckUnits, hqCityId) {
       const flow = state.freightFlowsById[String(flowId || "").trim()];
       const truckUnit = truckUnitsById[String(truckInstanceId || "").trim()];
       if (!flow || !truckUnit || flow.origin_id !== hqCityId || !truckSupportsFlow(truckUnit.truck, flow)) {
+        return null;
+      }
+      if (exclusiveFreightsEnabled() && !freightFlowAvailability(flow.id).available) {
+        return null;
+      }
+      if (!truckCanExecuteFlow(truckUnit, flow)) {
         return null;
       }
       return {
@@ -1976,7 +2469,7 @@ function buildHumanPlayerConfig() {
   };
 }
 
-function buildRobotPlayerConfigs(humanHqCityId) {
+function buildRobotPlayerConfigs(humanHqCityId, blockedFlowIds = new Set()) {
   const robotCount = openingWizardEnabled()
     ? clamp(state.setup.robotCount, MIN_ROBOT_COUNT, MAX_ROBOT_COUNT)
     : 3;
@@ -1990,7 +2483,7 @@ function buildRobotPlayerConfigs(humanHqCityId) {
     const name = ROBOT_NAMES[index] || `Adversario ${index + 1}`;
     const city = candidateCities[index] || candidateCities[0] || state.cities[0] || null;
     const hqCityId = city?.id || humanHqCityId;
-    const assignmentPlan = autoAssignContractsForTruckUnits(`robot-${index + 1}`, hqCityId, [], 2);
+    const assignmentPlan = autoAssignContractsForTruckUnits(`robot-${index + 1}`, hqCityId, [], 2, blockedFlowIds);
     const headquartersCost = Number(openingContextForCity(city)?.openingPrice || 0);
     const fleetInvestment = assignmentPlan.truckUnits.reduce((total, truckUnit) => total + Number(truckUnit.truck?.purchase_price_brl || 0), 0);
     const currentCash = roundNumber((robotBaseCash * (0.92 + (index * 0.025))) - headquartersCost - fleetInvestment, 0);
@@ -2010,7 +2503,16 @@ function buildRobotPlayerConfigs(humanHqCityId) {
   }).filter((config) => config.hqCityId && config.truckUnits.length && config.contractSpecs.length);
 }
 
+function isTravelStage(stageName) {
+  return ["repositioning", "outbound", "returning"].includes(String(stageName || "").trim());
+}
+
 function contractStatusLabel(contract) {
+  if (contract?.dispatchOnly) {
+    return contract.dispatchMode === "return_hq"
+      ? "Voltando a sede"
+      : "Reposicionando";
+  }
   return {
     repositioning: "Reposicionando",
     loading: "Carregando",
@@ -2020,14 +2522,110 @@ function contractStatusLabel(contract) {
   }[contract.stage] || "Em operacao";
 }
 
-function currentTrackForContract(contract) {
+function currentTrackForContract(contract, stageName = contract?.stage) {
   return {
-    repositioning: contract.repositionTrack,
-    loading: contract.deliveryTrack,
-    outbound: contract.deliveryTrack,
-    unloading: contract.deliveryTrack,
-    returning: contract.returnTrack,
-  }[contract.stage] || contract.deliveryTrack;
+    repositioning: contract?.repositionTrack,
+    loading: contract?.deliveryTrack,
+    outbound: contract?.deliveryTrack,
+    unloading: contract?.deliveryTrack,
+    returning: contract?.returnTrack,
+  }[stageName] || contract?.deliveryTrack;
+}
+
+function applyFuelPurchase(player, truckUnit, cityId, liters, reason) {
+  const fuelLiters = Math.max(0, Number(liters || 0));
+  if (!(fuelLiters > 0) || !truckUsesDiesel(truckUnit?.truck)) {
+    return 0;
+  }
+  const dieselPrice = dieselPriceForCity(cityId);
+  const tankLiters = Math.max(0, Number(truckUnit?.fuelTankLiters || truckFuelTankLiters(truckUnit?.truck)));
+  truckUnit.fuelLevelLiters = clamp(Number(truckUnit?.fuelLevelLiters || 0) + fuelLiters, 0, Math.max(tankLiters, fuelLiters));
+  const fuelCostBrl = roundNumber(fuelLiters * dieselPrice, 2);
+  if (player) {
+    player.cashBrl = roundNumber(player.cashBrl - fuelCostBrl, 2);
+    appendLog(player.id, "neutral", `${player.label} abasteceu ${formatLiters(fuelLiters)} em ${cityLabel(cityId)} (${formatCurrency(fuelCostBrl)}${reason ? ` · ${reason}` : ""}).`);
+  }
+  return fuelCostBrl;
+}
+
+function prepareContractTravelStage(player, contract) {
+  const stageName = String(contract?.stage || "").trim();
+  const track = currentTrackForContract(contract, stageName);
+  if (!isTravelStage(stageName) || !track) {
+    contract.travelStage = null;
+    return;
+  }
+  const travelPlan = buildTravelFuelPlan({
+    track,
+    truck: contract.truckUnit?.truck,
+    loaded: stageName === "outbound" && !contract.dispatchOnly,
+    startingFuelLiters: Number(contract.truckUnit?.fuelLevelLiters ?? truckFuelTankLiters(contract.truckUnit?.truck)),
+  });
+  contract.travelStage = {
+    plan: travelPlan,
+    processedSegmentCount: 0,
+    stageStartOdometerKm: Number(contract.truckUnit?.odometerKm || 0),
+  };
+  if (!travelPlan.feasible) {
+    appendLog(player.id, "negative", `${player.label} nao tem autonomia para sair de ${cityLabel(travelPlan.blockedStartCityId || contract.truckUnit?.currentCityId)} rumo a ${cityLabel(travelPlan.blockedEndCityId || contract.flow?.destination_id)}.`);
+    return;
+  }
+  const firstSegment = travelPlan.segments[0] || null;
+  if (firstSegment?.refuelLiters > 0) {
+    contract.realizedFuelCostBrl = roundNumber(
+      Number(contract.realizedFuelCostBrl || 0) + applyFuelPurchase(player, contract.truckUnit, firstSegment.startCityId, firstSegment.refuelLiters, "saida"),
+      2,
+    );
+  }
+}
+
+function processTravelStageProgress(player, contract, previousElapsedHours, nextElapsedHours) {
+  const travelStage = contract.travelStage;
+  const travelPlan = travelStage?.plan || null;
+  if (!travelPlan?.segments?.length) {
+    return;
+  }
+  while (travelStage.processedSegmentCount < travelPlan.segments.length) {
+    const segment = travelPlan.segments[travelStage.processedSegmentCount];
+    if (nextElapsedHours + 0.0001 < Number(segment.endHours || 0)) {
+      break;
+    }
+    contract.truckUnit.odometerKm = roundNumber(Number(travelStage.stageStartOdometerKm || 0) + Number(segment.endKm || 0), 1);
+    contract.truckUnit.fuelLevelLiters = roundNumber(Number(segment.fuelAfterSegmentLiters || 0), 2);
+    travelStage.processedSegmentCount += 1;
+
+    const nextSegment = travelPlan.segments[travelStage.processedSegmentCount] || null;
+    if (nextSegment?.refuelLiters > 0) {
+      contract.realizedFuelCostBrl = roundNumber(
+        Number(contract.realizedFuelCostBrl || 0) + applyFuelPurchase(player, contract.truckUnit, nextSegment.startCityId, nextSegment.refuelLiters, "trajeto"),
+        2,
+      );
+    }
+  }
+}
+
+function projectedTravelSnapshot(contract) {
+  const travelStage = contract?.travelStage;
+  const travelPlan = travelStage?.plan || null;
+  if (!travelPlan?.segments?.length || !isTravelStage(contract?.stage)) {
+    return null;
+  }
+  const stageBudget = Math.max(Number(contract?.stageDurationHours || 0), 0.0001);
+  const progressRatio = clamp(Number(contract?.stageElapsedHours || 0) / stageBudget, 0, 1);
+  const distanceKm = Number(travelPlan.distanceKm || 0) * progressRatio;
+  const segment = travelPlan.segments.find((item) => distanceKm <= Number(item.endKm || 0) + 0.0001) || travelPlan.segments[travelPlan.segments.length - 1];
+  if (!segment) {
+    return null;
+  }
+  const segmentDistanceKm = Math.max(Number(segment.distanceKm || 0), 0.0001);
+  const segmentProgressRatio = clamp((distanceKm - Number(segment.startKm || 0)) / segmentDistanceKm, 0, 1);
+  const fuelLevelLiters = Number(segment.fuelAfterRefuelLiters || 0) - (Number(segment.fuelNeededLiters || 0) * segmentProgressRatio);
+  return {
+    distanceKm,
+    odometerKm: roundNumber(Number(travelStage.stageStartOdometerKm || 0) + distanceKm, 1),
+    fuelLevelLiters: roundNumber(Math.max(0, fuelLevelLiters), 2),
+    tankLiters: Number(travelPlan.tankLiters || 0),
+  };
 }
 
 function updateContractPosition(contract) {
@@ -2068,21 +2666,78 @@ function buildDynamicContractSpec(player, truckUnit, flow) {
   };
 }
 
+function buildDispatchContractSpec(player, truckUnit, destinationCityId, dispatchMode = "reposition") {
+  const originCityId = String(truckUnit?.currentCityId || player?.hqCityId || "").trim();
+  const nextDestinationCityId = String(destinationCityId || "").trim();
+  const track = getTrack(originCityId, nextDestinationCityId, "fastest");
+  const destinationCity = state.citiesById[nextDestinationCityId] || null;
+  return {
+    dispatchOnly: true,
+    dispatchMode,
+    flow: {
+      id: `dispatch-${truckUnit?.id || "truck"}-${nextDestinationCityId}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      product_id: "dispatch",
+      product_name: dispatchMode === "return_hq" ? "Retorno a sede" : "Reposicionamento vazio",
+      product_emoji: "•",
+      product_color: player?.color || "#356d63",
+      origin_id: originCityId,
+      origin_label: cityLabel(originCityId),
+      destination_id: nextDestinationCityId,
+      destination_label: destinationCity?.label || cityLabel(nextDestinationCityId),
+      distance_km: Number(track?.distanceKm || 0),
+      quantity_t: 0,
+      custom: true,
+    },
+    truckUnit,
+    preparedEntry: null,
+  };
+}
+
 function assignFlowToTruck(player, truckUnit, flow) {
   if (!player || !truckUnit || !flow) {
     return null;
   }
-  truckUnit.currentCityId = flow.origin_id;
+  if (exclusiveFreightsEnabled() && !freightFlowAvailability(flow.id).available) {
+    return null;
+  }
+  if (!truckCanExecuteFlow(truckUnit, flow, {
+    currentCityId: truckUnit.currentCityId,
+    startingFuelLiters: truckUnit.fuelLevelLiters,
+  })) {
+    return null;
+  }
   const contract = createContractState(player, buildDynamicContractSpec(player, truckUnit, flow));
   player.contracts.push(contract);
   appendLog(player.id, "neutral", `${player.label} assumiu ${flow.product_name || "carga"} em ${cityLabel(flow.origin_id)} rumo a ${cityLabel(flow.destination_id)}.`);
   return contract;
 }
 
+function assignDispatchToTruck(player, truckUnit, destinationCityId, dispatchMode = "reposition") {
+  if (!player || !truckUnit || !destinationCityId) {
+    return null;
+  }
+  const spec = buildDispatchContractSpec(player, truckUnit, destinationCityId, dispatchMode);
+  if (!truckCanExecuteFlow(truckUnit, spec.flow, {
+    currentCityId: truckUnit.currentCityId,
+    startingFuelLiters: truckUnit.fuelLevelLiters,
+    loadedOutbound: false,
+  })) {
+    return null;
+  }
+  const contract = createContractState(player, spec);
+  player.contracts.push(contract);
+  appendLog(player.id, "neutral", `${player.label} despachou ${truckUnit.truck?.short_label || truckUnit.truck?.label || "caminhao"} para ${cityLabel(destinationCityId)}.`);
+  return contract;
+}
+
 function bestNextFlowForTruck(player, truckUnit, originCityId) {
-  const activeFlowIds = new Set((player?.contracts || []).map((contract) => contract.flowId));
   return (state.outboundFreightsByCityId[originCityId] || [])
-    .filter((flow) => !activeFlowIds.has(flow.id) && truckSupportsFlow(truckUnit.truck, flow))
+    .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
+    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
+    .filter((flow) => truckCanExecuteFlow(truckUnit, flow, {
+      currentCityId: originCityId,
+      startingFuelLiters: truckUnit.fuelLevelLiters,
+    }))
     .sort((left, right) => {
       const leftTrack = getTrack(left.origin_id, left.destination_id, "fastest");
       const rightTrack = getTrack(right.origin_id, right.destination_id, "fastest");
@@ -2104,12 +2759,18 @@ function processPendingHumanAssignmentQueue() {
       continue;
     }
     const availableEntries = (state.outboundFreightsByCityId[nextAssignment.originCityId] || [])
-      .filter((flow) => truckSupportsFlow(truckUnit.truck, flow));
-    if (!availableEntries.length) {
+      .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
+      .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
+      .filter((flow) => truckCanExecuteFlow(truckUnit, flow, {
+        currentCityId: nextAssignment.originCityId,
+        startingFuelLiters: truckUnit.fuelLevelLiters,
+      }));
+    if (!availableEntries.length && !advancedDispatchEnabled()) {
       appendLog(player.id, "neutral", `${player.label} ficou sem fretes em ${cityLabel(nextAssignment.originCityId)} e aguardara nova ordem.`);
       continue;
     }
     state.setup.activeHumanAssignment = nextAssignment;
+    state.setup.dispatchSelectedCityId = "";
     openSetupModal("freights");
     return;
   }
@@ -2118,6 +2779,11 @@ function processPendingHumanAssignmentQueue() {
 function completeContractCycle(player, contract) {
   contract.isCompleted = true;
   contract.truckUnit.currentCityId = contract.flow.destination_id;
+  contract.truckUnit.odometerKm = roundNumber(projectedTravelSnapshot(contract)?.odometerKm || contract.truckUnit.odometerKm || 0, 1);
+  contract.truckUnit.fuelLevelLiters = roundNumber(projectedTravelSnapshot(contract)?.fuelLevelLiters || contract.truckUnit.fuelLevelLiters || 0, 2);
+  if (exclusiveFreightsEnabled() && !contract.dispatchOnly) {
+    markFreightFlowCompleted(player, contract);
+  }
   if (!openingWizardEnabled()) {
     return;
   }
@@ -2142,36 +2808,33 @@ function completeContractCycle(player, contract) {
 function transitionContractStage(player, contract) {
   if (contract.stage === "repositioning") {
     contract.truckUnit.currentCityId = contract.flow.origin_id;
-    contract.stage = "loading";
-    contract.stageDurationHours = contract.loadHours;
-    contract.stageElapsedHours = 0;
-    contract.position = trackStartPoint(contract.deliveryTrack);
+    enterContractStage(player, contract, contract.dispatchOnly ? "outbound" : "loading");
     return;
   }
 
   if (contract.stage === "loading") {
-    contract.stage = "outbound";
-    contract.stageDurationHours = Math.max(contract.deliveryTrack?.durationHours || 0, 0.2);
-    contract.stageElapsedHours = 0;
-    contract.position = trackStartPoint(contract.deliveryTrack);
+    enterContractStage(player, contract, "outbound");
     return;
   }
 
   if (contract.stage === "outbound") {
     contract.truckUnit.currentCityId = contract.flow.destination_id;
+    if (contract.dispatchOnly) {
+      player.cashBrl = roundNumber(player.cashBrl - Number(contract.nonFuelCycleCostBrl || 0), 2);
+      appendLog(player.id, "neutral", `${player.label} reposicionou ${contract.truck.short_label || contract.truck.label || "caminhao"} para ${cityLabel(contract.flow.destination_id)}.`);
+      completeContractCycle(player, contract);
+      return;
+    }
     contract.deliveriesCompleted += 1;
     player.deliveries += 1;
     player.tonnesMoved += contract.payloadTons;
-    player.cashBrl = roundNumber(player.cashBrl + contract.profitPerDeliveryBrl, 2);
+    player.cashBrl = roundNumber(player.cashBrl + contract.revenuePerDeliveryBrl - Number(contract.nonFuelCycleCostBrl || 0), 2);
     appendLog(
       player.id,
       contract.profitPerDeliveryBrl >= 0 ? "positive" : "negative",
       `${player.label} entregou ${contract.flow.product_name || "carga"} em ${cityLabel(contract.flow.destination_id)} (${formatCurrency(contract.profitPerDeliveryBrl)}).`,
     );
-    contract.stage = "unloading";
-    contract.stageDurationHours = contract.unloadHours;
-    contract.stageElapsedHours = 0;
-    contract.position = trackEndPoint(contract.deliveryTrack);
+    enterContractStage(player, contract, "unloading");
     return;
   }
 
@@ -2180,18 +2843,12 @@ function transitionContractStage(player, contract) {
       completeContractCycle(player, contract);
       return;
     }
-    contract.stage = "returning";
-    contract.stageDurationHours = Math.max(contract.returnTrack?.durationHours || 0, 0.2);
-    contract.stageElapsedHours = 0;
-    contract.position = trackStartPoint(contract.returnTrack);
+    enterContractStage(player, contract, "returning");
     return;
   }
 
   contract.truckUnit.currentCityId = contract.flow.origin_id;
-  contract.stage = "loading";
-  contract.stageDurationHours = contract.loadHours;
-  contract.stageElapsedHours = 0;
-  contract.position = trackStartPoint(contract.deliveryTrack);
+  enterContractStage(player, contract, contract.dispatchOnly ? "outbound" : "loading");
 }
 
 function advanceContract(player, contract, deltaHours) {
@@ -2200,8 +2857,10 @@ function advanceContract(player, contract, deltaHours) {
     const stageBudget = Math.max(contract.stageDurationHours, 0.0001);
     const remainingStageHours = Math.max(0, stageBudget - contract.stageElapsedHours);
     const consumedHours = Math.min(remainingHours, remainingStageHours || stageBudget);
+    const previousElapsedHours = contract.stageElapsedHours;
     contract.stageElapsedHours += consumedHours;
     remainingHours -= consumedHours;
+    processTravelStageProgress(player, contract, previousElapsedHours, contract.stageElapsedHours);
     updateContractPosition(contract);
 
     if (contract.stageElapsedHours + 0.0001 >= stageBudget) {
@@ -2217,17 +2876,30 @@ function createContractState(player, spec, sequenceId = nextContractSequence()) 
   const flow = spec.flow;
   const truckUnit = spec.truckUnit;
   const truck = truckUnit.truck || state.trucksById[truckUnit.truckId] || null;
+  const dispatchOnly = Boolean(spec.dispatchOnly);
   const deliveryTrack = getTrack(flow.origin_id, flow.destination_id, "fastest");
-  const returnTrack = getTrack(flow.destination_id, flow.origin_id, "fastest");
+  const returnTrack = dispatchOnly ? null : getTrack(flow.destination_id, flow.origin_id, "fastest");
   const repositionTrack = truckUnit.currentCityId && truckUnit.currentCityId !== flow.origin_id
     ? getTrack(truckUnit.currentCityId, flow.origin_id, "fastest")
     : null;
-  const payloadTons = flowPayloadTons(flow, truck, spec.preparedEntry);
-  const revenuePerDeliveryBrl = estimateDeliveryRevenue(flow, truck, player, spec.preparedEntry, deliveryTrack.distanceKm);
-  const cycleCostBrl = estimateCycleCost(flow, truck, payloadTons, deliveryTrack.distanceKm);
-  const startingStage = repositionTrack && repositionTrack.distanceKm > 0.2 ? "repositioning" : "loading";
-  const loadHours = loadHoursForTruck(truck);
-  const unloadHours = unloadHoursForTruck(truck);
+  const payloadTons = dispatchOnly ? 0 : flowPayloadTons(flow, truck, spec.preparedEntry);
+  const revenuePerDeliveryBrl = dispatchOnly ? 0 : estimateDeliveryRevenue(flow, truck, player, spec.preparedEntry, deliveryTrack.distanceKm);
+  const cycleCostBrl = dispatchOnly ? estimateDispatchCycleCost(deliveryTrack, truck) : estimateCycleCost(flow, truck, payloadTons, deliveryTrack.distanceKm);
+  const estimatedFuelCostBrl = dispatchOnly
+    ? estimatedFuelCostForTrack(deliveryTrack, truck, { loaded: false })
+    : [
+      repositionTrack ? estimatedFuelCostForTrack(repositionTrack, truck, { loaded: false }) : 0,
+      estimatedFuelCostForTrack(deliveryTrack, truck, { loaded: true }),
+      returnTrack ? estimatedFuelCostForTrack(returnTrack, truck, { loaded: false }) : 0,
+    ].filter((value) => Number.isFinite(value)).reduce((total, value) => total + Number(value || 0), 0);
+  const nonFuelCycleCostBrl = roundNumber(Math.max(0, cycleCostBrl - Number(estimatedFuelCostBrl || 0)), 2);
+  const startingStage = repositionTrack && repositionTrack.distanceKm > 0.2
+    ? "repositioning"
+    : dispatchOnly
+      ? "outbound"
+      : "loading";
+  const loadHours = dispatchOnly ? 0.1 : loadHoursForTruck(truck);
+  const unloadHours = dispatchOnly ? 0.1 : unloadHoursForTruck(truck);
 
   const contract = {
     id: `${player.id}-contract-${sequenceId}`,
@@ -2240,25 +2912,53 @@ function createContractState(player, spec, sequenceId = nextContractSequence()) 
     revenuePerDeliveryBrl,
     cycleCostBrl,
     profitPerDeliveryBrl: roundNumber(revenuePerDeliveryBrl - cycleCostBrl, 2),
+    nonFuelCycleCostBrl,
+    estimatedFuelCostBrl,
+    realizedFuelCostBrl: 0,
     deliveryTrack,
     returnTrack,
     repositionTrack,
     loadHours,
     unloadHours,
     stage: startingStage,
+    dispatchOnly,
+    dispatchMode: spec.dispatchMode || "",
+    travelStage: null,
     stageDurationHours: startingStage === "repositioning"
       ? Math.max(repositionTrack?.durationHours || 0, 0.2)
-      : loadHours,
+      : startingStage === "outbound"
+        ? Math.max(deliveryTrack?.durationHours || 0, 0.2)
+        : loadHours,
     stageElapsedHours: 0,
     deliveriesCompleted: 0,
     position: null,
   };
+  prepareContractTravelStage(player, contract);
   updateContractPosition(contract);
   return contract;
 }
 
+function enterContractStage(player, contract, nextStage) {
+  contract.stage = nextStage;
+  contract.stageElapsedHours = 0;
+  contract.stageDurationHours = nextStage === "repositioning"
+    ? Math.max(contract.repositionTrack?.durationHours || 0, 0.2)
+    : nextStage === "outbound"
+      ? Math.max(contract.deliveryTrack?.durationHours || 0, 0.2)
+      : nextStage === "returning"
+        ? Math.max(contract.returnTrack?.durationHours || 0, 0.2)
+        : nextStage === "loading"
+          ? contract.loadHours
+          : contract.unloadHours;
+  if (isTravelStage(nextStage)) {
+    prepareContractTravelStage(player, contract);
+  } else {
+    contract.travelStage = null;
+  }
+  updateContractPosition(contract);
+}
 function createPlayer(config) {
-  const truckUnits = config.truckUnits.map((truckUnit) => ({ ...truckUnit }));
+  const truckUnits = config.truckUnits.map((truckUnit) => hydrateTruckUnitState({ ...truckUnit }));
   const truckUnitsById = Object.fromEntries(truckUnits.map((truckUnit) => [truckUnit.id, truckUnit]));
   const player = {
     id: config.id,
@@ -2284,7 +2984,8 @@ function createPlayer(config) {
 
 function buildPlayers() {
   const humanConfig = buildHumanPlayerConfig();
-  const robotConfigs = buildRobotPlayerConfigs(humanConfig.hqCityId);
+  const reservedFlowIds = new Set((humanConfig.contractSpecs || []).map((spec) => spec.flow.id));
+  const robotConfigs = buildRobotPlayerConfigs(humanConfig.hqCityId, reservedFlowIds);
   const players = [humanConfig, ...robotConfigs].map(createPlayer);
   state.players = players;
   state.playersById = Object.fromEntries(players.map((player) => [player.id, player]));
@@ -2499,6 +3200,10 @@ function toggleSetupFreightSelection(flowId) {
   if (!productId || !supportedProductIds.has(productId)) {
     return;
   }
+  const pricedEntry = setupPricedFreightEntryById(flow.id, currentSelectionHqCityId()) || null;
+  if (pricedEntry && (!pricedEntry.availability?.available || pricedEntry.fuelFeasible === false || !pricedEntry.contractTruckUnit)) {
+    return;
+  }
   if (setupFreightIsSelected(flowId)) {
     delete state.setup.selectedFreightAssignments[flowId];
   } else {
@@ -2509,6 +3214,61 @@ function toggleSetupFreightSelection(flowId) {
     state.setup.selectedFreightAssignments[flowId] = assignedTruckUnit.id;
   }
   renderSetupModal();
+}
+
+function clearPurchaseDraftState() {
+  state.setup.activePurchase = null;
+  state.setup.company.fleetPurchased = false;
+  state.setup.selectedTruckInstances = [];
+  state.setup.selectedFreightAssignments = {};
+  state.setup.dispatchSelectedCityId = "";
+}
+
+function startRuntimeTruckPurchaseFlow(playerId = "human") {
+  const player = state.playersById[playerId] || null;
+  if (!player || !player.isHuman) {
+    return;
+  }
+  state.setup.activePurchase = { playerId: player.id };
+  state.setup.company.hqCityId = player.hqCityId;
+  state.setup.company.fleetPurchased = false;
+  state.setup.selectedTruckInstances = [];
+  state.setup.selectedFreightAssignments = {};
+  state.setup.dispatchSelectedCityId = "";
+  state.setup.nextTruckDisplayNumber = Math.max(
+    Number(state.setup.nextTruckDisplayNumber || 1),
+    ...player.truckUnits.map((truckUnit) => Number(truckUnit.displayNumber || 0) + 1),
+  );
+  openSetupModal("fleet");
+}
+
+function finishRuntimeTruckPurchaseFlow() {
+  const player = activePurchasePlayer();
+  if (!player) {
+    return;
+  }
+  const hqCityId = currentSelectionHqCityId();
+  const purchasedTruckUnits = setupSelectedTruckUnits().map((instance) => hydrateTruckUnitState({
+    id: String(instance.id || "").trim(),
+    displayNumber: Number(instance.display_number || instance.displayNumber || 0),
+    currentCityId: String(instance.current_city_id || hqCityId).trim(),
+    truckId: String(instance.truck_id || instance.truck?.id || "").trim(),
+    truck: state.trucksById[String(instance.truck_id || instance.truck?.id || "").trim()] || instance.truck,
+  }));
+  const investmentBrl = setupSelectedFleetInvestmentTotal();
+  player.cashBrl = roundNumber(player.cashBrl - investmentBrl, 2);
+  player.truckUnits.push(...purchasedTruckUnits);
+  buildContractSpecsFromSetup(purchasedTruckUnits, hqCityId).forEach((spec) => {
+    const contract = createContractState(player, spec);
+    player.contracts.push(contract);
+  });
+  appendLog(player.id, "positive", `${player.label} comprou ${formatInteger(purchasedTruckUnits.length)} caminhoes na sede (${formatCurrency(investmentBrl)}).`);
+  clearPurchaseDraftState();
+  state.setup.activeModal = "";
+  updateSetupModalVisibility();
+  renderStaticUi();
+  renderMapUi({ refreshIcons: true });
+  focusPlayerOnMap(player);
 }
 
 function renderOpeningPalette() {
@@ -2606,7 +3366,7 @@ function renderSetupFleetRail() {
   if (!refs.fleetRail) {
     return;
   }
-  const recommendedFleet = starterFleetBlueprintForCity(setupCurrentHqCity());
+  const recommendedFleet = starterFleetBlueprintForCity(currentSelectionCity());
   const recommendedByTruckId = Object.fromEntries(recommendedFleet.fleetEntries.map((entry) => [entry.truck.id, entry]));
   const sortedTrucks = Object.values(state.trucksById).sort((left, right) => {
     const leftQuantity = setupSelectedTruckQuantityByType(left.id);
@@ -2675,7 +3435,7 @@ function renderSetupFleetRail() {
     }).join("")
     : `<div class="truck-gallery-empty">Nenhum caminhao disponivel no catalogo ativo.</div>`;
   if (refs.fleetRailMeta) {
-    refs.fleetRailMeta.textContent = `${formatInteger(sortedTrucks.length)} modelos · orcamento ${formatCurrency(setupAvailableFleetBudget())}`;
+    refs.fleetRailMeta.textContent = `${formatInteger(sortedTrucks.length)} modelos · ${purchaseFlowActive() ? "caixa" : "orcamento"} ${formatCurrency(setupAvailableFleetBudget())}`;
   }
   bindWheelRail(refs.fleetRail);
   updateRailPerspective(refs.fleetRail);
@@ -2685,7 +3445,8 @@ function renderSetupFleetSelection() {
   if (!refs.fleetSelection) {
     return;
   }
-  const city = setupCurrentHqCity();
+  const city = currentSelectionCity();
+  const purchaseMode = purchaseFlowActive();
   const entries = setupSelectedTruckEntries();
   const recommended = starterFleetBlueprintForCity(city);
   const totalUnits = entries.reduce((total, entry) => total + entry.quantity, 0);
@@ -2696,12 +3457,12 @@ function renderSetupFleetSelection() {
   const fleetPurchased = Boolean(state.setup.company.fleetPurchased && canPurchaseFleet);
   refs.fleetSelection.innerHTML = `
     <div class="game-setup-selector-head">
-      <span class="eyebrow">Frota inicial</span>
-      <h3>${escapeHtml(entries.length ? `${formatInteger(totalUnits)} caminhoes selecionados` : "Monte a frota de partida")}</h3>
+      <span class="eyebrow">${escapeHtml(purchaseMode ? "Compra na sede" : "Frota inicial")}</span>
+      <h3>${escapeHtml(entries.length ? `${formatInteger(totalUnits)} caminhoes selecionados` : (purchaseMode ? "Monte a ampliacao da frota" : "Monte a frota de partida"))}</h3>
     </div>
     <div class="game-setup-summary-metrics game-setup-summary-metrics-compact">
-      <article><span>Capital</span><strong>${escapeHtml(formatCurrency(setupCurrentCapitalSnapshot().initialCash))}</strong></article>
-      <article><span>Sede</span><strong>${escapeHtml(formatCurrency(setupHeadquartersOpeningCost(city)))}</strong></article>
+      <article><span>${escapeHtml(purchaseMode ? "Caixa" : "Capital")}</span><strong>${escapeHtml(formatCurrency(purchaseMode ? (activePurchasePlayer()?.cashBrl || 0) : setupCurrentCapitalSnapshot().initialCash))}</strong></article>
+      <article><span>${escapeHtml(purchaseMode ? "Sede" : "Sede")}</span><strong>${escapeHtml(purchaseMode ? cityLabel(city?.id) : formatCurrency(setupHeadquartersOpeningCost(city)))}</strong></article>
       <article><span>Investimento</span><strong>${escapeHtml(formatCurrency(totalInvestment))}</strong></article>
       <article><span>Saldo</span><strong class="${remainingCapital >= 0 ? "game-setup-balance-positive" : "game-setup-balance-negative"}">${escapeHtml(formatCurrency(remainingCapital))}</strong></article>
     </div>
@@ -2739,13 +3500,13 @@ function renderSetupFleetSelection() {
               </div>
             </article>
           `).join("")
-          : `<div class="truck-gallery-empty">A frota inicial ainda esta vazia. Use os botoes + nos cartoes para adicionar unidades.</div>`}
+          : `<div class="truck-gallery-empty">${escapeHtml(purchaseMode ? "A ampliacao da frota ainda esta vazia. Use os botoes + nos cartoes para adicionar unidades." : "A frota inicial ainda esta vazia. Use os botoes + nos cartoes para adicionar unidades.")}</div>`}
       </div>
     </div>
     <div class="game-setup-modal-actions game-setup-inline-actions">
       <button class="editor-header-action game-setup-company-purchase-button game-setup-truck-purchase-button${fleetPurchased ? " is-purchased" : ""}" type="button" data-runtime-purchase-trucks="true"${canPurchaseFleet && !fleetPurchased ? "" : " disabled"}>
         <span class="material-symbols-outlined" aria-hidden="true">${escapeHtml(fleetPurchased ? "check_circle" : "local_shipping")}</span>
-        <span>${escapeHtml(fleetPurchased ? "Caminhoes comprados" : "Comprar caminhoes")}</span>
+        <span>${escapeHtml(fleetPurchased ? "Caminhoes comprados" : purchaseMode ? "Separar compra" : "Comprar caminhoes")}</span>
       </button>
     </div>
   `;
@@ -2759,11 +3520,17 @@ function buildHumanAssignmentPricedEntries() {
     return [];
   }
   return (state.outboundFreightsByCityId[assignment.originCityId] || [])
+    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).state !== "completed")
     .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
     .map((flow) => {
       const track = getTrack(flow.origin_id, flow.destination_id, "fastest");
       const payloadTons = flowPayloadTons(flow, truckUnit.truck, null);
       const revenuePerDeliveryBrl = estimateDeliveryRevenue(flow, truckUnit.truck, player, null, track.distanceKm);
+      const availability = freightFlowAvailability(flow.id);
+      const executionPlan = buildTruckFlowExecutionPlan(truckUnit, flow, {
+        currentCityId: assignment.originCityId,
+        startingFuelLiters: truckUnit.fuelLevelLiters,
+      });
       return {
         flow,
         unitRevenuePerTon: payloadTons > 0 ? revenuePerDeliveryBrl / payloadTons : 0,
@@ -2771,9 +3538,110 @@ function buildHumanAssignmentPricedEntries() {
         contractTruck: truckUnit.truck,
         contractPayloadTons: payloadTons,
         contractRevenue: revenuePerDeliveryBrl,
+        availability,
+        fuelFeasible: executionPlan.feasible,
+        executionPlan,
       };
     })
     .sort((left, right) => Number(right.contractRevenue || 0) - Number(left.contractRevenue || 0));
+}
+
+function assignmentTruckUnit() {
+  const assignment = state.setup.activeHumanAssignment;
+  const player = state.playersById.human || null;
+  return assignment ? (player?.truckUnits || []).find((item) => item.id === assignment.truckUnitId) || null : null;
+}
+
+function truckFuelSnapshot(truckUnit, contract = null) {
+  const projected = contract ? projectedTravelSnapshot(contract) : null;
+  return {
+    fuelLevelLiters: Math.max(0, Number(projected?.fuelLevelLiters ?? truckUnit?.fuelLevelLiters ?? 0)),
+    tankLiters: Math.max(0, Number(projected?.tankLiters ?? truckUnit?.fuelTankLiters ?? truckFuelTankLiters(truckUnit?.truck) ?? 0)),
+    odometerKm: Math.max(0, Number(projected?.odometerKm ?? truckUnit?.odometerKm ?? 0)),
+  };
+}
+
+function truckLoadedRangeKm(truckUnit, fuelLevelLiters = Number(truckUnit?.fuelLevelLiters || 0)) {
+  const consumptionPerKm = truckConsumptionLitersPerKm(truckUnit?.truck, { loaded: true });
+  if (!(consumptionPerKm > 0)) {
+    return 0;
+  }
+  return Math.max(0, Number(fuelLevelLiters || 0) / consumptionPerKm);
+}
+
+function ensureDispatchMap() {
+  const stageElement = document.getElementById("game-runtime-dispatch-map-stage");
+  if (!stageElement || !state.bootstrap?.map_viewport) {
+    return null;
+  }
+  if (state.setup.dispatchMap && state.setup.dispatchMap.getContainer?.() !== stageElement) {
+    state.setup.dispatchMap.remove();
+    state.setup.dispatchMap = null;
+    state.setup.dispatchMarkerLayer = null;
+  }
+  if (!state.setup.dispatchMap) {
+    state.setup.dispatchMap = createBrasixMap({
+      elementId: "game-runtime-dispatch-map-stage",
+      viewport: state.bootstrap.map_viewport,
+      leafletSettings: state.bootstrap.map_editor?.leaflet_settings || {},
+    });
+    state.setup.dispatchMarkerLayer = window.L.layerGroup().addTo(state.setup.dispatchMap);
+  }
+  return state.setup.dispatchMap;
+}
+
+function selectDispatchDestination(cityId) {
+  const normalizedCityId = String(cityId || "").trim();
+  if (!normalizedCityId || !state.citiesById[normalizedCityId]) {
+    return;
+  }
+  state.setup.dispatchSelectedCityId = normalizedCityId;
+  renderSetupFreightSelection();
+  window.setTimeout(() => renderDispatchDestinationMap(), 30);
+}
+
+function renderDispatchDestinationMap() {
+  if (!advancedDispatchEnabled() || !state.setup.activeHumanAssignment) {
+    return;
+  }
+  const map = ensureDispatchMap();
+  if (!map || !state.setup.dispatchMarkerLayer) {
+    return;
+  }
+  const assignment = state.setup.activeHumanAssignment;
+  state.setup.dispatchMarkerLayer.clearLayers();
+  state.setup.dispatchMarkersByCityId = {};
+  state.cities.forEach((city) => {
+    const isCurrentCity = city.id === assignment.originCityId;
+    const marker = openingMarkerForCity(city, city.id === state.setup.dispatchSelectedCityId);
+    marker.bindTooltip(`<strong>${escapeHtml(city.label)}</strong><br>${escapeHtml(formatCurrency(dieselPriceForCity(city.id)))} diesel`, {
+      sticky: true,
+      direction: "top",
+      className: "brasix-map-tooltip city-editor-map-tooltip",
+      opacity: 1,
+      offset: [0, -8],
+    });
+    if (!isCurrentCity) {
+      marker.on("click", () => selectDispatchDestination(city.id));
+    }
+    marker.setOpacity(isCurrentCity ? 0.45 : 0.88);
+    marker.addTo(state.setup.dispatchMarkerLayer);
+    state.setup.dispatchMarkersByCityId[city.id] = marker;
+  });
+  window.setTimeout(() => {
+    if (!state.setup.dispatchMap) {
+      return;
+    }
+    state.setup.dispatchMap.invalidateSize();
+    state.setup.dispatchMap.fitBounds(
+      [
+        [state.bootstrap.map_viewport.lat_min, state.bootstrap.map_viewport.lon_min],
+        [state.bootstrap.map_viewport.lat_max, state.bootstrap.map_viewport.lon_max],
+      ],
+      { padding: [24, 24], animate: false },
+    );
+    applyBrasixLeafletSettings(state.setup.dispatchMap, state.bootstrap.map_viewport, state.bootstrap.map_editor?.leaflet_settings || {});
+  }, 30);
 }
 
 function renderSetupFreightRail() {
@@ -2781,10 +3649,12 @@ function renderSetupFreightRail() {
     return;
   }
   const assignmentMode = Boolean(state.setup.activeHumanAssignment);
-  const cityId = assignmentMode ? state.setup.activeHumanAssignment.originCityId : setupCompany().hqCityId;
+  const cityId = assignmentMode ? state.setup.activeHumanAssignment.originCityId : currentSelectionHqCityId();
   const pricedEntries = assignmentMode ? buildHumanAssignmentPricedEntries() : setupPricedFreightsForCity(cityId);
   const selectedEntries = assignmentMode ? [] : setupSelectedPricedFreightEntries();
-  const recommendedIds = new Set((assignmentMode ? pricedEntries : setupRecommendedPricedFreights(RECOMMENDED_FREIGHT_LIMIT)).map((entry) => entry.flow.id));
+  const recommendedIds = new Set((assignmentMode
+    ? pricedEntries.filter((entry) => entry.availability?.available && entry.fuelFeasible !== false)
+    : setupRecommendedPricedFreights(RECOMMENDED_FREIGHT_LIMIT)).map((entry) => entry.flow.id));
   const supportedProductIds = setupSelectedTruckSupportedProductIds();
   const referenceProductIds = setupReferenceSupportedProductIds();
   const hasSelectedFleet = assignmentMode ? true : setupSelectedTruckEntries().length > 0;
@@ -2793,8 +3663,13 @@ function renderSetupFreightRail() {
     ? pricedEntries.map((entry) => {
       const flow = entry.flow;
       const selected = assignmentMode ? false : setupFreightIsSelected(flow.id);
+      const availabilityState = entry.availability?.state || "available";
+      const available = availabilityState === "available";
+      const fuelFeasible = entry.fuelFeasible !== false;
       const hasProductCompatibleTruck = assignmentMode ? true : Boolean(supportedProductIds.has(flow.product_id));
-      const compatible = assignmentMode ? true : Boolean(entry.contractTruckUnit);
+      const compatible = assignmentMode
+        ? (available && fuelFeasible)
+        : Boolean(entry.contractTruckUnit) && available && fuelFeasible;
       const suggestedForReferenceFleet = referenceProductIds.has(flow.product_id);
       const contractTruckLabel = entry.contractTruck?.short_label || entry.contractTruck?.label || "-";
       const contractTruckUnitLabel = entry.contractTruckUnit ? `${truckUnitNumberLabel(entry.contractTruckUnit)} · ${contractTruckLabel}` : contractTruckLabel;
@@ -2803,22 +3678,49 @@ function renderSetupFreightRail() {
         : hasSelectedFleet
           ? "Sem caminhao livre na origem para calcular o contrato"
           : "Escolha um caminhao compativel para calcular o contrato";
-      const compatibilityMessage = assignmentMode
-        ? `Novo frete para ${truckUnitNumberLabel(entry.contractTruckUnit)}`
-        : compatible
-          ? "Caminhao livre na origem"
-          : hasSelectedFleet
-            ? hasProductCompatibleTruck
-              ? "Sem caminhao livre na origem"
-              : "Inativo para a frota atual"
-            : suggestedForReferenceFleet
-              ? "Compativel com a frota sugerida"
-              : "Escolha uma frota compativel";
+      const fuelMessage = fuelBlockedMessage(entry.executionPlan?.outboundPlan || entry.executionPlan?.repositionPlan || entry.executionPlan);
+      const compatibilityMessage = !available
+        ? entry.availability.message
+        : !fuelFeasible
+          ? fuelMessage
+          : assignmentMode
+            ? `Novo frete para ${truckUnitNumberLabel(entry.contractTruckUnit)}`
+            : compatible
+              ? "Caminhao livre na origem"
+              : hasSelectedFleet
+                ? hasProductCompatibleTruck
+                  ? "Sem caminhao livre na origem"
+                  : "Inativo para a frota atual"
+                : suggestedForReferenceFleet
+                  ? "Compativel com a frota sugerida"
+                  : "Escolha uma frota compativel";
+      const cardEnabled = compatible || (!assignmentMode && !hasSelectedFleet && suggestedForReferenceFleet && available);
+      const actionLabel = assignmentMode
+        ? compatible
+          ? "Assumir frete"
+          : !available
+            ? "Indisponivel"
+            : !fuelFeasible
+              ? "Sem autonomia"
+              : "Indisponivel"
+        : selected
+          ? `Selecionado em ${entry.contractTruckUnit ? truckUnitNumberLabel(entry.contractTruckUnit) : "frota"}`
+          : compatible
+            ? "Contratar"
+            : !available
+              ? "Em execucao"
+              : !fuelFeasible
+                ? "Sem autonomia"
+                : hasSelectedFleet
+                  ? "Sem frota compativel"
+                  : "Escolha a frota";
       return `
-        <article class="game-setup-rail-card game-setup-freight-card${selected ? " is-selected" : ""}${compatible || (!hasSelectedFleet && suggestedForReferenceFleet) ? "" : " is-disabled"}" data-rail-card="true" style="--freight-color:${escapeHtml(flow.product_color || setupCompany().color)}">
+        <article class="game-setup-rail-card game-setup-freight-card${selected ? " is-selected" : ""}${cardEnabled ? "" : " is-disabled"}" data-rail-card="true" style="--freight-color:${escapeHtml(flow.product_color || setupCompany().color)}">
           <div class="game-setup-rail-badges">
             ${recommendedIds.has(flow.id) ? `<span class="game-setup-pill is-recommended">Top recomendado</span>` : ""}
             ${!assignmentMode && selected && entry.contractTruckUnit ? `<span class="game-setup-pill is-instance">${escapeHtml(truckUnitNumberLabel(entry.contractTruckUnit))}</span>` : ""}
+            ${availabilityState === "active" ? `<span class="game-setup-pill is-blocked">Em execucao</span>` : ""}
+            ${!fuelFeasible ? `<span class="game-setup-pill is-blocked">Sem autonomia</span>` : ""}
           </div>
           <div class="game-setup-freight-product">
             <span class="game-setup-product-emoji">${escapeHtml(flow.product_emoji || "📦")}</span>
@@ -2836,24 +3738,24 @@ function renderSetupFreightRail() {
             <article><span>Distancia</span><strong>${escapeHtml(formatDistanceKm(flow.distance_km))}</strong></article>
             <article><span>Taxa</span><strong>${escapeHtml(formatCurrencyPerTon(entry.unitRevenuePerTon))}</strong></article>
           </div>
-          <p class="game-setup-compatibility-note${compatible || (!hasSelectedFleet && suggestedForReferenceFleet) ? " is-active" : ""}">${escapeHtml(`${compatibilityMessage} · ${contractSummary}`)}</p>
+          <p class="game-setup-compatibility-note${available && fuelFeasible && (compatible || (!hasSelectedFleet && suggestedForReferenceFleet)) ? " is-active" : ""}">${escapeHtml(`${compatibilityMessage} · ${contractSummary}`)}</p>
           <button class="editor-header-action game-setup-freight-toggle" type="button" data-runtime-toggle-freight="${escapeHtml(flow.id)}"${compatible ? "" : " disabled"}>
-            <span class="material-symbols-outlined" aria-hidden="true">${escapeHtml(assignmentMode ? "play_arrow" : selected ? "check_circle" : compatible ? "add_circle" : "block")}</span>
-            <span>${escapeHtml(assignmentMode ? "Assumir frete" : selected ? `Selecionado em ${entry.contractTruckUnit ? truckUnitNumberLabel(entry.contractTruckUnit) : "frota"}` : compatible ? "Contratar" : hasSelectedFleet ? "Sem frota compativel" : "Escolha a frota")}</span>
+            <span class="material-symbols-outlined" aria-hidden="true">${escapeHtml(assignmentMode ? (compatible ? "play_arrow" : "block") : selected ? "check_circle" : compatible ? "add_circle" : "block")}</span>
+            <span>${escapeHtml(actionLabel)}</span>
           </button>
         </article>
       `;
     }).join("")
-    : `<div class="truck-gallery-empty">Nao ha fretes de saida ativos para ${escapeHtml(cityLabel(cityId) || "a cidade atual")}.</div>`;
+    : `<div class="truck-gallery-empty">${escapeHtml(assignmentMode && advancedDispatchEnabled() ? `Nao ha contratos livres em ${cityLabel(cityId)}. Use o mapa ao lado para reposicionar ou voltar para a sede.` : `Nao ha fretes de saida ativos para ${cityLabel(cityId) || "a cidade atual"}.`)}</div>`;
 
   if (refs.freightRailMeta) {
     refs.freightRailMeta.textContent = assignmentMode
-      ? `${formatInteger(pricedEntries.length)} opcoes · ${cityLabel(cityId)}`
+      ? `${formatInteger(pricedEntries.filter((entry) => entry.availability?.available).length)} contratos livres · ${cityLabel(cityId)}`
       : `${formatInteger(pricedEntries.length)} fretes · ${formatInteger(selectedEntries.length)} selecionados`;
   }
   if (refs.freightRailTitle) {
     refs.freightRailTitle.textContent = assignmentMode
-      ? `Novo frete para ${cityLabel(cityId)}`
+      ? `Contratos de ${cityLabel(cityId)}`
       : `Fretes de saida de ${cityLabel(cityId)}`;
   }
   bindWheelRail(refs.freightRail);
@@ -2865,22 +3767,34 @@ function renderSetupFreightSelection() {
     return;
   }
   const assignmentMode = Boolean(state.setup.activeHumanAssignment);
-  const cityId = assignmentMode ? state.setup.activeHumanAssignment.originCityId : setupCompany().hqCityId;
-  const entries = assignmentMode ? buildHumanAssignmentPricedEntries().slice(0, 4) : setupSelectedPricedFreightEntries();
-  const recommended = assignmentMode ? buildHumanAssignmentPricedEntries().slice(0, 4) : setupRecommendedPricedFreights(4);
+  const cityId = assignmentMode ? state.setup.activeHumanAssignment.originCityId : currentSelectionHqCityId();
+  const allAssignmentEntries = assignmentMode ? buildHumanAssignmentPricedEntries() : [];
+  const entries = assignmentMode ? allAssignmentEntries.filter((entry) => entry.availability?.available && entry.fuelFeasible !== false).slice(0, 4) : setupSelectedPricedFreightEntries();
+  const recommended = assignmentMode ? entries : setupRecommendedPricedFreights(4);
   const totalTonnes = entries.reduce((total, entry) => total + Number(entry.contractPayloadTons || 0), 0);
   const averageDistance = entries.length ? entries.reduce((total, entry) => total + Number(entry.flow.distance_km || 0), 0) / entries.length : 0;
   const totalRevenue = entries.reduce((total, entry) => total + Number(entry.contractRevenue || 0), 0);
+  const truckUnit = assignmentMode ? assignmentTruckUnit() : null;
+  const fuelSnapshot = truckUnit ? truckFuelSnapshot(truckUnit) : null;
+  const selectedDispatchCity = state.citiesById[state.setup.dispatchSelectedCityId] || null;
+  const dispatchPlan = assignmentMode && truckUnit && selectedDispatchCity
+    ? buildTravelFuelPlan({
+      track: getTrack(cityId, selectedDispatchCity.id, "fastest"),
+      truck: truckUnit.truck,
+      loaded: false,
+      startingFuelLiters: fuelSnapshot?.fuelLevelLiters,
+    })
+    : null;
   refs.freightSelection.innerHTML = `
     <div class="game-setup-selector-head">
       <span class="eyebrow">${escapeHtml(assignmentMode ? "Destino" : "Carteira")}</span>
-      <h3>${escapeHtml(assignmentMode ? `Escolha o proximo frete em ${cityLabel(cityId)}` : (entries.length ? `${formatInteger(entries.length)} contratos selecionados` : `Fretes de ${cityLabel(cityId)}`))}</h3>
+      <h3>${escapeHtml(assignmentMode ? `Despacho em ${cityLabel(cityId)}` : (entries.length ? `${formatInteger(entries.length)} contratos selecionados` : `Fretes de ${cityLabel(cityId)}`))}</h3>
     </div>
     <div class="game-setup-summary-metrics">
-      <article><span>Melhor taxa</span><strong>${escapeHtml(recommended[0] ? formatCurrencyPerTon(recommended[0].unitRevenuePerTon) : "-")}</strong></article>
-      <article><span>Receita carteira</span><strong>${escapeHtml(formatCurrency(totalRevenue))}</strong></article>
-      <article><span>Carga por viagens</span><strong>${escapeHtml(formatTonnes(totalTonnes))}</strong></article>
-      <article><span>Distancia media</span><strong>${escapeHtml(entries.length ? formatDistanceKm(averageDistance) : "-")}</strong></article>
+      <article><span>${escapeHtml(assignmentMode ? "Tanque" : "Melhor taxa")}</span><strong>${escapeHtml(assignmentMode ? `${formatLiters(fuelSnapshot?.fuelLevelLiters || 0)} / ${formatLiters(fuelSnapshot?.tankLiters || 0)}` : (recommended[0] ? formatCurrencyPerTon(recommended[0].unitRevenuePerTon) : "-"))}</strong></article>
+      <article><span>${escapeHtml(assignmentMode ? "Autonomia" : "Receita carteira")}</span><strong>${escapeHtml(assignmentMode ? formatDistanceKm(truckLoadedRangeKm(truckUnit, fuelSnapshot?.fuelLevelLiters || 0)) : formatCurrency(totalRevenue))}</strong></article>
+      <article><span>${escapeHtml(assignmentMode ? "Odometro" : "Carga por viagens")}</span><strong>${escapeHtml(assignmentMode ? formatDistanceKm(fuelSnapshot?.odometerKm || 0) : formatTonnes(totalTonnes))}</strong></article>
+      <article><span>${escapeHtml(assignmentMode ? "Contratos livres" : "Distancia media")}</span><strong>${escapeHtml(assignmentMode ? formatInteger(entries.length) : (entries.length ? formatDistanceKm(averageDistance) : "-"))}</strong></article>
     </div>
     <div class="game-setup-section-block">
       <div class="game-setup-section-head"><span class="eyebrow">Recomendado</span><strong>${escapeHtml(`${formatInteger(recommended.length)} contratos`)}</strong></div>
@@ -2895,7 +3809,25 @@ function renderSetupFreightSelection() {
           : `<div class="truck-gallery-empty">Nenhum frete recomendado para a cidade atual.</div>`}
       </div>
     </div>
-    ${assignmentMode ? "" : `
+    ${assignmentMode && advancedDispatchEnabled() ? `
+      <div class="game-setup-section-block">
+        <div class="game-setup-section-head"><span class="eyebrow">Despacho alternativo</span><strong>${escapeHtml(selectedDispatchCity ? selectedDispatchCity.label : "Escolha no mapa")}</strong></div>
+        <div class="game-runtime-dispatch-options">
+          <button class="editor-header-action game-runtime-mini-action" type="button" data-runtime-dispatch-action="return-hq"${cityId === (state.playersById.human?.hqCityId || "") ? " disabled" : ""}>
+            <span class="material-symbols-outlined" aria-hidden="true">home_work</span>
+            <span>Voltar para a sede</span>
+          </button>
+          <button class="editor-header-action game-runtime-mini-action" type="button" data-runtime-dispatch-action="reposition"${selectedDispatchCity && dispatchPlan?.feasible ? "" : " disabled"}>
+            <span class="material-symbols-outlined" aria-hidden="true">explore</span>
+            <span>${escapeHtml(selectedDispatchCity ? `Ir para ${selectedDispatchCity.label}` : "Escolher destino no mapa")}</span>
+          </button>
+        </div>
+        <p class="game-setup-compatibility-note${dispatchPlan?.feasible ? " is-active" : ""}">${escapeHtml(selectedDispatchCity ? (dispatchPlan?.feasible ? `Reposicionamento vazio · ${formatDistanceKm(dispatchPlan.distanceKm || 0)} · diesel planejado ${formatLiters(dispatchPlan.totalFuelLiters || 0)}` : fuelBlockedMessage(dispatchPlan)) : "Clique em uma cidade no mapa para enviar o caminhao sem contrato." )}</p>
+        <div class="map-frame city-editor-map-frame game-runtime-dispatch-map-frame">
+          <div id="game-runtime-dispatch-map-stage" class="map-stage game-runtime-dispatch-map-stage" aria-label="Mapa para escolher outro destino"></div>
+        </div>
+      </div>
+    ` : assignmentMode ? "" : `
       <div class="game-setup-section-block">
         <div class="game-setup-section-head"><span class="eyebrow">Selecionado</span><strong>${escapeHtml(entries.length ? `${formatInteger(entries.length)} contratos` : "Sem contratos")}</strong></div>
         <div class="game-setup-selection-list">
@@ -2911,6 +3843,9 @@ function renderSetupFreightSelection() {
       </div>
     `}
   `;
+  if (assignmentMode && advancedDispatchEnabled()) {
+    window.setTimeout(() => renderDispatchDestinationMap(), 30);
+  }
 }
 
 function renderSetupModal() {
@@ -2945,7 +3880,9 @@ function setupModalCanClose() {
     return Boolean(state.setup.company.fleetPurchased && setupSelectedTruckEntries().length);
   }
   if (state.setup.activeModal === "freights") {
-    const entries = setupPricedFreightsForCity(setupCompany().hqCityId).filter((entry) => Boolean(entry.contractTruckUnit));
+    const entries = setupPricedFreightsForCity(currentSelectionHqCityId())
+      .filter((entry) => Boolean(entry.contractTruckUnit))
+      .filter((entry) => entry.availability?.available && entry.fuelFeasible !== false);
     return setupSelectedPricedFreightEntries().length > 0 || !entries.length;
   }
   return true;
@@ -2984,6 +3921,13 @@ function closeSetupModal() {
   if (state.setup.activeHumanAssignment) {
     return;
   }
+  if (purchaseFlowActive() && state.setup.activeModal === "freights") {
+    finishRuntimeTruckPurchaseFlow();
+    return;
+  }
+  if (purchaseFlowActive()) {
+    clearPurchaseDraftState();
+  }
   if (state.setup.activeModal === "freights" && openingWizardEnabled() && !state.players.length) {
     state.setup.activeModal = "";
     updateSetupModalVisibility();
@@ -3006,8 +3950,38 @@ function finishHumanAssignmentSelection(flowId) {
   if (!assignment || !player || !truckUnit || !flow) {
     return;
   }
-  assignFlowToTruck(player, truckUnit, flow);
+  const contract = assignFlowToTruck(player, truckUnit, flow);
+  if (!contract) {
+    return;
+  }
   state.setup.activeHumanAssignment = null;
+  state.setup.dispatchSelectedCityId = "";
+  state.setup.activeModal = "";
+  updateSetupModalVisibility();
+  renderStaticUi();
+  renderMapUi({ refreshIcons: true });
+  processPendingHumanAssignmentQueue();
+}
+
+function finishHumanDispatchSelection(dispatchMode) {
+  const assignment = state.setup.activeHumanAssignment;
+  const player = state.playersById.human || null;
+  const truckUnit = assignment ? player?.truckUnits?.find((unit) => unit.id === assignment.truckUnitId) || null : null;
+  if (!assignment || !player || !truckUnit) {
+    return;
+  }
+  const destinationCityId = dispatchMode === "return-hq"
+    ? player.hqCityId
+    : String(state.setup.dispatchSelectedCityId || "").trim();
+  if (!destinationCityId || destinationCityId === assignment.originCityId) {
+    return;
+  }
+  const contract = assignDispatchToTruck(player, truckUnit, destinationCityId, dispatchMode === "return-hq" ? "return_hq" : "reposition");
+  if (!contract) {
+    return;
+  }
+  state.setup.activeHumanAssignment = null;
+  state.setup.dispatchSelectedCityId = "";
   state.setup.activeModal = "";
   updateSetupModalVisibility();
   renderStaticUi();
@@ -3035,6 +4009,8 @@ function initializeOpeningWizard() {
   state.setup.nextTruckGameSequence = 1;
   state.setup.pendingHumanAssignments = [];
   state.setup.activeHumanAssignment = null;
+  state.setup.activePurchase = null;
+  state.setup.dispatchSelectedCityId = "";
   openSetupModal("opening");
 }
 
@@ -3306,7 +4282,7 @@ function renderStatus() {
       <span class="game-runtime-status-pill">${escapeHtml(state.bootstrap?.active_map?.name || state.runtime?.metadata?.map_name || "Mapa ativo")}</span>
       <span class="game-runtime-status-pill">${escapeHtml(difficultyLabel(state.setup.selectedDifficulty))}</span>
       <span class="game-runtime-status-pill">${escapeHtml(`${formatInteger(state.setup.robotCount)} adversarios`)}</span>
-      <span class="game-runtime-status-pill is-draft">Abertura v1.1</span>
+      <span class="game-runtime-status-pill is-draft">${escapeHtml(`Abertura v${RUNTIME_CONFIG.version || "1.1"}`)}</span>
     `;
     return;
   }
@@ -3398,6 +4374,12 @@ function renderHumanHud() {
     </div>
 
     <div class="game-runtime-panel-footer">
+      ${runtimeTruckMarketEnabled() ? `
+        <button class="ghost-button game-runtime-mini-link" type="button" data-runtime-open-market="${escapeHtml(player.id)}">
+          <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+          <span>Novo caminhao</span>
+        </button>
+      ` : ""}
       <a class="ghost-button game-runtime-mini-link" href="/jogo/preparacao" target="_blank" rel="noopener noreferrer">
         <span class="material-symbols-outlined" aria-hidden="true">edit</span>
         <span>Preparacao</span>
@@ -3466,14 +4448,16 @@ function contractProgressRatio(contract) {
 
 function truckRowMarkup(player, truckUnit) {
   const contract = player.contracts.find((item) => item.truckUnitId === truckUnit.id) || null;
+  const fuel = truckFuelSnapshot(truckUnit, contract);
+  const rangeKm = truckLoadedRangeKm(truckUnit, fuel.fuelLevelLiters);
   if (!contract) {
     return `
       <article class="game-runtime-truck-row is-idle">
         <div>
           <strong>${escapeHtml(`${truckUnit.truck.short_label || truckUnit.truck.label || truckUnit.truckId} #${formatInteger(truckUnit.displayNumber)}`)}</strong>
-          <span>${escapeHtml(`Parado em ${cityLabel(truckUnit.currentCityId || player.hqCityId)}`)}</span>
+          <span>${escapeHtml(`Parado em ${cityLabel(truckUnit.currentCityId || player.hqCityId)} · diesel ${formatLiters(fuel.fuelLevelLiters)} / ${formatLiters(fuel.tankLiters)} · autonomia ${formatDistanceKm(rangeKm)}`)}</span>
         </div>
-        <small>${escapeHtml(formatTonnes(payloadTonsForTruck(truckUnit.truck)))}</small>
+        <small>${escapeHtml(`Odo ${formatDistanceKm(fuel.odometerKm)}`)}</small>
       </article>
     `;
   }
@@ -3481,9 +4465,9 @@ function truckRowMarkup(player, truckUnit) {
     <article class="game-runtime-truck-row" style="--player-color:${escapeHtml(player.color)}">
       <div>
         <strong>${escapeHtml(`${truckUnit.truck.short_label || truckUnit.truck.label || truckUnit.truckId} #${formatInteger(truckUnit.displayNumber)}`)}</strong>
-        <span>${escapeHtml(`${contractStatusLabel(contract)} · ${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)}`)}</span>
+        <span>${escapeHtml(`${contractStatusLabel(contract)} · ${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)} · diesel ${formatLiters(fuel.fuelLevelLiters)} / ${formatLiters(fuel.tankLiters)}`)}</span>
       </div>
-      <small>${escapeHtml(formatTonnes(contract.payloadTons))}</small>
+      <small>${escapeHtml(`${contract.dispatchOnly ? "Vazio" : formatTonnes(contract.payloadTons)} · Odo ${formatDistanceKm(fuel.odometerKm)}`)}</small>
     </article>
   `;
 }
@@ -3499,7 +4483,7 @@ function contractRowMarkup(player, contract) {
       <div class="game-runtime-contract-row-meta">
         <span>${escapeHtml(`${formatTonnes(contract.payloadTons)} · ${formatDistanceKm(contract.deliveryTrack.distanceKm)}`)}</span>
         <span>${escapeHtml(`ETA ${formatHours(etaHours)}`)}</span>
-        <span>${escapeHtml(`Lucro ${formatCurrency(contract.profitPerDeliveryBrl)}`)}</span>
+        <span>${escapeHtml(`${contract.dispatchOnly ? "Custo" : "Lucro"} ${formatCurrency(contract.profitPerDeliveryBrl)}`)}</span>
       </div>
       <div class="game-runtime-progress">
         <span style="width:${escapeHtml(String(Math.round(contractProgressRatio(contract) * 100)))}%"></span>
@@ -3527,6 +4511,12 @@ function renderDrawer() {
         <span>${escapeHtml(`${cityLabel(player.hqCityId)} · ${player.isHuman ? "Operacao humana" : "Operacao robotica"}`)}</span>
       </div>
       <div class="game-runtime-drawer-actions">
+        ${player.isHuman && runtimeTruckMarketEnabled() ? `
+          <button class="ghost-button game-runtime-mini-action" type="button" data-runtime-open-market="${escapeHtml(player.id)}">
+            <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+            <span>Novo caminhao</span>
+          </button>
+        ` : ""}
         <button class="ghost-button game-runtime-mini-action" type="button" data-focus-player-id="${escapeHtml(player.id)}">
           <span class="material-symbols-outlined" aria-hidden="true">my_location</span>
           <span>Focar</span>
@@ -3695,6 +4685,18 @@ function handleClicks(event) {
     } else {
       toggleSetupFreightSelection(flowId);
     }
+    return;
+  }
+
+  const runtimeDispatchButton = target.closest("[data-runtime-dispatch-action]");
+  if (runtimeDispatchButton) {
+    finishHumanDispatchSelection(runtimeDispatchButton.getAttribute("data-runtime-dispatch-action") || "");
+    return;
+  }
+
+  const runtimeOpenMarketButton = target.closest("[data-runtime-open-market]");
+  if (runtimeOpenMarketButton) {
+    startRuntimeTruckPurchaseFlow(runtimeOpenMarketButton.getAttribute("data-runtime-open-market") || "human");
     return;
   }
 
