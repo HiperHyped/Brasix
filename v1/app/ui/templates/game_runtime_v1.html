@@ -72,7 +72,7 @@
 
 <script type="module">
   const gameRuntimeModuleUrl = new URL("{{ request.url_for('static', path='js/game-runtime-v1.js') }}", window.location.href);
-  gameRuntimeModuleUrl.searchParams.set("v", "20260414-game-runtime-1");
+  gameRuntimeModuleUrl.searchParams.set("v", "20260414-game-runtime-2");
 
   function showGameRuntimeLoadError(error) {
     const message = String(error?.message || error || "Falha ao carregar o jogo.");

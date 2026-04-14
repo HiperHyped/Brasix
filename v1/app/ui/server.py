@@ -1436,6 +1436,15 @@ def create_app() -> FastAPI:
             context={"page_title": "Brasix | Jogo 1.0"},
         )
 
+    @app.get("/jogo/v1-1", response_class=HTMLResponse, include_in_schema=False)
+    @app.get("/game/v1-1", response_class=HTMLResponse, include_in_schema=False)
+    async def game_runtime_v1_1(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="game_runtime_v1_1.html",
+            context={"page_title": "Brasix | Jogo 1.1"},
+        )
+
     @app.get("/editor/map", response_class=HTMLResponse, include_in_schema=False)
     async def map_editor(request: Request) -> HTMLResponse:
         active_map = load_active_map_bundle()

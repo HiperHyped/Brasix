@@ -7132,6 +7132,22 @@ html.game-runtime-page[data-editor-theme="night"] {
   gap: 8px;
 }
 
+.game-runtime-color-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.game-runtime-color-chip {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.84);
+  border-radius: 999px;
+  display: inline-flex;
+  background: var(--player-color, var(--green));
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+}
+
 .game-runtime-contract-chip,
 .game-runtime-truck-row,
 .game-runtime-contract-row,
@@ -7344,6 +7360,10 @@ html.game-runtime-page[data-editor-theme="night"] {
 
 .game-runtime-vehicle-icon.is-returning {
   background: color-mix(in srgb, var(--player-color, var(--green)) 74%, #4f8593);
+}
+
+.game-runtime-vehicle-icon.is-idle {
+  background: color-mix(in srgb, var(--player-color, var(--green)) 38%, #526062);
 }
 
 .game-runtime-vehicle-icon .material-symbols-outlined {
