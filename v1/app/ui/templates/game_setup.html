@@ -46,11 +46,19 @@
   <section class="game-setup-main" aria-label="Sala de abertura do jogo">
     <section class="editor-card game-setup-hero-card">
       <div class="game-setup-hero-copy">
-        <span class="eyebrow">Abertura da operacao</span>
-        <h2>Monte a empresa antes do primeiro km.</h2>
-        <p>Defina identidade visual, escolha a cidade-sede no mapa, monte a frota inicial e selecione os contratos de saida da base escolhida.</p>
+        <h2>Abertura</h2>
       </div>
-      <div id="game-setup-quick-metrics" class="game-setup-quick-metrics" aria-label="Indicadores rapidos da sala de abertura"></div>
+      <div class="game-setup-hero-side">
+        <label class="field game-setup-difficulty-field">
+          <span>Nivel de dificuldade</span>
+          <select id="game-setup-difficulty-select" class="editor-input" aria-label="Nivel de dificuldade inicial">
+            <option value="hard">Dificil</option>
+            <option value="standard" selected>Padrao</option>
+            <option value="sandbox">Sandbox</option>
+          </select>
+        </label>
+        <div id="game-setup-quick-metrics" class="game-setup-quick-metrics" aria-label="Indicadores rapidos da sala de abertura"></div>
+      </div>
     </section>
 
     <section class="game-setup-launch-grid" aria-label="Janelas principais da abertura">
@@ -178,16 +186,7 @@
             <div id="game-setup-company-preview" class="game-setup-company-preview"></div>
           </div>
 
-          <div class="game-setup-modal-actions">
-            <button class="editor-header-action" type="button" data-close-modal="true">
-              <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-              <span>Concluir identidade</span>
-            </button>
-            <button class="ghost-button" type="button" data-open-modal="fleet">
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-              <span>Ir para frota</span>
-            </button>
-          </div>
+          <div id="game-setup-company-economy" class="game-setup-company-economy" aria-label="Compra da sede selecionada"></div>
         </section>
 
         <section class="game-setup-map-column">
@@ -261,7 +260,7 @@
 
 <script type="module">
   const gameSetupModuleUrl = new URL("{{ request.url_for('static', path='js/game-setup.js') }}", window.location.href);
-  gameSetupModuleUrl.searchParams.set("v", "20260413-game-setup-11");
+  gameSetupModuleUrl.searchParams.set("v", "20260413-game-setup-24");
 
   function showGameSetupLoadError(error) {
     const message = String(error?.message || error || "Falha ao carregar a preparacao inicial.");

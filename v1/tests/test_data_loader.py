@@ -139,6 +139,7 @@ def test_truck_catalog_payloads_load() -> None:
     assert edited_vuc["cargo_volume_m3"] == 4
     assert edited_vuc["energy_source"] == "diesel"
     assert edited_vuc["consumption_unit"] == "l_per_km"
+    assert edited_vuc["fuel_tank_l"] == 120
     assert edited_vuc["empty_consumption_per_km"] == 0.19
     assert edited_vuc["loaded_consumption_per_km"] == 0.24
     assert edited_vuc["base_fixed_cost_brl_per_day"] == 240
@@ -498,6 +499,7 @@ def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
                     "overall_height_m": 2.6,
                     "energy_source": "diesel",
                     "consumption_unit": "l_per_km",
+                    "fuel_tank_l": 120,
                     "empty_consumption_per_km": 0.19,
                     "loaded_consumption_per_km": 0.24,
                     "truck_price_brl": 198000,
@@ -522,6 +524,7 @@ def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
                     "overall_height_m": 2.3,
                     "energy_source": "diesel",
                     "consumption_unit": "l_per_km",
+                    "fuel_tank_l": 90,
                     "empty_consumption_per_km": 0.15,
                     "loaded_consumption_per_km": 0.18,
                     "truck_price_brl": 132000,
@@ -551,6 +554,7 @@ def test_effective_truck_catalog_includes_custom_items(monkeypatch) -> None:
     assert types_by_id["truck_type_vuc_4x2"]["is_custom"] is False
     assert types_by_id["truck_type_vuc_4x2"]["payload_weight_kg"] == 2200
     assert types_by_id["truck_type_vuc_4x2"]["energy_source"] == "diesel"
+    assert types_by_id["truck_type_vuc_4x2"]["fuel_tank_l"] == 120
     assert types_by_id["truck_type_vuc_4x2"]["truck_price_brl"] == 198000
     assert types_by_id["truck_type_vuc_4x2"]["supported_surface_codes"] == ["double_road", "single_road"]
     assert types_by_id["truck_type_vuc_4x2"]["operational"]["notes"] == "operacional base"
@@ -692,6 +696,7 @@ def test_active_truck_operational_records_are_complete() -> None:
         "overall_height_m",
         "energy_source",
         "consumption_unit",
+        "fuel_tank_l",
         "empty_consumption_per_km",
         "loaded_consumption_per_km",
         "truck_price_brl",

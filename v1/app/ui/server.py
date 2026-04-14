@@ -8,7 +8,7 @@ from typing import Any
 import unicodedata
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -280,6 +280,7 @@ def _build_truck_operational_autofill_save_request(
             "overall_height_m": pick("overall_height_m"),
             "energy_source": pick("energy_source"),
             "consumption_unit": pick("consumption_unit"),
+            "fuel_tank_l": pick("fuel_tank_l"),
             "empty_consumption_per_km": pick("empty_consumption_per_km"),
             "loaded_consumption_per_km": pick("loaded_consumption_per_km"),
             "truck_price_brl": pick("truck_price_brl"),
@@ -810,7 +811,7 @@ def _build_truck_operational_editor_bootstrap_payload() -> dict[str, Any]:
 
 
 def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
-    city_payload = build_city_editor_bootstrap_payload()
+    pricing_payload = build_pricing_editor_bootstrap_payload()
     truck_matrix_payload = build_truck_product_matrix_payload()
     runtime = build_game_world_runtime(include_validation=False)
     operational_by_truck_id = runtime.catalogs.truck_operational_by_id
@@ -860,6 +861,8 @@ def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
                 "preview_image_version": str(truck.get("preview_image_version") or ""),
                 "payload_weight_kg": float(operational.get("payload_weight_kg") or 0),
                 "cargo_volume_m3": float(operational.get("cargo_volume_m3") or 0),
+                "fuel_tank_l": float(operational.get("fuel_tank_l") or 0),
+                "empty_consumption_per_km": float(operational.get("empty_consumption_per_km") or 0),
                 "loaded_consumption_per_km": float(operational.get("loaded_consumption_per_km") or 0),
                 "truck_price_brl": truck_price_brl,
                 "implement_cost_brl": implement_cost_brl,
@@ -885,7 +888,7 @@ def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
             "supply_items": _normalize_market_items(city.get("supply_items")),
             "demand_items": _normalize_market_items(city.get("demand_items")),
         }
-        for city in city_payload.get("cities", [])
+        for city in pricing_payload.get("cities", [])
         if str(city.get("id") or "").strip()
     ]
 
@@ -904,21 +907,25 @@ def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
             "quantity_t": float(flow.get("quantity_t") or 0),
             "custom": bool(flow.get("custom")),
         }
-        for flow in city_payload.get("freight_flows", [])
+        for flow in pricing_payload.get("freight_flows", [])
         if str(flow.get("id") or "").strip()
     ]
 
     return {
         "ui": load_ui_payload(),
-        "active_map": city_payload.get("active_map", {}),
-        "map_viewport": city_payload.get("map_viewport", {}),
-        "map_editor": city_payload.get("map_editor", {}),
-        "products": list(city_payload.get("products", [])),
+        "active_map": pricing_payload.get("active_map", {}),
+        "map_viewport": pricing_payload.get("map_viewport", {}),
+        "map_editor": pricing_payload.get("map_editor", {}),
+        "products": list(pricing_payload.get("products", [])),
+        "product_operational_catalog": pricing_payload.get("product_operational_catalog", {}),
+        "diesel_document": pricing_payload.get("diesel_document", {}),
+        "pricing_document": pricing_payload.get("pricing_document", {}),
+        "default_pricing_document": pricing_payload.get("default_pricing_document", {}),
         "cities": cities,
         "freight_flows": freight_flows,
         "trucks": trucks,
         "summary": {
-            "selected_city_id": city_payload.get("summary", {}).get("selected_city_id"),
+            "selected_city_id": pricing_payload.get("summary", {}).get("selected_city_id"),
             "city_count": len(cities),
             "truck_count": len(trucks),
             "freight_flow_count": len(freight_flows),
@@ -945,6 +952,7 @@ def _save_truck_operational_record(document: TruckOperationalSaveRequest) -> Tru
         "overall_height_m": document.overall_height_m,
         "energy_source": str(document.energy_source or "").strip() or None,
         "consumption_unit": str(document.consumption_unit or "").strip() or None,
+        "fuel_tank_l": document.fuel_tank_l,
         "empty_consumption_per_km": document.empty_consumption_per_km,
         "loaded_consumption_per_km": document.loaded_consumption_per_km,
         "truck_price_brl": document.truck_price_brl,
@@ -1668,7 +1676,9 @@ def create_app() -> FastAPI:
         return build_truck_product_matrix_payload()
 
     @app.get("/api/viewer/truck-operations/bootstrap")
-    async def truck_operational_editor_bootstrap() -> dict[str, Any]:
+    async def truck_operational_editor_bootstrap(response: Response) -> dict[str, Any]:
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["Pragma"] = "no-cache"
         return _build_truck_operational_editor_bootstrap_payload()
 
     @app.post("/api/viewer/truck-operations/autofill", response_model=TruckOperationalAutofillResponse)

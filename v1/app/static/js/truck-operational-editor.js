@@ -81,6 +81,7 @@ const COMPLETENESS_FIELDS = [
   "overall_height_m",
   "energy_source",
   "consumption_unit",
+  "fuel_tank_l",
   "empty_consumption_per_km",
   "loaded_consumption_per_km",
   "base_fixed_cost_brl_per_day",
@@ -137,7 +138,9 @@ const state = {
 };
 
 function loadBootstrap() {
-  return fetch("/api/viewer/truck-operations/bootstrap").then((response) => response.json());
+  const url = new URL("/api/viewer/truck-operations/bootstrap", window.location.origin);
+  url.searchParams.set("v", "20260413-truck-tanque-2");
+  return fetch(url, { cache: "no-store" }).then((response) => response.json());
 }
 
 function callJson(url, options) {
@@ -677,6 +680,7 @@ function buildOperationalDraft(type, operationalRecord) {
     overall_height_m: record.overall_height_m ?? "",
     energy_source: String(record.energy_source || ""),
     consumption_unit: String(record.consumption_unit || ""),
+    fuel_tank_l: record.fuel_tank_l ?? "",
     empty_consumption_per_km: record.empty_consumption_per_km ?? "",
     loaded_consumption_per_km: record.loaded_consumption_per_km ?? "",
     truck_price_brl: record.truck_price_brl ?? "",
@@ -1048,6 +1052,7 @@ function informationPanelMarkup(typeId, draft) {
       [
         selectChoiceMarkup("energy_source", "Energia", draft.energy_source, ENERGY_OPTIONS),
         selectChoiceMarkup("consumption_unit", "Unidade", draft.consumption_unit, CONSUMPTION_UNIT_OPTIONS),
+        inputChoiceMarkup("fuel_tank_l", "Tanque (Lt)", draft.fuel_tank_l, { type: "number", step: "1" }),
         inputChoiceMarkup("empty_consumption_per_km", `Consumo vazio (${unitLabel})`, draft.empty_consumption_per_km, { type: "number", step: "0.01" }),
         inputChoiceMarkup("loaded_consumption_per_km", `Consumo carregado (${unitLabel})`, draft.loaded_consumption_per_km, { type: "number", step: "0.01" }),
       ].join(""),
@@ -1130,6 +1135,7 @@ function applyAutofillPayloadToDraft(typeId, payload) {
     "overall_height_m",
     "energy_source",
     "consumption_unit",
+    "fuel_tank_l",
     "empty_consumption_per_km",
     "loaded_consumption_per_km",
     "truck_price_brl",
@@ -1179,6 +1185,7 @@ function serializeOperationalDraft(typeId) {
     overall_height_m: toOptionalNumber(draft.overall_height_m),
     energy_source: String(draft.energy_source || "").trim() || null,
     consumption_unit: String(draft.consumption_unit || "").trim() || null,
+    fuel_tank_l: toOptionalNumber(draft.fuel_tank_l),
     empty_consumption_per_km: toOptionalNumber(draft.empty_consumption_per_km),
     loaded_consumption_per_km: toOptionalNumber(draft.loaded_consumption_per_km),
     truck_price_brl: toOptionalNumber(draft.truck_price_brl),

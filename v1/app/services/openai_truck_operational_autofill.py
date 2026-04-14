@@ -110,6 +110,7 @@ def _schema() -> dict[str, Any]:
             "overall_height_m": {"type": ["number", "null"]},
             "energy_source": {"type": ["string", "null"], "enum": ["diesel", "electric", "gas", "hybrid", "other", None]},
             "consumption_unit": {"type": ["string", "null"], "enum": ["l_per_km", "kwh_per_km", "m3_per_km", "kg_per_km", None]},
+            "fuel_tank_l": {"type": ["number", "null"]},
             "empty_consumption_per_km": {"type": ["number", "null"]},
             "loaded_consumption_per_km": {"type": ["number", "null"]},
             "truck_price_brl": {"type": ["number", "null"]},
@@ -135,6 +136,7 @@ def _schema() -> dict[str, Any]:
             "overall_height_m",
             "energy_source",
             "consumption_unit",
+            "fuel_tank_l",
             "empty_consumption_per_km",
             "loaded_consumption_per_km",
             "truck_price_brl",
@@ -183,7 +185,7 @@ current_project_context: {current_notes}
 Regras obrigatórias:
 1. Considere primeiro o contexto estruturado já fornecido para este caminhão.
 2. Se o contexto fornecido não for suficiente, pesquise na web em fontes públicas confiáveis.
-3. Preencha somente estes campos: payload_weight_kg, cargo_volume_m3, overall_length_m, overall_width_m, overall_height_m, energy_source, consumption_unit, empty_consumption_per_km, loaded_consumption_per_km, truck_price_brl, implement_cost_brl, base_fixed_cost_brl_per_day, base_variable_cost_brl_per_km, confidence, research_basis, source_urls, notes.
+3. Preencha somente estes campos: payload_weight_kg, cargo_volume_m3, overall_length_m, overall_width_m, overall_height_m, energy_source, consumption_unit, fuel_tank_l, empty_consumption_per_km, loaded_consumption_per_km, truck_price_brl, implement_cost_brl, base_fixed_cost_brl_per_day, base_variable_cost_brl_per_km, confidence, research_basis, source_urls, notes.
 4. Considere sempre o tipo de caminhão selecionado e o implemento preferido ao estimar implement_cost_brl.
 5. Se encontrar valor exato em fonte confiável, use esse valor.
 6. Se houver apenas faixa, média de mercado ou aproximação técnica, escolha um valor representativo do mercado brasileiro atual e explique a decisão em notes.
@@ -191,8 +193,9 @@ Regras obrigatórias:
 8. Em confidence use apenas: low, medium ou high.
 9. Em research_basis use apenas: manufacturer_sheet, market_estimate ou derived_estimate.
 10. Use energy_source e consumption_unit coerentes entre si. Para caminhões a diesel, prefira consumption_unit = l_per_km.
-11. Em source_urls retorne somente URLs realmente usadas.
-12. Responda somente com JSON válido neste formato:
+11. Para caminhões a diesel, preencha fuel_tank_l com a capacidade total aproximada do tanque em litros. Para caminhões elétricos, use 0 se não houver tanque de combustivel.
+12. Em source_urls retorne somente URLs realmente usadas.
+13. Responda somente com JSON válido neste formato:
 
 {{
   "payload_weight_kg": number ou null,
@@ -202,6 +205,7 @@ Regras obrigatórias:
   "overall_height_m": number ou null,
     "energy_source": "diesel|electric|gas|hybrid|other" ou null,
     "consumption_unit": "l_per_km|kwh_per_km|m3_per_km|kg_per_km" ou null,
+        "fuel_tank_l": number ou null,
     "empty_consumption_per_km": number ou null,
     "loaded_consumption_per_km": number ou null,
   "truck_price_brl": number ou null,
@@ -308,6 +312,7 @@ def _normalize_payload(raw_payload: dict[str, Any]) -> dict[str, Any]:
         "overall_height_m": _optional_number(raw_payload.get("overall_height_m")),
         "energy_source": energy_source,
         "consumption_unit": consumption_unit,
+        "fuel_tank_l": _optional_number(raw_payload.get("fuel_tank_l")),
         "empty_consumption_per_km": _optional_number(raw_payload.get("empty_consumption_per_km")),
         "loaded_consumption_per_km": _optional_number(raw_payload.get("loaded_consumption_per_km")),
         "truck_price_brl": _optional_number(raw_payload.get("truck_price_brl")),

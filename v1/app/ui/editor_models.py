@@ -666,6 +666,7 @@ class TruckOperationalSaveRequest(BaseModel):
     overall_height_m: int | float | None = Field(default=None, ge=0)
     energy_source: str | None = None
     consumption_unit: str | None = None
+    fuel_tank_l: int | float | None = Field(default=None, ge=0)
     empty_consumption_per_km: int | float | None = Field(default=None, ge=0)
     loaded_consumption_per_km: int | float | None = Field(default=None, ge=0)
     truck_price_brl: int | float | None = Field(default=None, ge=0)

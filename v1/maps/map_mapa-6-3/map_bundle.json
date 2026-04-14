@@ -4,7 +4,7 @@
   "slug": "mapa-6-3",
   "description": "",
   "created_at": "2026-03-30T19:02:08-03:00",
-  "updated_at": "2026-04-13T17:57:09-03:00",
+  "updated_at": "2026-04-13T23:35:44-03:00",
   "source_options": {
     "include_base_cities": true,
     "include_created_cities": true,
@@ -6063,6 +6063,30 @@
         "style_id": "graph_node_style_junction_circle",
         "size_px": 10,
         "snapped_from_edge_id": "edge-auto-custom-city-1774656652719-ma-sao-luis-1774656665814",
+        "notes": "Criado com snap em rota no editor de mapa"
+      },
+      {
+        "id": "graph_node_1776134048287",
+        "label": "Ligacao 97",
+        "node_kind": "junction",
+        "placement_mode": "snapped_route",
+        "latitude": -21.44153,
+        "longitude": -50.1471,
+        "style_id": "graph_node_style_junction_circle",
+        "size_px": 10,
+        "snapped_from_edge_id": "edge-auto-sp-bauru-sp-aracatuba-1774654709426",
+        "notes": "Criado com snap em rota no editor de mapa"
+      },
+      {
+        "id": "graph_node_1776134125117",
+        "label": "Ligacao 98",
+        "node_kind": "junction",
+        "placement_mode": "snapped_route",
+        "latitude": -21.56708,
+        "longitude": -50.43805,
+        "style_id": "graph_node_style_junction_circle",
+        "size_px": 10,
+        "snapped_from_edge_id": "edge-graph_node_1774656758567-sp-aracatuba-1774656758567b",
         "notes": "Criado com snap em rota no editor de mapa"
       }
     ],
@@ -16041,470 +16065,6 @@
             "id": "route_point_auto_1774654690442_45",
             "latitude": -18.93055,
             "longitude": -48.27728
-          }
-        ]
-      },
-      {
-        "id": "edge-auto-sp-bauru-sp-aracatuba-1774654709426",
-        "from_node_id": "sp-bauru",
-        "to_node_id": "sp-aracatuba",
-        "from_city_id": "sp-bauru",
-        "to_city_id": "sp-aracatuba",
-        "mode": "road",
-        "surface_type_id": "route_surface_double_road",
-        "surface_code": "double_road",
-        "geometry_type_id": "route_geometry_polycurve",
-        "geometry_code": "polycurve",
-        "render_smoothing_enabled": false,
-        "status": "active",
-        "bidirectional": true,
-        "distance_km": 192.5,
-        "notes": "Gerada automaticamente por OSRM com resolucao de 2 km no editor de mapa.",
-        "waypoints": [
-          {
-            "id": "route_point_auto_1774654709426_1",
-            "latitude": -22.31321,
-            "longitude": -49.07219
-          },
-          {
-            "id": "route_point_auto_1774654709426_2",
-            "latitude": -22.29511,
-            "longitude": -49.07066
-          },
-          {
-            "id": "route_point_auto_1774654709426_3",
-            "latitude": -22.28203,
-            "longitude": -49.08619
-          },
-          {
-            "id": "route_point_auto_1774654709426_4",
-            "latitude": -22.26912,
-            "longitude": -49.10093
-          },
-          {
-            "id": "route_point_auto_1774654709426_5",
-            "latitude": -22.25524,
-            "longitude": -49.11411
-          },
-          {
-            "id": "route_point_auto_1774654709426_6",
-            "latitude": -22.24411,
-            "longitude": -49.13159
-          },
-          {
-            "id": "route_point_auto_1774654709426_7",
-            "latitude": -22.23468,
-            "longitude": -49.14857
-          },
-          {
-            "id": "route_point_auto_1774654709426_8",
-            "latitude": -22.2231,
-            "longitude": -49.16376
-          },
-          {
-            "id": "route_point_auto_1774654709426_9",
-            "latitude": -22.21149,
-            "longitude": -49.17868
-          },
-          {
-            "id": "route_point_auto_1774654709426_10",
-            "latitude": -22.1966,
-            "longitude": -49.18996
-          },
-          {
-            "id": "route_point_auto_1774654709426_11",
-            "latitude": -22.18965,
-            "longitude": -49.20826
-          },
-          {
-            "id": "route_point_auto_1774654709426_12",
-            "latitude": -22.17786,
-            "longitude": -49.22479
-          },
-          {
-            "id": "route_point_auto_1774654709426_13",
-            "latitude": -22.16609,
-            "longitude": -49.24122
-          },
-          {
-            "id": "route_point_auto_1774654709426_14",
-            "latitude": -22.15192,
-            "longitude": -49.26109
-          },
-          {
-            "id": "route_point_auto_1774654709426_15",
-            "latitude": -22.13869,
-            "longitude": -49.27961
-          },
-          {
-            "id": "route_point_auto_1774654709426_16",
-            "latitude": -22.12682,
-            "longitude": -49.29621
-          },
-          {
-            "id": "route_point_auto_1774654709426_17",
-            "latitude": -22.11288,
-            "longitude": -49.31573
-          },
-          {
-            "id": "route_point_auto_1774654709426_18",
-            "latitude": -22.10361,
-            "longitude": -49.33239
-          },
-          {
-            "id": "route_point_auto_1774654709426_19",
-            "latitude": -22.08937,
-            "longitude": -49.34822
-          },
-          {
-            "id": "route_point_auto_1774654709426_20",
-            "latitude": -22.07639,
-            "longitude": -49.36235
-          },
-          {
-            "id": "route_point_auto_1774654709426_21",
-            "latitude": -22.06211,
-            "longitude": -49.37537
-          },
-          {
-            "id": "route_point_auto_1774654709426_22",
-            "latitude": -22.04229,
-            "longitude": -49.39255
-          },
-          {
-            "id": "route_point_auto_1774654709426_23",
-            "latitude": -22.02547,
-            "longitude": -49.40717
-          },
-          {
-            "id": "route_point_auto_1774654709426_24",
-            "latitude": -22.00946,
-            "longitude": -49.42234
-          },
-          {
-            "id": "route_point_auto_1774654709426_25",
-            "latitude": -21.99505,
-            "longitude": -49.43596
-          },
-          {
-            "id": "route_point_auto_1774654709426_26",
-            "latitude": -21.97993,
-            "longitude": -49.44868
-          },
-          {
-            "id": "route_point_auto_1774654709426_27",
-            "latitude": -21.96447,
-            "longitude": -49.4616
-          },
-          {
-            "id": "route_point_auto_1774654709426_28",
-            "latitude": -21.94957,
-            "longitude": -49.47407
-          },
-          {
-            "id": "route_point_auto_1774654709426_29",
-            "latitude": -21.9359,
-            "longitude": -49.48811
-          },
-          {
-            "id": "route_point_auto_1774654709426_30",
-            "latitude": -21.92259,
-            "longitude": -49.50375
-          },
-          {
-            "id": "route_point_auto_1774654709426_31",
-            "latitude": -21.90998,
-            "longitude": -49.51858
-          },
-          {
-            "id": "route_point_auto_1774654709426_32",
-            "latitude": -21.89702,
-            "longitude": -49.53381
-          },
-          {
-            "id": "route_point_auto_1774654709426_33",
-            "latitude": -21.88456,
-            "longitude": -49.54925
-          },
-          {
-            "id": "route_point_auto_1774654709426_34",
-            "latitude": -21.87224,
-            "longitude": -49.56446
-          },
-          {
-            "id": "route_point_auto_1774654709426_35",
-            "latitude": -21.85981,
-            "longitude": -49.57979
-          },
-          {
-            "id": "route_point_auto_1774654709426_36",
-            "latitude": -21.84683,
-            "longitude": -49.59573
-          },
-          {
-            "id": "route_point_auto_1774654709426_37",
-            "latitude": -21.8293,
-            "longitude": -49.6108
-          },
-          {
-            "id": "route_point_auto_1774654709426_38",
-            "latitude": -21.81466,
-            "longitude": -49.62238
-          },
-          {
-            "id": "route_point_auto_1774654709426_39",
-            "latitude": -21.80066,
-            "longitude": -49.64029
-          },
-          {
-            "id": "route_point_auto_1774654709426_40",
-            "latitude": -21.78562,
-            "longitude": -49.6544
-          },
-          {
-            "id": "route_point_auto_1774654709426_41",
-            "latitude": -21.76862,
-            "longitude": -49.66811
-          },
-          {
-            "id": "route_point_auto_1774654709426_42",
-            "latitude": -21.75371,
-            "longitude": -49.68195
-          },
-          {
-            "id": "route_point_auto_1774654709426_43",
-            "latitude": -21.74196,
-            "longitude": -49.69704
-          },
-          {
-            "id": "route_point_auto_1774654709426_44",
-            "latitude": -21.72834,
-            "longitude": -49.71358
-          },
-          {
-            "id": "route_point_auto_1774654709426_45",
-            "latitude": -21.71572,
-            "longitude": -49.72776
-          },
-          {
-            "id": "route_point_auto_1774654709426_46",
-            "latitude": -21.70312,
-            "longitude": -49.74196
-          },
-          {
-            "id": "route_point_auto_1774654709426_47",
-            "latitude": -21.69032,
-            "longitude": -49.75653
-          },
-          {
-            "id": "route_point_auto_1774654709426_48",
-            "latitude": -21.6785,
-            "longitude": -49.77172
-          },
-          {
-            "id": "route_point_auto_1774654709426_49",
-            "latitude": -21.66686,
-            "longitude": -49.78771
-          },
-          {
-            "id": "route_point_auto_1774654709426_50",
-            "latitude": -21.65591,
-            "longitude": -49.80368
-          },
-          {
-            "id": "route_point_auto_1774654709426_51",
-            "latitude": -21.64476,
-            "longitude": -49.81983
-          },
-          {
-            "id": "route_point_auto_1774654709426_52",
-            "latitude": -21.63392,
-            "longitude": -49.8355
-          },
-          {
-            "id": "route_point_auto_1774654709426_53",
-            "latitude": -21.62279,
-            "longitude": -49.8516
-          },
-          {
-            "id": "route_point_auto_1774654709426_54",
-            "latitude": -21.61187,
-            "longitude": -49.86743
-          },
-          {
-            "id": "route_point_auto_1774654709426_55",
-            "latitude": -21.60092,
-            "longitude": -49.88327
-          },
-          {
-            "id": "route_point_auto_1774654709426_56",
-            "latitude": -21.5885,
-            "longitude": -49.90133
-          },
-          {
-            "id": "route_point_auto_1774654709426_57",
-            "latitude": -21.57766,
-            "longitude": -49.91702
-          },
-          {
-            "id": "route_point_auto_1774654709426_58",
-            "latitude": -21.56572,
-            "longitude": -49.93427
-          },
-          {
-            "id": "route_point_auto_1774654709426_59",
-            "latitude": -21.55282,
-            "longitude": -49.95292
-          },
-          {
-            "id": "route_point_auto_1774654709426_60",
-            "latitude": -21.54163,
-            "longitude": -49.9691
-          },
-          {
-            "id": "route_point_auto_1774654709426_61",
-            "latitude": -21.52979,
-            "longitude": -49.9862
-          },
-          {
-            "id": "route_point_auto_1774654709426_62",
-            "latitude": -21.51868,
-            "longitude": -50.00312
-          },
-          {
-            "id": "route_point_auto_1774654709426_63",
-            "latitude": -21.5095,
-            "longitude": -50.02002
-          },
-          {
-            "id": "route_point_auto_1774654709426_64",
-            "latitude": -21.49841,
-            "longitude": -50.0407
-          },
-          {
-            "id": "route_point_auto_1774654709426_65",
-            "latitude": -21.48865,
-            "longitude": -50.05889
-          },
-          {
-            "id": "route_point_auto_1774654709426_66",
-            "latitude": -21.47927,
-            "longitude": -50.0764
-          },
-          {
-            "id": "route_point_auto_1774654709426_67",
-            "latitude": -21.46938,
-            "longitude": -50.09529
-          },
-          {
-            "id": "route_point_auto_1774654709426_68",
-            "latitude": -21.45968,
-            "longitude": -50.11328
-          },
-          {
-            "id": "route_point_auto_1774654709426_69",
-            "latitude": -21.45022,
-            "longitude": -50.1309
-          },
-          {
-            "id": "route_point_auto_1774654709426_70",
-            "latitude": -21.44086,
-            "longitude": -50.14834
-          },
-          {
-            "id": "route_point_auto_1774654709426_71",
-            "latitude": -21.43172,
-            "longitude": -50.16533
-          },
-          {
-            "id": "route_point_auto_1774654709426_72",
-            "latitude": -21.42237,
-            "longitude": -50.18242
-          },
-          {
-            "id": "route_point_auto_1774654709426_73",
-            "latitude": -21.4121,
-            "longitude": -50.20154
-          },
-          {
-            "id": "route_point_auto_1774654709426_74",
-            "latitude": -21.4028,
-            "longitude": -50.21893
-          },
-          {
-            "id": "route_point_auto_1774654709426_75",
-            "latitude": -21.3924,
-            "longitude": -50.2383
-          },
-          {
-            "id": "route_point_auto_1774654709426_76",
-            "latitude": -21.38326,
-            "longitude": -50.25531
-          },
-          {
-            "id": "route_point_auto_1774654709426_77",
-            "latitude": -21.37301,
-            "longitude": -50.27446
-          },
-          {
-            "id": "route_point_auto_1774654709426_78",
-            "latitude": -21.36318,
-            "longitude": -50.29283
-          },
-          {
-            "id": "route_point_auto_1774654709426_79",
-            "latitude": -21.34904,
-            "longitude": -50.31415
-          },
-          {
-            "id": "route_point_auto_1774654709426_80",
-            "latitude": -21.33536,
-            "longitude": -50.32947
-          },
-          {
-            "id": "route_point_auto_1774654709426_81",
-            "latitude": -21.32273,
-            "longitude": -50.34361
-          },
-          {
-            "id": "route_point_auto_1774654709426_82",
-            "latitude": -21.30973,
-            "longitude": -50.35815
-          },
-          {
-            "id": "route_point_auto_1774654709426_83",
-            "latitude": -21.29698,
-            "longitude": -50.37246
-          },
-          {
-            "id": "route_point_auto_1774654709426_84",
-            "latitude": -21.28359,
-            "longitude": -50.38742
-          },
-          {
-            "id": "route_point_auto_1774654709426_85",
-            "latitude": -21.27077,
-            "longitude": -50.40176
-          },
-          {
-            "id": "route_point_auto_1774654709426_86",
-            "latitude": -21.25828,
-            "longitude": -50.41574
-          },
-          {
-            "id": "route_point_auto_1774654709426_87",
-            "latitude": -21.24535,
-            "longitude": -50.43019
-          },
-          {
-            "id": "route_point_auto_1774654709426_88",
-            "latitude": -21.22871,
-            "longitude": -50.43764
-          },
-          {
-            "id": "route_point_auto_1774654709426_89",
-            "latitude": -21.21067,
-            "longitude": -50.44125
           }
         ]
       },
@@ -45129,220 +44689,6 @@
             "id": "route_point_1774656758567a_34",
             "latitude": -21.81273,
             "longitude": -50.80272
-          }
-        ]
-      },
-      {
-        "id": "edge-graph_node_1774656758567-sp-aracatuba-1774656758567b",
-        "from_node_id": "graph_node_1774656758567",
-        "to_node_id": "sp-aracatuba",
-        "from_city_id": null,
-        "to_city_id": "sp-aracatuba",
-        "mode": "road",
-        "surface_type_id": "route_surface_single_road",
-        "surface_code": "single_road",
-        "geometry_type_id": "route_geometry_polycurve",
-        "geometry_code": "polycurve",
-        "render_smoothing_enabled": false,
-        "status": "active",
-        "bidirectional": true,
-        "distance_km": 88.8,
-        "notes": "Gerada automaticamente por OSRM com resolucao de 2 km no editor de mapa.",
-        "waypoints": [
-          {
-            "id": "route_point_1774656758567b_1",
-            "latitude": -21.78321,
-            "longitude": -50.77919
-          },
-          {
-            "id": "route_point_1774656758567b_2",
-            "latitude": -21.75707,
-            "longitude": -50.76542
-          },
-          {
-            "id": "route_point_1774656758567b_3",
-            "latitude": -21.73746,
-            "longitude": -50.7551
-          },
-          {
-            "id": "route_point_1774656758567b_4",
-            "latitude": -21.72203,
-            "longitude": -50.74507
-          },
-          {
-            "id": "route_point_1774656758567b_5",
-            "latitude": -21.71252,
-            "longitude": -50.72768
-          },
-          {
-            "id": "route_point_1774656758567b_6",
-            "latitude": -21.70967,
-            "longitude": -50.70839
-          },
-          {
-            "id": "route_point_1774656758567b_7",
-            "latitude": -21.7071,
-            "longitude": -50.68907
-          },
-          {
-            "id": "route_point_1774656758567b_8",
-            "latitude": -21.70451,
-            "longitude": -50.66945
-          },
-          {
-            "id": "route_point_1774656758567b_9",
-            "latitude": -21.69795,
-            "longitude": -50.64657
-          },
-          {
-            "id": "route_point_1774656758567b_10",
-            "latitude": -21.68996,
-            "longitude": -50.62549
-          },
-          {
-            "id": "route_point_1774656758567b_11",
-            "latitude": -21.68073,
-            "longitude": -50.60108
-          },
-          {
-            "id": "route_point_1774656758567b_12",
-            "latitude": -21.67348,
-            "longitude": -50.58195
-          },
-          {
-            "id": "route_point_1774656758567b_13",
-            "latitude": -21.66632,
-            "longitude": -50.56309
-          },
-          {
-            "id": "route_point_1774656758567b_14",
-            "latitude": -21.65663,
-            "longitude": -50.5375
-          },
-          {
-            "id": "route_point_1774656758567b_15",
-            "latitude": -21.64968,
-            "longitude": -50.51915
-          },
-          {
-            "id": "route_point_1774656758567b_16",
-            "latitude": -21.64265,
-            "longitude": -50.50078
-          },
-          {
-            "id": "route_point_1774656758567b_17",
-            "latitude": -21.62782,
-            "longitude": -50.48792
-          },
-          {
-            "id": "route_point_1774656758567b_18",
-            "latitude": -21.61044,
-            "longitude": -50.47514
-          },
-          {
-            "id": "route_point_1774656758567b_19",
-            "latitude": -21.59548,
-            "longitude": -50.46417
-          },
-          {
-            "id": "route_point_1774656758567b_20",
-            "latitude": -21.5804,
-            "longitude": -50.45186
-          },
-          {
-            "id": "route_point_1774656758567b_21",
-            "latitude": -21.56708,
-            "longitude": -50.43805
-          },
-          {
-            "id": "route_point_1774656758567b_22",
-            "latitude": -21.54912,
-            "longitude": -50.43935
-          },
-          {
-            "id": "route_point_1774656758567b_23",
-            "latitude": -21.5306,
-            "longitude": -50.43587
-          },
-          {
-            "id": "route_point_1774656758567b_24",
-            "latitude": -21.4992,
-            "longitude": -50.42951
-          },
-          {
-            "id": "route_point_1774656758567b_25",
-            "latitude": -21.48024,
-            "longitude": -50.43013
-          },
-          {
-            "id": "route_point_1774656758567b_26",
-            "latitude": -21.46214,
-            "longitude": -50.43442
-          },
-          {
-            "id": "route_point_1774656758567b_27",
-            "latitude": -21.44263,
-            "longitude": -50.44015
-          },
-          {
-            "id": "route_point_1774656758567b_28",
-            "latitude": -21.4234,
-            "longitude": -50.44581
-          },
-          {
-            "id": "route_point_1774656758567b_29",
-            "latitude": -21.40059,
-            "longitude": -50.45252
-          },
-          {
-            "id": "route_point_1774656758567b_30",
-            "latitude": -21.38115,
-            "longitude": -50.45823
-          },
-          {
-            "id": "route_point_1774656758567b_31",
-            "latitude": -21.36251,
-            "longitude": -50.46247
-          },
-          {
-            "id": "route_point_1774656758567b_32",
-            "latitude": -21.34383,
-            "longitude": -50.46292
-          },
-          {
-            "id": "route_point_1774656758567b_33",
-            "latitude": -21.3238,
-            "longitude": -50.46346
-          },
-          {
-            "id": "route_point_1774656758567b_34",
-            "latitude": -21.30538,
-            "longitude": -50.46801
-          },
-          {
-            "id": "route_point_1774656758567b_35",
-            "latitude": -21.2877,
-            "longitude": -50.47248
-          },
-          {
-            "id": "route_point_1774656758567b_36",
-            "latitude": -21.26945,
-            "longitude": -50.47001
-          },
-          {
-            "id": "route_point_1774656758567b_37",
-            "latitude": -21.2484,
-            "longitude": -50.45681
-          },
-          {
-            "id": "route_point_1774656758567b_38",
-            "latitude": -21.23221,
-            "longitude": -50.4465
-          },
-          {
-            "id": "route_point_1774656758567b_39",
-            "latitude": -21.21341,
-            "longitude": -50.4458
           }
         ]
       },
@@ -291824,6 +291170,865 @@
             "id": "route_point_1776113828987_37",
             "latitude": -1.29915,
             "longitude": -47.80495
+          }
+        ]
+      },
+      {
+        "id": "edge-sp-bauru-graph_node_1776134048287-1776134048287a",
+        "from_node_id": "sp-bauru",
+        "to_node_id": "graph_node_1776134048287",
+        "from_city_id": "sp-bauru",
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 151.3,
+        "notes": "Gerada automaticamente por OSRM com resolucao de 2 km no editor de mapa.",
+        "waypoints": [
+          {
+            "id": "route_point_1776134048287a_1",
+            "latitude": -22.31321,
+            "longitude": -49.07219
+          },
+          {
+            "id": "route_point_1776134048287a_2",
+            "latitude": -22.29511,
+            "longitude": -49.07066
+          },
+          {
+            "id": "route_point_1776134048287a_3",
+            "latitude": -22.28203,
+            "longitude": -49.08619
+          },
+          {
+            "id": "route_point_1776134048287a_4",
+            "latitude": -22.26912,
+            "longitude": -49.10093
+          },
+          {
+            "id": "route_point_1776134048287a_5",
+            "latitude": -22.25524,
+            "longitude": -49.11411
+          },
+          {
+            "id": "route_point_1776134048287a_6",
+            "latitude": -22.24411,
+            "longitude": -49.13159
+          },
+          {
+            "id": "route_point_1776134048287a_7",
+            "latitude": -22.23468,
+            "longitude": -49.14857
+          },
+          {
+            "id": "route_point_1776134048287a_8",
+            "latitude": -22.2231,
+            "longitude": -49.16376
+          },
+          {
+            "id": "route_point_1776134048287a_9",
+            "latitude": -22.21149,
+            "longitude": -49.17868
+          },
+          {
+            "id": "route_point_1776134048287a_10",
+            "latitude": -22.1966,
+            "longitude": -49.18996
+          },
+          {
+            "id": "route_point_1776134048287a_11",
+            "latitude": -22.18965,
+            "longitude": -49.20826
+          },
+          {
+            "id": "route_point_1776134048287a_12",
+            "latitude": -22.17786,
+            "longitude": -49.22479
+          },
+          {
+            "id": "route_point_1776134048287a_13",
+            "latitude": -22.16609,
+            "longitude": -49.24122
+          },
+          {
+            "id": "route_point_1776134048287a_14",
+            "latitude": -22.15192,
+            "longitude": -49.26109
+          },
+          {
+            "id": "route_point_1776134048287a_15",
+            "latitude": -22.13869,
+            "longitude": -49.27961
+          },
+          {
+            "id": "route_point_1776134048287a_16",
+            "latitude": -22.12682,
+            "longitude": -49.29621
+          },
+          {
+            "id": "route_point_1776134048287a_17",
+            "latitude": -22.11288,
+            "longitude": -49.31573
+          },
+          {
+            "id": "route_point_1776134048287a_18",
+            "latitude": -22.10361,
+            "longitude": -49.33239
+          },
+          {
+            "id": "route_point_1776134048287a_19",
+            "latitude": -22.08937,
+            "longitude": -49.34822
+          },
+          {
+            "id": "route_point_1776134048287a_20",
+            "latitude": -22.07639,
+            "longitude": -49.36235
+          },
+          {
+            "id": "route_point_1776134048287a_21",
+            "latitude": -22.06211,
+            "longitude": -49.37537
+          },
+          {
+            "id": "route_point_1776134048287a_22",
+            "latitude": -22.04229,
+            "longitude": -49.39255
+          },
+          {
+            "id": "route_point_1776134048287a_23",
+            "latitude": -22.02547,
+            "longitude": -49.40717
+          },
+          {
+            "id": "route_point_1776134048287a_24",
+            "latitude": -22.00946,
+            "longitude": -49.42234
+          },
+          {
+            "id": "route_point_1776134048287a_25",
+            "latitude": -21.99505,
+            "longitude": -49.43596
+          },
+          {
+            "id": "route_point_1776134048287a_26",
+            "latitude": -21.97993,
+            "longitude": -49.44868
+          },
+          {
+            "id": "route_point_1776134048287a_27",
+            "latitude": -21.96447,
+            "longitude": -49.4616
+          },
+          {
+            "id": "route_point_1776134048287a_28",
+            "latitude": -21.94957,
+            "longitude": -49.47407
+          },
+          {
+            "id": "route_point_1776134048287a_29",
+            "latitude": -21.9359,
+            "longitude": -49.48811
+          },
+          {
+            "id": "route_point_1776134048287a_30",
+            "latitude": -21.92259,
+            "longitude": -49.50375
+          },
+          {
+            "id": "route_point_1776134048287a_31",
+            "latitude": -21.90998,
+            "longitude": -49.51858
+          },
+          {
+            "id": "route_point_1776134048287a_32",
+            "latitude": -21.89702,
+            "longitude": -49.53381
+          },
+          {
+            "id": "route_point_1776134048287a_33",
+            "latitude": -21.88456,
+            "longitude": -49.54925
+          },
+          {
+            "id": "route_point_1776134048287a_34",
+            "latitude": -21.87224,
+            "longitude": -49.56446
+          },
+          {
+            "id": "route_point_1776134048287a_35",
+            "latitude": -21.85981,
+            "longitude": -49.57979
+          },
+          {
+            "id": "route_point_1776134048287a_36",
+            "latitude": -21.84683,
+            "longitude": -49.59573
+          },
+          {
+            "id": "route_point_1776134048287a_37",
+            "latitude": -21.8293,
+            "longitude": -49.6108
+          },
+          {
+            "id": "route_point_1776134048287a_38",
+            "latitude": -21.81466,
+            "longitude": -49.62238
+          },
+          {
+            "id": "route_point_1776134048287a_39",
+            "latitude": -21.80066,
+            "longitude": -49.64029
+          },
+          {
+            "id": "route_point_1776134048287a_40",
+            "latitude": -21.78562,
+            "longitude": -49.6544
+          },
+          {
+            "id": "route_point_1776134048287a_41",
+            "latitude": -21.76862,
+            "longitude": -49.66811
+          },
+          {
+            "id": "route_point_1776134048287a_42",
+            "latitude": -21.75371,
+            "longitude": -49.68195
+          },
+          {
+            "id": "route_point_1776134048287a_43",
+            "latitude": -21.74196,
+            "longitude": -49.69704
+          },
+          {
+            "id": "route_point_1776134048287a_44",
+            "latitude": -21.72834,
+            "longitude": -49.71358
+          },
+          {
+            "id": "route_point_1776134048287a_45",
+            "latitude": -21.71572,
+            "longitude": -49.72776
+          },
+          {
+            "id": "route_point_1776134048287a_46",
+            "latitude": -21.70312,
+            "longitude": -49.74196
+          },
+          {
+            "id": "route_point_1776134048287a_47",
+            "latitude": -21.69032,
+            "longitude": -49.75653
+          },
+          {
+            "id": "route_point_1776134048287a_48",
+            "latitude": -21.6785,
+            "longitude": -49.77172
+          },
+          {
+            "id": "route_point_1776134048287a_49",
+            "latitude": -21.66686,
+            "longitude": -49.78771
+          },
+          {
+            "id": "route_point_1776134048287a_50",
+            "latitude": -21.65591,
+            "longitude": -49.80368
+          },
+          {
+            "id": "route_point_1776134048287a_51",
+            "latitude": -21.64476,
+            "longitude": -49.81983
+          },
+          {
+            "id": "route_point_1776134048287a_52",
+            "latitude": -21.63392,
+            "longitude": -49.8355
+          },
+          {
+            "id": "route_point_1776134048287a_53",
+            "latitude": -21.62279,
+            "longitude": -49.8516
+          },
+          {
+            "id": "route_point_1776134048287a_54",
+            "latitude": -21.61187,
+            "longitude": -49.86743
+          },
+          {
+            "id": "route_point_1776134048287a_55",
+            "latitude": -21.60092,
+            "longitude": -49.88327
+          },
+          {
+            "id": "route_point_1776134048287a_56",
+            "latitude": -21.5885,
+            "longitude": -49.90133
+          },
+          {
+            "id": "route_point_1776134048287a_57",
+            "latitude": -21.57766,
+            "longitude": -49.91702
+          },
+          {
+            "id": "route_point_1776134048287a_58",
+            "latitude": -21.56572,
+            "longitude": -49.93427
+          },
+          {
+            "id": "route_point_1776134048287a_59",
+            "latitude": -21.55282,
+            "longitude": -49.95292
+          },
+          {
+            "id": "route_point_1776134048287a_60",
+            "latitude": -21.54163,
+            "longitude": -49.9691
+          },
+          {
+            "id": "route_point_1776134048287a_61",
+            "latitude": -21.52979,
+            "longitude": -49.9862
+          },
+          {
+            "id": "route_point_1776134048287a_62",
+            "latitude": -21.51868,
+            "longitude": -50.00312
+          },
+          {
+            "id": "route_point_1776134048287a_63",
+            "latitude": -21.5095,
+            "longitude": -50.02002
+          },
+          {
+            "id": "route_point_1776134048287a_64",
+            "latitude": -21.49841,
+            "longitude": -50.0407
+          },
+          {
+            "id": "route_point_1776134048287a_65",
+            "latitude": -21.48865,
+            "longitude": -50.05889
+          },
+          {
+            "id": "route_point_1776134048287a_66",
+            "latitude": -21.47927,
+            "longitude": -50.0764
+          },
+          {
+            "id": "route_point_1776134048287a_67",
+            "latitude": -21.46938,
+            "longitude": -50.09529
+          },
+          {
+            "id": "route_point_1776134048287a_68",
+            "latitude": -21.45968,
+            "longitude": -50.11328
+          },
+          {
+            "id": "route_point_1776134048287a_69",
+            "latitude": -21.45022,
+            "longitude": -50.1309
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1776134048287-sp-aracatuba-1776134048287b",
+        "from_node_id": "graph_node_1776134048287",
+        "to_node_id": "sp-aracatuba",
+        "from_city_id": null,
+        "to_city_id": "sp-aracatuba",
+        "mode": "road",
+        "surface_type_id": "route_surface_double_road",
+        "surface_code": "double_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 41.2,
+        "notes": "Gerada automaticamente por OSRM com resolucao de 2 km no editor de mapa.",
+        "waypoints": [
+          {
+            "id": "route_point_1776134048287b_1",
+            "latitude": -21.44086,
+            "longitude": -50.14834
+          },
+          {
+            "id": "route_point_1776134048287b_2",
+            "latitude": -21.43172,
+            "longitude": -50.16533
+          },
+          {
+            "id": "route_point_1776134048287b_3",
+            "latitude": -21.42237,
+            "longitude": -50.18242
+          },
+          {
+            "id": "route_point_1776134048287b_4",
+            "latitude": -21.4121,
+            "longitude": -50.20154
+          },
+          {
+            "id": "route_point_1776134048287b_5",
+            "latitude": -21.4028,
+            "longitude": -50.21893
+          },
+          {
+            "id": "route_point_1776134048287b_6",
+            "latitude": -21.3924,
+            "longitude": -50.2383
+          },
+          {
+            "id": "route_point_1776134048287b_7",
+            "latitude": -21.38326,
+            "longitude": -50.25531
+          },
+          {
+            "id": "route_point_1776134048287b_8",
+            "latitude": -21.37301,
+            "longitude": -50.27446
+          },
+          {
+            "id": "route_point_1776134048287b_9",
+            "latitude": -21.36318,
+            "longitude": -50.29283
+          },
+          {
+            "id": "route_point_1776134048287b_10",
+            "latitude": -21.34904,
+            "longitude": -50.31415
+          },
+          {
+            "id": "route_point_1776134048287b_11",
+            "latitude": -21.33536,
+            "longitude": -50.32947
+          },
+          {
+            "id": "route_point_1776134048287b_12",
+            "latitude": -21.32273,
+            "longitude": -50.34361
+          },
+          {
+            "id": "route_point_1776134048287b_13",
+            "latitude": -21.30973,
+            "longitude": -50.35815
+          },
+          {
+            "id": "route_point_1776134048287b_14",
+            "latitude": -21.29698,
+            "longitude": -50.37246
+          },
+          {
+            "id": "route_point_1776134048287b_15",
+            "latitude": -21.28359,
+            "longitude": -50.38742
+          },
+          {
+            "id": "route_point_1776134048287b_16",
+            "latitude": -21.27077,
+            "longitude": -50.40176
+          },
+          {
+            "id": "route_point_1776134048287b_17",
+            "latitude": -21.25828,
+            "longitude": -50.41574
+          },
+          {
+            "id": "route_point_1776134048287b_18",
+            "latitude": -21.24535,
+            "longitude": -50.43019
+          },
+          {
+            "id": "route_point_1776134048287b_19",
+            "latitude": -21.22871,
+            "longitude": -50.43764
+          },
+          {
+            "id": "route_point_1776134048287b_20",
+            "latitude": -21.21067,
+            "longitude": -50.44125
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1776134048287-sp-sao-jose-do-rio-preto-1776134087821",
+        "from_node_id": "graph_node_1776134048287",
+        "to_node_id": "sp-sao-jose-do-rio-preto",
+        "from_city_id": null,
+        "to_city_id": "sp-sao-jose-do-rio-preto",
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 108.8,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1776134087822_1",
+            "latitude": -21.43095,
+            "longitude": -50.13061
+          },
+          {
+            "id": "route_point_1776134087822_2",
+            "latitude": -21.40124,
+            "longitude": -50.11139
+          },
+          {
+            "id": "route_point_1776134087822_3",
+            "latitude": -21.25866,
+            "longitude": -49.95655
+          },
+          {
+            "id": "route_point_1776134087822_4",
+            "latitude": -21.20716,
+            "longitude": -49.92634
+          },
+          {
+            "id": "route_point_1776134087822_5",
+            "latitude": -21.15948,
+            "longitude": -49.89098
+          },
+          {
+            "id": "route_point_1776134087822_6",
+            "latitude": -21.12959,
+            "longitude": -49.85424
+          },
+          {
+            "id": "route_point_1776134087822_7",
+            "latitude": -21.05275,
+            "longitude": -49.71382
+          },
+          {
+            "id": "route_point_1776134087822_8",
+            "latitude": -21.00625,
+            "longitude": -49.63932
+          },
+          {
+            "id": "route_point_1776134087822_9",
+            "latitude": -20.97581,
+            "longitude": -49.60876
+          },
+          {
+            "id": "route_point_1776134087822_10",
+            "latitude": -20.96427,
+            "longitude": -49.57443
+          },
+          {
+            "id": "route_point_1776134087822_11",
+            "latitude": -20.94696,
+            "longitude": -49.53495
+          },
+          {
+            "id": "route_point_1776134087822_12",
+            "latitude": -20.92164,
+            "longitude": -49.50542
+          },
+          {
+            "id": "route_point_1776134087822_13",
+            "latitude": -20.90625,
+            "longitude": -49.46972
+          },
+          {
+            "id": "route_point_1776134087822_14",
+            "latitude": -20.89984,
+            "longitude": -49.44603
+          },
+          {
+            "id": "route_point_1776134087822_15",
+            "latitude": -20.87355,
+            "longitude": -49.41719
+          },
+          {
+            "id": "route_point_1776134087822_16",
+            "latitude": -20.85238,
+            "longitude": -49.40071
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1774656758567-graph_node_1776134125117-1776134125117a",
+        "from_node_id": "graph_node_1774656758567",
+        "to_node_id": "graph_node_1776134125117",
+        "from_city_id": null,
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 47.3,
+        "notes": "Gerada automaticamente por OSRM com resolucao de 2 km no editor de mapa.",
+        "waypoints": [
+          {
+            "id": "route_point_1776134125117a_1",
+            "latitude": -21.78321,
+            "longitude": -50.77919
+          },
+          {
+            "id": "route_point_1776134125117a_2",
+            "latitude": -21.75707,
+            "longitude": -50.76542
+          },
+          {
+            "id": "route_point_1776134125117a_3",
+            "latitude": -21.73746,
+            "longitude": -50.7551
+          },
+          {
+            "id": "route_point_1776134125117a_4",
+            "latitude": -21.72203,
+            "longitude": -50.74507
+          },
+          {
+            "id": "route_point_1776134125117a_5",
+            "latitude": -21.71252,
+            "longitude": -50.72768
+          },
+          {
+            "id": "route_point_1776134125117a_6",
+            "latitude": -21.70967,
+            "longitude": -50.70839
+          },
+          {
+            "id": "route_point_1776134125117a_7",
+            "latitude": -21.7071,
+            "longitude": -50.68907
+          },
+          {
+            "id": "route_point_1776134125117a_8",
+            "latitude": -21.70451,
+            "longitude": -50.66945
+          },
+          {
+            "id": "route_point_1776134125117a_9",
+            "latitude": -21.69795,
+            "longitude": -50.64657
+          },
+          {
+            "id": "route_point_1776134125117a_10",
+            "latitude": -21.68996,
+            "longitude": -50.62549
+          },
+          {
+            "id": "route_point_1776134125117a_11",
+            "latitude": -21.68073,
+            "longitude": -50.60108
+          },
+          {
+            "id": "route_point_1776134125117a_12",
+            "latitude": -21.67348,
+            "longitude": -50.58195
+          },
+          {
+            "id": "route_point_1776134125117a_13",
+            "latitude": -21.66632,
+            "longitude": -50.56309
+          },
+          {
+            "id": "route_point_1776134125117a_14",
+            "latitude": -21.65663,
+            "longitude": -50.5375
+          },
+          {
+            "id": "route_point_1776134125117a_15",
+            "latitude": -21.64968,
+            "longitude": -50.51915
+          },
+          {
+            "id": "route_point_1776134125117a_16",
+            "latitude": -21.64265,
+            "longitude": -50.50078
+          },
+          {
+            "id": "route_point_1776134125117a_17",
+            "latitude": -21.62782,
+            "longitude": -50.48792
+          },
+          {
+            "id": "route_point_1776134125117a_18",
+            "latitude": -21.61044,
+            "longitude": -50.47514
+          },
+          {
+            "id": "route_point_1776134125117a_19",
+            "latitude": -21.59548,
+            "longitude": -50.46417
+          },
+          {
+            "id": "route_point_1776134125117a_20",
+            "latitude": -21.5804,
+            "longitude": -50.45186
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1776134125117-sp-aracatuba-1776134125117b",
+        "from_node_id": "graph_node_1776134125117",
+        "to_node_id": "sp-aracatuba",
+        "from_city_id": null,
+        "to_city_id": "sp-aracatuba",
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": false,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 41.5,
+        "notes": "Gerada automaticamente por OSRM com resolucao de 2 km no editor de mapa.",
+        "waypoints": [
+          {
+            "id": "route_point_1776134125117b_1",
+            "latitude": -21.54912,
+            "longitude": -50.43935
+          },
+          {
+            "id": "route_point_1776134125117b_2",
+            "latitude": -21.5306,
+            "longitude": -50.43587
+          },
+          {
+            "id": "route_point_1776134125117b_3",
+            "latitude": -21.4992,
+            "longitude": -50.42951
+          },
+          {
+            "id": "route_point_1776134125117b_4",
+            "latitude": -21.48024,
+            "longitude": -50.43013
+          },
+          {
+            "id": "route_point_1776134125117b_5",
+            "latitude": -21.46214,
+            "longitude": -50.43442
+          },
+          {
+            "id": "route_point_1776134125117b_6",
+            "latitude": -21.44263,
+            "longitude": -50.44015
+          },
+          {
+            "id": "route_point_1776134125117b_7",
+            "latitude": -21.4234,
+            "longitude": -50.44581
+          },
+          {
+            "id": "route_point_1776134125117b_8",
+            "latitude": -21.40059,
+            "longitude": -50.45252
+          },
+          {
+            "id": "route_point_1776134125117b_9",
+            "latitude": -21.38115,
+            "longitude": -50.45823
+          },
+          {
+            "id": "route_point_1776134125117b_10",
+            "latitude": -21.36251,
+            "longitude": -50.46247
+          },
+          {
+            "id": "route_point_1776134125117b_11",
+            "latitude": -21.34383,
+            "longitude": -50.46292
+          },
+          {
+            "id": "route_point_1776134125117b_12",
+            "latitude": -21.3238,
+            "longitude": -50.46346
+          },
+          {
+            "id": "route_point_1776134125117b_13",
+            "latitude": -21.30538,
+            "longitude": -50.46801
+          },
+          {
+            "id": "route_point_1776134125117b_14",
+            "latitude": -21.2877,
+            "longitude": -50.47248
+          },
+          {
+            "id": "route_point_1776134125117b_15",
+            "latitude": -21.26945,
+            "longitude": -50.47001
+          },
+          {
+            "id": "route_point_1776134125117b_16",
+            "latitude": -21.2484,
+            "longitude": -50.45681
+          },
+          {
+            "id": "route_point_1776134125117b_17",
+            "latitude": -21.23221,
+            "longitude": -50.4465
+          },
+          {
+            "id": "route_point_1776134125117b_18",
+            "latitude": -21.21341,
+            "longitude": -50.4458
+          }
+        ]
+      },
+      {
+        "id": "edge-graph_node_1776134125117-graph_node_1776134048287-1776134143299",
+        "from_node_id": "graph_node_1776134125117",
+        "to_node_id": "graph_node_1776134048287",
+        "from_city_id": null,
+        "to_city_id": null,
+        "mode": "road",
+        "surface_type_id": "route_surface_single_road",
+        "surface_code": "single_road",
+        "geometry_type_id": "route_geometry_polycurve",
+        "geometry_code": "polycurve",
+        "render_smoothing_enabled": true,
+        "status": "active",
+        "bidirectional": true,
+        "distance_km": 34.2,
+        "notes": "Criada no editor de mapa",
+        "waypoints": [
+          {
+            "id": "route_point_1776134143299_1",
+            "latitude": -21.56749,
+            "longitude": -50.42379
+          },
+          {
+            "id": "route_point_1776134143299_2",
+            "latitude": -21.55804,
+            "longitude": -50.34922
+          },
+          {
+            "id": "route_point_1776134143299_3",
+            "latitude": -21.52664,
+            "longitude": -50.3165
+          },
+          {
+            "id": "route_point_1776134143299_4",
+            "latitude": -21.51775,
+            "longitude": -50.29662
+          },
+          {
+            "id": "route_point_1776134143299_5",
+            "latitude": -21.48588,
+            "longitude": -50.21263
+          },
+          {
+            "id": "route_point_1776134143299_6",
+            "latitude": -21.46697,
+            "longitude": -50.18394
           }
         ]
       }

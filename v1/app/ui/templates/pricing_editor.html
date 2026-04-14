@@ -166,7 +166,7 @@
 
 <script type="module">
   const pricingEditorModuleUrl = new URL("{{ request.url_for('static', path='js/pricing-editor.js') }}", window.location.href);
-  pricingEditorModuleUrl.searchParams.set("v", "20260413-pricing-editor-8");
+  pricingEditorModuleUrl.searchParams.set("v", "20260413-pricing-editor-14");
 
   function showPricingEditorLoadError(error) {
     const message = String(error?.message || error || "Falha ao carregar o editor de precos.");

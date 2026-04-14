@@ -7,6 +7,7 @@ import {
   sortPopulationBands,
 } from "./shared/leaflet-map.js";
 import { escapeHtml, numberFormatter, roundNumber } from "./shared/formatters.js";
+import { buildOpeningContextState, openingBandPricePath } from "./shared/opening-pricing.js?v=20260413-opening-2";
 
 const THEME_KEY = "brasix:v1:pricing-editor-theme";
 const DIFFICULTIES = [
@@ -21,6 +22,7 @@ const SORT_OPTIONS = [
 ];
 const SIZE_TIER_ORDER = ["super_leve", "leve", "medio", "pesado", "super_pesado"];
 const GLOBAL_CAPITAL_STARTER_TIERS = ["leve", "medio"];
+const DEFAULT_CAPITAL_BASE_INITIAL_CASH_BRL = 1000000;
 const SIZE_TIER_LABELS = {
   super_leve: "Super-leve",
   leve: "Leve",
@@ -121,9 +123,10 @@ const FIELD_GROUPS = [
     id: "capital",
     tab: "capital",
     label: "Capital inicial",
-    help: "Capital minimo global para iniciar a operacao, considerando uma frota-base fixa, colchao de reserva e fator de liquidez por dificuldade. O custo da sede nao entra nesta conta e a cidade ativa nao altera esta formula.",
-    formula: "capital = frota + (reserva + buffer) x fator_liquidez",
+    help: "Capital minimo global para iniciar a operacao, considerando uma frota-base fixa, base de caixa, colchao de reserva e fator de liquidez por dificuldade. O custo da sede nao entra nesta conta e a cidade ativa nao altera esta formula.",
+    formula: "capital = frota + (base_caixa + reserva + buffer) x fator_liquidez",
     fields: [
+      { path: "capital.base_initial_cash_brl", label: "Base de caixa", min: 0, max: 2000000, step: 10000, format: "compact_currency", defaultValue: DEFAULT_CAPITAL_BASE_INITIAL_CASH_BRL, help: "Valor base de caixa incluido no capital inicial antes da aplicacao do fator de liquidez por dificuldade." },
       { path: "capital.reserve_days", label: "Dias de reserva", min: 0, max: 60, step: 1, format: "days", help: "Quantidade de dias de custo fixo da frota guardada como reserva de caixa." },
       { path: "capital.buffer_percent", label: "Buffer financeiro", min: 0, max: 0.5, step: 0.01, format: "percent", help: "Margem de seguranca aplicada sobre abertura e investimento inicial em frota." },
       { path: "capital.hard_liquidity_factor", label: "Liquidez dificil", min: 0.2, max: 1.2, step: 0.05, format: "factor", help: "Fator de folga de caixa usado na dificuldade dificil." },
@@ -400,6 +403,28 @@ function getNestedValue(target, path, fallback = "") {
     .reduce((accumulator, key) => (accumulator && accumulator[key] != null ? accumulator[key] : undefined), target) ?? fallback;
 }
 
+function ensurePricingCapitalDefaults(document, fallbackDocument = null) {
+  const nextDocument = deepClone(document || {});
+  if (!nextDocument.capital || typeof nextDocument.capital !== "object") {
+    nextDocument.capital = {};
+  }
+
+  const fallbackBaseInitialCash = Number(
+    getNestedValue(
+      fallbackDocument || {},
+      "capital.base_initial_cash_brl",
+      DEFAULT_CAPITAL_BASE_INITIAL_CASH_BRL,
+    ),
+  );
+  const currentBaseInitialCash = Number(nextDocument.capital.base_initial_cash_brl);
+
+  nextDocument.capital.base_initial_cash_brl = Number.isFinite(currentBaseInitialCash)
+    ? currentBaseInitialCash
+    : fallbackBaseInitialCash;
+
+  return nextDocument;
+}
+
 function resetFilteredCitiesCache() {
   state.filteredCitiesCacheKey = "";
   state.filteredCitiesCache = [];
@@ -530,10 +555,6 @@ function bindHelpBadges() {
   });
 }
 
-function openingBandPricePath(bandId) {
-  return `opening.band_base_prices_brl.${bandId}`;
-}
-
 function buildOpeningBandField(band) {
   const bandId = String(band?.id || "").trim();
   const defaultValue = Number(getNestedValue(state.defaultPricingDocument, openingBandPricePath(bandId), 0));
@@ -603,8 +624,11 @@ function bandFilterOptions() {
 
 function normalizeBootstrap(payload) {
   state.bootstrap = payload;
-  state.defaultPricingDocument = deepClone(payload?.default_pricing_document || {});
-  state.pricingDocument = deepClone(payload?.pricing_document || {});
+  state.defaultPricingDocument = ensurePricingCapitalDefaults(deepClone(payload?.default_pricing_document || {}));
+  state.pricingDocument = ensurePricingCapitalDefaults(
+    deepClone(payload?.pricing_document || {}),
+    state.defaultPricingDocument,
+  );
   state.cities = Array.isArray(payload?.cities) ? payload.cities : [];
   state.citiesById = Object.fromEntries(state.cities.map((city) => [city.id, city]));
   state.freightFlows = (Array.isArray(payload?.freight_flows) ? payload.freight_flows : []).filter((flow) => Number(flow.quantity_t || 0) > 0);
@@ -717,62 +741,27 @@ function normalizeRange(value, minValue, maxValue) {
   return Math.max(0, Math.min(1, (Number(value) - Number(minValue)) / denominator));
 }
 
+function openingNumber(path, fallback = 0) {
+  const value = Number(
+    getNestedValue(
+      state.pricingDocument,
+      path,
+      getNestedValue(state.defaultPricingDocument, path, fallback),
+    ),
+  );
+  return Number.isFinite(value) ? value : Number(fallback || 0);
+}
+
 function rebuildOpeningContextCache() {
-  const populationLogValues = state.cities.map((city) => Math.log1p(Number(city.population_thousands || 0)));
-  const populationMin = populationLogValues.length ? Math.min(...populationLogValues) : 0;
-  const populationMax = populationLogValues.length ? Math.max(...populationLogValues) : 1;
-  const statsItems = Object.values(state.cityMarketStatsById || {});
-  const maxOutboundCount = maxValue(statsItems, (item) => Number(item.outboundCount || 0));
-  const maxInboundCount = maxValue(statsItems, (item) => Number(item.inboundCount || 0));
-  const maxOutboundTonnes = maxValue(statsItems, (item) => Number(item.outboundTonnes || 0));
-  const maxInboundTonnes = maxValue(statsItems, (item) => Number(item.inboundTonnes || 0));
-  const populationWeight = Number(state.pricingDocument?.opening?.population_weight || 0);
-  const outboundWeight = Number(state.pricingDocument?.opening?.outbound_weight || 0);
-  const inboundWeight = Number(state.pricingDocument?.opening?.inbound_weight || 0);
-  const totalWeight = Math.max(populationWeight + outboundWeight + inboundWeight, 0.0001);
-  const cityMultiplierMax = Number(state.pricingDocument?.opening?.city_multiplier_max || 0);
-
-  let minOpeningPrice = Number.POSITIVE_INFINITY;
-  let maxOpeningPrice = Number.NEGATIVE_INFINITY;
-  const nextContexts = {};
-
-  state.cities.forEach((city) => {
-    const band = findPopulationBand(city, state.populationBands);
-    const stats = state.cityMarketStatsById[city.id] || { outboundCount: 0, outboundTonnes: 0, inboundCount: 0, inboundTonnes: 0 };
-    const populationComponent = normalizeRange(Math.log1p(Number(city.population_thousands || 0)), populationMin, populationMax);
-    const outboundComponent = marketFlowScore(stats.outboundCount, stats.outboundTonnes, maxOutboundCount, maxOutboundTonnes);
-    const inboundComponent = marketFlowScore(stats.inboundCount, stats.inboundTonnes, maxInboundCount, maxInboundTonnes);
-    const blendedScore = (
-      (populationComponent * populationWeight)
-      + (outboundComponent * outboundWeight)
-      + (inboundComponent * inboundWeight)
-    ) / totalWeight;
-    const multiplier = 1 + (cityMultiplierMax * blendedScore);
-    const bandBasePrice = band ? Number(getNestedValue(state.pricingDocument, openingBandPricePath(band.id), 0)) : 0;
-    const openingPrice = bandBasePrice * multiplier;
-
-    nextContexts[city.id] = {
-      band,
-      bandBasePrice,
-      openingPrice,
-      populationComponent,
-      outboundComponent,
-      inboundComponent,
-      blendedScore,
-      multiplier,
-      stats,
-    };
-
-    minOpeningPrice = Math.min(minOpeningPrice, openingPrice);
-    maxOpeningPrice = Math.max(maxOpeningPrice, openingPrice);
+  const openingState = buildOpeningContextState({
+    cities: state.cities,
+    populationBands: state.populationBands,
+    cityMarketStatsById: state.cityMarketStatsById,
+    getNumber: openingNumber,
   });
-
-  state.openingContextByCityId = nextContexts;
-  state.populationScoreRange = { min: populationMin, max: populationMax };
-  state.openingPriceRange = {
-    min: Number.isFinite(minOpeningPrice) ? minOpeningPrice : 0,
-    max: Number.isFinite(maxOpeningPrice) ? maxOpeningPrice : 0,
-  };
+  state.openingContextByCityId = openingState.contexts;
+  state.populationScoreRange = openingState.populationScoreRange;
+  state.openingPriceRange = openingState.openingPriceRange;
   state.pricedFreightsCacheByCityId = {};
   state.mapNeedsFullRefresh = true;
   resetFilteredCitiesCache();
@@ -781,15 +770,6 @@ function rebuildOpeningContextCache() {
 function populationScore(city) {
   const currentValue = Math.log1p(Number(city?.population_thousands || 0));
   return normalizeRange(currentValue, state.populationScoreRange.min, state.populationScoreRange.max);
-}
-
-function marketFlowScore(countValue, tonnageValue, maxCount, maxTonnage) {
-  const countWeight = Number(state.pricingDocument?.opening?.market_count_weight || 0);
-  const volumeWeight = Number(state.pricingDocument?.opening?.market_volume_weight || 0);
-  const totalWeight = Math.max(countWeight + volumeWeight, 0.0001);
-  const countScore = maxCount > 0 ? Number(countValue || 0) / maxCount : 0;
-  const volumeScore = maxTonnage > 0 ? Number(tonnageValue || 0) / maxTonnage : 0;
-  return ((countScore * countWeight) + (volumeScore * volumeWeight)) / totalWeight;
 }
 
 function openingContextForCity(city) {
@@ -1431,9 +1411,17 @@ function capitalPreviewForDifficulty(_starterProfileId, difficultyId) {
   const fleetEntries = starterFleet.fleetEntries;
   const fleetInvestment = fleetEntries.reduce((total, entry) => total + (Number(entry.truck.purchase_price_brl || 0) * Number(entry.units || 0)), 0);
   const dailyFixedCost = fleetEntries.reduce((total, entry) => total + (Number(entry.truck.base_fixed_cost_brl_per_day || 0) * Number(entry.units || 0)), 0);
+  const baseInitialCash = Number(
+    getNestedValue(
+      state.pricingDocument,
+      "capital.base_initial_cash_brl",
+      getNestedValue(state.defaultPricingDocument, "capital.base_initial_cash_brl", 1000000),
+    ),
+  );
   const reserveDays = Number(state.pricingDocument?.capital?.reserve_days || 0);
   const reserveCost = reserveDays * dailyFixedCost;
   const bufferCost = Number(state.pricingDocument?.capital?.buffer_percent || 0) * fleetInvestment;
+  const workingCapitalBase = baseInitialCash + reserveCost + bufferCost;
   const liquidityFactor = {
     hard: Number(state.pricingDocument?.capital?.hard_liquidity_factor || 0),
     standard: Number(state.pricingDocument?.capital?.standard_liquidity_factor || 0),
@@ -1444,10 +1432,12 @@ function capitalPreviewForDifficulty(_starterProfileId, difficultyId) {
     starterFleet,
     fleetInvestment,
     dailyFixedCost,
+    baseInitialCash,
     reserveCost,
     bufferCost,
+    workingCapitalBase,
     liquidityFactor,
-    initialCash: fleetInvestment + ((reserveCost + bufferCost) * liquidityFactor),
+    initialCash: fleetInvestment + (workingCapitalBase * liquidityFactor),
   };
 }
 
@@ -1493,8 +1483,9 @@ function renderParametersPanel() {
         </p>
         <div class="pricing-editor-parameter-list">
           ${group.fields.map((field) => {
-            const currentValue = Number(getNestedValue(state.pricingDocument, field.path, field.min || 0));
-            const defaultValue = Number(getNestedValue(state.defaultPricingDocument, field.path, currentValue));
+            const fallbackValue = field.defaultValue ?? field.min ?? 0;
+            const defaultValue = Number(getNestedValue(state.defaultPricingDocument, field.path, fallbackValue));
+            const currentValue = Number(getNestedValue(state.pricingDocument, field.path, defaultValue));
             return `
               <label class="field flow-editor-parameter-field pricing-editor-parameter-field">
                 <span class="flow-editor-parameter-label pricing-editor-parameter-label">
@@ -1847,10 +1838,26 @@ function renderCapitalPanel() {
           <article class="pricing-editor-capital-card${difficulty.id === "standard" ? " is-standard" : ""}">
             <span>${escapeHtml(difficulty.label)}</span>
             <strong>${escapeHtml(formatCurrency(preview.initialCash))}</strong>
-            <small>${escapeHtml(`${formatCurrency(preview.fleetInvestment)} frota-base global · ${formatCurrency(preview.reserveCost + preview.bufferCost)} base de caixa`)}</small>
+            <small>${escapeHtml(`${formatCurrency(preview.fleetInvestment)} frota-base · ${formatCurrency(preview.workingCapitalBase)} bloco de caixa`)}</small>
           </article>
         `).join("")}
       </div>
+
+      ${standardPreview ? `
+        <div class="pricing-editor-section-divider" aria-hidden="true"></div>
+        <div class="pricing-editor-assumptions-card pricing-editor-capital-breakdown-card">
+          <strong>Breakdown padrao</strong>
+          <p class="pricing-editor-capital-breakdown-formula">capital = frota + (base de caixa + reserva + buffer) x liquidez</p>
+          <div class="pricing-editor-assumptions-grid pricing-editor-capital-breakdown-grid">
+            <article class="pricing-editor-capital-breakdown-item"><span>Frota-base</span><strong>${escapeHtml(formatCurrency(standardPreview.fleetInvestment))}</strong></article>
+            <article class="pricing-editor-capital-breakdown-item"><span>Base de caixa</span><strong>${escapeHtml(formatCurrency(standardPreview.baseInitialCash))}</strong></article>
+            <article class="pricing-editor-capital-breakdown-item"><span>Reserva</span><strong>${escapeHtml(formatCurrency(standardPreview.reserveCost))}</strong></article>
+            <article class="pricing-editor-capital-breakdown-item"><span>Buffer</span><strong>${escapeHtml(formatCurrency(standardPreview.bufferCost))}</strong></article>
+            <article class="pricing-editor-capital-breakdown-item"><span>Liquidez</span><strong>${escapeHtml(`${roundNumber(standardPreview.liquidityFactor, 2)}x`)}</strong></article>
+            <article class="pricing-editor-capital-breakdown-item"><span>Capital final</span><strong>${escapeHtml(formatCurrency(standardPreview.initialCash))}</strong></article>
+          </div>
+        </div>
+      ` : ""}
     `;
   }
   if (refs.starterPanel) {
@@ -1966,7 +1973,15 @@ async function persistDocument() {
     });
     state.persistedRevision = Math.max(state.persistedRevision, requestRevision);
     if (state.documentRevision === requestRevision) {
-      state.pricingDocument = deepClone(response.document || payloadDocument);
+      const responseDocument = deepClone(response.document || {});
+      if (getNestedValue(responseDocument, "capital.base_initial_cash_brl", null) == null) {
+        setNestedValue(
+          responseDocument,
+          "capital.base_initial_cash_brl",
+          getNestedValue(payloadDocument, "capital.base_initial_cash_brl", DEFAULT_CAPITAL_BASE_INITIAL_CASH_BRL),
+        );
+      }
+      state.pricingDocument = ensurePricingCapitalDefaults(responseDocument, state.defaultPricingDocument);
       state.dirty = false;
       state.needsPricingRebuild = true;
       renderParametersPanel();
@@ -1987,7 +2002,7 @@ async function persistDocument() {
 }
 
 function resetToDefaults() {
-  state.pricingDocument = deepClone(state.defaultPricingDocument || {});
+  state.pricingDocument = ensurePricingCapitalDefaults(deepClone(state.defaultPricingDocument || {}), state.defaultPricingDocument);
   state.selectedDifficulty = state.pricingDocument?.scenario?.selected_difficulty || "standard";
   state.sortMode = state.pricingDocument?.scenario?.sort_mode || "opening_desc";
   markDocumentDirty({ needsPricingRebuild: true });

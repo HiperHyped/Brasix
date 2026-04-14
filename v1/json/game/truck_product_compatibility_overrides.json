@@ -387,6 +387,12 @@
     },
     {
       "truck_type_id": "truck_type_cavalo_6x4",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:54:09-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_cavalo_6x4",
       "product_id": "bebida",
       "compatible": false,
       "updated_at": "2026-03-31T23:51:41-03:00"
@@ -402,12 +408,6 @@
       "product_id": "cana-de-acucar",
       "compatible": true,
       "updated_at": "2026-03-31T22:58:27-03:00"
-    },
-    {
-      "truck_type_id": "truck_type_cavalo_6x4",
-      "product_id": "carvao",
-      "compatible": false,
-      "updated_at": "2026-03-31T23:32:17-03:00"
     },
     {
       "truck_type_id": "truck_type_cavalo_6x4",
@@ -438,12 +438,6 @@
       "product_id": "feijao",
       "compatible": false,
       "updated_at": "2026-03-31T23:22:26-03:00"
-    },
-    {
-      "truck_type_id": "truck_type_cavalo_6x4",
-      "product_id": "ferro",
-      "compatible": false,
-      "updated_at": "2026-03-31T23:32:09-03:00"
     },
     {
       "truck_type_id": "truck_type_cavalo_6x4",
@@ -1557,6 +1551,12 @@
     },
     {
       "truck_type_id": "truck_type_rodotrem",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:53:34-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_rodotrem",
       "product_id": "bebida",
       "compatible": false,
       "updated_at": "2026-04-01T14:03:27-03:00"
@@ -2244,6 +2244,12 @@
       "product_id": "arroz",
       "compatible": false,
       "updated_at": "2026-03-31T23:24:40-03:00"
+    },
+    {
+      "truck_type_id": "truck_type_tritrem",
+      "product_id": "batata",
+      "compatible": false,
+      "updated_at": "2026-04-13T23:53:17-03:00"
     },
     {
       "truck_type_id": "truck_type_tritrem",

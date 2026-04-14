@@ -33,6 +33,7 @@ def test_build_prompt_describes_real_context_limits(monkeypatch) -> None:
     assert "NÃO tem acesso direto ao workspace do VS Code" in prompt
     assert "Considere primeiro o contexto estruturado já fornecido" in prompt
     assert "current_project_context:" in prompt
+    assert "fuel_tank_l" in prompt
     assert "empty_consumption_per_km" in prompt
     assert "loaded_consumption_per_km" in prompt
 
@@ -73,6 +74,7 @@ def test_autofill_truck_operational_record_normalizes_ai_payload(monkeypatch) ->
                     "overall_height_m": 2.8,
                     "energy_source": "diesel",
                     "consumption_unit": "l_per_km",
+                    "fuel_tank_l": 120,
                     "empty_consumption_per_km": 0.19,
                     "loaded_consumption_per_km": 0.24,
                     "truck_price_brl": 285000,
@@ -99,6 +101,7 @@ def test_autofill_truck_operational_record_normalizes_ai_payload(monkeypatch) ->
     assert result["payload"]["payload_weight_kg"] == 3500
     assert result["payload"]["energy_source"] == "diesel"
     assert result["payload"]["consumption_unit"] == "l_per_km"
+    assert result["payload"]["fuel_tank_l"] == 120
     assert result["payload"]["empty_consumption_per_km"] == 0.19
     assert result["payload"]["loaded_consumption_per_km"] == 0.24
     assert result["payload"]["truck_price_brl"] == 285000

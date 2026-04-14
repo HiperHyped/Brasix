@@ -193,6 +193,7 @@ def _default_document(map_id: str, population_bands: Any = None) -> dict[str, An
             "diesel_destination_weight": 0.30,
         },
         "capital": {
+            "base_initial_cash_brl": 1000000,
             "reserve_days": 20,
             "buffer_percent": 0.08,
             "hard_liquidity_factor": 0.65,
@@ -272,6 +273,15 @@ def _normalize_document(raw_document: dict[str, Any] | None, map_id: str, popula
             "diesel_destination_weight": round(_clamp_number(freight.get("diesel_destination_weight"), defaults["freight"]["diesel_destination_weight"], 0, 1), 4),
         },
         "capital": {
+            "base_initial_cash_brl": round(
+                _clamp_number(
+                    capital.get("base_initial_cash_brl"),
+                    defaults["capital"]["base_initial_cash_brl"],
+                    0,
+                    2000000,
+                ),
+                2,
+            ),
             "reserve_days": round(_clamp_number(capital.get("reserve_days"), defaults["capital"]["reserve_days"], 0), 2),
             "buffer_percent": round(_clamp_number(capital.get("buffer_percent"), defaults["capital"]["buffer_percent"], 0, 2), 4),
             "hard_liquidity_factor": round(_clamp_number(capital.get("hard_liquidity_factor"), defaults["capital"]["hard_liquidity_factor"], 0, 3), 4),
@@ -345,6 +355,8 @@ def _build_truck_records() -> list[dict[str, Any]]:
                 "supported_product_count": int(truck.get("supported_product_count") or len(supported_product_ids)),
                 "payload_weight_kg": _safe_number(operational.get("payload_weight_kg")),
                 "cargo_volume_m3": _safe_number(operational.get("cargo_volume_m3")),
+                "fuel_tank_l": _safe_number(operational.get("fuel_tank_l")),
+                "empty_consumption_per_km": _safe_number(operational.get("empty_consumption_per_km")),
                 "loaded_consumption_per_km": _safe_number(operational.get("loaded_consumption_per_km")),
                 "truck_price_brl": truck_price_brl,
                 "implement_cost_brl": implement_cost_brl,
