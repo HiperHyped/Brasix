@@ -7373,6 +7373,37 @@ html.game-runtime-page[data-editor-theme="night"] {
 
 .game-runtime-log-line {
   border-left: 4px solid rgba(114, 121, 110, 0.26);
+  display: grid;
+  gap: 6px;
+}
+
+.game-runtime-log-line-head {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.game-runtime-log-source-tag {
+  min-height: 22px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--log-player-color, var(--green)) 72%, rgba(22, 28, 30, 0.12));
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--log-player-color, var(--green));
+  color: var(--log-player-ink, #fffdf7) !important;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.game-runtime-log-message {
+  color: var(--text);
+  line-height: 1.35;
 }
 
 .game-runtime-log-line.is-positive {

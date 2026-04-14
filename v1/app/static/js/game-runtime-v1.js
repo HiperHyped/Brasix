@@ -4703,6 +4703,55 @@ function playerIdleTruckCount(player) {
   return playerIdleTruckUnits(player).length;
 }
 
+function hexColorRgb(rawColor) {
+  const source = String(rawColor || "").trim();
+  if (!source) {
+    return null;
+  }
+  const normalized = source.startsWith("#") ? source.slice(1) : source;
+  if (![3, 6].includes(normalized.length) || /[^0-9a-f]/i.test(normalized)) {
+    return null;
+  }
+  const expanded = normalized.length === 3
+    ? normalized.split("").map((fragment) => `${fragment}${fragment}`).join("")
+    : normalized;
+  return {
+    red: parseInt(expanded.slice(0, 2), 16),
+    green: parseInt(expanded.slice(2, 4), 16),
+    blue: parseInt(expanded.slice(4, 6), 16),
+  };
+}
+
+function contrastTextColor(rawColor) {
+  const rgb = hexColorRgb(rawColor);
+  if (!rgb) {
+    return "#fffdf7";
+  }
+  const luminance = ((0.2126 * rgb.red) + (0.7152 * rgb.green) + (0.0722 * rgb.blue)) / 255;
+  return luminance >= 0.64 ? "#1c241f" : "#fffdf7";
+}
+
+function trimLogSourcePrefix(message, sourceLabel) {
+  const text = String(message || "").trim();
+  const prefix = `${String(sourceLabel || "").trim()} `;
+  if (!prefix.trim()) {
+    return text;
+  }
+  return text.startsWith(prefix) ? text.slice(prefix.length).trimStart() : text;
+}
+
+function logEntryPresentation(entry) {
+  const player = state.playersById[entry?.playerId || ""] || null;
+  const sourceLabel = player?.label || (entry?.playerId === "system" ? "Sistema" : "Operacao");
+  const sourceColor = player?.color || "#72796e";
+  return {
+    sourceLabel,
+    sourceColor,
+    sourceInkColor: contrastTextColor(sourceColor),
+    message: trimLogSourcePrefix(entry?.message || "", player?.label || ""),
+  };
+}
+
 function renderStatus() {
   if (!refs.status) {
     return;
@@ -4897,14 +4946,18 @@ function renderLogPanel() {
     return;
   }
   const logMarkup = state.logs.length
-    ? state.logs.slice(0, 8).map((entry) => `
-      <article class="game-runtime-log-line is-${escapeHtml(entry.tone || "neutral")}">
-        <div>
-          <strong>${escapeHtml(entry.timeLabel)}</strong>
-          <span>${escapeHtml(entry.message)}</span>
-        </div>
-      </article>
-    `).join("")
+    ? state.logs.slice(0, 8).map((entry) => {
+      const presentation = logEntryPresentation(entry);
+      return `
+        <article class="game-runtime-log-line is-${escapeHtml(entry.tone || "neutral")}">
+          <div class="game-runtime-log-line-head">
+            <strong>${escapeHtml(entry.timeLabel)}</strong>
+            <span class="game-runtime-log-source-tag" style="--log-player-color:${escapeHtml(presentation.sourceColor)};--log-player-ink:${escapeHtml(presentation.sourceInkColor)}">${escapeHtml(presentation.sourceLabel)}</span>
+          </div>
+          <div class="game-runtime-log-message">${escapeHtml(presentation.message)}</div>
+        </article>
+      `;
+    }).join("")
     : `<div class="truck-gallery-empty">Sem eventos recentes.</div>`;
 
   refs.logPanel.innerHTML = `
