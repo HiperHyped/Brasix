@@ -57,7 +57,7 @@ const SIZE_TIER_ORDER = ["super_leve", "leve", "medio", "pesado", "super_pesado"
 const DEFAULT_CAPITAL_BASE_INITIAL_CASH_BRL = 1000000;
 const RECOMMENDED_FREIGHT_LIMIT = 4;
 const MIN_ROBOT_COUNT = 2;
-const MAX_ROBOT_COUNT = 10;
+const MAX_ROBOT_COUNT = 20;
 const GAME_SETUP_TRUCK_ID_SEED = `${Date.now()}${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
 const SPEED_OPTIONS = [
   { id: "pause", label: "Pausa", hours_per_second: 0 },
@@ -76,6 +76,16 @@ const ROBOT_NAMES = [
   "Mercurio Log",
   "Pico Ambar",
   "Cais Rubi",
+  "Nexo Norte",
+  "Costa Dourada",
+  "Triada Log",
+  "Arco Verde",
+  "Sertao Cargo",
+  "Vale Expresso",
+  "Horizonte Sul",
+  "Ponte Alta",
+  "Nova Faixa",
+  "Carga Prisma",
 ];
 const ROBOT_COLORS = [
   "#d83a4b",
@@ -88,6 +98,16 @@ const ROBOT_COLORS = [
   "#ff4f8b",
   "#00a87e",
   "#c55a11",
+  "#7453ff",
+  "#0d8ecf",
+  "#7a9e1b",
+  "#ff6f3c",
+  "#9d4edd",
+  "#118ab2",
+  "#ef476f",
+  "#2a9d8f",
+  "#bc6c25",
+  "#577590",
 ];
 const NETWORK_OPACITY_SCALE = 0.92;
 const SIMULATION_TICK_MS = 250;
@@ -131,7 +151,7 @@ const state = {
   trackCache: {},
   players: [],
   playersById: {},
-  activeDrawerPlayerId: "human",
+  activeDrawerPlayerId: "",
   focusedPlayerId: "human",
   humanPrepared: false,
   logs: [],
@@ -160,6 +180,7 @@ const state = {
     activeHumanAssignment: null,
     activePurchase: null,
     dispatchSelectedCityId: "",
+    mainMapDispatchSelection: false,
     dispatchMap: null,
     dispatchMarkerLayer: null,
     dispatchMarkersByCityId: {},
@@ -184,7 +205,13 @@ const refs = {
   playerBar: document.getElementById("game-runtime-player-bar"),
   modalRoot: document.getElementById("game-runtime-modal-root"),
   openingDifficultySelect: document.getElementById("game-runtime-opening-difficulty-select"),
-  openingRobotCountSelect: document.getElementById("game-runtime-opening-robot-count"),
+  openingRobotCountInput: document.getElementById("game-runtime-opening-robot-count"),
+  openingRobotCountValue: document.getElementById("game-runtime-opening-robot-count-value"),
+  openingCompanyNameInput: document.getElementById("game-runtime-opening-company-name"),
+  openingCompanyColorInput: document.getElementById("game-runtime-opening-company-color"),
+  openingCompanyColorTextInput: document.getElementById("game-runtime-opening-company-color-text"),
+  openingLogoGrid: document.getElementById("game-runtime-opening-logo-grid"),
+  openingCompanyPreview: document.getElementById("game-runtime-opening-company-preview"),
   openingPalette: document.getElementById("game-runtime-opening-palette"),
   openingEconomy: document.getElementById("game-runtime-opening-economy"),
   openingTopOffers: document.getElementById("game-runtime-opening-top-offers"),
@@ -374,6 +401,10 @@ function setupCurrentDifficultyId() {
   return normalizeDifficultyId(state.setup.selectedDifficulty);
 }
 
+function currentSetupLogoOption() {
+  return COMPANY_LOGO_OPTIONS.find((option) => option.id === setupCompany().logoId) || COMPANY_LOGO_OPTIONS[0];
+}
+
 function nextContractSequence() {
   const nextValue = Number(state.contractSequence || 1);
   state.contractSequence = nextValue + 1;
@@ -550,6 +581,14 @@ function normalizedLookupText(value) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
+}
+
+function normalizeColor(rawValue, fallback = setupCompany().color) {
+  const source = String(rawValue || "").trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(source)) {
+    return source.toLowerCase();
+  }
+  return fallback;
 }
 
 function preferredStartupCityId() {
@@ -1344,6 +1383,7 @@ function normalizeBootstrap(bootstrapPayload, runtimePayload) {
   state.setup.activeHumanAssignment = null;
   state.setup.activePurchase = null;
   state.setup.dispatchSelectedCityId = "";
+  state.setup.mainMapDispatchSelection = false;
   state.setup.dispatchMarkersByCityId = {};
   state.trackCache = {};
   buildGraphAdjacency();
@@ -2747,6 +2787,71 @@ function bestNextFlowForTruck(player, truckUnit, originCityId) {
     })[0] || null;
 }
 
+function bestRobotRecoveryDispatch(player, truckUnit, originCityId) {
+  const currentCityId = String(originCityId || truckUnit?.currentCityId || player?.hqCityId || "").trim();
+  if (!player || !truckUnit || !currentCityId) {
+    return null;
+  }
+
+  const feasibleFlowCandidates = state.freightFlows
+    .filter((flow) => String(flow?.origin_id || "").trim() && String(flow.origin_id).trim() !== currentCityId)
+    .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
+    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
+    .map((flow) => {
+      const executionPlan = buildTruckFlowExecutionPlan(truckUnit, flow, {
+        currentCityId,
+        startingFuelLiters: truckUnit.fuelLevelLiters,
+      });
+      if (!executionPlan.feasible) {
+        return null;
+      }
+      const repositionDistanceKm = Math.max(0, Number(executionPlan.repositionPlan?.distanceKm || 0));
+      const deliveryTrack = getTrack(flow.origin_id, flow.destination_id, "fastest");
+      const revenueBrl = estimateDeliveryRevenue(flow, truckUnit.truck, player, null, deliveryTrack.distanceKm);
+      return {
+        flow,
+        executionPlan,
+        repositionDistanceKm,
+        revenueBrl,
+        cityScore: cityOpportunityScore(state.citiesById[flow.origin_id] || { id: flow.origin_id, population_thousands: 0 }),
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => left.repositionDistanceKm - right.repositionDistanceKm
+      || right.revenueBrl - left.revenueBrl
+      || right.cityScore - left.cityScore);
+
+  if (feasibleFlowCandidates.length) {
+    const target = feasibleFlowCandidates[0];
+    return {
+      destinationCityId: target.flow.origin_id,
+      dispatchMode: "reposition",
+      targetFlow: target.flow,
+      repositionDistanceKm: target.repositionDistanceKm,
+    };
+  }
+
+  const hqCityId = String(player.hqCityId || "").trim();
+  if (hqCityId && hqCityId !== currentCityId) {
+    const returnPlan = buildTravelFuelPlan({
+      track: getTrack(currentCityId, hqCityId, "fastest"),
+      truck: truckUnit.truck,
+      loaded: false,
+      startingFuelLiters: truckUnit.fuelLevelLiters,
+    });
+    if (returnPlan.feasible) {
+      return {
+        destinationCityId: hqCityId,
+        dispatchMode: "return_hq",
+        targetFlow: null,
+        repositionDistanceKm: Number(returnPlan.distanceKm || 0),
+      };
+    }
+  }
+
+  return null;
+}
+
 function processPendingHumanAssignmentQueue() {
   if (!openingWizardEnabled() || state.setup.activeModal || !state.setup.pendingHumanAssignments.length) {
     return;
@@ -2776,6 +2881,43 @@ function processPendingHumanAssignmentQueue() {
   }
 }
 
+function resetHumanAssignmentState() {
+  state.setup.activeHumanAssignment = null;
+  state.setup.dispatchSelectedCityId = "";
+  state.setup.mainMapDispatchSelection = false;
+}
+
+function startHumanTruckDispatchSelection(truckUnitId, { optional = true } = {}) {
+  if (!openingWizardEnabled()) {
+    return false;
+  }
+  const player = state.playersById.human || null;
+  const normalizedTruckUnitId = String(truckUnitId || "").trim();
+  if (!player || !normalizedTruckUnitId) {
+    return false;
+  }
+  if (state.setup.activeHumanAssignment && !state.setup.activeHumanAssignment.optional) {
+    return false;
+  }
+  const truckUnit = (player.truckUnits || []).find((unit) => unit.id === normalizedTruckUnitId) || null;
+  const contract = (player.contracts || []).find((item) => item.truckUnitId === normalizedTruckUnitId) || null;
+  const originCityId = String(truckUnit?.currentCityId || player.hqCityId || "").trim();
+  if (!truckUnit || contract || !originCityId || !state.citiesById[originCityId]) {
+    return false;
+  }
+  state.setup.activeHumanAssignment = {
+    playerId: player.id,
+    truckUnitId: truckUnit.id,
+    originCityId,
+    optional,
+  };
+  state.setup.dispatchSelectedCityId = "";
+  state.setup.mainMapDispatchSelection = false;
+  openSetupModal("freights");
+  focusPlayerOnMap(player);
+  return true;
+}
+
 function completeContractCycle(player, contract) {
   contract.isCompleted = true;
   contract.truckUnit.currentCityId = contract.flow.destination_id;
@@ -2799,7 +2941,21 @@ function completeContractCycle(player, contract) {
   }
   const nextFlow = bestNextFlowForTruck(player, contract.truckUnit, nextCityId);
   if (!nextFlow) {
-    appendLog(player.id, "neutral", `${player.label} encerrou a rota em ${cityLabel(nextCityId)} e ficou sem carga compativel.`);
+    const recoveryDispatch = bestRobotRecoveryDispatch(player, contract.truckUnit, nextCityId);
+    if (!recoveryDispatch) {
+      appendLog(player.id, "neutral", `${player.label} encerrou a rota em ${cityLabel(nextCityId)} e ficou sem carga compativel.`);
+      return;
+    }
+    const dispatchContract = assignDispatchToTruck(player, contract.truckUnit, recoveryDispatch.destinationCityId, recoveryDispatch.dispatchMode);
+    if (!dispatchContract) {
+      appendLog(player.id, "neutral", `${player.label} encerrou a rota em ${cityLabel(nextCityId)} e ficou sem carga compativel.`);
+      return;
+    }
+    if (recoveryDispatch.dispatchMode === "return_hq") {
+      appendLog(player.id, "neutral", `${player.label} ficou sem carga em ${cityLabel(nextCityId)} e voltou para a sede em ${cityLabel(recoveryDispatch.destinationCityId)}.`);
+    } else {
+      appendLog(player.id, "neutral", `${player.label} ficou sem carga em ${cityLabel(nextCityId)} e vai para ${cityLabel(recoveryDispatch.destinationCityId)} buscar novo carregamento.`);
+    }
     return;
   }
   assignFlowToTruck(player, contract.truckUnit, nextFlow);
@@ -2990,7 +3146,7 @@ function buildPlayers() {
   state.players = players;
   state.playersById = Object.fromEntries(players.map((player) => [player.id, player]));
   state.humanPrepared = Boolean(players[0]?.prepared);
-  state.activeDrawerPlayerId = players[0]?.id || "";
+  state.activeDrawerPlayerId = "";
   state.focusedPlayerId = players[0]?.id || "";
 
   appendLog("system", "neutral", `${state.bootstrap?.active_map?.name || state.runtime?.metadata?.map_name || "Mapa"} carregado.`);
@@ -3275,9 +3431,50 @@ function renderOpeningPalette() {
   if (!refs.openingPalette) {
     return;
   }
-  refs.openingPalette.innerHTML = ROBOT_COLORS.slice(0, state.setup.robotCount).map((color, index) => `
+  const robotCount = clamp(Number(state.setup.robotCount || 0), MIN_ROBOT_COUNT, MAX_ROBOT_COUNT);
+  if (refs.openingRobotCountValue) {
+    refs.openingRobotCountValue.textContent = `${formatInteger(robotCount)} robo${robotCount > 1 ? "s" : ""}`;
+  }
+  refs.openingPalette.innerHTML = ROBOT_COLORS.slice(0, robotCount).map((color, index) => `
     <span class="game-runtime-color-chip" style="--player-color:${escapeHtml(color)}" title="${escapeHtml(`${ROBOT_NAMES[index] || `Adversario ${index + 1}`}`)}"></span>
   `).join("");
+}
+
+function renderOpeningLogoGrid() {
+  if (!refs.openingLogoGrid) {
+    return;
+  }
+  refs.openingLogoGrid.innerHTML = COMPANY_LOGO_OPTIONS.map((option) => `
+    <button
+      class="game-setup-logo-chip${option.id === setupCompany().logoId ? " is-selected" : ""}"
+      type="button"
+      data-runtime-logo-id="${escapeHtml(option.id)}"
+      aria-label="${escapeHtml(option.label)}"
+      title="${escapeHtml(option.label)}"
+      style="--company-color:${escapeHtml(setupCompany().color)}"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">${escapeHtml(option.icon)}</span>
+    </button>
+  `).join("");
+}
+
+function renderOpeningCompanyPreview() {
+  if (!refs.openingCompanyPreview) {
+    return;
+  }
+  const city = setupCurrentHqCity();
+  const logo = currentSetupLogoOption();
+  refs.openingCompanyPreview.innerHTML = `
+    <article class="game-setup-company-preview-card" style="--company-color:${escapeHtml(setupCompany().color)}">
+      <div class="game-setup-company-preview-mark">
+        <span class="material-symbols-outlined" aria-hidden="true">${escapeHtml(logo.icon)}</span>
+      </div>
+      <div>
+        <strong>${escapeHtml(String(setupCompany().name || "").trim() || "Brasix")}</strong>
+        <p>${escapeHtml(city?.label || "Escolha a sede")}</p>
+      </div>
+    </article>
+  `;
 }
 
 function renderOpeningEconomyPanel() {
@@ -3552,6 +3749,73 @@ function assignmentTruckUnit() {
   return assignment ? (player?.truckUnits || []).find((item) => item.id === assignment.truckUnitId) || null : null;
 }
 
+function mainMapDispatchSelectionActive() {
+  return advancedDispatchEnabled() && Boolean(state.setup.mainMapDispatchSelection && state.setup.activeHumanAssignment);
+}
+
+function syncMainMapDispatchSelectionUi() {
+  if (refs.mapStage) {
+    refs.mapStage.classList.toggle("is-dispatch-picking", mainMapDispatchSelectionActive());
+  }
+}
+
+function startMainMapDispatchSelection() {
+  if (!state.setup.activeHumanAssignment) {
+    return;
+  }
+  state.setup.mainMapDispatchSelection = true;
+  state.setup.dispatchSelectedCityId = "";
+  state.setup.activeModal = "";
+  updateSetupModalVisibility();
+  renderStaticUi();
+  renderMapUi({ refreshIcons: true });
+  focusPlayerOnMap(state.playersById.human || state.players[0] || null);
+}
+
+function cancelMainMapDispatchSelection({ reopenModal = true } = {}) {
+  if (!mainMapDispatchSelectionActive()) {
+    return;
+  }
+  state.setup.mainMapDispatchSelection = false;
+  state.setup.dispatchSelectedCityId = "";
+  if (reopenModal) {
+    openSetupModal("freights");
+    return;
+  }
+  renderStaticUi();
+  renderMapUi({ refreshIcons: true });
+}
+
+function handleMainMapDispatchCitySelection(cityId) {
+  if (!mainMapDispatchSelectionActive()) {
+    return;
+  }
+  const assignment = state.setup.activeHumanAssignment;
+  const player = state.playersById.human || null;
+  const truckUnit = assignmentTruckUnit();
+  const destinationCityId = String(cityId || "").trim();
+  if (!assignment || !player || !truckUnit || !destinationCityId || !state.citiesById[destinationCityId]) {
+    return;
+  }
+  if (destinationCityId === assignment.originCityId) {
+    return;
+  }
+  const dispatchPlan = buildTravelFuelPlan({
+    track: getTrack(assignment.originCityId, destinationCityId, "fastest"),
+    truck: truckUnit.truck,
+    loaded: false,
+    startingFuelLiters: Number(truckUnit.fuelLevelLiters || 0),
+  });
+  if (dispatchPlan && dispatchPlan.feasible === false) {
+    appendLog(player.id, "negative", fuelBlockedMessage(dispatchPlan));
+    renderStaticUi();
+    renderMapUi({ refreshIcons: true });
+    return;
+  }
+  state.setup.dispatchSelectedCityId = destinationCityId;
+  finishHumanDispatchSelection("reposition");
+}
+
 function truckFuelSnapshot(truckUnit, contract = null) {
   const projected = contract ? projectedTravelSnapshot(contract) : null;
   return {
@@ -3746,7 +4010,7 @@ function renderSetupFreightRail() {
         </article>
       `;
     }).join("")
-    : `<div class="truck-gallery-empty">${escapeHtml(assignmentMode && advancedDispatchEnabled() ? `Nao ha contratos livres em ${cityLabel(cityId)}. Use o mapa ao lado para reposicionar ou voltar para a sede.` : `Nao ha fretes de saida ativos para ${cityLabel(cityId) || "a cidade atual"}.`)}</div>`;
+    : `<div class="truck-gallery-empty">${escapeHtml(assignmentMode && advancedDispatchEnabled() ? `Nao ha contratos livres em ${cityLabel(cityId)}. Use o mapa principal para reposicionar ou voltar para a sede.` : `Nao ha fretes de saida ativos para ${cityLabel(cityId) || "a cidade atual"}.`)}</div>`;
 
   if (refs.freightRailMeta) {
     refs.freightRailMeta.textContent = assignmentMode
@@ -3776,15 +4040,6 @@ function renderSetupFreightSelection() {
   const totalRevenue = entries.reduce((total, entry) => total + Number(entry.contractRevenue || 0), 0);
   const truckUnit = assignmentMode ? assignmentTruckUnit() : null;
   const fuelSnapshot = truckUnit ? truckFuelSnapshot(truckUnit) : null;
-  const selectedDispatchCity = state.citiesById[state.setup.dispatchSelectedCityId] || null;
-  const dispatchPlan = assignmentMode && truckUnit && selectedDispatchCity
-    ? buildTravelFuelPlan({
-      track: getTrack(cityId, selectedDispatchCity.id, "fastest"),
-      truck: truckUnit.truck,
-      loaded: false,
-      startingFuelLiters: fuelSnapshot?.fuelLevelLiters,
-    })
-    : null;
   refs.freightSelection.innerHTML = `
     <div class="game-setup-selector-head">
       <span class="eyebrow">${escapeHtml(assignmentMode ? "Destino" : "Carteira")}</span>
@@ -3811,21 +4066,18 @@ function renderSetupFreightSelection() {
     </div>
     ${assignmentMode && advancedDispatchEnabled() ? `
       <div class="game-setup-section-block">
-        <div class="game-setup-section-head"><span class="eyebrow">Despacho alternativo</span><strong>${escapeHtml(selectedDispatchCity ? selectedDispatchCity.label : "Escolha no mapa")}</strong></div>
+        <div class="game-setup-section-head"><span class="eyebrow">Despacho alternativo</span><strong>Mapa principal</strong></div>
         <div class="game-runtime-dispatch-options">
           <button class="editor-header-action game-runtime-mini-action" type="button" data-runtime-dispatch-action="return-hq"${cityId === (state.playersById.human?.hqCityId || "") ? " disabled" : ""}>
             <span class="material-symbols-outlined" aria-hidden="true">home_work</span>
             <span>Voltar para a sede</span>
           </button>
-          <button class="editor-header-action game-runtime-mini-action" type="button" data-runtime-dispatch-action="reposition"${selectedDispatchCity && dispatchPlan?.feasible ? "" : " disabled"}>
+          <button class="editor-header-action game-runtime-mini-action" type="button" data-runtime-dispatch-action="pick-map">
             <span class="material-symbols-outlined" aria-hidden="true">explore</span>
-            <span>${escapeHtml(selectedDispatchCity ? `Ir para ${selectedDispatchCity.label}` : "Escolher destino no mapa")}</span>
+            <span>Escolher destino no mapa</span>
           </button>
         </div>
-        <p class="game-setup-compatibility-note${dispatchPlan?.feasible ? " is-active" : ""}">${escapeHtml(selectedDispatchCity ? (dispatchPlan?.feasible ? `Reposicionamento vazio · ${formatDistanceKm(dispatchPlan.distanceKm || 0)} · diesel planejado ${formatLiters(dispatchPlan.totalFuelLiters || 0)}` : fuelBlockedMessage(dispatchPlan)) : "Clique em uma cidade no mapa para enviar o caminhao sem contrato." )}</p>
-        <div class="map-frame city-editor-map-frame game-runtime-dispatch-map-frame">
-          <div id="game-runtime-dispatch-map-stage" class="map-stage game-runtime-dispatch-map-stage" aria-label="Mapa para escolher outro destino"></div>
-        </div>
+        <p class="game-setup-compatibility-note is-active">Ao clicar, o seletor fecha e o mapa principal entra no modo de escolha da cidade.</p>
       </div>
     ` : assignmentMode ? "" : `
       <div class="game-setup-section-block">
@@ -3843,9 +4095,6 @@ function renderSetupFreightSelection() {
       </div>
     `}
   `;
-  if (assignmentMode && advancedDispatchEnabled()) {
-    window.setTimeout(() => renderDispatchDestinationMap(), 30);
-  }
 }
 
 function renderSetupModal() {
@@ -3855,11 +4104,22 @@ function renderSetupModal() {
   if (refs.openingDifficultySelect) {
     refs.openingDifficultySelect.value = setupCurrentDifficultyId();
   }
-  if (refs.openingRobotCountSelect) {
-    refs.openingRobotCountSelect.value = String(clamp(state.setup.robotCount, MIN_ROBOT_COUNT, MAX_ROBOT_COUNT));
+  if (refs.openingRobotCountInput) {
+    refs.openingRobotCountInput.value = String(clamp(state.setup.robotCount, MIN_ROBOT_COUNT, MAX_ROBOT_COUNT));
+  }
+  if (refs.openingCompanyNameInput) {
+    refs.openingCompanyNameInput.value = String(setupCompany().name || "");
+  }
+  if (refs.openingCompanyColorInput) {
+    refs.openingCompanyColorInput.value = normalizeColor(setupCompany().color, "#356d63");
+  }
+  if (refs.openingCompanyColorTextInput) {
+    refs.openingCompanyColorTextInput.value = normalizeColor(setupCompany().color, "#356d63");
   }
   renderStatus();
   renderOpeningPalette();
+  renderOpeningLogoGrid();
+  renderOpeningCompanyPreview();
   renderOpeningEconomyPanel();
   renderOpeningMarketPanels();
   renderSetupFleetRail();
@@ -3871,15 +4131,21 @@ function renderSetupModal() {
 
 function setupModalCanClose() {
   if (state.setup.activeHumanAssignment) {
-    return false;
+    return Boolean(state.setup.activeHumanAssignment.optional);
   }
   if (state.setup.activeModal === "opening") {
     return setupHeadquartersPurchased();
   }
   if (state.setup.activeModal === "fleet") {
+    if (purchaseFlowActive() || (openingWizardEnabled() && !state.players.length)) {
+      return true;
+    }
     return Boolean(state.setup.company.fleetPurchased && setupSelectedTruckEntries().length);
   }
   if (state.setup.activeModal === "freights") {
+    if (purchaseFlowActive()) {
+      return true;
+    }
     const entries = setupPricedFreightsForCity(currentSelectionHqCityId())
       .filter((entry) => Boolean(entry.contractTruckUnit))
       .filter((entry) => entry.availability?.available && entry.fuelFeasible !== false);
@@ -3919,6 +4185,19 @@ function closeSetupModal() {
     return;
   }
   if (state.setup.activeHumanAssignment) {
+    if (!state.setup.activeHumanAssignment.optional) {
+      return;
+    }
+    resetHumanAssignmentState();
+    state.setup.activeModal = "";
+    updateSetupModalVisibility();
+    renderStaticUi();
+    renderMapUi({ refreshIcons: true });
+    processPendingHumanAssignmentQueue();
+    return;
+  }
+  if (openingWizardEnabled() && !state.players.length && !purchaseFlowActive() && state.setup.activeModal === "fleet") {
+    openSetupModal("opening");
     return;
   }
   if (purchaseFlowActive() && state.setup.activeModal === "freights") {
@@ -3942,6 +4221,30 @@ function closeSetupModal() {
   updateSetupModalVisibility();
 }
 
+function handleRuntimeKeydown(event) {
+  if (event.key !== "Escape") {
+    return;
+  }
+  if (mainMapDispatchSelectionActive()) {
+    event.preventDefault();
+    cancelMainMapDispatchSelection({ reopenModal: true });
+    return;
+  }
+  if (state.setup.activeModal) {
+    if (setupModalCanClose()) {
+      event.preventDefault();
+      closeSetupModal();
+    }
+    return;
+  }
+  if (state.activeDrawerPlayerId) {
+    event.preventDefault();
+    state.activeDrawerPlayerId = "";
+    renderPlayerBar();
+    renderDrawer();
+  }
+}
+
 function finishHumanAssignmentSelection(flowId) {
   const assignment = state.setup.activeHumanAssignment;
   const player = state.playersById.human || null;
@@ -3954,8 +4257,7 @@ function finishHumanAssignmentSelection(flowId) {
   if (!contract) {
     return;
   }
-  state.setup.activeHumanAssignment = null;
-  state.setup.dispatchSelectedCityId = "";
+  resetHumanAssignmentState();
   state.setup.activeModal = "";
   updateSetupModalVisibility();
   renderStaticUi();
@@ -3980,8 +4282,7 @@ function finishHumanDispatchSelection(dispatchMode) {
   if (!contract) {
     return;
   }
-  state.setup.activeHumanAssignment = null;
-  state.setup.dispatchSelectedCityId = "";
+  resetHumanAssignmentState();
   state.setup.activeModal = "";
   updateSetupModalVisibility();
   renderStaticUi();
@@ -4011,6 +4312,7 @@ function initializeOpeningWizard() {
   state.setup.activeHumanAssignment = null;
   state.setup.activePurchase = null;
   state.setup.dispatchSelectedCityId = "";
+  state.setup.mainMapDispatchSelection = false;
   openSetupModal("opening");
 }
 
@@ -4079,13 +4381,31 @@ function handleRuntimeInputs(event) {
     state.setup.company.hqPurchased = false;
     state.setup.company.fleetPurchased = false;
     renderStatus();
+    renderOpeningEconomyPanel();
+    return;
+  }
+  if (target === refs.openingRobotCountInput && (target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) {
+    state.setup.robotCount = clamp(Number(target.value || 3), MIN_ROBOT_COUNT, MAX_ROBOT_COUNT);
+    renderStatus();
+    renderOpeningPalette();
+    return;
+  }
+  if (target === refs.openingCompanyNameInput && target instanceof HTMLInputElement) {
+    state.setup.company.name = String(target.value || "").slice(0, 48);
+    renderOpeningCompanyPreview();
+    return;
+  }
+  if (target === refs.openingCompanyColorInput && target instanceof HTMLInputElement) {
+    state.setup.company.color = normalizeColor(target.value, "#356d63");
     renderSetupModal();
     return;
   }
-  if (target === refs.openingRobotCountSelect && target instanceof HTMLSelectElement) {
-    state.setup.robotCount = clamp(Number(target.value || 3), MIN_ROBOT_COUNT, MAX_ROBOT_COUNT);
-    renderStatus();
-    renderSetupModal();
+  if (target === refs.openingCompanyColorTextInput && target instanceof HTMLInputElement) {
+    const normalizedColor = normalizeColor(target.value, "");
+    if (normalizedColor) {
+      state.setup.company.color = normalizedColor;
+      renderSetupModal();
+    }
   }
 }
 
@@ -4109,12 +4429,15 @@ function renderCityMarkers() {
   const layerGroup = window.L.layerGroup();
   const focusedPlayer = state.playersById[state.focusedPlayerId] || state.players[0] || null;
   const focusedCityIds = focusPlayerCityIds(focusedPlayer);
+  const dispatchPicking = mainMapDispatchSelectionActive();
+  const dispatchAssignment = dispatchPicking ? state.setup.activeHumanAssignment : null;
 
   state.cities.forEach((city) => {
     const ownerPlayer = state.players.find((player) => player.hqCityId === city.id) || null;
     const band = findPopulationBand(city, state.populationBands);
     const pin = state.pinsById[band?.pin_id] || state.pinsById[Object.keys(state.pinsById)[0]] || null;
     const baseMarkerSize = Math.max(8, Number(band?.marker_size_px || 16));
+    const dispatchSelectable = Boolean(dispatchPicking && dispatchAssignment && city.id !== dispatchAssignment.originCityId);
     const selected = Boolean(ownerPlayer || focusedCityIds.has(city.id));
     const marker = createCityMarker({
       city,
@@ -4128,8 +4451,18 @@ function renderCityMarkers() {
       selectedHaloFillColor: "#ffffff",
       selectedHaloStrokeColor: ownerPlayer?.color || "#356d63",
       selected,
-      opacity: selected ? 0.96 : 0.56,
+      opacity: dispatchPicking ? (dispatchSelectable ? 0.94 : 0.24) : (selected ? 0.96 : 0.56),
     });
+    if (dispatchSelectable) {
+      marker.on("click", () => handleMainMapDispatchCitySelection(city.id));
+      marker.bindTooltip(`<strong>${escapeHtml(city.label)}</strong><br>Clique para enviar o caminhao para ca`, {
+        sticky: true,
+        direction: "top",
+        className: "brasix-map-tooltip city-editor-map-tooltip",
+        opacity: 1,
+        offset: [0, -8],
+      });
+    }
     layerGroup.addLayer(marker);
   });
 
@@ -4230,12 +4563,15 @@ function syncVehicleMarkers({ refreshIcons = false } = {}) {
       if (!position) {
         return;
       }
+      const title = player.isHuman && !contract
+        ? `${player.label} ${cityLabel(truckUnit.currentCityId || player.hqCityId)} · clique para despachar`
+        : `${player.label} ${contract?.flow?.product_name || cityLabel(truckUnit.currentCityId)}`;
       const nextStateKey = vehicleIconStateKey(player, truckUnit, contract);
       let marker = state.vehicleMarkersByTruckId[truckUnit.id] || null;
       if (!marker) {
         marker = window.L.marker([position.lat, position.lng], {
           icon: buildVehicleIcon(player, truckUnit, contract),
-          title: `${player.label} ${contract?.flow?.product_name || cityLabel(truckUnit.currentCityId)}`,
+          title,
           keyboard: false,
           zIndexOffset: 1400,
         });
@@ -4248,6 +4584,13 @@ function syncVehicleMarkers({ refreshIcons = false } = {}) {
         marker.__stateKey = nextStateKey;
       }
       marker.setLatLng([position.lat, position.lng]);
+      marker.off("click");
+      if (openingWizardEnabled() && player.isHuman && !contract) {
+        marker.on("click", () => startHumanTruckDispatchSelection(truckUnit.id));
+      }
+      if (marker.getElement()) {
+        marker.getElement().title = title;
+      }
     });
   });
 
@@ -4268,9 +4611,13 @@ function playerActiveContractCount(player) {
   return Array.isArray(player?.contracts) ? player.contracts.length : 0;
 }
 
-function playerIdleTruckCount(player) {
+function playerIdleTruckUnits(player) {
   const busyIds = new Set((player?.contracts || []).map((contract) => contract.truckUnitId));
-  return (player?.truckUnits || []).filter((truckUnit) => !busyIds.has(truckUnit.id)).length;
+  return (player?.truckUnits || []).filter((truckUnit) => !busyIds.has(truckUnit.id));
+}
+
+function playerIdleTruckCount(player) {
+  return playerIdleTruckUnits(player).length;
 }
 
 function renderStatus() {
@@ -4300,20 +4647,76 @@ function renderClock() {
   }
 }
 
-function humanHighlightsMarkup(player) {
-  const activeContracts = player.contracts.slice(0, 3);
-  if (!activeContracts.length) {
-    return `<div class="truck-gallery-empty">Sem contratos ativos para a empresa principal.</div>`;
+function routeCardStatusLabel(contract) {
+  if (!contract) {
+    return "Parado";
   }
-  return activeContracts.map((contract) => `
-    <article class="game-runtime-contract-chip" style="--player-color:${escapeHtml(player.color)}">
-      <div>
-        <strong>${escapeHtml(`${contract.flow.product_name || "Carga"} · ${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)}`)}</strong>
-        <small>${escapeHtml(`${contractStatusLabel(contract)} · entrega ${formatCurrency(contract.profitPerDeliveryBrl)} · ETA ${formatHours(Math.max(0, contract.stageDurationHours - contract.stageElapsedHours))}`)}</small>
+  if (contract.stage === "loading") {
+    return "Carregando";
+  }
+  if (contract.stage === "unloading") {
+    return "Descarregando";
+  }
+  return "Em rota";
+}
+
+function routeCardStatusTone(contract) {
+  if (!contract) {
+    return "is-idle";
+  }
+  if (contract.stage === "loading" || contract.stage === "unloading") {
+    return "is-handling";
+  }
+  return "is-moving";
+}
+
+function playerRouteCardMarkup(player, truckUnit, contract, { interactiveIdle = false } = {}) {
+  const currentCityId = String(truckUnit?.currentCityId || player?.hqCityId || "").trim();
+  const routeText = contract
+    ? `${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)}`
+    : cityLabel(currentCityId);
+  const valueText = contract ? formatCurrency(contract.profitPerDeliveryBrl) : "-";
+  const weightText = contract && !contract.dispatchOnly ? formatTonnes(contract.payloadTons) : "0 t";
+  const etaText = contract ? `ETA ${formatHours(Math.max(0, contract.stageDurationHours - contract.stageElapsedHours))}` : "ETA -";
+  const emoji = contract
+    ? (contract.dispatchOnly ? "🚚" : (contract.flow.product_emoji || "📦"))
+    : "🚚";
+  const tagName = interactiveIdle && !contract ? "button" : "article";
+  const openDispatchAttr = interactiveIdle && !contract
+    ? ` type="button" data-runtime-open-idle-dispatch="${escapeHtml(truckUnit.id)}"`
+    : "";
+  return `
+    <${tagName}
+      class="game-runtime-contract-chip game-runtime-route-card${interactiveIdle && !contract ? " game-runtime-truck-row-action" : ""}${!contract ? " is-idle" : ""}"
+      style="--player-color:${escapeHtml(player.color)}"
+      ${openDispatchAttr}
+    >
+      <div class="game-runtime-route-card-top">
+        <span class="game-runtime-route-card-id">${escapeHtml(`#${formatInteger(truckUnit.displayNumber)}`)}</span>
+        <span class="game-runtime-route-card-emoji" aria-hidden="true">${escapeHtml(emoji)}</span>
+        <strong class="game-runtime-route-card-path">${escapeHtml(routeText || "Sem rota")}</strong>
+        <span class="game-runtime-route-card-value">${escapeHtml(valueText)}</span>
       </div>
-      <span>${escapeHtml(formatTonnes(contract.payloadTons))}</span>
-    </article>
-  `).join("");
+      <div class="game-runtime-route-card-meta">
+        <span class="game-runtime-route-status-tag ${escapeHtml(routeCardStatusTone(contract))}">${escapeHtml(routeCardStatusLabel(contract))}</span>
+        <span>${escapeHtml(weightText)}</span>
+        <span>${escapeHtml(etaText)}</span>
+      </div>
+    </${tagName}>
+  `;
+}
+
+function playerRouteCardsMarkup(player, { interactiveIdle = false } = {}) {
+  const contractsByTruckId = Object.fromEntries((player?.contracts || []).map((contract) => [contract.truckUnitId, contract]));
+  const truckUnits = (player?.truckUnits || []).slice().sort((left, right) => Number(left.displayNumber || 0) - Number(right.displayNumber || 0));
+  if (!truckUnits.length) {
+    return `<div class="truck-gallery-empty">Sem frota ativa.</div>`;
+  }
+  return truckUnits.map((truckUnit) => playerRouteCardMarkup(player, truckUnit, contractsByTruckId[truckUnit.id] || null, { interactiveIdle })).join("");
+}
+
+function humanHighlightsMarkup(player) {
+  return playerRouteCardsMarkup(player, { interactiveIdle: true });
 }
 
 function renderHumanHud() {
@@ -4327,6 +4730,9 @@ function renderHumanHud() {
       : `<div class="truck-gallery-empty">Empresa principal indisponivel.</div>`;
     return;
   }
+  const dispatchPicking = mainMapDispatchSelectionActive();
+  const dispatchAssignment = dispatchPicking ? state.setup.activeHumanAssignment : null;
+  const dispatchTruckUnit = dispatchPicking ? assignmentTruckUnit() : null;
 
   refs.humanHud.innerHTML = `
     <div class="game-runtime-panel-head">
@@ -4349,6 +4755,16 @@ function renderHumanHud() {
         </div>
       </div>
     `}
+
+    ${dispatchPicking ? `
+      <div class="game-runtime-inline-alert is-dispatch-picking">
+        <span class="material-symbols-outlined" aria-hidden="true">explore</span>
+        <div>
+          <strong>Escolhendo destino no mapa</strong>
+          <span>${escapeHtml(`Clique em uma cidade no mapa principal para despachar ${truckUnitNumberLabel(dispatchTruckUnit)} saindo de ${cityLabel(dispatchAssignment?.originCityId)}.`)}</span>
+        </div>
+      </div>
+    ` : ""}
 
     <div class="game-runtime-metric-grid">
       <article class="game-runtime-metric-card">
@@ -4374,6 +4790,12 @@ function renderHumanHud() {
     </div>
 
     <div class="game-runtime-panel-footer">
+      ${dispatchPicking ? `
+        <button class="ghost-button game-runtime-mini-link" type="button" data-runtime-cancel-dispatch-pick="true">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          <span>Cancelar escolha</span>
+        </button>
+      ` : ""}
       ${runtimeTruckMarketEnabled() ? `
         <button class="ghost-button game-runtime-mini-link" type="button" data-runtime-open-market="${escapeHtml(player.id)}">
           <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
@@ -4439,7 +4861,7 @@ function renderPlayerBar() {
   if (!refs.playerBar) {
     return;
   }
-  refs.playerBar.innerHTML = state.players.map(playerCardMarkup).join("");
+  refs.playerBar.innerHTML = state.players.filter((player) => !player.isHuman).map(playerCardMarkup).join("");
 }
 
 function contractProgressRatio(contract) {
@@ -4492,20 +4914,29 @@ function contractRowMarkup(player, contract) {
   `;
 }
 
+function syncRobotDrawerLayout() {
+  const rightColumn = refs.playerBar?.parentElement || null;
+  if (!rightColumn) {
+    return;
+  }
+  rightColumn.classList.toggle("is-drawer-open", Boolean(state.activeDrawerPlayerId));
+}
+
 function renderDrawer() {
   if (!refs.drawer) {
     return;
   }
   const player = state.playersById[state.activeDrawerPlayerId] || null;
-  if (!player) {
+  if (!player || player.isHuman) {
     refs.drawer.hidden = true;
     refs.drawer.innerHTML = "";
+    syncRobotDrawerLayout();
     return;
   }
 
   refs.drawer.hidden = false;
   refs.drawer.innerHTML = `
-    <div class="game-runtime-drawer-head">
+    <div class="game-runtime-panel-head game-runtime-drawer-head">
       <div class="game-runtime-panel-title">
         <strong>${escapeHtml(player.label)}</strong>
         <span>${escapeHtml(`${cityLabel(player.hqCityId)} · ${player.isHuman ? "Operacao humana" : "Operacao robotica"}`)}</span>
@@ -4528,49 +4959,34 @@ function renderDrawer() {
       </div>
     </div>
 
-    <div class="game-runtime-drawer-grid">
-      <section class="game-runtime-drawer-section">
-        <div class="game-runtime-drawer-summary-grid">
-          <article class="game-runtime-summary-box">
-            <span>Caixa</span>
-            <strong>${escapeHtml(formatCurrency(player.cashBrl))}</strong>
-          </article>
-          <article class="game-runtime-summary-box">
-            <span>Saldo</span>
-            <strong class="${playerCashDelta(player) >= 0 ? "is-positive" : "is-negative"}">${escapeHtml(formatCurrency(playerCashDelta(player)))}</strong>
-          </article>
-          <article class="game-runtime-summary-box">
-            <span>Entregas</span>
-            <strong>${escapeHtml(formatInteger(player.deliveries))}</strong>
-          </article>
-          <article class="game-runtime-summary-box">
-            <span>Toneladas</span>
-            <strong>${escapeHtml(formatTonnes(player.tonnesMoved))}</strong>
-          </article>
-        </div>
-      </section>
+    <div class="game-runtime-metric-grid game-runtime-drawer-metric-grid">
+      <article class="game-runtime-metric-card">
+        <span>Caixa</span>
+        <strong>${escapeHtml(formatCurrency(player.cashBrl))}</strong>
+      </article>
+      <article class="game-runtime-metric-card">
+        <span>Saldo</span>
+        <strong class="${playerCashDelta(player) >= 0 ? "is-positive" : "is-negative"}">${escapeHtml(formatCurrency(playerCashDelta(player)))}</strong>
+      </article>
+      <article class="game-runtime-metric-card">
+        <span>Entregas</span>
+        <strong>${escapeHtml(formatInteger(player.deliveries))}</strong>
+      </article>
+      <article class="game-runtime-metric-card">
+        <span>Toneladas</span>
+        <strong>${escapeHtml(formatTonnes(player.tonnesMoved))}</strong>
+      </article>
+    </div>
 
-      <section class="game-runtime-drawer-section">
-        <div class="game-runtime-drawer-section-head">
-          <strong>Caminhoes</strong>
-          <span>${escapeHtml(`${formatInteger(playerIdleTruckCount(player))} parados`)}</span>
-        </div>
-        <div class="game-runtime-drawer-stack">
-          ${(player.truckUnits || []).map((truckUnit) => truckRowMarkup(player, truckUnit)).join("") || `<div class="truck-gallery-empty">Sem frota ativa.</div>`}
-        </div>
-      </section>
-
-      <section class="game-runtime-drawer-section">
-        <div class="game-runtime-drawer-section-head">
-          <strong>Contratos</strong>
-          <span>${escapeHtml(`${formatInteger(playerActiveContractCount(player))} ativos`)}</span>
-        </div>
-        <div class="game-runtime-drawer-stack">
-          ${(player.contracts || []).map((contract) => contractRowMarkup(player, contract)).join("") || `<div class="truck-gallery-empty">Sem contratos ativos.</div>`}
-        </div>
-      </section>
+    <div class="game-runtime-inline-stack">
+      <div class="game-runtime-panel-title">
+        <strong>Rotas</strong>
+        <span>${escapeHtml(`${formatInteger(playerActiveContractCount(player))} ativos · ${formatInteger(playerIdleTruckCount(player))} parados`)}</span>
+      </div>
+      ${playerRouteCardsMarkup(player)}
     </div>
   `;
+  syncRobotDrawerLayout();
 }
 
 function renderStaticUi() {
@@ -4592,6 +5008,7 @@ function renderDynamicUi() {
 }
 
 function renderMapUi({ refreshIcons = false } = {}) {
+  syncMainMapDispatchSelectionUi();
   renderNetworkLayer();
   renderCityMarkers();
   renderHighlightedRoutes();
@@ -4630,7 +5047,7 @@ function setFocusedPlayer(playerId, { closeDrawer = false } = {}) {
     return;
   }
   state.focusedPlayerId = player.id;
-  state.activeDrawerPlayerId = closeDrawer ? "" : player.id;
+  state.activeDrawerPlayerId = closeDrawer || player.isHuman ? "" : player.id;
   renderPlayerBar();
   renderDrawer();
   renderCityMarkers();
@@ -4668,6 +5085,14 @@ function handleClicks(event) {
     return;
   }
 
+  const runtimeLogoButton = target.closest("[data-runtime-logo-id]");
+  if (runtimeLogoButton) {
+    state.setup.company.logoId = runtimeLogoButton.getAttribute("data-runtime-logo-id") || COMPANY_LOGO_OPTIONS[0].id;
+    renderOpeningLogoGrid();
+    renderOpeningCompanyPreview();
+    return;
+  }
+
   const runtimeTruckButton = target.closest("[data-runtime-truck-change]");
   if (runtimeTruckButton) {
     adjustSetupTruckQuantity(
@@ -4690,7 +5115,24 @@ function handleClicks(event) {
 
   const runtimeDispatchButton = target.closest("[data-runtime-dispatch-action]");
   if (runtimeDispatchButton) {
-    finishHumanDispatchSelection(runtimeDispatchButton.getAttribute("data-runtime-dispatch-action") || "");
+    const action = runtimeDispatchButton.getAttribute("data-runtime-dispatch-action") || "";
+    if (action === "pick-map") {
+      startMainMapDispatchSelection();
+    } else {
+      finishHumanDispatchSelection(action);
+    }
+    return;
+  }
+
+  const runtimeCancelDispatchPickButton = target.closest("[data-runtime-cancel-dispatch-pick]");
+  if (runtimeCancelDispatchPickButton) {
+    cancelMainMapDispatchSelection({ reopenModal: true });
+    return;
+  }
+
+  const runtimeOpenIdleDispatchButton = target.closest("[data-runtime-open-idle-dispatch]");
+  if (runtimeOpenIdleDispatchButton) {
+    startHumanTruckDispatchSelection(runtimeOpenIdleDispatchButton.getAttribute("data-runtime-open-idle-dispatch") || "");
     return;
   }
 
@@ -4742,6 +5184,7 @@ function bindEvents() {
   document.addEventListener("click", handleClicks);
   document.addEventListener("input", handleRuntimeInputs);
   document.addEventListener("change", handleRuntimeInputs);
+  document.addEventListener("keydown", handleRuntimeKeydown);
   document.addEventListener("wheel", handleRailWheel, { passive: false });
   window.addEventListener("resize", () => {
     if (state.map) {
@@ -4765,7 +5208,7 @@ function tickSimulation() {
     state.simulation.lastRealTimestamp = now;
     return;
   }
-  if (openingWizardEnabled() && state.setup.activeModal) {
+  if (openingWizardEnabled() && (state.setup.activeModal || mainMapDispatchSelectionActive())) {
     state.simulation.lastRealTimestamp = now;
     return;
   }
@@ -4798,7 +5241,7 @@ async function initialize() {
   setTheme(getStoredTheme(), { persist: false });
   const [bootstrapPayload, runtimePayload] = await Promise.all([
     fetchJson("/api/jogo/preparacao/bootstrap"),
-    fetchJson("/api/game/runtime"),
+    fetchJson("/api/game/runtime/bootstrap"),
     waitForLeaflet(),
   ]);
 

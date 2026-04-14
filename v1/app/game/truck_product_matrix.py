@@ -52,8 +52,8 @@ def _preview_image_data(asset_entry: dict[str, Any] | None) -> tuple[str, str]:
     )
 
 
-def build_truck_product_matrix_payload() -> dict[str, Any]:
-    runtime = build_game_world_runtime(include_validation=True)
+def build_truck_product_matrix_payload(runtime: Any | None = None) -> dict[str, Any]:
+    runtime = runtime or build_game_world_runtime(include_validation=False)
 
     product_family_by_id = runtime.catalogs.product_family_by_id
     logistics_type_by_id = runtime.catalogs.product_logistics_type_by_id

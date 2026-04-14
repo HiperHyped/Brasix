@@ -321,12 +321,16 @@ def _supported_product_ids_for_truck(truck: dict[str, Any]) -> list[str]:
     ]
 
 
-def _build_truck_records() -> list[dict[str, Any]]:
+def _build_truck_records(
+    *,
+    truck_matrix_payload: dict[str, Any] | None = None,
+    runtime: Any | None = None,
+) -> list[dict[str, Any]]:
     from app.game.runtime import build_game_world_runtime
     from app.game.truck_product_matrix import build_truck_product_matrix_payload
 
-    truck_matrix_payload = build_truck_product_matrix_payload()
-    runtime = build_game_world_runtime(include_validation=False)
+    runtime = runtime or build_game_world_runtime(include_validation=False)
+    truck_matrix_payload = truck_matrix_payload or build_truck_product_matrix_payload(runtime=runtime)
     operational_by_truck_id = runtime.catalogs.truck_operational_by_id
 
     trucks: list[dict[str, Any]] = []
@@ -429,23 +433,32 @@ def _apply_route_planner_distances(
     return enriched_flows
 
 
-def build_pricing_editor_bootstrap_payload() -> dict[str, Any]:
+def build_pricing_editor_bootstrap_payload(
+    *,
+    truck_matrix_payload: dict[str, Any] | None = None,
+    runtime: Any | None = None,
+    city_payload: dict[str, Any] | None = None,
+    apply_route_planner_distances: bool = True,
+) -> dict[str, Any]:
     active_map = load_active_map_bundle()
-    city_payload = build_city_editor_bootstrap_payload()
+    city_payload = city_payload or build_city_editor_bootstrap_payload()
     map_editor = load_map_editor_payload()
     cities = [city.model_dump(mode="json") for city in active_map.cities]
-    trucks = _build_truck_records()
+    trucks = _build_truck_records(truck_matrix_payload=truck_matrix_payload, runtime=runtime)
     diesel_document = build_diesel_cost_editor_document(active_map.id, cities)
     pricing_document = load_pricing_editor_document(active_map.id, map_editor.get("population_bands"))
-    route_network = getattr(active_map, "route_network", None)
-    route_surface_types = map_editor.get("route_surface_types") if isinstance(map_editor.get("route_surface_types"), dict) else {}
-    freight_flows = _apply_route_planner_distances(
-        cities=active_map.cities,
-        graph_nodes=list(getattr(route_network, "nodes", []) or []),
-        edges=list(getattr(route_network, "edges", []) or []),
-        route_surface_types=list(route_surface_types.get("types", []) or []),
-        freight_flows=list(city_payload.get("freight_flows", [])),
-    )
+    if apply_route_planner_distances:
+        route_network = getattr(active_map, "route_network", None)
+        route_surface_types = map_editor.get("route_surface_types") if isinstance(map_editor.get("route_surface_types"), dict) else {}
+        freight_flows = _apply_route_planner_distances(
+            cities=active_map.cities,
+            graph_nodes=list(getattr(route_network, "nodes", []) or []),
+            edges=list(getattr(route_network, "edges", []) or []),
+            route_surface_types=list(route_surface_types.get("types", []) or []),
+            freight_flows=list(city_payload.get("freight_flows", [])),
+        )
+    else:
+        freight_flows = [dict(flow) for flow in city_payload.get("freight_flows", [])]
 
     return {
         "ui": load_ui_payload(),

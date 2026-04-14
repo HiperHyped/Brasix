@@ -73,12 +73,14 @@
       <div id="game-runtime-map-stage" class="map-stage game-runtime-map-stage" aria-label="Mapa principal do jogo"></div>
     </div>
 
-    <aside id="game-runtime-human-hud" class="editor-card game-runtime-overlay game-runtime-human-hud" aria-live="polite"></aside>
-    <aside id="game-runtime-log-panel" class="editor-card game-runtime-overlay game-runtime-log-panel" aria-live="polite"></aside>
+    <section class="game-runtime-left-column" aria-label="Painel do jogador e log">
+      <aside id="game-runtime-human-hud" class="editor-card game-runtime-human-hud" aria-live="polite"></aside>
+      <aside id="game-runtime-log-panel" class="editor-card game-runtime-log-panel" aria-live="polite"></aside>
+    </section>
 
-    <section class="game-runtime-bottom" aria-label="Jogadores ativos">
-      <div id="game-runtime-drawer" class="editor-card game-runtime-drawer" hidden></div>
+    <section class="game-runtime-right-column" aria-label="Operacoes dos robos">
       <div id="game-runtime-player-bar" class="game-runtime-player-bar"></div>
+      <div id="game-runtime-drawer" class="editor-card game-runtime-drawer" hidden></div>
     </section>
   </section>
 
@@ -96,9 +98,9 @@
         </button>
       </header>
 
-      <div class="game-setup-modal-body game-setup-company-layout">
-        <section class="game-setup-form-column">
-          <label class="field game-setup-difficulty-field">
+      <div class="game-setup-modal-body game-runtime-opening-body">
+        <section class="game-runtime-opening-top-box" aria-label="Configuracao da partida">
+          <label class="field game-runtime-opening-top-item">
             <span>Nivel de dificuldade</span>
             <select id="game-runtime-opening-difficulty-select" class="editor-input game-setup-difficulty-select" aria-label="Nivel de dificuldade do jogo">
               <option value="hard">Dificil</option>
@@ -107,33 +109,62 @@
             </select>
           </label>
 
-          <label class="field game-runtime-opening-robot-field">
-            <span>Numero de adversarios</span>
-            <select id="game-runtime-opening-robot-count" class="editor-input game-setup-difficulty-select" aria-label="Numero de adversarios">
-              {% for count in range(2, 11) %}
-              <option value="{{ count }}"{% if count == 3 %} selected{% endif %}>{{ count }}</option>
-              {% endfor %}
-            </select>
+          <label class="field game-runtime-opening-top-item game-runtime-opening-slider-item">
+            <div class="game-runtime-opening-top-head">
+              <span>Numero de robos</span>
+              <strong id="game-runtime-opening-robot-count-value">3</strong>
+            </div>
+            <input id="game-runtime-opening-robot-count" class="game-runtime-opening-robot-slider" type="range" min="2" max="20" step="1" value="3" aria-label="Numero de robos" />
           </label>
 
-          <div class="field">
+          <div class="field game-runtime-opening-top-item">
             <span>Paleta dos adversarios</span>
-            <div id="game-runtime-opening-palette" class="game-runtime-color-palette" aria-label="Paleta de cores dos adversarios"></div>
-          </div>
-
-          <div id="game-runtime-opening-economy" class="game-setup-company-economy" aria-label="Compra da sede selecionada"></div>
-        </section>
-
-        <section class="game-setup-map-column">
-          <div class="map-frame city-editor-map-frame game-setup-map-frame">
-            <div id="game-runtime-opening-map-stage" class="map-stage game-setup-map-stage" aria-label="Mapa para definir a sede"></div>
-          </div>
-
-          <div class="game-setup-market-grid" aria-label="Mercado da cidade selecionada">
-            <div id="game-runtime-opening-top-offers" class="game-setup-market-panel" aria-label="Top ofertas da cidade selecionada"></div>
-            <div id="game-runtime-opening-top-demands" class="game-setup-market-panel" aria-label="Top demandas da cidade selecionada"></div>
+            <div id="game-runtime-opening-palette" class="game-runtime-color-palette game-runtime-opening-palette" aria-label="Paleta de cores dos adversarios"></div>
           </div>
         </section>
+
+        <div class="game-setup-company-layout game-runtime-opening-layout">
+          <section class="game-setup-form-column game-runtime-opening-company-column">
+            <label class="field">
+              <span>Nome da empresa</span>
+              <input id="game-runtime-opening-company-name" class="editor-input" type="text" maxlength="48" placeholder="Ex.: Vitoria Sul Logistica" />
+            </label>
+
+            <div class="game-setup-color-row">
+              <label class="field game-setup-color-picker-field">
+                <span>Cor principal</span>
+                <input id="game-runtime-opening-company-color" class="game-setup-color-picker" type="color" value="#356d63" />
+              </label>
+              <label class="field game-setup-color-text-field">
+                <span>Hex</span>
+                <input id="game-runtime-opening-company-color-text" class="editor-input" type="text" maxlength="7" value="#356d63" />
+              </label>
+            </div>
+
+            <div class="field">
+              <span>Icone da empresa</span>
+              <div id="game-runtime-opening-logo-grid" class="game-setup-logo-grid" aria-label="Lista de icones disponiveis"></div>
+            </div>
+
+            <div class="field">
+              <span>Preview</span>
+              <div id="game-runtime-opening-company-preview" class="game-setup-company-preview"></div>
+            </div>
+
+            <div id="game-runtime-opening-economy" class="game-setup-company-economy" aria-label="Compra da sede selecionada"></div>
+          </section>
+
+          <section class="game-setup-map-column game-runtime-opening-map-column">
+            <div class="map-frame city-editor-map-frame game-setup-map-frame">
+              <div id="game-runtime-opening-map-stage" class="map-stage game-setup-map-stage" aria-label="Mapa para definir a sede"></div>
+            </div>
+
+            <div class="game-setup-market-grid" aria-label="Mercado da cidade selecionada">
+              <div id="game-runtime-opening-top-offers" class="game-setup-market-panel" aria-label="Top ofertas da cidade selecionada"></div>
+              <div id="game-runtime-opening-top-demands" class="game-setup-market-panel" aria-label="Top demandas da cidade selecionada"></div>
+            </div>
+          </section>
+        </div>
       </div>
     </section>
 

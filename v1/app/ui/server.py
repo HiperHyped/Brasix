@@ -811,9 +811,15 @@ def _build_truck_operational_editor_bootstrap_payload() -> dict[str, Any]:
 
 
 def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
-    pricing_payload = build_pricing_editor_bootstrap_payload()
-    truck_matrix_payload = build_truck_product_matrix_payload()
+    city_payload = build_city_editor_bootstrap_payload()
     runtime = build_game_world_runtime(include_validation=False)
+    truck_matrix_payload = build_truck_product_matrix_payload(runtime=runtime)
+    pricing_payload = build_pricing_editor_bootstrap_payload(
+        city_payload=city_payload,
+        apply_route_planner_distances=False,
+        truck_matrix_payload=truck_matrix_payload,
+        runtime=runtime,
+    )
     map_editor_payload = load_map_editor_payload()
     operational_by_truck_id = runtime.catalogs.truck_operational_by_id
 
@@ -1611,6 +1617,16 @@ def create_app() -> FastAPI:
     async def game_runtime() -> dict[str, Any]:
         runtime = build_game_world_runtime(include_validation=True)
         return runtime.model_dump(mode="json")
+
+    @app.get("/api/game/runtime/bootstrap")
+    async def game_runtime_bootstrap() -> dict[str, Any]:
+        runtime = build_game_world_runtime(include_validation=False)
+        return {
+            "metadata": runtime.metadata.model_dump(mode="json"),
+            "map": {
+                "route_network": runtime.map.route_network.model_dump(mode="json"),
+            },
+        }
 
     @app.get("/api/game/runtime/validation")
     async def game_runtime_validation() -> dict[str, Any]:

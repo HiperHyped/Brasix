@@ -7028,28 +7028,54 @@ html.game-runtime-page[data-editor-theme="night"] {
   backdrop-filter: blur(16px);
 }
 
-.game-runtime-overlay {
+.game-runtime-left-column,
+.game-runtime-right-column {
   position: absolute;
-  z-index: 401;
+  top: 18px;
+  bottom: 18px;
+  display: grid;
+  gap: 12px;
+  pointer-events: none;
 }
 
-.game-runtime-human-hud {
-  top: 18px;
+.game-runtime-left-column {
   left: 18px;
+  z-index: 401;
   width: min(360px, calc(100vw - 36px));
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.game-runtime-right-column {
+  right: 18px;
+  z-index: 405;
+  width: min(220px, calc(100vw - 36px));
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(0, 1fr);
+  align-items: start;
+}
+
+.game-runtime-right-column.is-drawer-open {
+  width: 592px;
+  grid-template-columns: minmax(0, 360px) 220px;
+  align-items: start;
+}
+
+.game-runtime-left-column > *,
+.game-runtime-right-column > * {
+  pointer-events: auto;
+}
+
+.game-runtime-human-hud,
+.game-runtime-log-panel {
+  position: relative;
+  width: auto;
   padding: 14px;
   display: grid;
   gap: 12px;
 }
 
 .game-runtime-log-panel {
-  top: 18px;
-  right: 18px;
-  width: min(340px, calc(100vw - 36px));
-  max-height: min(52vh, 460px);
-  padding: 14px;
-  display: grid;
-  gap: 12px;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -7172,6 +7198,84 @@ html.game-runtime-page[data-editor-theme="night"] {
   border-left: 4px solid var(--player-color, var(--green));
 }
 
+.game-runtime-route-card {
+  display: grid;
+  gap: 6px;
+}
+
+.game-runtime-route-card-top {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.game-runtime-route-card-id,
+.game-runtime-route-card-value {
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.game-runtime-route-card-emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.game-runtime-route-card-path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-runtime-route-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--game-runtime-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.game-runtime-route-card-meta span:not(.game-runtime-route-status-tag) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-runtime-route-status-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.game-runtime-route-status-tag.is-moving {
+  background: rgba(47, 98, 89, 0.14);
+  color: var(--green);
+}
+
+.game-runtime-route-status-tag.is-handling {
+  background: rgba(168, 95, 44, 0.14);
+  color: var(--copper);
+}
+
+.game-runtime-route-status-tag.is-idle {
+  background: rgba(114, 121, 110, 0.14);
+  color: var(--game-runtime-muted);
+}
+
 .game-runtime-inline-alert {
   padding: 10px 12px;
   border: 1px solid rgba(140, 79, 16, 0.18);
@@ -7184,6 +7288,15 @@ html.game-runtime-page[data-editor-theme="night"] {
 
 .game-runtime-inline-alert strong {
   color: var(--copper);
+}
+
+.game-runtime-inline-alert.is-dispatch-picking {
+  border-color: rgba(53, 109, 99, 0.2);
+  background: rgba(53, 109, 99, 0.1);
+}
+
+.game-runtime-inline-alert.is-dispatch-picking strong {
+  color: var(--green);
 }
 
 .game-runtime-panel-footer {
@@ -7213,6 +7326,19 @@ html.game-runtime-page[data-editor-theme="night"] {
   min-height: 0 !important;
 }
 
+.game-runtime-map-stage.is-dispatch-picking,
+.game-runtime-map-stage.is-dispatch-picking .leaflet-container,
+.game-runtime-map-stage.is-dispatch-picking .leaflet-pane,
+.game-runtime-map-stage.is-dispatch-picking .leaflet-marker-pane,
+.game-runtime-map-stage.is-dispatch-picking .leaflet-interactive,
+.game-runtime-map-stage.is-dispatch-picking .leaflet-marker-icon {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='6' fill='none' stroke='%23356d63' stroke-width='2'/%3E%3Cpath d='M15 1v8M15 21v8M1 15h8M21 15h8' stroke='%23356d63' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='15' cy='15' r='1.8' fill='%23b36a2b'/%3E%3C/svg%3E") 15 15, crosshair !important;
+}
+
+.game-runtime-map-stage.is-dispatch-picking {
+  box-shadow: inset 0 0 0 2px rgba(53, 109, 99, 0.22);
+}
+
 .game-runtime-log-line {
   border-left: 4px solid rgba(114, 121, 110, 0.26);
 }
@@ -7225,18 +7351,12 @@ html.game-runtime-page[data-editor-theme="night"] {
   border-left-color: rgba(139, 46, 46, 0.62);
 }
 
-.game-runtime-bottom {
-  position: absolute;
-  right: 18px;
-  bottom: 18px;
-  left: 18px;
-  z-index: 405;
-  display: grid;
-  gap: 10px;
-}
-
 .game-runtime-drawer {
   padding: 14px;
+  display: grid;
+  gap: 12px;
+  max-height: none;
+  overflow: visible;
 }
 
 .game-runtime-drawer[hidden] {
@@ -7247,6 +7367,14 @@ html.game-runtime-page[data-editor-theme="night"] {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.game-runtime-drawer-metric-grid .game-runtime-metric-card strong.is-positive {
+  color: var(--green);
+}
+
+.game-runtime-drawer-metric-grid .game-runtime-metric-card strong.is-negative {
+  color: #8b2e2e;
 }
 
 .game-runtime-drawer-grid {
@@ -7264,16 +7392,30 @@ html.game-runtime-page[data-editor-theme="night"] {
 
 .game-runtime-player-bar {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
+  min-height: 0;
+  overflow: auto;
+  align-content: start;
+  padding-right: 4px;
+}
+
+.game-runtime-right-column.is-drawer-open .game-runtime-player-bar {
+  grid-column: 2;
+  align-self: stretch;
+}
+
+.game-runtime-right-column.is-drawer-open .game-runtime-drawer {
+  grid-column: 1;
+  align-self: start;
 }
 
 .game-runtime-player-card {
-  min-height: 84px;
-  padding: 12px 14px;
+  min-height: 76px;
+  padding: 10px 12px;
   border-radius: 18px;
   display: grid;
-  gap: 10px;
+  gap: 8px;
   text-align: left;
   cursor: pointer;
   position: relative;
@@ -7282,9 +7424,9 @@ html.game-runtime-page[data-editor-theme="night"] {
 .game-runtime-player-card::before {
   content: "";
   position: absolute;
-  inset: 0 0 auto;
+  inset: 0 10px auto;
   height: 4px;
-  border-radius: 18px 18px 0 0;
+  border-radius: 0 0 999px 999px;
   background: var(--player-color, var(--green));
 }
 
@@ -7333,6 +7475,22 @@ html.game-runtime-page[data-editor-theme="night"] {
 
 .game-runtime-truck-row.is-idle {
   border-left-color: rgba(114, 121, 110, 0.18);
+}
+
+.game-runtime-truck-row-action {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.game-runtime-truck-row-action:hover,
+.game-runtime-truck-row-action:focus-visible {
+  border-left-color: var(--player-color, var(--green));
+  background: rgba(255, 255, 255, 0.68);
+  transform: translateY(-1px);
 }
 
 .game-runtime-contract-row-meta {
@@ -7440,29 +7598,48 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-log-line {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .game-runtime-player-bar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .game-runtime-left-column {
+    width: min(320px, calc(100vw - 36px));
+  }
+
+  .game-runtime-right-column {
+    width: min(280px, calc(100vw - 36px));
+  }
+
+  .game-runtime-right-column.is-drawer-open {
+    width: 520px;
+    grid-template-columns: minmax(0, 328px) 180px;
+    align-items: start;
   }
 }
 
 @media (max-width: 920px) {
-  .game-runtime-human-hud,
-  .game-runtime-log-panel {
-    width: calc(100vw - 28px);
-    left: 14px;
-    right: 14px;
-  }
-
-  .game-runtime-log-panel {
-    top: auto;
-    bottom: 222px;
-    max-height: 28vh;
-  }
-
-  .game-runtime-bottom {
-    right: 14px;
+  .game-runtime-left-column,
+  .game-runtime-right-column {
+    top: 14px;
     bottom: 14px;
+  }
+
+  .game-runtime-left-column {
     left: 14px;
+    width: min(290px, calc(100vw - 320px));
+  }
+
+  .game-runtime-right-column {
+    right: 14px;
+    width: 260px;
+  }
+
+  .game-runtime-right-column.is-drawer-open {
+    width: 260px;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .game-runtime-right-column.is-drawer-open .game-runtime-player-bar,
+  .game-runtime-right-column.is-drawer-open .game-runtime-drawer {
+    grid-column: auto;
+    align-self: auto;
   }
 
   .game-runtime-drawer-grid {
@@ -7475,16 +7652,16 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-log-line {
     overflow: auto;
   }
 
-  .game-runtime-human-hud,
-  .game-runtime-log-panel,
-  .game-runtime-bottom {
+  .game-runtime-left-column,
+  .game-runtime-right-column {
     position: static;
     width: auto;
+    pointer-events: auto;
   }
 
   .game-runtime-main {
     display: grid;
-    grid-template-rows: minmax(56vh, 56vh) auto auto auto;
+    grid-template-rows: minmax(56vh, 56vh) auto auto;
     gap: 12px;
     padding: 12px;
   }
@@ -7494,8 +7671,10 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-log-line {
     overflow: hidden;
   }
 
-  .game-runtime-player-bar {
-    grid-template-columns: 1fr;
+  .game-runtime-left-column,
+  .game-runtime-right-column {
+    display: grid;
+    gap: 12px;
   }
 }
 
@@ -8126,6 +8305,93 @@ body.game-setup-page {
   padding: 18px 20px 20px;
   overflow: auto;
   overscroll-behavior: contain;
+}
+
+.game-runtime-shell .game-setup-modal-company {
+  width: min(1320px, 100%);
+}
+
+.game-runtime-opening-body {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
+  overflow: hidden;
+}
+
+.game-runtime-opening-top-box {
+  display: grid;
+  grid-template-columns: minmax(190px, 240px) minmax(220px, 280px) minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(45, 90, 39, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 242, 231, 0.92));
+}
+
+.game-runtime-opening-top-item {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.game-runtime-opening-top-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.game-runtime-opening-top-head strong {
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 0.94rem;
+}
+
+.game-runtime-opening-robot-slider {
+  width: 100%;
+  margin: 0;
+  accent-color: #356d63;
+}
+
+.game-runtime-opening-palette {
+  min-height: 24px;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.game-runtime-opening-palette .game-runtime-color-chip {
+  width: 18px;
+  height: 18px;
+}
+
+.game-runtime-opening-layout {
+  min-height: 0;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.game-runtime-opening-company-column {
+  gap: 12px;
+}
+
+.game-runtime-opening-company-column .field {
+  gap: 6px;
+}
+
+.game-runtime-opening-company-column .game-setup-company-economy {
+  margin-top: auto;
+}
+
+.game-runtime-opening-map-column {
+  grid-template-rows: minmax(320px, 1fr) auto;
+  gap: 12px;
+}
+
+.game-runtime-opening-map-column .game-setup-market-grid {
+  gap: 8px;
 }
 
 .game-setup-company-layout {
@@ -8985,6 +9251,14 @@ html[data-editor-theme="night"] .game-setup-compatibility-note.is-active {
     grid-template-columns: 1fr;
   }
 
+  .game-runtime-opening-top-box {
+    grid-template-columns: 1fr;
+  }
+
+  .game-runtime-opening-body {
+    overflow: auto;
+  }
+
   .game-setup-hero-side {
     grid-template-columns: 1fr;
   }
@@ -9026,6 +9300,18 @@ html[data-editor-theme="night"] .game-setup-compatibility-note.is-active {
 @media (max-height: 920px) {
   .game-setup-shell {
     --editor-button-height: 30px;
+  }
+
+  .game-runtime-opening-body {
+    gap: 12px;
+  }
+
+  .game-runtime-opening-top-box {
+    padding: 10px 12px;
+  }
+
+  .game-runtime-opening-map-column {
+    grid-template-rows: minmax(280px, 1fr) auto;
   }
 
   .game-setup-topbar {
