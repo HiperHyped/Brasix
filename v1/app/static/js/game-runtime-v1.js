@@ -40,6 +40,10 @@ const COMPANY_LOGO_OPTIONS = [
   { id: "route", icon: "route", label: "Corredor" },
   { id: "flight", icon: "flight", label: "Aereo" },
   { id: "train", icon: "train", label: "Ferrovia" },
+  { id: "inventory_2", icon: "inventory_2", label: "Pacotes" },
+  { id: "factory", icon: "factory", label: "Fabrica" },
+  { id: "directions_boat", icon: "directions_boat", label: "Navio" },
+  { id: "hub", icon: "hub", label: "Hub" },
 ];
 const SIZE_TIER_LABELS = {
   super_leve: "Super-leve",
@@ -160,10 +164,10 @@ const state = {
     openingWizard: Boolean(RUNTIME_CONFIG.openingWizard),
     activeModal: "",
     selectedDifficulty: "standard",
-    robotCount: 3,
+    robotCount: 10,
     company: {
       name: "Brasix",
-      color: "#356d63",
+      color: "#000000",
       logoId: COMPANY_LOGO_OPTIONS[0].id,
       hqCityId: "",
       hqPurchased: false,
@@ -2260,14 +2264,6 @@ function freightFlowAvailability(flowId) {
       message: `Em execucao por ${freightOwnerLabel(activeEntry.player, activeEntry.contract)}`,
     };
   }
-  const completedEntry = completedFreightAssignment(normalizedFlowId);
-  if (completedEntry) {
-    return {
-      state: "completed",
-      available: false,
-      message: `Contrato ja encerrado por ${completedEntry.playerLabel || "outra operacao"}`,
-    };
-  }
   return {
     state: "available",
     available: true,
@@ -2863,14 +2859,15 @@ function processPendingHumanAssignmentQueue() {
     if (!player || !truckUnit) {
       continue;
     }
-    const availableEntries = (state.outboundFreightsByCityId[nextAssignment.originCityId] || [])
+    const cityFlows = state.outboundFreightsByCityId[nextAssignment.originCityId] || [];
+    const availableEntries = cityFlows
       .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
       .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
       .filter((flow) => truckCanExecuteFlow(truckUnit, flow, {
         currentCityId: nextAssignment.originCityId,
         startingFuelLiters: truckUnit.fuelLevelLiters,
       }));
-    if (!availableEntries.length && !advancedDispatchEnabled()) {
+    if (!cityFlows.length && !advancedDispatchEnabled()) {
       appendLog(player.id, "neutral", `${player.label} ficou sem fretes em ${cityLabel(nextAssignment.originCityId)} e aguardara nova ordem.`);
       continue;
     }
@@ -3717,36 +3714,88 @@ function buildHumanAssignmentPricedEntries() {
     return [];
   }
   return (state.outboundFreightsByCityId[assignment.originCityId] || [])
-    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).state !== "completed")
-    .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
     .map((flow) => {
-      const track = getTrack(flow.origin_id, flow.destination_id, "fastest");
-      const payloadTons = flowPayloadTons(flow, truckUnit.truck, null);
-      const revenuePerDeliveryBrl = estimateDeliveryRevenue(flow, truckUnit.truck, player, null, track.distanceKm);
       const availability = freightFlowAvailability(flow.id);
-      const executionPlan = buildTruckFlowExecutionPlan(truckUnit, flow, {
-        currentCityId: assignment.originCityId,
-        startingFuelLiters: truckUnit.fuelLevelLiters,
-      });
+      const truckCompatible = truckSupportsFlow(truckUnit.truck, flow);
+      const track = getTrack(flow.origin_id, flow.destination_id, "fastest") || { distanceKm: Number(flow.distance_km || 0) };
+      const payloadTons = truckCompatible ? flowPayloadTons(flow, truckUnit.truck, null) : 0;
+      const revenuePerDeliveryBrl = truckCompatible
+        ? estimateDeliveryRevenue(flow, truckUnit.truck, player, null, track.distanceKm)
+        : 0;
+      const executionPlan = truckCompatible
+        ? buildTruckFlowExecutionPlan(truckUnit, flow, {
+          currentCityId: assignment.originCityId,
+          startingFuelLiters: truckUnit.fuelLevelLiters,
+        })
+        : null;
       return {
         flow,
+        truckCompatible,
         unitRevenuePerTon: payloadTons > 0 ? revenuePerDeliveryBrl / payloadTons : 0,
         contractTruckUnit: truckUnit,
         contractTruck: truckUnit.truck,
         contractPayloadTons: payloadTons,
         contractRevenue: revenuePerDeliveryBrl,
         availability,
-        fuelFeasible: executionPlan.feasible,
+        fuelFeasible: truckCompatible ? executionPlan?.feasible !== false : false,
         executionPlan,
       };
     })
-    .sort((left, right) => Number(right.contractRevenue || 0) - Number(left.contractRevenue || 0));
+    .sort((left, right) => {
+      const leftRank = left.truckCompatible && left.availability?.available && left.fuelFeasible !== false
+        ? 0
+        : left.availability?.state === "active"
+          ? 1
+          : !left.truckCompatible
+            ? 2
+            : 3;
+      const rightRank = right.truckCompatible && right.availability?.available && right.fuelFeasible !== false
+        ? 0
+        : right.availability?.state === "active"
+          ? 1
+          : !right.truckCompatible
+            ? 2
+            : 3;
+      return leftRank - rightRank || Number(right.contractRevenue || 0) - Number(left.contractRevenue || 0);
+    });
 }
 
 function assignmentTruckUnit() {
   const assignment = state.setup.activeHumanAssignment;
   const player = state.playersById.human || null;
   return assignment ? (player?.truckUnits || []).find((item) => item.id === assignment.truckUnitId) || null : null;
+}
+
+function humanAssignmentEntrySelectable(entry) {
+  return Boolean(entry?.truckCompatible && entry?.availability?.available && entry?.fuelFeasible !== false);
+}
+
+function assignmentTruckSummaryMarkup(truckUnit) {
+  if (!truckUnit?.truck) {
+    return "";
+  }
+  const truck = truckUnit.truck;
+  const imageUrl = versionedAssetUrl(truck.preview_image_url_path, truck.preview_image_version);
+  const truckTypeLabel = truck.short_label || truck.label || "Caminhao";
+  const truckSubtitle = [
+    slugLabel(truck.size_tier, SIZE_TIER_LABELS),
+    String(truck.axle_config || "").trim(),
+    primaryImplementLabel(truck),
+  ].filter(Boolean).join(" · ");
+  return `
+    <div class="game-setup-assignment-truck-card">
+      <div class="game-setup-assignment-truck-visual${imageUrl ? "" : " is-empty"}">
+        ${imageUrl
+          ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(truck.label || truckTypeLabel)}" loading="lazy" />`
+          : `<span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>`}
+      </div>
+      <div class="game-setup-assignment-truck-copy">
+        <span class="eyebrow">Caminhao em busca</span>
+        <strong>${escapeHtml(`${truckUnitNumberLabel(truckUnit)} · ${truckTypeLabel}`)}</strong>
+        <span>${escapeHtml(truckSubtitle || truck.label || truckTypeLabel)}</span>
+      </div>
+    </div>
+  `;
 }
 
 function mainMapDispatchSelectionActive() {
@@ -3913,11 +3962,12 @@ function renderSetupFreightRail() {
     return;
   }
   const assignmentMode = Boolean(state.setup.activeHumanAssignment);
+  const assignmentTruck = assignmentMode ? assignmentTruckUnit() : null;
   const cityId = assignmentMode ? state.setup.activeHumanAssignment.originCityId : currentSelectionHqCityId();
   const pricedEntries = assignmentMode ? buildHumanAssignmentPricedEntries() : setupPricedFreightsForCity(cityId);
   const selectedEntries = assignmentMode ? [] : setupSelectedPricedFreightEntries();
   const recommendedIds = new Set((assignmentMode
-    ? pricedEntries.filter((entry) => entry.availability?.available && entry.fuelFeasible !== false)
+    ? pricedEntries.filter((entry) => humanAssignmentEntrySelectable(entry))
     : setupRecommendedPricedFreights(RECOMMENDED_FREIGHT_LIMIT)).map((entry) => entry.flow.id));
   const supportedProductIds = setupSelectedTruckSupportedProductIds();
   const referenceProductIds = setupReferenceSupportedProductIds();
@@ -3930,14 +3980,17 @@ function renderSetupFreightRail() {
       const availabilityState = entry.availability?.state || "available";
       const available = availabilityState === "available";
       const fuelFeasible = entry.fuelFeasible !== false;
-      const hasProductCompatibleTruck = assignmentMode ? true : Boolean(supportedProductIds.has(flow.product_id));
+      const truckCompatible = assignmentMode ? Boolean(entry.truckCompatible) : Boolean(supportedProductIds.has(flow.product_id));
+      const hasProductCompatibleTruck = assignmentMode ? truckCompatible : Boolean(supportedProductIds.has(flow.product_id));
       const compatible = assignmentMode
-        ? (available && fuelFeasible)
+        ? (truckCompatible && available && fuelFeasible)
         : Boolean(entry.contractTruckUnit) && available && fuelFeasible;
       const suggestedForReferenceFleet = referenceProductIds.has(flow.product_id);
       const contractTruckLabel = entry.contractTruck?.short_label || entry.contractTruck?.label || "-";
       const contractTruckUnitLabel = entry.contractTruckUnit ? `${truckUnitNumberLabel(entry.contractTruckUnit)} · ${contractTruckLabel}` : contractTruckLabel;
-      const contractSummary = entry.contractTruck
+      const contractSummary = assignmentMode && !truckCompatible
+        ? `${contractTruckUnitLabel} nao transporta ${flow.product_name}`
+        : entry.contractTruck
         ? `1 viagem: ${formatCurrency(entry.contractRevenue)} · ${contractTruckUnitLabel} · ${formatTonnes(entry.contractPayloadTons)}`
         : hasSelectedFleet
           ? "Sem caminhao livre na origem para calcular o contrato"
@@ -3945,6 +3998,8 @@ function renderSetupFreightRail() {
       const fuelMessage = fuelBlockedMessage(entry.executionPlan?.outboundPlan || entry.executionPlan?.repositionPlan || entry.executionPlan);
       const compatibilityMessage = !available
         ? entry.availability.message
+        : assignmentMode && !truckCompatible
+          ? `Incompativel com ${contractTruckUnitLabel}`
         : !fuelFeasible
           ? fuelMessage
           : assignmentMode
@@ -3964,6 +4019,8 @@ function renderSetupFreightRail() {
           ? "Assumir frete"
           : !available
             ? "Indisponivel"
+            : !truckCompatible
+              ? "Incompativel"
             : !fuelFeasible
               ? "Sem autonomia"
               : "Indisponivel"
@@ -3983,8 +4040,10 @@ function renderSetupFreightRail() {
           <div class="game-setup-rail-badges">
             ${recommendedIds.has(flow.id) ? `<span class="game-setup-pill is-recommended">Top recomendado</span>` : ""}
             ${!assignmentMode && selected && entry.contractTruckUnit ? `<span class="game-setup-pill is-instance">${escapeHtml(truckUnitNumberLabel(entry.contractTruckUnit))}</span>` : ""}
+            ${assignmentMode && available && truckCompatible && fuelFeasible ? `<span class="game-setup-pill is-available">Disponivel</span>` : ""}
             ${availabilityState === "active" ? `<span class="game-setup-pill is-blocked">Em execucao</span>` : ""}
-            ${!fuelFeasible ? `<span class="game-setup-pill is-blocked">Sem autonomia</span>` : ""}
+            ${assignmentMode && !truckCompatible ? `<span class="game-setup-pill is-muted">Incompativel</span>` : ""}
+            ${truckCompatible && !fuelFeasible ? `<span class="game-setup-pill is-blocked">Sem autonomia</span>` : ""}
           </div>
           <div class="game-setup-freight-product">
             <span class="game-setup-product-emoji">${escapeHtml(flow.product_emoji || "📦")}</span>
@@ -4000,7 +4059,7 @@ function renderSetupFreightRail() {
           </div>
           <div class="game-setup-spec-grid game-setup-freight-spec-grid">
             <article><span>Distancia</span><strong>${escapeHtml(formatDistanceKm(flow.distance_km))}</strong></article>
-            <article><span>Taxa</span><strong>${escapeHtml(formatCurrencyPerTon(entry.unitRevenuePerTon))}</strong></article>
+            <article><span>Taxa</span><strong>${escapeHtml(truckCompatible && entry.unitRevenuePerTon > 0 ? formatCurrencyPerTon(entry.unitRevenuePerTon) : "-")}</strong></article>
           </div>
           <p class="game-setup-compatibility-note${available && fuelFeasible && (compatible || (!hasSelectedFleet && suggestedForReferenceFleet)) ? " is-active" : ""}">${escapeHtml(`${compatibilityMessage} · ${contractSummary}`)}</p>
           <button class="editor-header-action game-setup-freight-toggle" type="button" data-runtime-toggle-freight="${escapeHtml(flow.id)}"${compatible ? "" : " disabled"}>
@@ -4013,13 +4072,14 @@ function renderSetupFreightRail() {
     : `<div class="truck-gallery-empty">${escapeHtml(assignmentMode && advancedDispatchEnabled() ? `Nao ha contratos livres em ${cityLabel(cityId)}. Use o mapa principal para reposicionar ou voltar para a sede.` : `Nao ha fretes de saida ativos para ${cityLabel(cityId) || "a cidade atual"}.`)}</div>`;
 
   if (refs.freightRailMeta) {
+    const selectableCount = assignmentMode ? pricedEntries.filter((entry) => humanAssignmentEntrySelectable(entry)).length : 0;
     refs.freightRailMeta.textContent = assignmentMode
-      ? `${formatInteger(pricedEntries.filter((entry) => entry.availability?.available).length)} contratos livres · ${cityLabel(cityId)}`
+      ? `${formatInteger(selectableCount)} livres · ${formatInteger(Math.max(0, pricedEntries.length - selectableCount))} bloqueados · ${cityLabel(cityId)}`
       : `${formatInteger(pricedEntries.length)} fretes · ${formatInteger(selectedEntries.length)} selecionados`;
   }
   if (refs.freightRailTitle) {
     refs.freightRailTitle.textContent = assignmentMode
-      ? `Contratos de ${cityLabel(cityId)}`
+      ? `Contratos de ${cityLabel(cityId)}${assignmentTruck ? ` · ${truckUnitNumberLabel(assignmentTruck)}` : ""}`
       : `Fretes de saida de ${cityLabel(cityId)}`;
   }
   bindWheelRail(refs.freightRail);
@@ -4033,7 +4093,8 @@ function renderSetupFreightSelection() {
   const assignmentMode = Boolean(state.setup.activeHumanAssignment);
   const cityId = assignmentMode ? state.setup.activeHumanAssignment.originCityId : currentSelectionHqCityId();
   const allAssignmentEntries = assignmentMode ? buildHumanAssignmentPricedEntries() : [];
-  const entries = assignmentMode ? allAssignmentEntries.filter((entry) => entry.availability?.available && entry.fuelFeasible !== false).slice(0, 4) : setupSelectedPricedFreightEntries();
+  const selectableEntries = assignmentMode ? allAssignmentEntries.filter((entry) => humanAssignmentEntrySelectable(entry)) : [];
+  const entries = assignmentMode ? selectableEntries.slice(0, 4) : setupSelectedPricedFreightEntries();
   const recommended = assignmentMode ? entries : setupRecommendedPricedFreights(4);
   const totalTonnes = entries.reduce((total, entry) => total + Number(entry.contractPayloadTons || 0), 0);
   const averageDistance = entries.length ? entries.reduce((total, entry) => total + Number(entry.flow.distance_km || 0), 0) / entries.length : 0;
@@ -4045,11 +4106,12 @@ function renderSetupFreightSelection() {
       <span class="eyebrow">${escapeHtml(assignmentMode ? "Destino" : "Carteira")}</span>
       <h3>${escapeHtml(assignmentMode ? `Despacho em ${cityLabel(cityId)}` : (entries.length ? `${formatInteger(entries.length)} contratos selecionados` : `Fretes de ${cityLabel(cityId)}`))}</h3>
     </div>
+    ${assignmentMode ? assignmentTruckSummaryMarkup(truckUnit) : ""}
     <div class="game-setup-summary-metrics">
       <article><span>${escapeHtml(assignmentMode ? "Tanque" : "Melhor taxa")}</span><strong>${escapeHtml(assignmentMode ? `${formatLiters(fuelSnapshot?.fuelLevelLiters || 0)} / ${formatLiters(fuelSnapshot?.tankLiters || 0)}` : (recommended[0] ? formatCurrencyPerTon(recommended[0].unitRevenuePerTon) : "-"))}</strong></article>
       <article><span>${escapeHtml(assignmentMode ? "Autonomia" : "Receita carteira")}</span><strong>${escapeHtml(assignmentMode ? formatDistanceKm(truckLoadedRangeKm(truckUnit, fuelSnapshot?.fuelLevelLiters || 0)) : formatCurrency(totalRevenue))}</strong></article>
       <article><span>${escapeHtml(assignmentMode ? "Odometro" : "Carga por viagens")}</span><strong>${escapeHtml(assignmentMode ? formatDistanceKm(fuelSnapshot?.odometerKm || 0) : formatTonnes(totalTonnes))}</strong></article>
-      <article><span>${escapeHtml(assignmentMode ? "Contratos livres" : "Distancia media")}</span><strong>${escapeHtml(assignmentMode ? formatInteger(entries.length) : (entries.length ? formatDistanceKm(averageDistance) : "-"))}</strong></article>
+      <article><span>${escapeHtml(assignmentMode ? "Rotas livres" : "Distancia media")}</span><strong>${escapeHtml(assignmentMode ? `${formatInteger(selectableEntries.length)} / ${formatInteger(allAssignmentEntries.length)}` : (entries.length ? formatDistanceKm(averageDistance) : "-"))}</strong></article>
     </div>
     <div class="game-setup-section-block">
       <div class="game-setup-section-head"><span class="eyebrow">Recomendado</span><strong>${escapeHtml(`${formatInteger(recommended.length)} contratos`)}</strong></div>
@@ -4131,7 +4193,7 @@ function renderSetupModal() {
 
 function setupModalCanClose() {
   if (state.setup.activeHumanAssignment) {
-    return Boolean(state.setup.activeHumanAssignment.optional);
+    return true;
   }
   if (state.setup.activeModal === "opening") {
     return setupHeadquartersPurchased();
@@ -4185,15 +4247,11 @@ function closeSetupModal() {
     return;
   }
   if (state.setup.activeHumanAssignment) {
-    if (!state.setup.activeHumanAssignment.optional) {
-      return;
-    }
     resetHumanAssignmentState();
     state.setup.activeModal = "";
     updateSetupModalVisibility();
     renderStaticUi();
     renderMapUi({ refreshIcons: true });
-    processPendingHumanAssignmentQueue();
     return;
   }
   if (openingWizardEnabled() && !state.players.length && !purchaseFlowActive() && state.setup.activeModal === "fleet") {
@@ -4295,10 +4353,10 @@ function initializeOpeningWizard() {
     return;
   }
   state.setup.selectedDifficulty = "standard";
-  state.setup.robotCount = 3;
+  state.setup.robotCount = 10;
   state.setup.company = {
     name: "Brasix",
-    color: "#356d63",
+    color: "#000000",
     logoId: COMPANY_LOGO_OPTIONS[0].id,
     hqCityId: preferredStartupCityId(),
     hqPurchased: false,
@@ -4320,12 +4378,23 @@ function findWheelRailTarget(eventTarget) {
   return eventTarget instanceof Element ? eventTarget.closest("[data-wheel-rail]") : null;
 }
 
+function findWheelStackTarget(eventTarget) {
+  return eventTarget instanceof Element ? eventTarget.closest(".game-runtime-player-bar") : null;
+}
+
 function applyWheelScrollToRail(element, delta) {
   if (!(element instanceof HTMLElement)) {
     return;
   }
   element.scrollLeft += delta * 1.18;
   updateRailPerspective(element);
+}
+
+function applyWheelScrollToStack(element, delta) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+  element.scrollTop += delta * 1.08;
 }
 
 function bindWheelRail(element) {
@@ -4337,7 +4406,21 @@ function bindWheelRail(element) {
 }
 
 function handleRailWheel(event) {
-  if (event.defaultPrevented || event.ctrlKey || !state.setup.activeModal) {
+  if (event.defaultPrevented || event.ctrlKey) {
+    return;
+  }
+  const stack = findWheelStackTarget(event.target);
+  if (stack instanceof HTMLElement && stack.scrollHeight > stack.clientHeight + 4) {
+    const dominantDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+    if (!dominantDelta) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    applyWheelScrollToStack(stack, dominantDelta);
+    return;
+  }
+  if (!state.setup.activeModal) {
     return;
   }
   const rail = findWheelRailTarget(event.target);
@@ -4385,7 +4468,7 @@ function handleRuntimeInputs(event) {
     return;
   }
   if (target === refs.openingRobotCountInput && (target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) {
-    state.setup.robotCount = clamp(Number(target.value || 3), MIN_ROBOT_COUNT, MAX_ROBOT_COUNT);
+    state.setup.robotCount = clamp(Number(target.value || 10), MIN_ROBOT_COUNT, MAX_ROBOT_COUNT);
     renderStatus();
     renderOpeningPalette();
     return;
@@ -4678,6 +4761,7 @@ function playerRouteCardMarkup(player, truckUnit, contract, { interactiveIdle = 
   const valueText = contract ? formatCurrency(contract.profitPerDeliveryBrl) : "-";
   const weightText = contract && !contract.dispatchOnly ? formatTonnes(contract.payloadTons) : "0 t";
   const etaText = contract ? `ETA ${formatHours(Math.max(0, contract.stageDurationHours - contract.stageElapsedHours))}` : "ETA -";
+  const distanceText = contract ? formatDistanceKm(contract.flow.distance_km) : "- km";
   const emoji = contract
     ? (contract.dispatchOnly ? "🚚" : (contract.flow.product_emoji || "📦"))
     : "🚚";
@@ -4695,12 +4779,15 @@ function playerRouteCardMarkup(player, truckUnit, contract, { interactiveIdle = 
         <span class="game-runtime-route-card-id">${escapeHtml(`#${formatInteger(truckUnit.displayNumber)}`)}</span>
         <span class="game-runtime-route-card-emoji" aria-hidden="true">${escapeHtml(emoji)}</span>
         <strong class="game-runtime-route-card-path">${escapeHtml(routeText || "Sem rota")}</strong>
-        <span class="game-runtime-route-card-value">${escapeHtml(valueText)}</span>
       </div>
       <div class="game-runtime-route-card-meta">
-        <span class="game-runtime-route-status-tag ${escapeHtml(routeCardStatusTone(contract))}">${escapeHtml(routeCardStatusLabel(contract))}</span>
-        <span>${escapeHtml(weightText)}</span>
-        <span>${escapeHtml(etaText)}</span>
+        <div class="game-runtime-route-card-meta-main">
+          <span class="game-runtime-route-status-tag ${escapeHtml(routeCardStatusTone(contract))}">${escapeHtml(routeCardStatusLabel(contract))}</span>
+          <span>${escapeHtml(weightText)}</span>
+          <span>${escapeHtml(etaText)}</span>
+          <span>${escapeHtml(distanceText)}</span>
+        </div>
+        <strong class="game-runtime-route-card-value">${escapeHtml(valueText)}</strong>
       </div>
     </${tagName}>
   `;
@@ -4740,9 +4827,8 @@ function renderHumanHud() {
         <strong>${escapeHtml(player.label)}</strong>
         <span>${escapeHtml(`${cityLabel(player.hqCityId)} · ${player.note || "Operacao ativa"}`)}</span>
       </div>
-      <button class="ghost-button game-runtime-mini-action" type="button" data-focus-player-id="${escapeHtml(player.id)}">
+      <button class="ghost-button game-runtime-mini-action" type="button" data-focus-player-id="${escapeHtml(player.id)}" aria-label="Focar sede" title="Focar sede">
         <span class="material-symbols-outlined" aria-hidden="true">my_location</span>
-        <span>Focar</span>
       </button>
     </div>
 
@@ -4802,10 +4888,6 @@ function renderHumanHud() {
           <span>Novo caminhao</span>
         </button>
       ` : ""}
-      <a class="ghost-button game-runtime-mini-link" href="/jogo/preparacao" target="_blank" rel="noopener noreferrer">
-        <span class="material-symbols-outlined" aria-hidden="true">edit</span>
-        <span>Preparacao</span>
-      </a>
     </div>
   `;
 }
@@ -4948,9 +5030,8 @@ function renderDrawer() {
             <span>Novo caminhao</span>
           </button>
         ` : ""}
-        <button class="ghost-button game-runtime-mini-action" type="button" data-focus-player-id="${escapeHtml(player.id)}">
+        <button class="ghost-button game-runtime-mini-action" type="button" data-focus-player-id="${escapeHtml(player.id)}" aria-label="Focar sede" title="Focar sede">
           <span class="material-symbols-outlined" aria-hidden="true">my_location</span>
-          <span>Focar</span>
         </button>
         <button class="editor-header-action game-runtime-mini-action" type="button" data-close-drawer="true">
           <span class="material-symbols-outlined" aria-hidden="true">close</span>
@@ -5041,7 +5122,22 @@ function focusPlayerOnMap(player) {
   });
 }
 
-function setFocusedPlayer(playerId, { closeDrawer = false } = {}) {
+function focusPlayerHeadquartersOnMap(player) {
+  ensureMap();
+  if (!state.map || !player) {
+    return;
+  }
+  const hqCity = state.citiesById[player.hqCityId] || null;
+  if (!hqCity) {
+    focusPlayerOnMap(player);
+    return;
+  }
+  state.map.setView([hqCity.latitude, hqCity.longitude], Math.max(state.map.getZoom(), 6), {
+    animate: true,
+  });
+}
+
+function setFocusedPlayer(playerId, { closeDrawer = false, mapTarget = "activity" } = {}) {
   const player = state.playersById[playerId] || null;
   if (!player) {
     return;
@@ -5052,6 +5148,10 @@ function setFocusedPlayer(playerId, { closeDrawer = false } = {}) {
   renderDrawer();
   renderCityMarkers();
   renderHighlightedRoutes();
+  if (mapTarget === "hq") {
+    focusPlayerHeadquartersOnMap(player);
+    return;
+  }
   focusPlayerOnMap(player);
 }
 
@@ -5168,7 +5268,7 @@ function handleClicks(event) {
 
   const focusButton = target.closest("[data-focus-player-id]");
   if (focusButton) {
-    setFocusedPlayer(focusButton.getAttribute("data-focus-player-id") || "");
+    setFocusedPlayer(focusButton.getAttribute("data-focus-player-id") || "", { mapTarget: "hq" });
     return;
   }
 

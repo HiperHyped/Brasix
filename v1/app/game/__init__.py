@@ -12,7 +12,7 @@ from app.game.models import (
     GameWorldValidationIssue,
     GameWorldValidationReport,
 )
-from app.game.runtime import build_game_world_runtime
+from app.game.runtime import build_game_world_runtime, build_game_world_runtime_bootstrap_payload
 from app.game.truck_product_matrix import build_truck_product_matrix_payload
 from app.game.validators import validate_game_world_runtime
 
@@ -28,6 +28,7 @@ __all__ = [
     "GameWorldValidationIssue",
     "GameWorldValidationReport",
     "build_game_world_runtime",
+    "build_game_world_runtime_bootstrap_payload",
     "build_truck_product_matrix_payload",
     "validate_game_world_runtime",
 ]

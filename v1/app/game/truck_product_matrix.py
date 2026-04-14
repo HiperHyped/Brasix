@@ -1,13 +1,20 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from app.game.runtime import build_game_world_runtime
 from app.services.data_loader import (
+    load_effective_truck_type_catalog_payload,
+    load_product_catalog_v2_master_payload,
+    load_product_family_catalog_payload,
+    load_product_logistics_type_catalog_payload,
+    load_truck_body_catalog_payload,
     load_truck_image_asset_registry_payload,
     load_truck_product_compatibility_overrides_payload,
     sort_truck_type_records,
 )
+from app.services.map_repository import load_active_map_bundle
 
 
 def _text(value: Any) -> str:
@@ -52,12 +59,62 @@ def _preview_image_data(asset_entry: dict[str, Any] | None) -> tuple[str, str]:
     )
 
 
-def build_truck_product_matrix_payload(runtime: Any | None = None) -> dict[str, Any]:
-    runtime = runtime or build_game_world_runtime(include_validation=False)
+def _now_iso() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
 
-    product_family_by_id = runtime.catalogs.product_family_by_id
-    logistics_type_by_id = runtime.catalogs.product_logistics_type_by_id
-    truck_body_by_id = runtime.catalogs.truck_body_by_id
+
+def _empty_validation_report() -> dict[str, Any]:
+    return {
+        "valid": True,
+        "error_count": 0,
+        "warning_count": 0,
+        "issues": [],
+    }
+
+
+def build_truck_product_matrix_payload(runtime: Any | None = None, *, include_validation: bool = True) -> dict[str, Any]:
+    runtime = runtime or (build_game_world_runtime(include_validation=True) if include_validation else None)
+
+    if runtime is not None:
+        product_catalog = runtime.products.catalog
+        product_family_catalog = runtime.products.family_catalog
+        product_logistics_type_catalog = runtime.products.logistics_type_catalog
+        truck_type_catalog = runtime.trucks.type_catalog
+        truck_body_catalog = runtime.trucks.body_catalog
+        product_family_by_id = runtime.catalogs.product_family_by_id
+        logistics_type_by_id = runtime.catalogs.product_logistics_type_by_id
+        truck_body_by_id = runtime.catalogs.truck_body_by_id
+        generated_at = runtime.metadata.generated_at
+        map_id = runtime.metadata.map_id
+        map_name = runtime.metadata.map_name
+        validation_payload = runtime.validation.model_dump(mode="json")
+    else:
+        active_map = load_active_map_bundle()
+        product_catalog = load_product_catalog_v2_master_payload()
+        product_family_catalog = load_product_family_catalog_payload()
+        product_logistics_type_catalog = load_product_logistics_type_catalog_payload()
+        truck_type_catalog = load_effective_truck_type_catalog_payload()
+        truck_body_catalog = load_truck_body_catalog_payload()
+        product_family_by_id = {
+            _text(item.get("id")): dict(item)
+            for item in product_family_catalog.get("families", [])
+            if _text(item.get("id"))
+        }
+        logistics_type_by_id = {
+            _text(item.get("id")): dict(item)
+            for item in product_logistics_type_catalog.get("types", [])
+            if _text(item.get("id"))
+        }
+        truck_body_by_id = {
+            _text(item.get("id")): dict(item)
+            for item in truck_body_catalog.get("types", [])
+            if _text(item.get("id"))
+        }
+        generated_at = _now_iso()
+        map_id = active_map.id
+        map_name = active_map.name
+        validation_payload = _empty_validation_report()
+
     truck_asset_registry_by_id = {
         _text(item.get("truck_type_id")): dict(item)
         for item in load_truck_image_asset_registry_payload().get("items", [])
@@ -70,7 +127,7 @@ def build_truck_product_matrix_payload(runtime: Any | None = None) -> dict[str, 
     }
 
     products: list[dict[str, Any]] = []
-    for product in _sort_records(list(runtime.products.catalog.get("products", [])), label_keys=("name", "short_name", "id")):
+    for product in _sort_records(list(product_catalog.get("products", [])), label_keys=("name", "short_name", "id")):
         product_id = _text(product.get("id"))
         if not product_id or not bool(product.get("is_active", True)):
             continue
@@ -105,7 +162,7 @@ def build_truck_product_matrix_payload(runtime: Any | None = None) -> dict[str, 
 
     trucks: list[dict[str, Any]] = []
     compatible_pair_count = 0
-    for truck in sort_truck_type_records(list(runtime.trucks.type_catalog.get("types", []))):
+    for truck in sort_truck_type_records(list(truck_type_catalog.get("types", []))):
         truck_id = _text(truck.get("id"))
         if not truck_id:
             continue
@@ -168,7 +225,7 @@ def build_truck_product_matrix_payload(runtime: Any | None = None) -> dict[str, 
         )
 
     bodies: list[dict[str, Any]] = []
-    for body in _sort_records(list(runtime.trucks.body_catalog.get("types", []))):
+    for body in _sort_records(list(truck_body_catalog.get("types", []))):
         body_id = _text(body.get("id"))
         if not body_id:
             continue
@@ -192,7 +249,7 @@ def build_truck_product_matrix_payload(runtime: Any | None = None) -> dict[str, 
             "id": _text(item.get("id")),
             "label": _text(item.get("label") or item.get("name") or item.get("id")),
         }
-        for item in _sort_records(list(runtime.products.family_catalog.get("families", [])), label_keys=("label", "name", "id"))
+        for item in _sort_records(list(product_family_catalog.get("families", [])), label_keys=("label", "name", "id"))
         if _text(item.get("id"))
     ]
 
@@ -210,7 +267,7 @@ def build_truck_product_matrix_payload(runtime: Any | None = None) -> dict[str, 
                 if set([_text(body_id) for body_id in item.get("body_type_ids", []) if _text(body_id)]) & set(truck["body_type_ids"])
             ),
         }
-        for item in _sort_records(list(runtime.products.logistics_type_catalog.get("types", [])), label_keys=("label", "name", "id"))
+        for item in _sort_records(list(product_logistics_type_catalog.get("types", [])), label_keys=("label", "name", "id"))
         if _text(item.get("id"))
     ]
 
@@ -219,9 +276,9 @@ def build_truck_product_matrix_payload(runtime: Any | None = None) -> dict[str, 
     usable_truck_type_count = sum(1 for truck in trucks if truck["supported_product_count"] > 0)
 
     return {
-        "generated_at": runtime.metadata.generated_at,
-        "map": {"id": runtime.metadata.map_id, "name": runtime.metadata.map_name},
-        "validation": runtime.validation.model_dump(mode="json"),
+        "generated_at": generated_at,
+        "map": {"id": map_id, "name": map_name},
+        "validation": validation_payload,
         "summary": {
             "truck_type_count": len(trucks),
             "product_count": len(products),

@@ -10,6 +10,7 @@ from app.services.data_loader import (
     load_map_editor_payload,
     load_map_viewport_payload,
     load_product_operational_catalog_payload,
+    load_truck_operational_catalog_payload,
     load_ui_payload,
     save_json,
 )
@@ -325,13 +326,21 @@ def _build_truck_records(
     *,
     truck_matrix_payload: dict[str, Any] | None = None,
     runtime: Any | None = None,
+    operational_by_truck_id: dict[str, dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     from app.game.runtime import build_game_world_runtime
     from app.game.truck_product_matrix import build_truck_product_matrix_payload
 
-    runtime = runtime or build_game_world_runtime(include_validation=False)
-    truck_matrix_payload = truck_matrix_payload or build_truck_product_matrix_payload(runtime=runtime)
-    operational_by_truck_id = runtime.catalogs.truck_operational_by_id
+    if truck_matrix_payload is None:
+        if runtime is not None:
+            truck_matrix_payload = build_truck_product_matrix_payload(runtime=runtime)
+        else:
+            truck_matrix_payload = build_truck_product_matrix_payload(include_validation=False)
+
+    if operational_by_truck_id is None:
+        if runtime is None:
+            runtime = build_game_world_runtime(include_validation=False)
+        operational_by_truck_id = runtime.catalogs.truck_operational_by_id
 
     trucks: list[dict[str, Any]] = []
     for truck in truck_matrix_payload.get("trucks", []):
@@ -438,13 +447,27 @@ def build_pricing_editor_bootstrap_payload(
     truck_matrix_payload: dict[str, Any] | None = None,
     runtime: Any | None = None,
     city_payload: dict[str, Any] | None = None,
+    product_operational_catalog: dict[str, Any] | None = None,
+    truck_operational_catalog: dict[str, Any] | None = None,
+    operational_by_truck_id: dict[str, dict[str, Any]] | None = None,
     apply_route_planner_distances: bool = True,
 ) -> dict[str, Any]:
     active_map = load_active_map_bundle()
     city_payload = city_payload or build_city_editor_bootstrap_payload()
     map_editor = load_map_editor_payload()
     cities = [city.model_dump(mode="json") for city in active_map.cities]
-    trucks = _build_truck_records(truck_matrix_payload=truck_matrix_payload, runtime=runtime)
+    product_operational_catalog = product_operational_catalog or load_product_operational_catalog_payload()
+    truck_operational_catalog = truck_operational_catalog or load_truck_operational_catalog_payload()
+    operational_by_truck_id = operational_by_truck_id or {
+        _safe_text(item.get("truck_type_id")): dict(item)
+        for item in truck_operational_catalog.get("items", [])
+        if _safe_text(item.get("truck_type_id"))
+    }
+    trucks = _build_truck_records(
+        truck_matrix_payload=truck_matrix_payload,
+        runtime=runtime,
+        operational_by_truck_id=operational_by_truck_id,
+    )
     diesel_document = build_diesel_cost_editor_document(active_map.id, cities)
     pricing_document = load_pricing_editor_document(active_map.id, map_editor.get("population_bands"))
     if apply_route_planner_distances:
@@ -478,7 +501,7 @@ def build_pricing_editor_bootstrap_payload(
         "cities": list(city_payload.get("cities", [])),
         "freight_flows": freight_flows,
         "products": list(city_payload.get("products", [])),
-        "product_operational_catalog": load_product_operational_catalog_payload(),
+        "product_operational_catalog": product_operational_catalog,
         "diesel_document": diesel_document,
         "trucks": trucks,
         "pricing_document": pricing_document,

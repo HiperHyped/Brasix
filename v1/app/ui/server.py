@@ -32,7 +32,11 @@ from app.config import (
     TRUCK_IMAGE_REVIEW_QUEUE_PATH,
     TRUCK_OPERATIONAL_DATA_PATH,
 )
-from app.game import build_game_world_runtime, build_truck_product_matrix_payload
+from app.game import (
+    build_game_world_runtime,
+    build_game_world_runtime_bootstrap_payload,
+    build_truck_product_matrix_payload,
+)
 from app.maptools import RouteGraph, RouteWorkspaceSnapshot
 from app.services import (
     AutoRouteError,
@@ -812,16 +816,23 @@ def _build_truck_operational_editor_bootstrap_payload() -> dict[str, Any]:
 
 def _build_game_setup_bootstrap_payload() -> dict[str, Any]:
     city_payload = build_city_editor_bootstrap_payload()
-    runtime = build_game_world_runtime(include_validation=False)
-    truck_matrix_payload = build_truck_product_matrix_payload(runtime=runtime)
+    product_operational_catalog = load_product_operational_catalog_payload()
+    truck_operational_catalog = load_truck_operational_catalog_payload()
+    operational_by_truck_id = {
+        str(item.get("truck_type_id") or "").strip(): dict(item)
+        for item in truck_operational_catalog.get("items", [])
+        if str(item.get("truck_type_id") or "").strip()
+    }
+    truck_matrix_payload = build_truck_product_matrix_payload(include_validation=False)
     pricing_payload = build_pricing_editor_bootstrap_payload(
         city_payload=city_payload,
         apply_route_planner_distances=False,
         truck_matrix_payload=truck_matrix_payload,
-        runtime=runtime,
+        product_operational_catalog=product_operational_catalog,
+        truck_operational_catalog=truck_operational_catalog,
+        operational_by_truck_id=operational_by_truck_id,
     )
     map_editor_payload = load_map_editor_payload()
-    operational_by_truck_id = runtime.catalogs.truck_operational_by_id
 
     def _normalize_market_items(raw_items: Any) -> list[dict[str, Any]]:
         normalized: list[dict[str, Any]] = []
@@ -1620,13 +1631,7 @@ def create_app() -> FastAPI:
 
     @app.get("/api/game/runtime/bootstrap")
     async def game_runtime_bootstrap() -> dict[str, Any]:
-        runtime = build_game_world_runtime(include_validation=False)
-        return {
-            "metadata": runtime.metadata.model_dump(mode="json"),
-            "map": {
-                "route_network": runtime.map.route_network.model_dump(mode="json"),
-            },
-        }
+        return build_game_world_runtime_bootstrap_payload()
 
     @app.get("/api/game/runtime/validation")
     async def game_runtime_validation() -> dict[str, Any]:

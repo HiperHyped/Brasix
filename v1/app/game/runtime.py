@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from app.game.models import (
     GameWorldCatalogSnapshot,
@@ -33,6 +34,35 @@ from app.services import (
 
 def _now_iso() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
+def build_game_world_runtime_bootstrap_payload() -> dict[str, Any]:
+    active_map = load_active_map_bundle()
+    city_count = len(active_map.cities)
+    route_node_count = len(active_map.route_network.nodes)
+    route_edge_count = len(active_map.route_network.edges)
+    return {
+        "metadata": GameWorldMetadata(
+            generated_at=_now_iso(),
+            map_id=active_map.id,
+            map_name=active_map.name,
+            city_count=city_count,
+            route_edge_count=route_edge_count,
+            route_graph_node_count=route_node_count,
+            product_count=0,
+            active_product_count=0,
+            truck_type_count=0,
+            active_truck_type_count=0,
+        ).model_dump(mode="json"),
+        "map": {
+            "active_map_id": active_map.id,
+            "active_map_name": active_map.name,
+            "route_network": active_map.route_network.model_dump(mode="json"),
+            "city_count": city_count,
+            "graph_node_count": route_node_count,
+            "edge_count": route_edge_count,
+        },
+    }
 
 
 def build_game_world_runtime(*, include_validation: bool = True) -> GameWorldRuntimeDocument:

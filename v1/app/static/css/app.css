@@ -7055,8 +7055,8 @@ html.game-runtime-page[data-editor-theme="night"] {
 }
 
 .game-runtime-right-column.is-drawer-open {
-  width: 592px;
-  grid-template-columns: minmax(0, 360px) 220px;
+  width: min(592px, calc(100vw - 36px));
+  grid-template-columns: minmax(0, 1fr) minmax(208px, 220px);
   align-items: start;
 }
 
@@ -7205,26 +7205,28 @@ html.game-runtime-page[data-editor-theme="night"] {
 
 .game-runtime-route-card-top {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  grid-template-columns: auto auto minmax(0, 1fr);
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
+  font-size: 0.86rem;
 }
 
-.game-runtime-route-card-id,
-.game-runtime-route-card-value {
+.game-runtime-route-card-id {
   color: var(--text);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .game-runtime-route-card-emoji {
-  font-size: 1rem;
+  font-size: 0.92rem;
   line-height: 1;
 }
 
 .game-runtime-route-card-path {
+  font-size: 0.88rem;
+  font-weight: 800;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -7232,16 +7234,27 @@ html.game-runtime-page[data-editor-theme="night"] {
 }
 
 .game-runtime-route-card-meta {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  column-gap: 8px;
+  row-gap: 4px;
   min-width: 0;
   color: var(--game-runtime-muted);
   font-size: 0.74rem;
   font-weight: 700;
 }
 
-.game-runtime-route-card-meta span:not(.game-runtime-route-status-tag) {
+.game-runtime-route-card-meta-main {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.game-runtime-route-card-meta-main span:not(.game-runtime-route-status-tag) {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -7258,6 +7271,25 @@ html.game-runtime-page[data-editor-theme="night"] {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.game-runtime-route-card-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid rgba(53, 109, 99, 0.16);
+  border-radius: 999px;
+  justify-self: end;
+  align-self: center;
+  margin-right: -10px;
+  background: rgba(53, 109, 99, 0.1);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-align: right;
   white-space: nowrap;
 }
 
@@ -7395,23 +7427,46 @@ html.game-runtime-page[data-editor-theme="night"] {
   grid-template-columns: 1fr;
   gap: 10px;
   min-height: 0;
-  overflow: auto;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   align-content: start;
-  padding-right: 4px;
+  padding-right: 2px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 90, 39, 0.28) rgba(255, 255, 255, 0.38);
+}
+
+.game-runtime-player-bar::-webkit-scrollbar {
+  width: 7px;
+}
+
+.game-runtime-player-bar::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.36);
+}
+
+.game-runtime-player-bar::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(45, 90, 39, 0.28);
 }
 
 .game-runtime-right-column.is-drawer-open .game-runtime-player-bar {
   grid-column: 2;
+  grid-row: 1;
   align-self: stretch;
 }
 
 .game-runtime-right-column.is-drawer-open .game-runtime-drawer {
   grid-column: 1;
+  grid-row: 1;
   align-self: start;
 }
 
 .game-runtime-player-card {
   min-height: 76px;
+  min-width: 0;
   padding: 10px 12px;
   border-radius: 18px;
   display: grid;
@@ -7419,6 +7474,7 @@ html.game-runtime-page[data-editor-theme="night"] {
   text-align: left;
   cursor: pointer;
   position: relative;
+  overflow: hidden;
 }
 
 .game-runtime-player-card::before {
@@ -7446,7 +7502,22 @@ html.game-runtime-page[data-editor-theme="night"] {
 }
 
 .game-runtime-player-card-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
+}
+
+.game-runtime-player-card-top div strong,
+.game-runtime-player-card-top div span {
+  min-width: 0;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-runtime-player-card-top small {
+  white-space: nowrap;
 }
 
 .game-runtime-player-card-top div {
@@ -7456,9 +7527,30 @@ html.game-runtime-page[data-editor-theme="night"] {
 }
 
 .game-runtime-player-card-metrics {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  justify-content: initial;
+  row-gap: 4px;
+  column-gap: 10px;
   color: var(--game-runtime-muted);
   font-size: 0.75rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.game-runtime-player-card-metrics span {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.game-runtime-player-card-metrics span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-runtime-player-card-metrics span:nth-child(n + 2) {
+  justify-self: end;
 }
 
 .game-runtime-truck-row,
@@ -7581,6 +7673,23 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-log-line {
   background: rgba(255, 255, 255, 0.04);
 }
 
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-route-card-value {
+  border-color: rgba(161, 212, 148, 0.2);
+  background: rgba(161, 212, 148, 0.12);
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-player-bar {
+  scrollbar-color: rgba(161, 212, 148, 0.34) rgba(29, 34, 30, 0.56);
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-player-bar::-webkit-scrollbar-track {
+  background: rgba(29, 34, 30, 0.56);
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-player-bar::-webkit-scrollbar-thumb {
+  background: rgba(161, 212, 148, 0.34);
+}
+
 @media (max-width: 1220px) {
   .game-runtime-topbar {
     grid-template-columns: 1fr;
@@ -7607,8 +7716,8 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-log-line {
   }
 
   .game-runtime-right-column.is-drawer-open {
-    width: 520px;
-    grid-template-columns: minmax(0, 328px) 180px;
+    width: min(540px, calc(100vw - 36px));
+    grid-template-columns: minmax(0, 1fr) minmax(204px, 220px);
     align-items: start;
   }
 }
@@ -7631,15 +7740,22 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-log-line {
   }
 
   .game-runtime-right-column.is-drawer-open {
-    width: 260px;
-    grid-template-columns: 1fr;
+    width: min(504px, calc(100vw - 28px));
+    grid-template-columns: minmax(0, 1fr) minmax(198px, 208px);
+    grid-template-rows: minmax(0, 1fr);
     align-items: start;
   }
 
-  .game-runtime-right-column.is-drawer-open .game-runtime-player-bar,
+  .game-runtime-right-column.is-drawer-open .game-runtime-player-bar {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: stretch;
+  }
+
   .game-runtime-right-column.is-drawer-open .game-runtime-drawer {
-    grid-column: auto;
-    align-self: auto;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
   }
 
   .game-runtime-drawer-grid {
@@ -8246,6 +8362,58 @@ body.game-setup-page {
   gap: 10px;
 }
 
+.game-setup-assignment-truck-card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.game-setup-assignment-truck-visual {
+  min-height: 70px;
+  border-radius: 16px;
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  background: rgba(255, 255, 255, 0.84);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.game-setup-assignment-truck-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.game-setup-assignment-truck-visual.is-empty {
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.game-setup-assignment-truck-visual.is-empty .material-symbols-outlined {
+  color: var(--company-color, var(--green));
+  font-size: 1.4rem;
+}
+
+.game-setup-assignment-truck-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.game-setup-assignment-truck-copy strong {
+  color: var(--text);
+}
+
+.game-setup-assignment-truck-copy span:last-child {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .game-setup-mini-action {
   padding-inline: 10px;
 }
@@ -8309,6 +8477,7 @@ body.game-setup-page {
 
 .game-runtime-shell .game-setup-modal-company {
   width: min(1320px, 100%);
+  margin-top: 18px;
 }
 
 .game-runtime-opening-body {
@@ -8334,6 +8503,10 @@ body.game-setup-page {
   display: grid;
   gap: 8px;
   align-content: start;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(45, 90, 39, 0.12);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .game-runtime-opening-top-head {
@@ -8347,6 +8520,13 @@ body.game-setup-page {
   color: var(--text);
   font-family: var(--font-head);
   font-size: 0.94rem;
+}
+
+.game-runtime-opening-slider-value {
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 0.94rem;
+  line-height: 1;
 }
 
 .game-runtime-opening-robot-slider {
@@ -8774,10 +8954,22 @@ body.game-setup-page {
   color: var(--green);
 }
 
+.game-setup-pill.is-available {
+  border-color: rgba(47, 98, 89, 0.24);
+  background: color-mix(in srgb, var(--green) 14%, white);
+  color: #2f6259;
+}
+
 .game-setup-pill.is-blocked {
   border-color: rgba(140, 79, 16, 0.24);
   background: rgba(140, 79, 16, 0.08);
   color: #8c4f10;
+}
+
+.game-setup-pill.is-muted {
+  border-color: rgba(114, 121, 110, 0.2);
+  background: rgba(114, 121, 110, 0.08);
+  color: var(--muted);
 }
 
 .game-setup-pill.is-instance {
@@ -9135,12 +9327,14 @@ html[data-editor-theme="night"] .game-setup-preview-card,
 html[data-editor-theme="night"] .game-setup-modal,
 html[data-editor-theme="night"] .game-setup-metric-card,
 html[data-editor-theme="night"] .game-setup-logo-chip,
+html[data-editor-theme="night"] .game-setup-assignment-truck-card,
 html[data-editor-theme="night"] .game-setup-summary-metrics article,
 html[data-editor-theme="night"] .game-setup-selection-line,
 html[data-editor-theme="night"] .game-setup-city-row,
 html[data-editor-theme="night"] .game-setup-rail-card,
 html[data-editor-theme="night"] .game-setup-spec-grid article,
-html[data-editor-theme="night"] .game-setup-truck-visual {
+html[data-editor-theme="night"] .game-setup-truck-visual,
+html[data-editor-theme="night"] .game-setup-assignment-truck-visual {
   background: rgba(30, 35, 32, 0.94);
   box-shadow: inset 0 0 0 1px rgba(137, 146, 146, 0.12), 0 12px 24px rgba(0, 0, 0, 0.2);
 }
@@ -9225,10 +9419,22 @@ html[data-editor-theme="night"] .game-setup-pill.is-recommended {
   color: #a1d494;
 }
 
+html[data-editor-theme="night"] .game-setup-pill.is-available {
+  background: rgba(32, 64, 59, 0.94);
+  border-color: rgba(88, 178, 161, 0.24);
+  color: #98d8cb;
+}
+
 html[data-editor-theme="night"] .game-setup-pill.is-instance {
   background: rgba(32, 64, 59, 0.94);
   border-color: rgba(88, 178, 161, 0.24);
   color: #98d8cb;
+}
+
+html[data-editor-theme="night"] .game-setup-pill.is-muted {
+  background: rgba(22, 27, 24, 0.9);
+  border-color: rgba(137, 146, 146, 0.18);
+  color: #a6b1ab;
 }
 
 html[data-editor-theme="night"] .game-setup-pill.is-blocked,
