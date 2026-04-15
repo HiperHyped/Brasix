@@ -560,10 +560,7 @@ def _build_freight_payload(
     products_by_id: dict[str, dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     document = load_city_editor_freight_document(map_id)
-    if bool(document.get("topology_frozen")):
-        frozen_generated_flows = _normalize_frozen_generated_flows(list(document.get("frozen_generated_flows") or []), cities_by_id)
-    else:
-        frozen_generated_flows = _snapshot_generated_flows_from_freight_editor(cities_by_id)
+    generated_flows = _snapshot_generated_flows_from_freight_editor(cities_by_id)
 
     overrides_by_flow_id = {
         str(item.get("flow_id") or ""): item
@@ -574,9 +571,9 @@ def _build_freight_payload(
     supply_by_city_product = _city_product_values_index(city_payload_by_id, "supply")
     demand_by_city_product = _city_product_values_index(city_payload_by_id, "demand")
 
-    generated_flow_ids = {flow["id"] for flow in frozen_generated_flows}
+    generated_flow_ids = {flow["id"] for flow in generated_flows}
     generated_flows_by_product: dict[str, list[dict[str, Any]]] = {}
-    for flow in frozen_generated_flows:
+    for flow in generated_flows:
         generated_flows_by_product.setdefault(flow["product_id"], []).append(flow)
 
     custom_overrides_by_product: dict[str, list[dict[str, Any]]] = {}
@@ -755,7 +752,6 @@ def update_city_editor_product_value(
 ) -> dict[str, Any]:
     active_map = load_active_map_bundle()
     city_lookup = {city.id: city.model_dump(mode="json") for city in active_map.cities}
-    _ensure_city_editor_freight_topology(map_id, cities_by_id=city_lookup)
     city = city_lookup.get(city_id)
     if city is None:
         raise KeyError(city_id)
@@ -810,7 +806,6 @@ def remove_city_editor_product_value(
     product_id: str,
     layer: str,
 ) -> dict[str, Any]:
-    _ensure_city_editor_freight_topology(map_id)
     field_document = load_product_field_edit_document(product_id, layer, map_id=map_id)
     baked_document = load_product_field_baked_document(product_id, layer, map_id=map_id)
     timestamp = _now_iso()
@@ -837,8 +832,6 @@ def update_city_editor_freight_value(
     document = load_city_editor_freight_document(map_id)
     active_map = load_active_map_bundle()
     cities_by_id = {city.id: city.model_dump(mode="json") for city in active_map.cities}
-    if not bool(document.get("topology_frozen")):
-        document = _ensure_city_editor_freight_topology(map_id, cities_by_id=cities_by_id)
     products_by_id = {product["id"]: product for product in _product_catalog_payload()}
     origin = cities_by_id.get(origin_id)
     destination = cities_by_id.get(destination_id)
@@ -902,8 +895,6 @@ def remove_city_editor_freight_value(
     destination_id: str,
 ) -> dict[str, Any]:
     document = load_city_editor_freight_document(map_id)
-    if not bool(document.get("topology_frozen")):
-        document = _ensure_city_editor_freight_topology(map_id)
     overrides = [item for item in document.get("overrides", []) if str(item.get("flow_id") or "") != flow_id]
     overrides.append(
         {

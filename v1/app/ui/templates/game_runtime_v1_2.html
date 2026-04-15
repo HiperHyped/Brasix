@@ -52,6 +52,11 @@
         <span>Editores</span>
       </a>
 
+      <button id="game-runtime-analytics-button" class="ghost-button" type="button" data-runtime-open-modal="analytics">
+        <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
+        <span>Graficos</span>
+      </button>
+
       <div id="game-runtime-speed-controls" class="game-runtime-speed-controls" role="group" aria-label="Velocidade do tempo">
         <button class="game-runtime-speed-button" type="button" data-speed-id="pause">||</button>
         <button class="game-runtime-speed-button" type="button" data-speed-id="x1">1x</button>
@@ -219,12 +224,29 @@
         <aside id="game-runtime-freight-selection" class="game-setup-selector-summary" aria-label="Resumo da carteira inicial"></aside>
       </div>
     </section>
+
+    <section class="editor-card game-setup-modal game-runtime-analytics-modal" data-runtime-modal="analytics" hidden>
+      <header class="game-setup-modal-head">
+        <div>
+          <h2>Graficos do jogo</h2>
+        </div>
+        <button class="editor-header-action game-setup-close-button" type="button" data-runtime-close-modal="true">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          <span>Fechar</span>
+        </button>
+      </header>
+
+      <div class="game-setup-modal-body game-runtime-analytics-body">
+        <div id="game-runtime-analytics-tabs" class="game-runtime-analytics-tabs" role="tablist" aria-label="Analises do jogo"></div>
+        <div id="game-runtime-analytics-content" class="game-runtime-analytics-content" aria-live="polite"></div>
+      </div>
+    </section>
   </div>
 </main>
 
 <script type="module">
   const gameRuntimeModuleUrl = new URL("{{ request.url_for('static', path='js/game-runtime-v1.js') }}", window.location.href);
-  gameRuntimeModuleUrl.searchParams.set("v", "20260414-game-runtime-3");
+  gameRuntimeModuleUrl.searchParams.set("v", "20260415-game-runtime-9");
 
   function showGameRuntimeLoadError(error) {
     const message = String(error?.message || error || "Falha ao carregar o jogo.");

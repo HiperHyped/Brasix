@@ -45,6 +45,7 @@ const state = {
 
 let floatingHelpTooltip = null;
 let activeHelpTarget = null;
+let saveDocumentTimer = 0;
 
 const refs = {
   headerBadges: document.getElementById("flow-editor-header-badges"),
@@ -525,9 +526,10 @@ function waitForLeaflet(timeoutMs = 4000) {
 }
 
 function productDefaultState(product) {
+  const parameters = buildParameterState(product, product.editor_state || {});
   return {
-    ...buildParameterState(product),
-    quantityMode: inferQuantityMode(quantityExponentForMode(product.defaults.quantity_mode)),
+    ...parameters,
+    quantityMode: inferQuantityMode(parameters.quantityExponent),
     generated: deepClone(product.generated),
   };
 }
@@ -555,10 +557,11 @@ function normalizeBootstrap(payload) {
 }
 
 function restoreSession() {
+  let restoredLegacyProductStates = false;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      return;
+      return false;
     }
     const saved = JSON.parse(raw);
     state.searchTerm = String(saved?.searchTerm || "");
@@ -577,10 +580,12 @@ function restoreSession() {
         ...buildParameterState(product, savedState),
         quantityMode: inferQuantityMode(savedState.quantityExponent ?? state.productStatesById[product.id].quantityExponent),
       };
+      restoredLegacyProductStates = true;
     }
   } catch (_error) {
     // Ignore broken local state.
   }
+  return restoredLegacyProductStates;
 }
 
 function saveSession() {
@@ -588,14 +593,65 @@ function saveSession() {
     selectedProductId: state.selectedProductId,
     mapMode: state.mapMode,
     searchTerm: state.searchTerm,
-    productStatesById: Object.fromEntries(
-      Object.entries(state.productStatesById).map(([productId, productState]) => [
-        productId,
-        Object.fromEntries(PARAMETER_KEYS.map((key) => [key, productState[key]])),
-      ]),
-    ),
   };
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+}
+
+function serializeProductState(productState) {
+  return {
+    algorithm: String(productState?.algorithm || ""),
+    quantityMode: String(productState?.quantityMode || inferQuantityMode(productState?.quantityExponent)),
+    ...Object.fromEntries(PARAMETER_KEYS.map((key) => [key, Number(productState?.[key] ?? 0)])),
+    generated: deepClone(productState?.generated || { flows: [] }),
+  };
+}
+
+function buildDocumentPayload() {
+  return {
+    selected_product_id: state.selectedProductId || "",
+    product_states: Object.fromEntries(
+      Object.entries(state.productStatesById).map(([productId, productState]) => [productId, serializeProductState(productState)]),
+    ),
+  };
+}
+
+async function persistDocumentNow() {
+  const mapId = String(state.bootstrap?.active_map?.id || state.bootstrap?.summary?.active_map_id || "");
+  if (!mapId) {
+    return null;
+  }
+  const response = await fetch("/api/editor/fretes/document", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      map_id: mapId,
+      document: buildDocumentPayload(),
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(`Falha ao salvar o editor de fretes (${response.status}).`);
+  }
+  return response.json();
+}
+
+function scheduleDocumentSave() {
+  window.clearTimeout(saveDocumentTimer);
+  saveDocumentTimer = window.setTimeout(() => {
+    saveDocumentTimer = 0;
+    void persistDocumentNow().catch((error) => {
+      console.error("Brasix freight editor save failure:", error);
+    });
+  }, 300);
+}
+
+async function flushDocumentSave() {
+  if (saveDocumentTimer) {
+    window.clearTimeout(saveDocumentTimer);
+    saveDocumentTimer = 0;
+  }
+  return persistDocumentNow();
 }
 
 function applyThemeButtonLabel() {
@@ -1464,23 +1520,33 @@ function regenerateProduct(productId) {
   product.summary.covered_destinations = productState.generated.coverage_data.destinations_count;
 }
 
-function regenerateCurrentProduct() {
+function regenerateCurrentProduct({ render = true, persist = true } = {}) {
   regenerateProduct(state.selectedProductId);
   state.selectedFlowId = currentGenerated()?.flows?.[0]?.id || "";
   saveSession();
-  renderAll();
+  if (persist) {
+    scheduleDocumentSave();
+  }
+  if (render) {
+    renderAll();
+  }
 }
 
-function regenerateAllProducts() {
+function regenerateAllProducts({ render = true, persist = true } = {}) {
   for (const product of state.products) {
     regenerateProduct(product.id);
   }
   state.selectedFlowId = currentGenerated()?.flows?.[0]?.id || "";
   saveSession();
-  renderAll();
+  if (persist) {
+    scheduleDocumentSave();
+  }
+  if (render) {
+    renderAll();
+  }
 }
 
-function resetCurrentProduct() {
+function resetCurrentProduct({ render = true, persist = true } = {}) {
   const product = currentProduct();
   if (!product) {
     return;
@@ -1488,7 +1554,12 @@ function resetCurrentProduct() {
   state.productStatesById[product.id] = productDefaultState(product);
   state.selectedFlowId = state.productStatesById[product.id].generated?.flows?.[0]?.id || "";
   saveSession();
-  renderAll();
+  if (persist) {
+    scheduleDocumentSave();
+  }
+  if (render) {
+    renderAll();
+  }
 }
 
 function bindEvents() {
@@ -1506,6 +1577,7 @@ function bindEvents() {
     state.selectedProductId = button.dataset.productId;
     state.selectedFlowId = currentGenerated()?.flows?.[0]?.id || "";
     saveSession();
+    scheduleDocumentSave();
     renderAll();
   });
 
@@ -1542,6 +1614,7 @@ function bindEvents() {
     currentProductState()[parameterKey] = nextValue;
     currentProductState().quantityMode = inferQuantityMode(currentProductState().quantityExponent);
     saveSession();
+    scheduleDocumentSave();
     const valueTag = input.closest(".flow-editor-range-top")?.querySelector(".flow-editor-range-value");
     if (valueTag) {
       valueTag.textContent = parameterValueLabel(parameterKey, nextValue);
@@ -1551,7 +1624,14 @@ function bindEvents() {
   refs.generateSideButton?.addEventListener("click", regenerateCurrentProduct);
   refs.generateTopButton?.addEventListener("click", regenerateAllProducts);
   refs.resetButton?.addEventListener("click", resetCurrentProduct);
-  refs.saveButton?.addEventListener("click", saveSession);
+  refs.saveButton?.addEventListener("click", async () => {
+    saveSession();
+    try {
+      await flushDocumentSave();
+    } catch (error) {
+      console.error("Brasix freight editor save failure:", error);
+    }
+  });
   refs.themeButton?.addEventListener("click", toggleTheme);
 
   window.addEventListener("resize", () => {
@@ -1601,11 +1681,15 @@ async function initMap() {
 async function init() {
   const payload = await loadBootstrap();
   normalizeBootstrap(payload);
-  restoreSession();
+  const restoredLegacyProductStates = restoreSession();
+  if (restoredLegacyProductStates) {
+    regenerateAllProducts({ render: false, persist: false });
+    saveSession();
+    scheduleDocumentSave();
+  }
   await initMap();
   applyThemeButtonLabel();
   bindEvents();
-  regenerateAllProducts();
   syncControls();
   renderAll();
 }

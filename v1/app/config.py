@@ -90,6 +90,7 @@ REGION_PRODUCT_SUPPLY_MATRIX_PATH = GAME_JSON_DIR / "region_product_supply_matri
 PRODUCT_INFERENCE_RULES_PATH = GAME_JSON_DIR / "product_inference_rules.json"
 PRODUCT_FIELD_EDITS_DIR = GAME_JSON_DIR / "product_field_edits"
 PRODUCT_FIELD_BAKED_DIR = GAME_JSON_DIR / "product_field_baked"
+FREIGHT_EDITOR_DIR = GAME_JSON_DIR / "freight_editor"
 DIESEL_COST_EDITOR_DIR = GAME_JSON_DIR / "diesel_cost_editor"
 PRICING_EDITOR_DIR = GAME_JSON_DIR / "pricing_editor"
 CITY_EDITOR_FREIGHT_DIR = GAME_JSON_DIR / "city_editor_freights"

@@ -772,6 +772,16 @@ class DieselCostSaveResponse(BaseModel):
     document: dict[str, Any]
 
 
+class FreightEditorSaveRequest(BaseModel):
+    map_id: str = Field(min_length=1)
+    document: dict[str, Any] = Field(default_factory=dict)
+    updated_at: str | None = None
+
+
+class FreightEditorSaveResponse(BaseModel):
+    document: dict[str, Any]
+
+
 class PricingEditorSaveRequest(BaseModel):
     map_id: str = Field(min_length=1)
     document: dict[str, Any] = Field(default_factory=dict)

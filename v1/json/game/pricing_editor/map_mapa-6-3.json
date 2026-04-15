@@ -2,7 +2,7 @@
   "id": "pricing_editor::map_mapa-6-3",
   "map_id": "map_mapa-6-3",
   "version": 1,
-  "updated_at": "2026-04-14T00:02:11-03:00",
+  "updated_at": "2026-04-15T11:10:51-03:00",
   "scenario": {
     "selected_difficulty": "standard",
     "sort_mode": "opening_desc"
@@ -55,7 +55,7 @@
     "diesel_destination_weight": 0.85
   },
   "capital": {
-    "base_initial_cash_brl": 760000.0,
+    "base_initial_cash_brl": 880000.0,
     "reserve_days": 47.0,
     "buffer_percent": 0.25,
     "hard_liquidity_factor": 0.65,

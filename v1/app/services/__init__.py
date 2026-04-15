@@ -79,7 +79,7 @@ from app.services.city_editor import (
     update_city_editor_product_value,
 )
 from app.services.diesel_cost_editor import build_diesel_cost_editor_bootstrap_payload, save_diesel_cost_editor_document
-from app.services.freight_editor import build_freight_editor_bootstrap_payload
+from app.services.freight_editor import build_freight_editor_bootstrap_payload, load_freight_editor_document, save_freight_editor_document
 from app.services.pricing_editor import build_pricing_editor_bootstrap_payload, save_pricing_editor_document
 from app.services.route_auto_osrm import AutoRouteError, generate_auto_route_preview, load_route_auto_engine_config
 from app.services.route_planner import RoutePlannerError, build_route_plan
@@ -165,6 +165,8 @@ __all__ = [
     "build_diesel_cost_editor_bootstrap_payload",
     "save_diesel_cost_editor_document",
     "build_freight_editor_bootstrap_payload",
+    "load_freight_editor_document",
+    "save_freight_editor_document",
     "build_pricing_editor_bootstrap_payload",
     "save_pricing_editor_document",
     "AutoRouteError",

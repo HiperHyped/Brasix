@@ -1,17 +1,171 @@
 from __future__ import annotations
 
+from copy import deepcopy
+from datetime import datetime
 from math import ceil, sqrt
 from typing import Any
 
+from app.config import FREIGHT_EDITOR_DIR
 from app.services.data_loader import (
+    load_json,
     load_map_editor_payload,
     load_map_viewport_payload,
     load_product_catalog_v2_master_payload,
     load_product_family_catalog_payload,
     load_product_field_baked_document,
+    load_product_inference_rules_payload,
     load_ui_payload,
+    save_json,
 )
 from app.services.map_repository import load_active_map_bundle, map_repository_payload
+
+
+_INTEGER_EDITOR_STATE_KEYS = {
+    "coverage",
+    "flowCount",
+    "scoreOriginWeight",
+    "scoreDestinationWeight",
+    "scoreTransferWeight",
+    "distanceBonus",
+    "originLimitShare",
+    "destinationLimitShare",
+    "targetOriginsShare",
+    "targetDestinationsShare",
+    "newOriginBonus",
+    "newDestinationBonus",
+}
+_FLOAT_EDITOR_STATE_KEYS = {"reusePenalty", "quantityExponent"}
+
+
+def _safe_text(value: Any) -> str:
+    return str(value or "").strip()
+
+
+def _now_iso() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
+def _freight_editor_document_path(map_id: str):
+    safe_map_id = _safe_text(map_id) or "default"
+    return FREIGHT_EDITOR_DIR / f"{safe_map_id}.json"
+
+
+def _empty_freight_editor_document(map_id: str) -> dict[str, Any]:
+    return {
+        "id": f"freight_editor::{map_id}",
+        "map_id": map_id,
+        "version": 1,
+        "updated_at": None,
+        "selected_product_id": None,
+        "product_states": {},
+    }
+
+
+def _normalize_saved_generation(raw_generated: Any) -> dict[str, Any] | None:
+    if not isinstance(raw_generated, dict):
+        return None
+
+    normalized = deepcopy(raw_generated)
+    normalized["algorithm"] = _safe_text(normalized.get("algorithm")) or None
+    normalized["quantity_mode"] = _safe_text(normalized.get("quantity_mode")) or None
+    normalized["coverage_percent"] = int(round(_safe_number(normalized.get("coverage_percent"))))
+    normalized["flow_count"] = int(round(_safe_number(normalized.get("flow_count"))))
+    normalized["volume_total_t"] = int(round(_safe_number(normalized.get("volume_total_t"))))
+    normalized["origins"] = [dict(item) for item in normalized.get("origins", []) if isinstance(item, dict)]
+    normalized["destinations"] = [dict(item) for item in normalized.get("destinations", []) if isinstance(item, dict)]
+    normalized["flows"] = [dict(item) for item in normalized.get("flows", []) if isinstance(item, dict)]
+    coverage_data = normalized.get("coverage_data") if isinstance(normalized.get("coverage_data"), dict) else {}
+    normalized["coverage_data"] = dict(coverage_data)
+    return normalized
+
+
+def _normalize_saved_product_state(raw_state: Any) -> dict[str, Any] | None:
+    if not isinstance(raw_state, dict):
+        return None
+
+    normalized: dict[str, Any] = {}
+    algorithm = _safe_text(raw_state.get("algorithm"))
+    if algorithm:
+        normalized["algorithm"] = algorithm
+
+    quantity_mode = _safe_text(raw_state.get("quantityMode"))
+    if quantity_mode:
+        normalized["quantityMode"] = quantity_mode
+
+    for key in _INTEGER_EDITOR_STATE_KEYS:
+        if raw_state.get(key) is None:
+            continue
+        normalized[key] = int(round(_safe_number(raw_state.get(key))))
+
+    for key in _FLOAT_EDITOR_STATE_KEYS:
+        if raw_state.get(key) is None:
+            continue
+        normalized[key] = round(_safe_number(raw_state.get(key)), 6)
+
+    generated = _normalize_saved_generation(raw_state.get("generated"))
+    if generated is not None:
+        normalized["generated"] = generated
+
+    return normalized or None
+
+
+def load_freight_editor_document(map_id: str) -> dict[str, Any]:
+    target = _freight_editor_document_path(map_id)
+    if not target.exists():
+        return _empty_freight_editor_document(map_id)
+
+    try:
+        payload = load_json(target)
+    except (OSError, ValueError):
+        return _empty_freight_editor_document(map_id)
+
+    if not isinstance(payload, dict):
+        return _empty_freight_editor_document(map_id)
+
+    normalized = _empty_freight_editor_document(map_id)
+    normalized["updated_at"] = payload.get("updated_at")
+    selected_product_id = _safe_text(payload.get("selected_product_id"))
+    normalized["selected_product_id"] = selected_product_id or None
+
+    raw_states = payload.get("product_states") if isinstance(payload.get("product_states"), dict) else {}
+    normalized_states: dict[str, dict[str, Any]] = {}
+    for raw_product_id, raw_state in raw_states.items():
+        product_id = _safe_text(raw_product_id)
+        normalized_state = _normalize_saved_product_state(raw_state)
+        if not product_id or normalized_state is None:
+            continue
+        normalized_states[product_id] = normalized_state
+    normalized["product_states"] = normalized_states
+    return normalized
+
+
+def save_freight_editor_document(
+    map_id: str,
+    document: dict[str, Any],
+    updated_at: str | None = None,
+) -> dict[str, Any]:
+    existing = load_freight_editor_document(map_id)
+    raw_document = document if isinstance(document, dict) else {}
+    raw_states = raw_document.get("product_states") if isinstance(raw_document.get("product_states"), dict) else existing.get("product_states", {})
+
+    normalized_states: dict[str, dict[str, Any]] = {}
+    for raw_product_id, raw_state in raw_states.items():
+        product_id = _safe_text(raw_product_id)
+        normalized_state = _normalize_saved_product_state(raw_state)
+        if not product_id or normalized_state is None:
+            continue
+        normalized_states[product_id] = normalized_state
+
+    selected_product_id = _safe_text(raw_document.get("selected_product_id") or existing.get("selected_product_id"))
+    payload = {
+        "id": f"freight_editor::{map_id}",
+        "map_id": map_id,
+        "version": 1,
+        "updated_at": updated_at or _now_iso(),
+        "selected_product_id": selected_product_id or None,
+        "product_states": normalized_states,
+    }
+    return save_json(_freight_editor_document_path(map_id), payload)
 
 
 def _safe_number(value: Any) -> float:
@@ -61,6 +215,279 @@ def _compact_city_points(document: dict[str, Any], city_by_id: dict[str, dict[st
         )
     points.sort(key=lambda item: (-item["value"], item["label"]))
     return points
+
+
+def _load_product_points(
+    product_id: str,
+    layer: str,
+    city_by_id: dict[str, dict[str, Any]],
+    *,
+    map_id: str | None = None,
+    legacy_source_product_id: str | None = None,
+    point_cache: dict[tuple[str, str, str], list[dict[str, Any]]] | None = None,
+) -> list[dict[str, Any]]:
+    cache_key = (map_id or "", product_id, layer)
+    if point_cache is not None and cache_key in point_cache:
+        return point_cache[cache_key]
+
+    points = _compact_city_points(load_product_field_baked_document(product_id, layer, map_id=map_id), city_by_id)
+    legacy_id = str(legacy_source_product_id or "").strip()
+    if not points and legacy_id and legacy_id != product_id:
+        points = _compact_city_points(load_product_field_baked_document(legacy_id, layer, map_id=map_id), city_by_id)
+
+    if point_cache is not None:
+        point_cache[cache_key] = points
+    return points
+
+
+def _points_total(points: list[dict[str, Any]]) -> float:
+    return sum(float(item.get("value") or 0) for item in points)
+
+
+def _merge_point_sets(
+    point_sets: list[list[dict[str, Any]]],
+    city_by_id: dict[str, dict[str, Any]],
+    *,
+    total_volume: float | None = None,
+) -> list[dict[str, Any]]:
+    combined_weights: dict[str, float] = {}
+    valid_totals: list[float] = []
+    for points in point_sets:
+        points_total = _points_total(points)
+        if points_total <= 0:
+            continue
+        valid_totals.append(points_total)
+        for item in points:
+            city_id = str(item.get("city_id") or "").strip()
+            if not city_id:
+                continue
+            combined_weights[city_id] = combined_weights.get(city_id, 0.0) + (float(item.get("value") or 0) / points_total)
+
+    if not combined_weights:
+        return []
+
+    resolved_total = float(total_volume or 0)
+    if resolved_total <= 0:
+        resolved_total = sum(valid_totals) / max(len(valid_totals), 1)
+
+    weight_total = sum(combined_weights.values()) or 1.0
+    merged: list[dict[str, Any]] = []
+    for city_id, weight in combined_weights.items():
+        city = city_by_id.get(city_id)
+        value = resolved_total * (weight / weight_total)
+        if not city or value <= 0:
+            continue
+        merged.append(
+            {
+                "city_id": city_id,
+                "value": value,
+                "label": city.get("label") or city_id,
+                "state_code": city.get("state_code") or "",
+                "latitude": float(city.get("latitude") or 0),
+                "longitude": float(city.get("longitude") or 0),
+            }
+        )
+    merged.sort(key=lambda item: (-item["value"], item["label"]))
+    return merged
+
+
+def _related_point_sets(
+    related_ids: list[str],
+    layer: str,
+    city_by_id: dict[str, dict[str, Any]],
+    products_by_id: dict[str, dict[str, Any]],
+    *,
+    map_id: str | None = None,
+    point_cache: dict[tuple[str, str, str], list[dict[str, Any]]] | None = None,
+) -> list[list[dict[str, Any]]]:
+    point_sets: list[list[dict[str, Any]]] = []
+    seen: set[str] = set()
+    for raw_related_id in related_ids:
+        related_id = str(raw_related_id or "").strip()
+        if not related_id or related_id in seen:
+            continue
+        seen.add(related_id)
+        related_product = products_by_id.get(related_id, {"id": related_id})
+        points = _load_product_points(
+            related_id,
+            layer,
+            city_by_id,
+            map_id=map_id,
+            legacy_source_product_id=str(related_product.get("legacy_source_product_id") or "").strip() or None,
+            point_cache=point_cache,
+        )
+        if points:
+            point_sets.append(points)
+    return point_sets
+
+
+def _family_profile_point_sets(
+    family_id: str,
+    layer: str,
+    city_by_id: dict[str, dict[str, Any]],
+    products_by_id: dict[str, dict[str, Any]],
+    *,
+    exclude_product_id: str,
+    map_id: str | None = None,
+    point_cache: dict[tuple[str, str, str], list[dict[str, Any]]] | None = None,
+) -> list[list[dict[str, Any]]]:
+    point_sets: list[list[dict[str, Any]]] = []
+    for related_product in products_by_id.values():
+        related_id = str(related_product.get("id") or "").strip()
+        if not related_id or related_id == exclude_product_id:
+            continue
+        if str(related_product.get("family_id") or "") != family_id:
+            continue
+        if related_product.get("visible") is False or related_product.get("is_active") is False:
+            continue
+        points = _load_product_points(
+            related_id,
+            layer,
+            city_by_id,
+            map_id=map_id,
+            legacy_source_product_id=str(related_product.get("legacy_source_product_id") or "").strip() or None,
+            point_cache=point_cache,
+        )
+        if points:
+            point_sets.append(points)
+    return point_sets
+
+
+def _population_weighted_points(
+    city_by_id: dict[str, dict[str, Any]],
+    total_volume: float,
+    inference_rules: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if total_volume <= 0:
+        return []
+
+    demand_rules = inference_rules.get("demand_estimation") if isinstance(inference_rules, dict) else {}
+    minimum_population = max(float((demand_rules or {}).get("minimum_reference_population_thousands") or 40), 0.0)
+    population_exponent = max(float((demand_rules or {}).get("population_exponent") or 0.85), 0.1)
+
+    weights: list[tuple[dict[str, Any], float]] = []
+    for city in city_by_id.values():
+        population = float(city.get("population_thousands") or 0)
+        if population < minimum_population:
+            continue
+        weights.append((city, population**population_exponent))
+
+    weight_total = sum(weight for _, weight in weights) or 0.0
+    if weight_total <= 0:
+        return []
+
+    points = [
+        {
+            "city_id": str(city.get("id") or ""),
+            "value": total_volume * (weight / weight_total),
+            "label": city.get("label") or str(city.get("id") or ""),
+            "state_code": city.get("state_code") or "",
+            "latitude": float(city.get("latitude") or 0),
+            "longitude": float(city.get("longitude") or 0),
+        }
+        for city, weight in weights
+        if str(city.get("id") or "").strip()
+    ]
+    points.sort(key=lambda item: (-item["value"], item["label"]))
+    return points
+
+
+def _infer_supply_points(
+    product: dict[str, Any],
+    demand_points: list[dict[str, Any]],
+    city_by_id: dict[str, dict[str, Any]],
+    products_by_id: dict[str, dict[str, Any]],
+    *,
+    map_id: str | None = None,
+    point_cache: dict[tuple[str, str, str], list[dict[str, Any]]] | None = None,
+    inference_rules: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    product_id = str(product.get("id") or "").strip()
+    family_id = str(product.get("family_id") or "").strip()
+    reference_total = _points_total(demand_points) or None
+    inputs = [str(item or "").strip() for item in product.get("inputs", [])]
+    outputs = [str(item or "").strip() for item in product.get("outputs", [])]
+
+    input_demand_sets = _related_point_sets(
+        inputs,
+        "demand",
+        city_by_id,
+        products_by_id,
+        map_id=map_id,
+        point_cache=point_cache,
+    )
+    if input_demand_sets:
+        return _merge_point_sets(input_demand_sets, city_by_id, total_volume=reference_total)
+
+    family_supply_sets = _family_profile_point_sets(
+        family_id,
+        "supply",
+        city_by_id,
+        products_by_id,
+        exclude_product_id=product_id,
+        map_id=map_id,
+        point_cache=point_cache,
+    )
+    if family_supply_sets:
+        return _merge_point_sets(family_supply_sets, city_by_id, total_volume=reference_total)
+
+    output_supply_sets = _related_point_sets(
+        outputs,
+        "supply",
+        city_by_id,
+        products_by_id,
+        map_id=map_id,
+        point_cache=point_cache,
+    )
+    if output_supply_sets:
+        return _merge_point_sets(output_supply_sets, city_by_id, total_volume=reference_total)
+
+    return _population_weighted_points(city_by_id, float(reference_total or 0), inference_rules or {})
+
+
+def _infer_demand_points(
+    product: dict[str, Any],
+    supply_points: list[dict[str, Any]],
+    city_by_id: dict[str, dict[str, Any]],
+    products_by_id: dict[str, dict[str, Any]],
+    *,
+    map_id: str | None = None,
+    point_cache: dict[tuple[str, str, str], list[dict[str, Any]]] | None = None,
+    inference_rules: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    product_id = str(product.get("id") or "").strip()
+    family_id = str(product.get("family_id") or "").strip()
+    reference_total = _points_total(supply_points) or None
+    outputs = [str(item or "").strip() for item in product.get("outputs", [])]
+
+    output_supply_sets = _related_point_sets(
+        outputs,
+        "supply",
+        city_by_id,
+        products_by_id,
+        map_id=map_id,
+        point_cache=point_cache,
+    )
+    if output_supply_sets:
+        return _merge_point_sets(output_supply_sets, city_by_id, total_volume=reference_total)
+
+    estimated_population_points = _population_weighted_points(city_by_id, float(reference_total or 0), inference_rules or {})
+    if estimated_population_points:
+        return estimated_population_points
+
+    family_demand_sets = _family_profile_point_sets(
+        family_id,
+        "demand",
+        city_by_id,
+        products_by_id,
+        exclude_product_id=product_id,
+        map_id=map_id,
+        point_cache=point_cache,
+    )
+    if family_demand_sets:
+        return _merge_point_sets(family_demand_sets, city_by_id, total_volume=reference_total)
+
+    return []
 
 
 def _coverage_slice(points: list[dict[str, Any]], coverage_percent: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -345,8 +772,11 @@ def build_freight_editor_bootstrap_payload() -> dict[str, Any]:
     cities = [city.model_dump(mode="json") for city in active_map.cities]
     cities.sort(key=lambda item: item["label"])
     city_by_id = {str(city.get("id") or ""): city for city in cities if str(city.get("id") or "").strip()}
+    saved_document = load_freight_editor_document(active_map.id)
+    saved_product_states = dict(saved_document.get("product_states") or {})
 
     product_catalog = load_product_catalog_v2_master_payload()
+    inference_rules = load_product_inference_rules_payload()
     family_catalog = load_product_family_catalog_payload()
     family_colors = {
         str(item.get("id") or ""): str(item.get("color") or "#2d5a27")
@@ -354,19 +784,59 @@ def build_freight_editor_bootstrap_payload() -> dict[str, Any]:
         if str(item.get("id") or "").strip()
     }
     map_editor = load_map_editor_payload()
+    catalog_products = list(product_catalog.get("products", []))
+    products_by_id = {
+        str(product.get("id") or "").strip(): product
+        for product in catalog_products
+        if str(product.get("id") or "").strip()
+    }
+    point_cache: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
 
     products_payload: list[dict[str, Any]] = []
-    for product in sorted(product_catalog.get("products", []), key=lambda item: (int(item.get("order") or 0), str(item.get("name") or ""))):
+    for product in sorted(catalog_products, key=lambda item: (int(item.get("order") or 0), str(item.get("name") or ""))):
         product_id = str(product.get("id") or "").strip()
         if not product_id:
             continue
         if product.get("visible") is False or product.get("is_active") is False:
             continue
 
-        supply_points = _compact_city_points(load_product_field_baked_document(product_id, "supply", map_id=active_map.id), city_by_id)
-        demand_points = _compact_city_points(load_product_field_baked_document(product_id, "demand", map_id=active_map.id), city_by_id)
-        if not supply_points or not demand_points:
-            continue
+        legacy_source_product_id = str(product.get("legacy_source_product_id") or "").strip() or None
+        supply_points = _load_product_points(
+            product_id,
+            "supply",
+            city_by_id,
+            map_id=active_map.id,
+            legacy_source_product_id=legacy_source_product_id,
+            point_cache=point_cache,
+        )
+        demand_points = _load_product_points(
+            product_id,
+            "demand",
+            city_by_id,
+            map_id=active_map.id,
+            legacy_source_product_id=legacy_source_product_id,
+            point_cache=point_cache,
+        )
+        if not supply_points:
+            supply_points = _infer_supply_points(
+                product,
+                demand_points,
+                city_by_id,
+                products_by_id,
+                map_id=active_map.id,
+                point_cache=point_cache,
+                inference_rules=inference_rules,
+            )
+        if not demand_points:
+            demand_points = _infer_demand_points(
+                product,
+                supply_points,
+                city_by_id,
+                products_by_id,
+                map_id=active_map.id,
+                point_cache=point_cache,
+                inference_rules=inference_rules,
+            )
 
         initial_coverage = 90
         initial_flow_count = _default_flow_count(len(supply_points), len(demand_points))
@@ -385,6 +855,15 @@ def build_freight_editor_bootstrap_payload() -> dict[str, Any]:
             supply_points=supply_points,
             demand_points=demand_points,
         )
+        saved_state = saved_product_states.get(product_id) or {}
+        saved_generated = _normalize_saved_generation(saved_state.get("generated"))
+        resolved_generated = deepcopy(saved_generated) if saved_generated is not None else generated
+        coverage_data = resolved_generated.get("coverage_data") if isinstance(resolved_generated.get("coverage_data"), dict) else {}
+        editor_state = {
+            key: deepcopy(value)
+            for key, value in saved_state.items()
+            if key != "generated"
+        }
         products_payload.append(
             {
                 "id": product_id,
@@ -393,22 +872,50 @@ def build_freight_editor_bootstrap_payload() -> dict[str, Any]:
                 "family_id": str(product.get("family_id") or ""),
                 "color": family_colors.get(str(product.get("family_id") or ""), "#2d5a27"),
                 "defaults": defaults,
+                "editor_state": editor_state,
                 "summary": {
                     "supply_nonzero": len(supply_points),
                     "demand_nonzero": len(demand_points),
                     "supply_total_t": round(sum(item["value"] for item in supply_points)),
                     "demand_total_t": round(sum(item["value"] for item in demand_points)),
-                    "candidate_pairs": generated["coverage_data"]["pairs"],
-                    "covered_origins": generated["coverage_data"]["origins_count"],
-                    "covered_destinations": generated["coverage_data"]["destinations_count"],
+                    "candidate_pairs": int(
+                        round(
+                            _safe_number(
+                                coverage_data.get("pairs")
+                                if coverage_data.get("pairs") is not None
+                                else generated["coverage_data"]["pairs"]
+                            )
+                        )
+                    ),
+                    "covered_origins": int(
+                        round(
+                            _safe_number(
+                                coverage_data.get("origins_count")
+                                if coverage_data.get("origins_count") is not None
+                                else generated["coverage_data"]["origins_count"]
+                            )
+                        )
+                    ),
+                    "covered_destinations": int(
+                        round(
+                            _safe_number(
+                                coverage_data.get("destinations_count")
+                                if coverage_data.get("destinations_count") is not None
+                                else generated["coverage_data"]["destinations_count"]
+                            )
+                        )
+                    ),
                 },
                 "supply_points": [{"city_id": item["city_id"], "value": round(item["value"], 3)} for item in supply_points],
                 "demand_points": [{"city_id": item["city_id"], "value": round(item["value"], 3)} for item in demand_points],
-                "generated": generated,
+                "generated": resolved_generated,
             }
         )
 
-    selected_product_id = products_payload[0]["id"] if products_payload else None
+    product_ids = {product["id"] for product in products_payload}
+    selected_product_id = _safe_text(saved_document.get("selected_product_id")) or (products_payload[0]["id"] if products_payload else None)
+    if selected_product_id not in product_ids:
+        selected_product_id = products_payload[0]["id"] if products_payload else None
     return {
         "ui": load_ui_payload(),
         "map_repository": map_repository_payload(),

@@ -463,7 +463,7 @@ def test_update_city_editor_freight_value_rejects_quantity_above_available_suppl
         )
 
 
-def test_build_city_editor_bootstrap_payload_keeps_frozen_topology_when_products_change(monkeypatch) -> None:
+def test_build_city_editor_bootstrap_payload_uses_latest_freight_mesh_even_when_document_has_frozen_snapshot(monkeypatch) -> None:
     monkeypatch.setattr(city_service, "load_active_map_bundle", _active_map_bundle_three_cities)
     monkeypatch.setattr(city_service, "load_product_catalog_v2_master_payload", lambda: {
         "products": [
@@ -547,5 +547,8 @@ def test_build_city_editor_bootstrap_payload_keeps_frozen_topology_when_products
 
     payload = city_service.build_city_editor_bootstrap_payload()
 
-    assert [flow["id"] for flow in payload["freight_flows"]] == ["trigo::city-a::city-b"]
-    assert payload["freight_flows"][0]["quantity_t"] == 200
+    quantities_by_flow_id = {flow["id"]: flow["quantity_t"] for flow in payload["freight_flows"]}
+
+    assert set(quantities_by_flow_id) == {"trigo::city-a::city-b", "trigo::city-a::city-c"}
+    assert quantities_by_flow_id["trigo::city-a::city-b"] == 200
+    assert quantities_by_flow_id["trigo::city-a::city-c"] == 300

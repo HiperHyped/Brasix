@@ -60,6 +60,7 @@ const DIFFICULTY_OPTIONS = {
 const SIZE_TIER_ORDER = ["super_leve", "leve", "medio", "pesado", "super_pesado", "especial"];
 const DEFAULT_CAPITAL_BASE_INITIAL_CASH_BRL = 1000000;
 const RECOMMENDED_FREIGHT_LIMIT = 4;
+const LOG_HISTORY_LIMIT = 100;
 const MIN_ROBOT_COUNT = 2;
 const MAX_ROBOT_COUNT = 20;
 const GAME_SETUP_TRUCK_ID_SEED = `${Date.now()}${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
@@ -115,7 +116,18 @@ const ROBOT_COLORS = [
 ];
 const NETWORK_OPACITY_SCALE = 0.92;
 const SIMULATION_TICK_MS = 250;
+const ANALYTICS_HISTORY_MAX_POINTS = 72;
+const ANALYTICS_SNAPSHOT_INTERVAL_HOURS = 6;
 const WEEKDAY_LABELS = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
+const ANALYTICS_TABS = [
+  { id: "overview", label: "Geral" },
+  { id: "player", label: "Jogador" },
+  { id: "competition", label: "Empresas" },
+  { id: "freights", label: "Fretes" },
+  { id: "trucks", label: "Caminhoes" },
+  { id: "products", label: "Produtos" },
+  { id: "cities", label: "Cidades" },
+];
 
 const state = {
   bootstrap: null,
@@ -183,6 +195,7 @@ const state = {
     pendingHumanAssignments: [],
     activeHumanAssignment: null,
     activePurchase: null,
+    cityFreightBrowseCityId: "",
     dispatchSelectedCityId: "",
     mainMapDispatchSelection: false,
     dispatchMap: null,
@@ -192,14 +205,23 @@ const state = {
   simulation: {
     currentTime: initialSimulationDate(),
     speedId: "x4",
+    lastRunningSpeedId: "x4",
     timerId: null,
     lastRealTimestamp: 0,
+  },
+  analytics: {
+    activeTabId: ANALYTICS_TABS[0].id,
+    history: [],
+    lastSnapshotBucket: "",
+    flowStatsById: {},
+    truckStatsById: {},
   },
 };
 
 const refs = {
   status: document.getElementById("game-runtime-status"),
   themeToggle: document.getElementById("game-runtime-theme-toggle"),
+  analyticsButton: document.getElementById("game-runtime-analytics-button"),
   speedControls: document.getElementById("game-runtime-speed-controls"),
   clock: document.getElementById("game-runtime-clock"),
   mapStage: document.getElementById("game-runtime-map-stage"),
@@ -228,6 +250,8 @@ const refs = {
   freightRailMeta: document.getElementById("game-runtime-freight-rail-meta"),
   freightRailTitle: document.getElementById("game-runtime-freight-rail-title"),
   freightSelection: document.getElementById("game-runtime-freight-selection"),
+  analyticsTabs: document.getElementById("game-runtime-analytics-tabs"),
+  analyticsContent: document.getElementById("game-runtime-analytics-content"),
 };
 
 function initialSimulationDate() {
@@ -291,6 +315,10 @@ function formatCurrencyPerTon(value) {
   const numericValue = Number(value || 0);
   const digits = numericValue >= 10 ? 0 : 1;
   return `R$ ${numberFormat(digits).format(roundNumber(numericValue, 1))}/t`;
+}
+
+function formatPercent(value, digits = 0) {
+  return `${numberFormat(digits).format(roundNumber(Number(value || 0), digits))}%`;
 }
 
 function formatLiters(value) {
@@ -391,6 +419,30 @@ function currentSelectionHqCityId() {
 
 function currentSelectionCity() {
   return state.citiesById[currentSelectionHqCityId()] || null;
+}
+
+function currentFreightBrowseCityId() {
+  return String(state.setup.cityFreightBrowseCityId || "").trim();
+}
+
+function cityFreightBrowseMode() {
+  return Boolean(currentFreightBrowseCityId() && state.players.length && !state.setup.activeHumanAssignment && !purchaseFlowActive());
+}
+
+function clearCityFreightBrowseState() {
+  state.setup.cityFreightBrowseCityId = "";
+}
+
+function openCityFreightBrowser(cityId) {
+  if (!refs.modalRoot || !state.players.length || purchaseFlowActive() || mainMapDispatchSelectionActive()) {
+    return;
+  }
+  const normalizedCityId = String(cityId || "").trim();
+  if (!normalizedCityId || !state.citiesById[normalizedCityId]) {
+    return;
+  }
+  state.setup.cityFreightBrowseCityId = normalizedCityId;
+  openSetupModal("freights");
 }
 
 function setupCurrentHqCity() {
@@ -530,8 +582,38 @@ function speedOptionById(speedId) {
 }
 
 function setSpeed(speedId) {
-  state.simulation.speedId = speedOptionById(speedId).id;
+  const nextSpeedId = speedOptionById(speedId).id;
+  state.simulation.speedId = nextSpeedId;
+  if (nextSpeedId !== "pause") {
+    state.simulation.lastRunningSpeedId = nextSpeedId;
+  }
   renderSpeedControls();
+}
+
+function togglePauseSpeed() {
+  if (state.simulation.speedId === "pause") {
+    setSpeed(state.simulation.lastRunningSpeedId || "x4");
+    return;
+  }
+  setSpeed("pause");
+}
+
+function keyboardTargetAcceptsTyping(eventTarget) {
+  if (!(eventTarget instanceof HTMLElement)) {
+    return false;
+  }
+  if (eventTarget.isContentEditable) {
+    return true;
+  }
+  const field = eventTarget.closest("input, textarea, select, [contenteditable='true']");
+  if (!(field instanceof HTMLElement)) {
+    return false;
+  }
+  if (field instanceof HTMLInputElement) {
+    const type = String(field.type || "text").toLowerCase();
+    return !["button", "checkbox", "color", "file", "image", "radio", "range", "reset", "submit"].includes(type);
+  }
+  return true;
 }
 
 function renderSpeedControls() {
@@ -1268,6 +1350,22 @@ function setupPricedFreightsForCity(cityId) {
     });
 }
 
+function buildCityFreightBrowseEntries(cityId) {
+  const nextCityId = String(cityId || "").trim();
+  if (!nextCityId) {
+    return [];
+  }
+  return setupPricedFreightsForCity(nextCityId)
+    .filter((entry) => ["available", "active"].includes(entry.availability?.state || "available"))
+    .sort((left, right) => {
+      const leftRank = left.availability?.state === "available" ? 0 : 1;
+      const rightRank = right.availability?.state === "available" ? 0 : 1;
+      return leftRank - rightRank
+        || Number(right.unitRevenuePerTon || 0) - Number(left.unitRevenuePerTon || 0)
+        || flowQuantityBaseTons(right.flow) - flowQuantityBaseTons(left.flow);
+    });
+}
+
 function setupPricedFreightEntryById(flowId, cityId = currentSelectionHqCityId()) {
   return setupPricedFreightsForCity(cityId).find((entry) => entry.flow.id === flowId) || null;
 }
@@ -1386,6 +1484,7 @@ function normalizeBootstrap(bootstrapPayload, runtimePayload) {
   state.setup.pendingHumanAssignments = [];
   state.setup.activeHumanAssignment = null;
   state.setup.activePurchase = null;
+  state.setup.cityFreightBrowseCityId = "";
   state.setup.dispatchSelectedCityId = "";
   state.setup.mainMapDispatchSelection = false;
   state.setup.dispatchMarkersByCityId = {};
@@ -2688,7 +2787,7 @@ function appendLog(playerId, tone, message) {
     timeLabel: formatClock(state.simulation.currentTime),
     timestamp: state.simulation.currentTime.getTime(),
   });
-  state.logs = state.logs.slice(0, 14);
+  state.logs = state.logs.slice(0, LOG_HISTORY_LIMIT);
 }
 
 function buildDynamicContractSpec(player, truckUnit, flow) {
@@ -2744,6 +2843,11 @@ function assignFlowToTruck(player, truckUnit, flow) {
   }
   const contract = createContractState(player, buildDynamicContractSpec(player, truckUnit, flow));
   player.contracts.push(contract);
+  const flowStat = analyticsEnsureFlowStat(flow);
+  if (flowStat) {
+    flowStat.activeCount += 1;
+    flowStat.lastPlayerId = player.id;
+  }
   appendLog(player.id, "neutral", `${player.label} assumiu ${flow.product_name || "carga"} em ${cityLabel(flow.origin_id)} rumo a ${cityLabel(flow.destination_id)}.`);
   return contract;
 }
@@ -2848,6 +2952,20 @@ function bestRobotRecoveryDispatch(player, truckUnit, originCityId) {
   return null;
 }
 
+function bestHumanNearestContractDispatch() {
+  const assignment = state.setup.activeHumanAssignment;
+  const player = state.playersById.human || null;
+  const truckUnit = assignmentTruckUnit();
+  if (!assignment || !player || !truckUnit) {
+    return null;
+  }
+  const target = bestRobotRecoveryDispatch(player, truckUnit, assignment.originCityId);
+  if (!target || target.dispatchMode !== "reposition" || !target.targetFlow) {
+    return null;
+  }
+  return target;
+}
+
 function processPendingHumanAssignmentQueue() {
   if (!openingWizardEnabled() || state.setup.activeModal || !state.setup.pendingHumanAssignments.length) {
     return;
@@ -2859,6 +2977,7 @@ function processPendingHumanAssignmentQueue() {
     if (!player || !truckUnit) {
       continue;
     }
+    clearCityFreightBrowseState();
     const cityFlows = state.outboundFreightsByCityId[nextAssignment.originCityId] || [];
     const availableEntries = cityFlows
       .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
@@ -2896,6 +3015,7 @@ function startHumanTruckDispatchSelection(truckUnitId, { optional = true } = {})
   if (state.setup.activeHumanAssignment && !state.setup.activeHumanAssignment.optional) {
     return false;
   }
+  clearCityFreightBrowseState();
   const truckUnit = (player.truckUnits || []).find((unit) => unit.id === normalizedTruckUnitId) || null;
   const contract = (player.contracts || []).find((item) => item.truckUnitId === normalizedTruckUnitId) || null;
   const originCityId = String(truckUnit?.currentCityId || player.hqCityId || "").trim();
@@ -2920,6 +3040,31 @@ function completeContractCycle(player, contract) {
   contract.truckUnit.currentCityId = contract.flow.destination_id;
   contract.truckUnit.odometerKm = roundNumber(projectedTravelSnapshot(contract)?.odometerKm || contract.truckUnit.odometerKm || 0, 1);
   contract.truckUnit.fuelLevelLiters = roundNumber(projectedTravelSnapshot(contract)?.fuelLevelLiters || contract.truckUnit.fuelLevelLiters || 0, 2);
+  const truckStat = analyticsEnsureTruckStat(player, contract.truckUnit);
+  if (truckStat) {
+    truckStat.fuelCostBrl = roundNumber(Number(truckStat.fuelCostBrl || 0) + Number(contract.realizedFuelCostBrl || 0), 2);
+    truckStat.estimatedDistanceKm = roundNumber(Number(truckStat.estimatedDistanceKm || 0)
+      + Number(contract.repositionTrack?.distanceKm || 0)
+      + Number(contract.deliveryTrack?.distanceKm || 0)
+      + Number(contract.returnTrack?.distanceKm || 0), 2);
+  }
+  if (!contract.dispatchOnly) {
+    const flowStat = analyticsEnsureFlowStat(contract.flow);
+    if (flowStat) {
+      flowStat.totalDeliveries += 1;
+      flowStat.totalTonnes = roundNumber(Number(flowStat.totalTonnes || 0) + Number(contract.payloadTons || 0), 2);
+      flowStat.totalRevenueBrl = roundNumber(Number(flowStat.totalRevenueBrl || 0) + Number(contract.revenuePerDeliveryBrl || 0), 2);
+      flowStat.totalProfitBrl = roundNumber(Number(flowStat.totalProfitBrl || 0) + Number(contract.profitPerDeliveryBrl || 0), 2);
+      flowStat.activeCount = Math.max(0, Number(flowStat.activeCount || 0) - 1);
+      flowStat.lastPlayerId = player?.id || "";
+    }
+    if (truckStat) {
+      truckStat.deliveries += 1;
+      truckStat.tonnes = roundNumber(Number(truckStat.tonnes || 0) + Number(contract.payloadTons || 0), 2);
+      truckStat.revenueBrl = roundNumber(Number(truckStat.revenueBrl || 0) + Number(contract.revenuePerDeliveryBrl || 0), 2);
+      truckStat.profitBrl = roundNumber(Number(truckStat.profitBrl || 0) + Number(contract.profitPerDeliveryBrl || 0), 2);
+    }
+  }
   if (exclusiveFreightsEnabled() && !contract.dispatchOnly) {
     markFreightFlowCompleted(player, contract);
   }
@@ -3145,6 +3290,11 @@ function buildPlayers() {
   state.humanPrepared = Boolean(players[0]?.prepared);
   state.activeDrawerPlayerId = "";
   state.focusedPlayerId = players[0]?.id || "";
+  state.analytics.flowStatsById = {};
+  state.analytics.truckStatsById = {};
+  state.analytics.history = [];
+  state.analytics.lastSnapshotBucket = "";
+  analyticsHydrateCurrentState();
 
   appendLog("system", "neutral", `${state.bootstrap?.active_map?.name || state.runtime?.metadata?.map_name || "Mapa"} carregado.`);
   appendLog(players[0]?.id || "human", state.humanPrepared ? "positive" : "neutral", openingWizardEnabled()
@@ -3152,6 +3302,7 @@ function buildPlayers() {
     : (state.humanPrepared
       ? "Preparacao carregada na partida."
       : "Preparacao nao foi encontrada; a operacao abriu com selecao automatica."));
+  analyticsRecordSnapshot(true);
 }
 
 function ensureMap() {
@@ -3374,6 +3525,7 @@ function clearPurchaseDraftState() {
   state.setup.company.fleetPurchased = false;
   state.setup.selectedTruckInstances = [];
   state.setup.selectedFreightAssignments = {};
+  clearCityFreightBrowseState();
   state.setup.dispatchSelectedCityId = "";
 }
 
@@ -3382,6 +3534,7 @@ function startRuntimeTruckPurchaseFlow(playerId = "human") {
   if (!player || !player.isHuman) {
     return;
   }
+  clearCityFreightBrowseState();
   state.setup.activePurchase = { playerId: player.id };
   state.setup.company.hqCityId = player.hqCityId;
   state.setup.company.fleetPurchased = false;
@@ -3798,6 +3951,26 @@ function assignmentTruckSummaryMarkup(truckUnit) {
   `;
 }
 
+function setFreightModalContextLabels({ assignmentMode = false, cityBrowse = false } = {}) {
+  if (!refs.modalRoot) {
+    return;
+  }
+  const modalTitle = refs.modalRoot.querySelector('[data-runtime-modal="freights"] .game-setup-modal-head h2');
+  if (modalTitle instanceof HTMLElement) {
+    modalTitle.textContent = cityBrowse ? "Fretes da cidade" : "Seletor de fretes";
+  }
+  const railEyebrow = refs.modalRoot.querySelector('[data-runtime-modal="freights"] .game-setup-rail-head .eyebrow');
+  if (railEyebrow instanceof HTMLElement) {
+    railEyebrow.textContent = cityBrowse ? "Cidade selecionada" : assignmentMode ? "Destino" : "Carteira inicial";
+  }
+  if (refs.freightRail) {
+    refs.freightRail.setAttribute("aria-label", cityBrowse ? "Fretes da cidade selecionada" : "Selecao inicial de fretes");
+  }
+  if (refs.freightSelection) {
+    refs.freightSelection.setAttribute("aria-label", cityBrowse ? "Resumo dos fretes da cidade" : "Resumo da carteira inicial");
+  }
+}
+
 function mainMapDispatchSelectionActive() {
   return advancedDispatchEnabled() && Boolean(state.setup.mainMapDispatchSelection && state.setup.activeHumanAssignment);
 }
@@ -3957,18 +4130,140 @@ function renderDispatchDestinationMap() {
   }, 30);
 }
 
+function freightCardValueBrl(entry) {
+  const directRevenue = Number(entry?.contractRevenue || 0);
+  if (directRevenue > 0) {
+    return directRevenue;
+  }
+  const payloadTons = Math.max(0, Number(entry?.contractPayloadTons || flowQuantityBaseTons(entry?.flow) || 0));
+  const unitRevenuePerTon = Number(entry?.unitRevenuePerTon || 0);
+  return payloadTons > 0 && unitRevenuePerTon > 0 ? payloadTons * unitRevenuePerTon : 0;
+}
+
+function freightCardWeightTons(entry) {
+  return Math.max(0, Number(entry?.contractPayloadTons || flowQuantityBaseTons(entry?.flow) || 0));
+}
+
+function setupFreightCardStatus({
+  selected = false,
+  availabilityState = "available",
+  assignmentMode = false,
+  truckCompatible = true,
+  fuelFeasible = true,
+  hasSelectedFleet = true,
+  hasProductCompatibleTruck = true,
+  compatible = false,
+} = {}) {
+  if (selected) {
+    return { label: "Selecionado", tone: "is-instance" };
+  }
+  if (availabilityState === "active") {
+    return { label: "Em execucao", tone: "is-blocked" };
+  }
+  if (assignmentMode && !truckCompatible) {
+    return { label: "Incompativel", tone: "is-muted" };
+  }
+  if (truckCompatible && !fuelFeasible) {
+    return { label: "Sem autonomia", tone: "is-blocked" };
+  }
+  if (hasSelectedFleet && !hasProductCompatibleTruck) {
+    return { label: "Sem frota", tone: "is-muted" };
+  }
+  if (hasSelectedFleet && !compatible) {
+    return { label: "Sem caminhao", tone: "is-muted" };
+  }
+  return { label: "Disponivel", tone: "is-available" };
+}
+
+function setupFreightCardMarkup(entry, {
+  selected = false,
+  cardEnabled = true,
+  statusLabel = "Disponivel",
+  statusTone = "is-available",
+  showAction = false,
+  actionLabel = "",
+  actionIcon = "play_arrow",
+  actionDisabled = false,
+} = {}) {
+  const flow = entry.flow;
+  const weightTons = freightCardWeightTons(entry);
+  const valueBrl = freightCardValueBrl(entry);
+  return `
+    <article class="game-setup-rail-card game-setup-freight-card${selected ? " is-selected" : ""}${cardEnabled ? "" : " is-disabled"}" data-rail-card="true" style="--freight-color:${escapeHtml(flow.product_color || setupCompany().color)}">
+      <div class="game-setup-rail-badges">
+        <span class="game-setup-pill ${escapeHtml(statusTone)}">${escapeHtml(statusLabel)}</span>
+      </div>
+      <div class="game-setup-freight-product">
+        <span class="game-setup-product-emoji">${escapeHtml(flow.product_emoji || "📦")}</span>
+        <span class="game-setup-freight-product-separator" aria-hidden="true">-</span>
+        <strong class="game-setup-freight-product-name">${escapeHtml(flow.product_name)}</strong>
+      </div>
+      <div class="game-setup-freight-route">
+        <div class="game-setup-freight-route-line is-origin">
+          <strong>${escapeHtml(flow.origin_label)}</strong>
+          <span class="material-symbols-outlined" aria-hidden="true">east</span>
+        </div>
+        <div class="game-setup-freight-route-line is-destination">
+          <strong>${escapeHtml(flow.destination_label)}</strong>
+        </div>
+      </div>
+      <div class="game-setup-spec-grid game-setup-freight-spec-grid">
+        <article><span>Distancia</span><strong>${escapeHtml(formatDistanceKm(flow.distance_km))}</strong></article>
+        <article><span>Peso</span><strong>${escapeHtml(weightTons > 0 ? formatTonnes(weightTons) : "-")}</strong></article>
+        <article><span>Taxa</span><strong>${escapeHtml(Number(entry.unitRevenuePerTon || 0) > 0 ? formatCurrencyPerTon(entry.unitRevenuePerTon) : "-")}</strong></article>
+        <article><span>Valor</span><strong>${escapeHtml(valueBrl > 0 ? formatCurrency(valueBrl) : "-")}</strong></article>
+      </div>
+      ${showAction ? `
+        <button class="editor-header-action game-setup-freight-toggle" type="button" data-runtime-toggle-freight="${escapeHtml(flow.id)}"${actionDisabled ? " disabled" : ""}>
+          <span class="material-symbols-outlined" aria-hidden="true">${escapeHtml(actionIcon)}</span>
+          <span>${escapeHtml(actionLabel)}</span>
+        </button>
+      ` : ""}
+    </article>
+  `;
+}
+
 function renderSetupFreightRail() {
   if (!refs.freightRail) {
     return;
   }
   const assignmentMode = Boolean(state.setup.activeHumanAssignment);
+  const cityBrowse = cityFreightBrowseMode();
   const assignmentTruck = assignmentMode ? assignmentTruckUnit() : null;
-  const cityId = assignmentMode ? state.setup.activeHumanAssignment.originCityId : currentSelectionHqCityId();
+  const cityId = assignmentMode
+    ? state.setup.activeHumanAssignment.originCityId
+    : cityBrowse
+      ? currentFreightBrowseCityId()
+      : currentSelectionHqCityId();
+  setFreightModalContextLabels({ assignmentMode, cityBrowse });
+  if (cityBrowse) {
+    const browseEntries = buildCityFreightBrowseEntries(cityId);
+    const openEntries = browseEntries.filter((entry) => entry.availability?.state !== "active");
+    const activeEntries = browseEntries.filter((entry) => entry.availability?.state === "active");
+    refs.freightRail.innerHTML = browseEntries.length
+      ? browseEntries.map((entry) => {
+        const availabilityState = entry.availability?.state || "available";
+        const isOpen = availabilityState !== "active";
+        const status = setupFreightCardStatus({ availabilityState, compatible: isOpen, hasSelectedFleet: false });
+        return setupFreightCardMarkup(entry, {
+          statusLabel: status.label,
+          statusTone: status.tone,
+        });
+      }).join("")
+      : `<div class="truck-gallery-empty">${escapeHtml(`Nao ha fretes cadastrados saindo de ${cityLabel(cityId) || "a cidade selecionada"}.`)}</div>`;
+
+    if (refs.freightRailMeta) {
+      refs.freightRailMeta.textContent = `${formatInteger(openEntries.length)} em aberto · ${formatInteger(activeEntries.length)} em execucao · ${cityLabel(cityId)}`;
+    }
+    if (refs.freightRailTitle) {
+      refs.freightRailTitle.textContent = `Fretes de saida de ${cityLabel(cityId)}`;
+    }
+    bindWheelRail(refs.freightRail);
+    updateRailPerspective(refs.freightRail);
+    return;
+  }
   const pricedEntries = assignmentMode ? buildHumanAssignmentPricedEntries() : setupPricedFreightsForCity(cityId);
   const selectedEntries = assignmentMode ? [] : setupSelectedPricedFreightEntries();
-  const recommendedIds = new Set((assignmentMode
-    ? pricedEntries.filter((entry) => humanAssignmentEntrySelectable(entry))
-    : setupRecommendedPricedFreights(RECOMMENDED_FREIGHT_LIMIT)).map((entry) => entry.flow.id));
   const supportedProductIds = setupSelectedTruckSupportedProductIds();
   const referenceProductIds = setupReferenceSupportedProductIds();
   const hasSelectedFleet = assignmentMode ? true : setupSelectedTruckEntries().length > 0;
@@ -3986,37 +4281,10 @@ function renderSetupFreightRail() {
         ? (truckCompatible && available && fuelFeasible)
         : Boolean(entry.contractTruckUnit) && available && fuelFeasible;
       const suggestedForReferenceFleet = referenceProductIds.has(flow.product_id);
-      const contractTruckLabel = entry.contractTruck?.short_label || entry.contractTruck?.label || "-";
-      const contractTruckUnitLabel = entry.contractTruckUnit ? `${truckUnitNumberLabel(entry.contractTruckUnit)} · ${contractTruckLabel}` : contractTruckLabel;
-      const contractSummary = assignmentMode && !truckCompatible
-        ? `${contractTruckUnitLabel} nao transporta ${flow.product_name}`
-        : entry.contractTruck
-        ? `1 viagem: ${formatCurrency(entry.contractRevenue)} · ${contractTruckUnitLabel} · ${formatTonnes(entry.contractPayloadTons)}`
-        : hasSelectedFleet
-          ? "Sem caminhao livre na origem para calcular o contrato"
-          : "Escolha um caminhao compativel para calcular o contrato";
-      const fuelMessage = fuelBlockedMessage(entry.executionPlan?.outboundPlan || entry.executionPlan?.repositionPlan || entry.executionPlan);
-      const compatibilityMessage = !available
-        ? entry.availability.message
-        : assignmentMode && !truckCompatible
-          ? `Incompativel com ${contractTruckUnitLabel}`
-        : !fuelFeasible
-          ? fuelMessage
-          : assignmentMode
-            ? `Novo frete para ${truckUnitNumberLabel(entry.contractTruckUnit)}`
-            : compatible
-              ? "Caminhao livre na origem"
-              : hasSelectedFleet
-                ? hasProductCompatibleTruck
-                  ? "Sem caminhao livre na origem"
-                  : "Inativo para a frota atual"
-                : suggestedForReferenceFleet
-                  ? "Compativel com a frota sugerida"
-                  : "Escolha uma frota compativel";
       const cardEnabled = compatible || (!assignmentMode && !hasSelectedFleet && suggestedForReferenceFleet && available);
       const actionLabel = assignmentMode
         ? compatible
-          ? "Assumir frete"
+          ? "Assumir Frete"
           : !available
             ? "Indisponivel"
             : !truckCompatible
@@ -4035,39 +4303,26 @@ function renderSetupFreightRail() {
                 : hasSelectedFleet
                   ? "Sem frota compativel"
                   : "Escolha a frota";
-      return `
-        <article class="game-setup-rail-card game-setup-freight-card${selected ? " is-selected" : ""}${cardEnabled ? "" : " is-disabled"}" data-rail-card="true" style="--freight-color:${escapeHtml(flow.product_color || setupCompany().color)}">
-          <div class="game-setup-rail-badges">
-            ${recommendedIds.has(flow.id) ? `<span class="game-setup-pill is-recommended">Top recomendado</span>` : ""}
-            ${!assignmentMode && selected && entry.contractTruckUnit ? `<span class="game-setup-pill is-instance">${escapeHtml(truckUnitNumberLabel(entry.contractTruckUnit))}</span>` : ""}
-            ${assignmentMode && available && truckCompatible && fuelFeasible ? `<span class="game-setup-pill is-available">Disponivel</span>` : ""}
-            ${availabilityState === "active" ? `<span class="game-setup-pill is-blocked">Em execucao</span>` : ""}
-            ${assignmentMode && !truckCompatible ? `<span class="game-setup-pill is-muted">Incompativel</span>` : ""}
-            ${truckCompatible && !fuelFeasible ? `<span class="game-setup-pill is-blocked">Sem autonomia</span>` : ""}
-          </div>
-          <div class="game-setup-freight-product">
-            <span class="game-setup-product-emoji">${escapeHtml(flow.product_emoji || "📦")}</span>
-            <div>
-              <strong>${escapeHtml(flow.product_name)}</strong>
-              <small>${escapeHtml(entry.contractTruck ? `${contractTruckUnitLabel} · ${formatTonnes(entry.contractPayloadTons)} por viagem` : "Preco por tonelada da rota")}</small>
-            </div>
-          </div>
-          <div class="game-setup-freight-route">
-            <strong>${escapeHtml(flow.origin_label)}</strong>
-            <span class="material-symbols-outlined" aria-hidden="true">east</span>
-            <strong>${escapeHtml(flow.destination_label)}</strong>
-          </div>
-          <div class="game-setup-spec-grid game-setup-freight-spec-grid">
-            <article><span>Distancia</span><strong>${escapeHtml(formatDistanceKm(flow.distance_km))}</strong></article>
-            <article><span>Taxa</span><strong>${escapeHtml(truckCompatible && entry.unitRevenuePerTon > 0 ? formatCurrencyPerTon(entry.unitRevenuePerTon) : "-")}</strong></article>
-          </div>
-          <p class="game-setup-compatibility-note${available && fuelFeasible && (compatible || (!hasSelectedFleet && suggestedForReferenceFleet)) ? " is-active" : ""}">${escapeHtml(`${compatibilityMessage} · ${contractSummary}`)}</p>
-          <button class="editor-header-action game-setup-freight-toggle" type="button" data-runtime-toggle-freight="${escapeHtml(flow.id)}"${compatible ? "" : " disabled"}>
-            <span class="material-symbols-outlined" aria-hidden="true">${escapeHtml(assignmentMode ? (compatible ? "play_arrow" : "block") : selected ? "check_circle" : compatible ? "add_circle" : "block")}</span>
-            <span>${escapeHtml(actionLabel)}</span>
-          </button>
-        </article>
-      `;
+        const status = setupFreightCardStatus({
+          selected,
+          availabilityState,
+          assignmentMode,
+          truckCompatible,
+          fuelFeasible,
+          hasSelectedFleet,
+          hasProductCompatibleTruck,
+          compatible,
+        });
+        return setupFreightCardMarkup(entry, {
+          selected,
+          cardEnabled,
+          statusLabel: status.label,
+          statusTone: status.tone,
+          showAction: true,
+          actionLabel,
+          actionIcon: assignmentMode ? (compatible ? "play_arrow" : "block") : selected ? "check_circle" : compatible ? "add_circle" : "block",
+          actionDisabled: !compatible,
+        });
     }).join("")
     : `<div class="truck-gallery-empty">${escapeHtml(assignmentMode && advancedDispatchEnabled() ? `Nao ha contratos livres em ${cityLabel(cityId)}. Use o mapa principal para reposicionar ou voltar para a sede.` : `Nao ha fretes de saida ativos para ${cityLabel(cityId) || "a cidade atual"}.`)}</div>`;
 
@@ -4091,7 +4346,58 @@ function renderSetupFreightSelection() {
     return;
   }
   const assignmentMode = Boolean(state.setup.activeHumanAssignment);
-  const cityId = assignmentMode ? state.setup.activeHumanAssignment.originCityId : currentSelectionHqCityId();
+  const cityBrowse = cityFreightBrowseMode();
+  const cityId = assignmentMode
+    ? state.setup.activeHumanAssignment.originCityId
+    : cityBrowse
+      ? currentFreightBrowseCityId()
+      : currentSelectionHqCityId();
+  if (cityBrowse) {
+    const browseEntries = buildCityFreightBrowseEntries(cityId);
+    const openEntries = browseEntries.filter((entry) => entry.availability?.state !== "active");
+    const activeEntries = browseEntries.filter((entry) => entry.availability?.state === "active");
+    const totalOpenTonnes = openEntries.reduce((total, entry) => total + flowQuantityBaseTons(entry.flow), 0);
+    const bestOpenEntry = openEntries[0] || null;
+    refs.freightSelection.innerHTML = `
+      <div class="game-setup-selector-head">
+        <span class="eyebrow">Cidade</span>
+        <h3>${escapeHtml(`Fretes em ${cityLabel(cityId)}`)}</h3>
+      </div>
+      <div class="game-setup-summary-metrics">
+        <article><span>Em aberto</span><strong>${escapeHtml(formatInteger(openEntries.length))}</strong></article>
+        <article><span>Em execucao</span><strong>${escapeHtml(formatInteger(activeEntries.length))}</strong></article>
+        <article><span>Melhor taxa</span><strong>${escapeHtml(bestOpenEntry ? formatCurrencyPerTon(bestOpenEntry.unitRevenuePerTon) : "-")}</strong></article>
+        <article><span>Carga base</span><strong>${escapeHtml(openEntries.length ? formatTonnes(totalOpenTonnes) : "-")}</strong></article>
+      </div>
+      <div class="game-setup-section-block">
+        <div class="game-setup-section-head"><span class="eyebrow">Em aberto</span><strong>${escapeHtml(`${formatInteger(openEntries.length)} contratos`)}</strong></div>
+        <div class="game-setup-selection-list">
+          ${openEntries.length
+            ? openEntries.slice(0, 4).map((entry) => `
+              <article class="game-setup-selection-line">
+                <strong>${escapeHtml(entry.flow.product_name)}</strong>
+                <span>${escapeHtml(`${formatCurrencyPerTon(entry.unitRevenuePerTon)} · ${entry.flow.origin_label} -> ${entry.flow.destination_label}`)}</span>
+              </article>
+            `).join("")
+            : `<div class="truck-gallery-empty">Nenhum frete em aberto nesta cidade.</div>`}
+        </div>
+      </div>
+      <div class="game-setup-section-block">
+        <div class="game-setup-section-head"><span class="eyebrow">Em execucao</span><strong>${escapeHtml(`${formatInteger(activeEntries.length)} contratos`)}</strong></div>
+        <div class="game-setup-selection-list">
+          ${activeEntries.length
+            ? activeEntries.slice(0, 4).map((entry) => `
+              <article class="game-setup-selection-line">
+                <strong>${escapeHtml(entry.flow.product_name)}</strong>
+                <span>${escapeHtml(`${entry.availability?.message || "Contrato em execucao"} · ${entry.flow.origin_label} -> ${entry.flow.destination_label}`)}</span>
+              </article>
+            `).join("")
+            : `<div class="truck-gallery-empty">Nenhum frete em execucao saindo desta cidade.</div>`}
+        </div>
+      </div>
+    `;
+    return;
+  }
   const allAssignmentEntries = assignmentMode ? buildHumanAssignmentPricedEntries() : [];
   const selectableEntries = assignmentMode ? allAssignmentEntries.filter((entry) => humanAssignmentEntrySelectable(entry)) : [];
   const entries = assignmentMode ? selectableEntries.slice(0, 4) : setupSelectedPricedFreightEntries();
@@ -4101,35 +4407,33 @@ function renderSetupFreightSelection() {
   const totalRevenue = entries.reduce((total, entry) => total + Number(entry.contractRevenue || 0), 0);
   const truckUnit = assignmentMode ? assignmentTruckUnit() : null;
   const fuelSnapshot = truckUnit ? truckFuelSnapshot(truckUnit) : null;
+  const nearestDispatch = assignmentMode ? bestHumanNearestContractDispatch() : null;
   refs.freightSelection.innerHTML = `
     <div class="game-setup-selector-head">
       <span class="eyebrow">${escapeHtml(assignmentMode ? "Destino" : "Carteira")}</span>
       <h3>${escapeHtml(assignmentMode ? `Despacho em ${cityLabel(cityId)}` : (entries.length ? `${formatInteger(entries.length)} contratos selecionados` : `Fretes de ${cityLabel(cityId)}`))}</h3>
     </div>
     ${assignmentMode ? assignmentTruckSummaryMarkup(truckUnit) : ""}
-    <div class="game-setup-summary-metrics">
-      <article><span>${escapeHtml(assignmentMode ? "Tanque" : "Melhor taxa")}</span><strong>${escapeHtml(assignmentMode ? `${formatLiters(fuelSnapshot?.fuelLevelLiters || 0)} / ${formatLiters(fuelSnapshot?.tankLiters || 0)}` : (recommended[0] ? formatCurrencyPerTon(recommended[0].unitRevenuePerTon) : "-"))}</strong></article>
-      <article><span>${escapeHtml(assignmentMode ? "Autonomia" : "Receita carteira")}</span><strong>${escapeHtml(assignmentMode ? formatDistanceKm(truckLoadedRangeKm(truckUnit, fuelSnapshot?.fuelLevelLiters || 0)) : formatCurrency(totalRevenue))}</strong></article>
-      <article><span>${escapeHtml(assignmentMode ? "Odometro" : "Carga por viagens")}</span><strong>${escapeHtml(assignmentMode ? formatDistanceKm(fuelSnapshot?.odometerKm || 0) : formatTonnes(totalTonnes))}</strong></article>
-      <article><span>${escapeHtml(assignmentMode ? "Rotas livres" : "Distancia media")}</span><strong>${escapeHtml(assignmentMode ? `${formatInteger(selectableEntries.length)} / ${formatInteger(allAssignmentEntries.length)}` : (entries.length ? formatDistanceKm(averageDistance) : "-"))}</strong></article>
-    </div>
-    <div class="game-setup-section-block">
-      <div class="game-setup-section-head"><span class="eyebrow">Recomendado</span><strong>${escapeHtml(`${formatInteger(recommended.length)} contratos`)}</strong></div>
-      <div class="game-setup-selection-list">
-        ${recommended.length
-          ? recommended.map((entry) => `
-            <article class="game-setup-selection-line">
-              <strong>${escapeHtml(entry.flow.product_name)}</strong>
-              <span>${escapeHtml(`${formatCurrencyPerTon(entry.unitRevenuePerTon)} · ${entry.flow.origin_label} -> ${entry.flow.destination_label}`)}</span>
-            </article>
-          `).join("")
-          : `<div class="truck-gallery-empty">Nenhum frete recomendado para a cidade atual.</div>`}
+    ${assignmentMode ? `
+      <div class="game-setup-summary-metrics game-setup-summary-metrics-compact">
+        <article><span>Odometro</span><strong>${escapeHtml(formatDistanceKm(fuelSnapshot?.odometerKm || 0))}</strong></article>
       </div>
-    </div>
+    ` : `
+      <div class="game-setup-summary-metrics">
+        <article><span>Melhor taxa</span><strong>${escapeHtml(recommended[0] ? formatCurrencyPerTon(recommended[0].unitRevenuePerTon) : "-")}</strong></article>
+        <article><span>Receita carteira</span><strong>${escapeHtml(formatCurrency(totalRevenue))}</strong></article>
+        <article><span>Carga por viagens</span><strong>${escapeHtml(formatTonnes(totalTonnes))}</strong></article>
+        <article><span>Distancia media</span><strong>${escapeHtml(entries.length ? formatDistanceKm(averageDistance) : "-")}</strong></article>
+      </div>
+    `}
     ${assignmentMode && advancedDispatchEnabled() ? `
       <div class="game-setup-section-block">
-        <div class="game-setup-section-head"><span class="eyebrow">Despacho alternativo</span><strong>Mapa principal</strong></div>
+        <div class="game-setup-section-head"><span class="eyebrow">Opcoes</span></div>
         <div class="game-runtime-dispatch-options">
+          <button class="editor-header-action game-runtime-mini-action" type="button" data-runtime-dispatch-action="nearest-contract"${nearestDispatch ? "" : " disabled"}>
+            <span class="material-symbols-outlined" aria-hidden="true">travel_explore</span>
+            <span>Ir ate o contrato mais proximo</span>
+          </button>
           <button class="editor-header-action game-runtime-mini-action" type="button" data-runtime-dispatch-action="return-hq"${cityId === (state.playersById.human?.hqCityId || "") ? " disabled" : ""}>
             <span class="material-symbols-outlined" aria-hidden="true">home_work</span>
             <span>Voltar para a sede</span>
@@ -4139,7 +4443,10 @@ function renderSetupFreightSelection() {
             <span>Escolher destino no mapa</span>
           </button>
         </div>
-        <p class="game-setup-compatibility-note is-active">Ao clicar, o seletor fecha e o mapa principal entra no modo de escolha da cidade.</p>
+        <p class="game-setup-compatibility-note${nearestDispatch ? " is-active" : ""}">${escapeHtml(nearestDispatch
+          ? `Vai para ${cityLabel(nearestDispatch.destinationCityId)} buscar ${nearestDispatch.targetFlow?.product_name || "carga"} rumo a ${cityLabel(nearestDispatch.targetFlow?.destination_id)} · ${formatDistanceKm(nearestDispatch.repositionDistanceKm)} de reposicionamento.`
+          : "Nenhum contrato compativel e viavel foi encontrado fora da cidade atual.")}</p>
+        <p class="game-setup-compatibility-note is-active">A opcao Escolher destino no mapa fecha o seletor e ativa a escolha da cidade no mapa principal.</p>
       </div>
     ` : assignmentMode ? "" : `
       <div class="game-setup-section-block">
@@ -4160,7 +4467,12 @@ function renderSetupFreightSelection() {
 }
 
 function renderSetupModal() {
-  if (!openingWizardEnabled() || !refs.modalRoot) {
+  if (!refs.modalRoot || (!openingWizardEnabled() && !cityFreightBrowseMode() && !state.setup.activeHumanAssignment && !purchaseFlowActive())) {
+    return;
+  }
+  if (state.setup.activeModal === "analytics") {
+    renderAnalyticsModal();
+    updateSetupModalVisibility();
     return;
   }
   if (refs.openingDifficultySelect) {
@@ -4205,6 +4517,9 @@ function setupModalCanClose() {
     return Boolean(state.setup.company.fleetPurchased && setupSelectedTruckEntries().length);
   }
   if (state.setup.activeModal === "freights") {
+    if (cityFreightBrowseMode()) {
+      return true;
+    }
     if (purchaseFlowActive()) {
       return true;
     }
@@ -4238,6 +4553,9 @@ function updateSetupModalVisibility() {
 }
 
 function openSetupModal(modalName) {
+  if (modalName !== "freights") {
+    clearCityFreightBrowseState();
+  }
   state.setup.activeModal = modalName;
   renderSetupModal();
 }
@@ -4254,6 +4572,7 @@ function closeSetupModal() {
     renderMapUi({ refreshIcons: true });
     return;
   }
+  clearCityFreightBrowseState();
   if (openingWizardEnabled() && !state.players.length && !purchaseFlowActive() && state.setup.activeModal === "fleet") {
     openSetupModal("opening");
     return;
@@ -4280,6 +4599,11 @@ function closeSetupModal() {
 }
 
 function handleRuntimeKeydown(event) {
+  if ((event.code === "Space" || event.key === " ") && !event.repeat && !keyboardTargetAcceptsTyping(event.target)) {
+    event.preventDefault();
+    togglePauseSpeed();
+    return;
+  }
   if (event.key !== "Escape") {
     return;
   }
@@ -4330,15 +4654,30 @@ function finishHumanDispatchSelection(dispatchMode) {
   if (!assignment || !player || !truckUnit) {
     return;
   }
+  const nearestDispatch = dispatchMode === "nearest-contract" ? bestHumanNearestContractDispatch() : null;
   const destinationCityId = dispatchMode === "return-hq"
     ? player.hqCityId
-    : String(state.setup.dispatchSelectedCityId || "").trim();
+    : dispatchMode === "nearest-contract"
+      ? String(nearestDispatch?.destinationCityId || "").trim()
+      : String(state.setup.dispatchSelectedCityId || "").trim();
   if (!destinationCityId || destinationCityId === assignment.originCityId) {
+    if (dispatchMode === "nearest-contract" && !nearestDispatch) {
+      appendLog(player.id, "neutral", `${player.label} nao encontrou contrato compativel e viavel fora de ${cityLabel(assignment.originCityId)}.`);
+      renderStaticUi();
+      renderMapUi({ refreshIcons: true });
+    }
     return;
   }
   const contract = assignDispatchToTruck(player, truckUnit, destinationCityId, dispatchMode === "return-hq" ? "return_hq" : "reposition");
   if (!contract) {
     return;
+  }
+  if (nearestDispatch?.targetFlow) {
+    appendLog(
+      player.id,
+      "neutral",
+      `${player.label} vai para ${cityLabel(nearestDispatch.destinationCityId)} buscar ${nearestDispatch.targetFlow.product_name || "carga"} rumo a ${cityLabel(nearestDispatch.targetFlow.destination_id)}.`,
+    );
   }
   resetHumanAssignmentState();
   state.setup.activeModal = "";
@@ -4369,6 +4708,7 @@ function initializeOpeningWizard() {
   state.setup.pendingHumanAssignments = [];
   state.setup.activeHumanAssignment = null;
   state.setup.activePurchase = null;
+  state.setup.cityFreightBrowseCityId = "";
   state.setup.dispatchSelectedCityId = "";
   state.setup.mainMapDispatchSelection = false;
   openSetupModal("opening");
@@ -4545,6 +4885,15 @@ function renderCityMarkers() {
         opacity: 1,
         offset: [0, -8],
       });
+    } else if (state.players.length) {
+      marker.on("click", () => openCityFreightBrowser(city.id));
+      marker.bindTooltip(`<strong>${escapeHtml(city.label)}</strong><br>Clique para ver os fretes da cidade`, {
+        sticky: true,
+        direction: "top",
+        className: "brasix-map-tooltip city-editor-map-tooltip",
+        opacity: 1,
+        offset: [0, -8],
+      });
     }
     layerGroup.addLayer(marker);
   });
@@ -4703,6 +5052,879 @@ function playerIdleTruckCount(player) {
   return playerIdleTruckUnits(player).length;
 }
 
+function analyticsSnapshotBucket(date) {
+  const safeDate = date instanceof Date ? date : new Date(date);
+  const bucketHour = Math.floor(safeDate.getHours() / ANALYTICS_SNAPSHOT_INTERVAL_HOURS) * ANALYTICS_SNAPSHOT_INTERVAL_HOURS;
+  return `${safeDate.getFullYear()}-${String(safeDate.getMonth() + 1).padStart(2, "0")}-${String(safeDate.getDate()).padStart(2, "0")}T${String(bucketHour).padStart(2, "0")}`;
+}
+
+function analyticsStageLabel(contract) {
+  if (!contract) {
+    return "idle";
+  }
+  if (contract.stage === "loading") {
+    return "loading";
+  }
+  if (contract.stage === "unloading") {
+    return "unloading";
+  }
+  return "moving";
+}
+
+function analyticsProductLabel(productId) {
+  const runtimeProduct = state.productsById[String(productId || "").trim()] || null;
+  return runtimeProduct?.name || String(productId || "Carga").trim() || "Carga";
+}
+
+function analyticsTopEntries(entries, limit = 8, comparator = null) {
+  const nextEntries = Array.isArray(entries) ? entries.slice() : [];
+  if (typeof comparator === "function") {
+    nextEntries.sort(comparator);
+  }
+  return nextEntries.slice(0, Math.max(0, Number(limit || 0)));
+}
+
+function analyticsEnsureFlowStat(flow) {
+  const flowId = String(flow?.id || "").trim();
+  if (!flowId) {
+    return null;
+  }
+  if (!state.analytics.flowStatsById[flowId]) {
+    state.analytics.flowStatsById[flowId] = {
+      flowId,
+      productId: String(flow?.product_id || "").trim(),
+      productName: flow?.product_name || analyticsProductLabel(flow?.product_id),
+      originId: String(flow?.origin_id || "").trim(),
+      destinationId: String(flow?.destination_id || "").trim(),
+      routeLabel: `${cityLabel(flow?.origin_id)} -> ${cityLabel(flow?.destination_id)}`,
+      totalDeliveries: 0,
+      totalTonnes: 0,
+      totalRevenueBrl: 0,
+      totalProfitBrl: 0,
+      totalDistanceKm: Number(flow?.distance_km || 0),
+      activeCount: 0,
+      lastPlayerId: "",
+    };
+  }
+  return state.analytics.flowStatsById[flowId];
+}
+
+function analyticsEnsureTruckStat(player, truckUnit) {
+  const truckId = String(truckUnit?.id || "").trim();
+  if (!truckId) {
+    return null;
+  }
+  if (!state.analytics.truckStatsById[truckId]) {
+    state.analytics.truckStatsById[truckId] = {
+      truckUnitId: truckId,
+      playerId: String(player?.id || "").trim(),
+      playerLabel: player?.label || "Operacao",
+      truckLabel: `${truckUnit?.truck?.short_label || truckUnit?.truck?.label || truckUnit?.truckId || "Caminhao"} #${formatInteger(truckUnit?.displayNumber || 0)}`,
+      modelLabel: truckUnit?.truck?.short_label || truckUnit?.truck?.label || truckUnit?.truckId || "Caminhao",
+      deliveries: 0,
+      tonnes: 0,
+      profitBrl: 0,
+      revenueBrl: 0,
+      fuelCostBrl: 0,
+      estimatedDistanceKm: 0,
+      statusHours: {
+        moving: 0,
+        loading: 0,
+        unloading: 0,
+        idle: 0,
+      },
+    };
+  }
+  return state.analytics.truckStatsById[truckId];
+}
+
+function analyticsRecordTruckActivity(deltaHours) {
+  state.players.forEach((player) => {
+    const contractsByTruckId = Object.fromEntries((player.contracts || []).map((contract) => [contract.truckUnitId, contract]));
+    (player.truckUnits || []).forEach((truckUnit) => {
+      const truckStat = analyticsEnsureTruckStat(player, truckUnit);
+      if (!truckStat) {
+        return;
+      }
+      const contract = contractsByTruckId[truckUnit.id] || null;
+      const stageLabel = analyticsStageLabel(contract);
+      truckStat.statusHours[stageLabel] = roundNumber(Number(truckStat.statusHours[stageLabel] || 0) + deltaHours, 3);
+      if (contract) {
+        truckStat.estimatedDistanceKm = roundNumber(Number(truckStat.estimatedDistanceKm || 0) + (Number(contract.deliveryTrack?.distanceKm || 0) * (deltaHours / Math.max(Number(contract.stageDurationHours || 0.0001), 0.0001))), 2);
+      }
+    });
+  });
+}
+
+function analyticsRecordSnapshot(force = false) {
+  if (!state.players.length) {
+    return;
+  }
+  const bucket = analyticsSnapshotBucket(state.simulation.currentTime);
+  if (!force && bucket === state.analytics.lastSnapshotBucket) {
+    return;
+  }
+  const playerEntries = state.players.map((player) => ({
+    playerId: player.id,
+    label: player.label,
+    isHuman: Boolean(player.isHuman),
+    cashBrl: roundNumber(Number(player.cashBrl || 0), 2),
+    deltaBrl: roundNumber(playerCashDelta(player), 2),
+    deliveries: Number(player.deliveries || 0),
+    tonnesMoved: roundNumber(Number(player.tonnesMoved || 0), 2),
+    activeContracts: playerActiveContractCount(player),
+    idleTrucks: playerIdleTruckCount(player),
+    truckCount: Number(player.truckUnits?.length || 0),
+  }));
+  state.analytics.history.push({
+    bucket,
+    timestamp: state.simulation.currentTime.getTime(),
+    label: formatClock(state.simulation.currentTime),
+    players: playerEntries,
+  });
+  if (state.analytics.history.length > ANALYTICS_HISTORY_MAX_POINTS) {
+    state.analytics.history = state.analytics.history.slice(-ANALYTICS_HISTORY_MAX_POINTS);
+  }
+  state.analytics.lastSnapshotBucket = bucket;
+}
+
+function analyticsPlayerHistory(playerId) {
+  const normalizedPlayerId = String(playerId || "").trim();
+  return state.analytics.history.map((entry) => ({
+    label: entry.label,
+    timestamp: entry.timestamp,
+    point: entry.players.find((player) => player.playerId === normalizedPlayerId) || null,
+  })).filter((entry) => entry.point);
+}
+
+function analyticsCompanyRanking() {
+  return state.players.slice().sort((left, right) => Number(right.cashBrl || 0) - Number(left.cashBrl || 0)
+    || Number(right.deliveries || 0) - Number(left.deliveries || 0)
+    || Number(right.tonnesMoved || 0) - Number(left.tonnesMoved || 0));
+}
+
+function analyticsFlowStatsList() {
+  return Object.values(state.analytics.flowStatsById);
+}
+
+function analyticsTruckStatsList() {
+  return Object.values(state.analytics.truckStatsById);
+}
+
+function analyticsTopCityList(metricKey, limit = 8) {
+  return analyticsTopEntries(state.cities.map((city) => {
+    const stats = state.cityMarketStatsById[city.id] || { outboundCount: 0, outboundTonnes: 0, inboundCount: 0, inboundTonnes: 0 };
+    const player = state.players.find((entry) => entry.hqCityId === city.id) || null;
+    return {
+      cityId: city.id,
+      label: city.label,
+      value: Number(stats[metricKey] || 0),
+      ownerLabel: player?.label || "Mercado",
+    };
+  }), limit, (left, right) => Number(right.value || 0) - Number(left.value || 0));
+}
+
+function analyticsPlayerContracts(player) {
+  return Array.isArray(player?.contracts) ? player.contracts.slice() : [];
+}
+
+function analyticsPlayerFreightRows(player) {
+  return analyticsPlayerContracts(player).map((contract) => ({
+    flowId: contract.flowId,
+    routeLabel: `${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)}`,
+    productName: contract.flow.product_name || analyticsProductLabel(contract.flow.product_id),
+    distanceKm: Number(contract.flow.distance_km || contract.deliveryTrack?.distanceKm || 0),
+    profitBrl: Number(contract.profitPerDeliveryBrl || 0),
+    payloadTons: Number(contract.payloadTons || 0),
+    statusLabel: routeCardStatusLabel(contract),
+  }));
+}
+
+function analyticsPlayerProductRows(player) {
+  const map = {};
+  analyticsPlayerContracts(player).forEach((contract) => {
+    const key = String(contract.flow.product_id || "outros").trim() || "outros";
+    if (!map[key]) {
+      map[key] = {
+        productId: key,
+        label: contract.flow.product_name || analyticsProductLabel(key),
+        contracts: 0,
+        tonnes: 0,
+        profitBrl: 0,
+      };
+    }
+    map[key].contracts += 1;
+    map[key].tonnes = roundNumber(Number(map[key].tonnes || 0) + Number(contract.payloadTons || 0), 2);
+    map[key].profitBrl = roundNumber(Number(map[key].profitBrl || 0) + Number(contract.profitPerDeliveryBrl || 0), 2);
+  });
+  return Object.values(map).sort((left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+}
+
+function analyticsHydrateCurrentState() {
+  state.players.forEach((player) => {
+    (player.truckUnits || []).forEach((truckUnit) => {
+      analyticsEnsureTruckStat(player, truckUnit);
+    });
+    (player.contracts || []).forEach((contract) => {
+      if (contract.dispatchOnly) {
+        return;
+      }
+      const flowStat = analyticsEnsureFlowStat(contract.flow);
+      if (flowStat) {
+        flowStat.activeCount += 1;
+        flowStat.lastPlayerId = player.id;
+      }
+    });
+  });
+}
+
+function analyticsCurrentPlayer() {
+  return state.playersById.human || state.players[0] || null;
+}
+
+function analyticsSum(entries, resolver) {
+  const list = Array.isArray(entries) ? entries : [];
+  return list.reduce((total, entry) => total + Number(typeof resolver === "function" ? resolver(entry) : entry?.[resolver] || 0), 0);
+}
+
+function analyticsAverage(entries, resolver) {
+  const list = Array.isArray(entries) ? entries : [];
+  if (!list.length) {
+    return 0;
+  }
+  return analyticsSum(list, resolver) / list.length;
+}
+
+function analyticsTruckUtilizationPercent(truckStat) {
+  const totalHours = analyticsSum(Object.entries(truckStat?.statusHours || {}), ([, value]) => value);
+  if (!totalHours) {
+    return 0;
+  }
+  const activeHours = Number(truckStat?.statusHours?.moving || 0) + Number(truckStat?.statusHours?.loading || 0) + Number(truckStat?.statusHours?.unloading || 0);
+  return (activeHours / totalHours) * 100;
+}
+
+function analyticsCompanyRows() {
+  return state.players.map((player) => {
+    const truckRows = analyticsTruckStatsList().filter((row) => row.playerId === player.id);
+    return {
+      playerId: player.id,
+      label: player.label,
+      color: player.color,
+      isHuman: Boolean(player.isHuman),
+      cashBrl: Number(player.cashBrl || 0),
+      deltaBrl: Number(playerCashDelta(player) || 0),
+      deliveries: Number(player.deliveries || 0),
+      tonnesMoved: Number(player.tonnesMoved || 0),
+      truckCount: Number(player.truckUnits?.length || 0),
+      activeContracts: (player.contracts || []).filter((contract) => !contract.dispatchOnly).length,
+      idleTrucks: playerIdleTruckCount(player),
+      realizedRevenueBrl: analyticsSum(truckRows, (row) => row.revenueBrl),
+      realizedProfitBrl: analyticsSum(truckRows, (row) => row.profitBrl),
+      realizedFuelCostBrl: analyticsSum(truckRows, (row) => row.fuelCostBrl),
+      utilizationPercent: analyticsAverage(truckRows, (row) => analyticsTruckUtilizationPercent(row)),
+    };
+  });
+}
+
+function analyticsPlayerTruckRows(player) {
+  return analyticsTruckStatsList()
+    .filter((row) => row.playerId === player?.id)
+    .map((row) => ({
+      ...row,
+      utilizationPercent: analyticsTruckUtilizationPercent(row),
+    }))
+    .sort((left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+}
+
+function analyticsTruckModelRows() {
+  const rows = {};
+  analyticsTruckStatsList().forEach((truckStat) => {
+    const key = truckStat.modelLabel || "Caminhao";
+    if (!rows[key]) {
+      rows[key] = {
+        label: key,
+        truckCount: 0,
+        deliveries: 0,
+        tonnes: 0,
+        profitBrl: 0,
+        fuelCostBrl: 0,
+      };
+    }
+    rows[key].truckCount += 1;
+    rows[key].deliveries += Number(truckStat.deliveries || 0);
+    rows[key].tonnes = roundNumber(Number(rows[key].tonnes || 0) + Number(truckStat.tonnes || 0), 2);
+    rows[key].profitBrl = roundNumber(Number(rows[key].profitBrl || 0) + Number(truckStat.profitBrl || 0), 2);
+    rows[key].fuelCostBrl = roundNumber(Number(rows[key].fuelCostBrl || 0) + Number(truckStat.fuelCostBrl || 0), 2);
+  });
+  return Object.values(rows).sort((left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+}
+
+function analyticsGlobalProductRows() {
+  const rows = {};
+  analyticsFlowStatsList().forEach((flowStat) => {
+    const key = String(flowStat.productId || "outros").trim() || "outros";
+    if (!rows[key]) {
+      rows[key] = {
+        productId: key,
+        label: flowStat.productName || analyticsProductLabel(key),
+        deliveries: 0,
+        tonnes: 0,
+        profitBrl: 0,
+        activeFreights: 0,
+      };
+    }
+    rows[key].deliveries += Number(flowStat.totalDeliveries || 0);
+    rows[key].tonnes = roundNumber(Number(rows[key].tonnes || 0) + Number(flowStat.totalTonnes || 0), 2);
+    rows[key].profitBrl = roundNumber(Number(rows[key].profitBrl || 0) + Number(flowStat.totalProfitBrl || 0), 2);
+    rows[key].activeFreights += Number(flowStat.activeCount || 0);
+  });
+  return Object.values(rows).sort((left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+}
+
+function analyticsPlayerCityRows(player) {
+  const rows = {};
+  const ensureRow = (cityId) => {
+    const normalizedCityId = String(cityId || "").trim();
+    if (!normalizedCityId || !state.citiesById[normalizedCityId]) {
+      return null;
+    }
+    if (!rows[normalizedCityId]) {
+      const marketStats = state.cityMarketStatsById[normalizedCityId] || { outboundCount: 0, outboundTonnes: 0, inboundCount: 0, inboundTonnes: 0 };
+      rows[normalizedCityId] = {
+        cityId: normalizedCityId,
+        label: cityLabel(normalizedCityId),
+        currentContracts: 0,
+        outboundContracts: 0,
+        inboundContracts: 0,
+        marketTonnes: Number(marketStats.outboundTonnes || 0) + Number(marketStats.inboundTonnes || 0),
+        isHq: normalizedCityId === player?.hqCityId,
+      };
+    }
+    return rows[normalizedCityId];
+  };
+
+  ensureRow(player?.hqCityId);
+  analyticsPlayerContracts(player).forEach((contract) => {
+    const originRow = ensureRow(contract.flow.origin_id);
+    const destinationRow = ensureRow(contract.flow.destination_id);
+    if (originRow) {
+      originRow.currentContracts += 1;
+      originRow.outboundContracts += 1;
+    }
+    if (destinationRow) {
+      destinationRow.currentContracts += 1;
+      destinationRow.inboundContracts += 1;
+    }
+  });
+
+  return Object.values(rows).sort((left, right) => Number(right.currentContracts || 0) - Number(left.currentContracts || 0)
+    || Number(right.marketTonnes || 0) - Number(left.marketTonnes || 0)
+    || String(left.label).localeCompare(String(right.label), "pt-BR"));
+}
+
+function analyticsActiveFreightRows() {
+  return state.players.flatMap((player) => (player.contracts || [])
+    .filter((contract) => !contract.dispatchOnly)
+    .map((contract) => ({
+      label: `${contract.flow.product_name || analyticsProductLabel(contract.flow.product_id)} · ${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)}`,
+      playerLabel: player.label,
+      color: player.color,
+      value: Number(contract.profitPerDeliveryBrl || 0),
+      tonnes: Number(contract.payloadTons || 0),
+      distanceKm: Number(contract.deliveryTrack?.distanceKm || contract.flow.distance_km || 0),
+      statusLabel: routeCardStatusLabel(contract),
+    })));
+}
+
+function analyticsMetricCardMarkup({ label, value, meta = "", tone = "" }) {
+  return `
+    <article class="game-runtime-analytics-metric${tone ? ` is-${escapeHtml(tone)}` : ""}">
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(value)}</strong>
+      ${meta ? `<small>${escapeHtml(meta)}</small>` : ""}
+    </article>
+  `;
+}
+
+function analyticsEmptyMarkup(message) {
+  return `<div class="truck-gallery-empty game-runtime-analytics-empty">${escapeHtml(message)}</div>`;
+}
+
+function analyticsSectionMarkup(title, subtitle, content) {
+  return `
+    <section class="game-runtime-analytics-section">
+      <div class="game-runtime-analytics-section-head">
+        <div>
+          <strong>${escapeHtml(title)}</strong>
+          ${subtitle ? `<span>${escapeHtml(subtitle)}</span>` : ""}
+        </div>
+      </div>
+      ${content}
+    </section>
+  `;
+}
+
+function analyticsBarChartMarkup(items, {
+  valueFormatter = formatInteger,
+  colorResolver = (item) => item.color || "#356d63",
+  metaResolver = null,
+  emptyMessage = "Sem dados suficientes.",
+  labelResolver = (item) => item.label || "Item",
+  valueResolver = (item) => item.value,
+} = {}) {
+  const rows = Array.isArray(items) ? items.filter(Boolean) : [];
+  if (!rows.length) {
+    return analyticsEmptyMarkup(emptyMessage);
+  }
+  const maxValue = Math.max(...rows.map((item) => Math.abs(Number(valueResolver(item) || 0))), 0.0001);
+  return `
+    <div class="game-runtime-analytics-bar-list">
+      ${rows.map((item) => {
+        const value = Number(valueResolver(item) || 0);
+        const ratio = Math.max(0.06, Math.abs(value) / maxValue);
+        const meta = typeof metaResolver === "function" ? metaResolver(item) : "";
+        return `
+          <article class="game-runtime-analytics-bar-row">
+            <div class="game-runtime-analytics-bar-head">
+              <strong>${escapeHtml(labelResolver(item))}</strong>
+              <span>${escapeHtml(valueFormatter(value))}</span>
+            </div>
+            ${meta ? `<small>${escapeHtml(meta)}</small>` : ""}
+            <div class="game-runtime-analytics-bar-track">
+              <span style="width:${escapeHtml(String(Math.round(ratio * 100)))}%;--analytics-bar-color:${escapeHtml(colorResolver(item))}"></span>
+            </div>
+          </article>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function analyticsStatusBarMarkup(statusHours) {
+  const segments = [
+    { key: "moving", label: "Em rota", color: "#356d63" },
+    { key: "loading", label: "Carga", color: "#b36a2b" },
+    { key: "unloading", label: "Descarga", color: "#cc8f43" },
+    { key: "idle", label: "Parado", color: "#72796e" },
+  ];
+  const total = analyticsSum(segments, (segment) => Number(statusHours?.[segment.key] || 0));
+  if (!total) {
+    return analyticsEmptyMarkup("Sem horas acumuladas ainda.");
+  }
+  return `
+    <div class="game-runtime-analytics-status-wrap">
+      <div class="game-runtime-analytics-status-bar">
+        ${segments.map((segment) => {
+          const value = Number(statusHours?.[segment.key] || 0);
+          const width = (value / total) * 100;
+          if (width <= 0) {
+            return "";
+          }
+          return `<span style="width:${escapeHtml(String(width))}%;background:${escapeHtml(segment.color)}" title="${escapeHtml(`${segment.label}: ${formatHours(value)}`)}"></span>`;
+        }).join("")}
+      </div>
+      <div class="game-runtime-analytics-status-legend">
+        ${segments.map((segment) => `<span><i style="background:${escapeHtml(segment.color)}"></i>${escapeHtml(`${segment.label} ${formatHours(Number(statusHours?.[segment.key] || 0))}`)}</span>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function analyticsLineChartMarkup(series, { valueFormatter = formatCurrency, emptyMessage = "Historico ainda insuficiente." } = {}) {
+  const preparedSeries = (Array.isArray(series) ? series : []).map((entry) => ({
+    ...entry,
+    values: Array.isArray(entry?.values) ? entry.values.map((value) => Number(value || 0)) : [],
+    labels: Array.isArray(entry?.labels) ? entry.labels : [],
+  })).filter((entry) => entry.values.length);
+  const pointCount = Math.max(0, ...preparedSeries.map((entry) => entry.values.length));
+  if (pointCount < 2) {
+    return analyticsEmptyMarkup(emptyMessage);
+  }
+  const allValues = preparedSeries.flatMap((entry) => entry.values);
+  const minValue = Math.min(0, ...allValues);
+  const maxValue = Math.max(...allValues, 1);
+  const range = Math.max(maxValue - minValue, 1);
+  const width = 720;
+  const height = 220;
+  const padding = { top: 18, right: 16, bottom: 30, left: 20 };
+  const innerWidth = width - padding.left - padding.right;
+  const innerHeight = height - padding.top - padding.bottom;
+  const xStep = pointCount > 1 ? innerWidth / (pointCount - 1) : innerWidth;
+  const yPosition = (value) => padding.top + ((maxValue - Number(value || 0)) / range) * innerHeight;
+  const xPosition = (index) => padding.left + (xStep * index);
+  const labels = preparedSeries.find((entry) => entry.labels.length)?.labels || [];
+  const footerLabels = [labels[0], labels[Math.floor(labels.length / 2)], labels[labels.length - 1]].filter(Boolean);
+
+  return `
+    <div class="game-runtime-analytics-chart-shell">
+      <svg class="game-runtime-analytics-line-chart" viewBox="0 0 ${escapeHtml(String(width))} ${escapeHtml(String(height))}" role="img" aria-label="Grafico de linha do runtime">
+        ${[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+          const y = padding.top + (innerHeight * ratio);
+          return `<line x1="${escapeHtml(String(padding.left))}" y1="${escapeHtml(String(y))}" x2="${escapeHtml(String(width - padding.right))}" y2="${escapeHtml(String(y))}"></line>`;
+        }).join("")}
+        ${minValue < 0 && maxValue > 0 ? `<line class="is-zero" x1="${escapeHtml(String(padding.left))}" y1="${escapeHtml(String(yPosition(0)))}" x2="${escapeHtml(String(width - padding.right))}" y2="${escapeHtml(String(yPosition(0)))}"></line>` : ""}
+        ${preparedSeries.map((entry) => {
+          const points = entry.values.map((value, index) => `${xPosition(index)},${yPosition(value)}`).join(" ");
+          const latestValue = entry.values[entry.values.length - 1];
+          return `
+            <polyline style="--analytics-series-color:${escapeHtml(entry.color || "#356d63")}" points="${escapeHtml(points)}"></polyline>
+            <circle cx="${escapeHtml(String(xPosition(entry.values.length - 1)))}" cy="${escapeHtml(String(yPosition(latestValue)))}" r="4" style="--analytics-series-color:${escapeHtml(entry.color || "#356d63")}"></circle>
+          `;
+        }).join("")}
+      </svg>
+      <div class="game-runtime-analytics-chart-legend">
+        ${preparedSeries.map((entry) => `<span><i style="background:${escapeHtml(entry.color || "#356d63")}"></i>${escapeHtml(`${entry.label} · ${valueFormatter(entry.values[entry.values.length - 1])}`)}</span>`).join("")}
+      </div>
+      ${footerLabels.length ? `<div class="game-runtime-analytics-chart-footer">${footerLabels.map((label) => `<span>${escapeHtml(label)}</span>`).join("")}</div>` : ""}
+    </div>
+  `;
+}
+
+function analyticsOverviewContentMarkup() {
+  const companyRows = analyticsCompanyRows().sort((left, right) => Number(right.cashBrl || 0) - Number(left.cashBrl || 0));
+  const flowRows = analyticsFlowStatsList().filter((row) => Number(row.totalDeliveries || 0) > 0 || Number(row.activeCount || 0) > 0);
+  const cashSeries = companyRows.map((row) => {
+    const history = analyticsPlayerHistory(row.playerId);
+    return {
+      label: row.label,
+      color: row.color,
+      values: history.map((entry) => Number(entry.point?.cashBrl || 0)),
+      labels: history.map((entry) => entry.label),
+    };
+  });
+  const metricsMarkup = [
+    analyticsMetricCardMarkup({ label: "Empresas", value: formatInteger(companyRows.length), meta: `${formatInteger(state.players.filter((player) => !player.isHuman).length)} robos + 1 jogador` }),
+    analyticsMetricCardMarkup({ label: "Fretes ativos", value: formatInteger(analyticsActiveFreightRows().length), meta: `${formatInteger(analyticsSum(flowRows, (row) => row.totalDeliveries))} concluidos` }),
+    analyticsMetricCardMarkup({ label: "Frota total", value: formatInteger(analyticsSum(companyRows, (row) => row.truckCount)), meta: `${formatInteger(analyticsSum(companyRows, (row) => row.idleTrucks))} parada` }),
+    analyticsMetricCardMarkup({ label: "Toneladas", value: formatTonnes(analyticsSum(companyRows, (row) => row.tonnesMoved)), meta: "Volume acumulado" }),
+  ].join("");
+  return `
+    <div class="game-runtime-analytics-stack">
+      <div class="game-runtime-analytics-metric-grid">${metricsMarkup}</div>
+      ${analyticsSectionMarkup("Caixa das empresas", "Evolucao do caixa por janelas de tempo do jogo", analyticsLineChartMarkup(cashSeries, { valueFormatter: formatCurrency }))}
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Ranking por caixa", "Quem esta mais forte agora", analyticsBarChartMarkup(companyRows, {
+          valueFormatter: formatCurrency,
+          colorResolver: (row) => row.color,
+          valueResolver: (row) => row.cashBrl,
+          metaResolver: (row) => `${formatInteger(row.deliveries)} entregas · ${formatTonnes(row.tonnesMoved)}`,
+        }))}
+        ${analyticsSectionMarkup("Ranking por entregas", "Execucao operacional", analyticsBarChartMarkup(companyRows, {
+          valueFormatter: formatInteger,
+          colorResolver: (row) => row.color,
+          valueResolver: (row) => row.deliveries,
+          metaResolver: (row) => `${formatCurrency(row.deltaBrl)} de saldo`,
+        }))}
+      </div>
+    </div>
+  `;
+}
+
+function analyticsPlayerContentMarkup() {
+  const player = analyticsCurrentPlayer();
+  if (!player) {
+    return analyticsEmptyMarkup("Ainda nao ha empresa principal carregada.");
+  }
+  const playerRow = analyticsCompanyRows().find((row) => row.playerId === player.id) || null;
+  const playerHistory = analyticsPlayerHistory(player.id);
+  const freightRows = analyticsTopEntries(analyticsPlayerFreightRows(player), 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+  const truckRows = analyticsTopEntries(analyticsPlayerTruckRows(player), 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+  const productRows = analyticsTopEntries(analyticsPlayerProductRows(player), 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+  const cityRows = analyticsTopEntries(analyticsPlayerCityRows(player), 8, (left, right) => Number(right.currentContracts || 0) - Number(left.currentContracts || 0) || Number(right.marketTonnes || 0) - Number(left.marketTonnes || 0));
+  const series = [{
+    label: player.label,
+    color: player.color,
+    values: playerHistory.map((entry) => Number(entry.point?.cashBrl || 0)),
+    labels: playerHistory.map((entry) => entry.label),
+  }];
+
+  return `
+    <div class="game-runtime-analytics-stack">
+      <div class="game-runtime-analytics-metric-grid">
+        ${analyticsMetricCardMarkup({ label: "Caixa", value: formatCurrency(player.cashBrl), meta: cityLabel(player.hqCityId) })}
+        ${analyticsMetricCardMarkup({ label: "Saldo", value: formatCurrency(playerCashDelta(player)), meta: "Contra o capital inicial", tone: playerCashDelta(player) >= 0 ? "positive" : "negative" })}
+        ${analyticsMetricCardMarkup({ label: "Fretes ativos", value: formatInteger(playerRow?.activeContracts || 0), meta: `${formatInteger(playerIdleTruckCount(player))} caminhao(es) parado(s)` })}
+        ${analyticsMetricCardMarkup({ label: "Toneladas", value: formatTonnes(player.tonnesMoved), meta: `${formatInteger(player.deliveries)} entregas` })}
+      </div>
+      ${analyticsSectionMarkup("Financeiro do jogador", "Caixa da empresa ao longo da partida", analyticsLineChartMarkup(series, { valueFormatter: formatCurrency }))}
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Fretes do jogador", "Lucro dos contratos atuais", analyticsBarChartMarkup(freightRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.profitBrl,
+          metaResolver: (row) => `${row.statusLabel} · ${formatTonnes(row.payloadTons)} · ${formatDistanceKm(row.distanceKm)}`,
+        }))}
+        ${analyticsSectionMarkup("Caminhoes do jogador", "Resultado por unidade", truckRows.length
+          ? `<div class="game-runtime-analytics-bar-list">${truckRows.map((row) => `
+              <article class="game-runtime-analytics-bar-row">
+                <div class="game-runtime-analytics-bar-head">
+                  <strong>${escapeHtml(row.truckLabel)}</strong>
+                  <span>${escapeHtml(formatCurrency(row.profitBrl))}</span>
+                </div>
+                <small>${escapeHtml(`${formatInteger(row.deliveries)} entregas · ${formatPercent(row.utilizationPercent)} de uso · diesel ${formatCurrency(row.fuelCostBrl)}`)}</small>
+                ${analyticsStatusBarMarkup(row.statusHours)}
+              </article>
+            `).join("")}</div>`
+          : analyticsEmptyMarkup("Nenhum caminhao com historico ainda."))}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Produtos do jogador", "Carteira operacional atual", analyticsBarChartMarkup(productRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.profitBrl,
+          metaResolver: (row) => `${formatInteger(row.contracts)} contrato(s) · ${formatTonnes(row.tonnes)}`,
+        }))}
+        ${analyticsSectionMarkup("Cidades do jogador", "Onde a empresa esta mais presente", analyticsBarChartMarkup(cityRows, {
+          valueFormatter: formatInteger,
+          valueResolver: (row) => row.currentContracts,
+          metaResolver: (row) => `${row.isHq ? "Sede" : "Operacao"} · mercado ${formatTonnes(row.marketTonnes)}`,
+        }))}
+      </div>
+    </div>
+  `;
+}
+
+function analyticsCompetitionContentMarkup() {
+  const companyRows = analyticsCompanyRows().sort((left, right) => Number(right.cashBrl || 0) - Number(left.cashBrl || 0));
+  return `
+    <div class="game-runtime-analytics-stack">
+      <div class="game-runtime-analytics-metric-grid">
+        ${analyticsMetricCardMarkup({ label: "Caixa medio", value: formatCurrency(analyticsAverage(companyRows, (row) => row.cashBrl)), meta: "Media entre empresas" })}
+        ${analyticsMetricCardMarkup({ label: "Saldo medio", value: formatCurrency(analyticsAverage(companyRows, (row) => row.deltaBrl)), meta: "Variacao media" })}
+        ${analyticsMetricCardMarkup({ label: "Entregas medias", value: formatInteger(analyticsAverage(companyRows, (row) => row.deliveries)), meta: "Por empresa" })}
+        ${analyticsMetricCardMarkup({ label: "Uso medio da frota", value: formatPercent(analyticsAverage(companyRows, (row) => row.utilizationPercent)), meta: "Caminhoes em atividade" })}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Empresas por caixa", "Comparacao direta", analyticsBarChartMarkup(companyRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.cashBrl,
+          colorResolver: (row) => row.color,
+          metaResolver: (row) => `${formatCurrency(row.deltaBrl)} de saldo`,
+        }))}
+        ${analyticsSectionMarkup("Empresas por toneladas", "Volume movimentado", analyticsBarChartMarkup(companyRows, {
+          valueFormatter: formatTonnes,
+          valueResolver: (row) => row.tonnesMoved,
+          colorResolver: (row) => row.color,
+          metaResolver: (row) => `${formatInteger(row.deliveries)} entregas`,
+        }))}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Empresas por frota", "Tamanho e ociosidade", analyticsBarChartMarkup(companyRows, {
+          valueFormatter: formatInteger,
+          valueResolver: (row) => row.truckCount,
+          colorResolver: (row) => row.color,
+          metaResolver: (row) => `${formatInteger(row.idleTrucks)} parado(s) · ${formatPercent(row.utilizationPercent)} de uso`,
+        }))}
+        ${analyticsSectionMarkup("Empresas por lucro realizado", "Resultado acumulado nas entregas concluidas", analyticsBarChartMarkup(companyRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.realizedProfitBrl,
+          colorResolver: (row) => row.color,
+          metaResolver: (row) => `diesel ${formatCurrency(row.realizedFuelCostBrl)}`,
+        }))}
+      </div>
+    </div>
+  `;
+}
+
+function analyticsFreightsContentMarkup() {
+  const flowRows = analyticsFlowStatsList().filter((row) => Number(row.totalDeliveries || 0) > 0 || Number(row.activeCount || 0) > 0);
+  const profitRows = analyticsTopEntries(flowRows, 8, (left, right) => Number(right.totalProfitBrl || 0) - Number(left.totalProfitBrl || 0));
+  const volumeRows = analyticsTopEntries(flowRows, 8, (left, right) => Number(right.totalTonnes || 0) - Number(left.totalTonnes || 0));
+  const activeRows = analyticsTopEntries(analyticsActiveFreightRows(), 8, (left, right) => Number(right.value || 0) - Number(left.value || 0));
+  const productRows = analyticsTopEntries(analyticsGlobalProductRows(), 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+  const totalDeliveries = analyticsSum(flowRows, (row) => row.totalDeliveries);
+  return `
+    <div class="game-runtime-analytics-stack">
+      <div class="game-runtime-analytics-metric-grid">
+        ${analyticsMetricCardMarkup({ label: "Fretes rastreados", value: formatInteger(flowRows.length), meta: `${formatInteger(analyticsActiveFreightRows().length)} ativos agora` })}
+        ${analyticsMetricCardMarkup({ label: "Entregas de frete", value: formatInteger(totalDeliveries), meta: "Concluidas" })}
+        ${analyticsMetricCardMarkup({ label: "Lucro medio", value: formatCurrency(totalDeliveries ? analyticsSum(flowRows, (row) => row.totalProfitBrl) / totalDeliveries : 0), meta: "Por entrega concluida" })}
+        ${analyticsMetricCardMarkup({ label: "Tonelagem", value: formatTonnes(analyticsSum(flowRows, (row) => row.totalTonnes)), meta: "Movida pelos fretes" })}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Fretes mais lucrativos", "Resultado acumulado por rota", analyticsBarChartMarkup(profitRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.totalProfitBrl,
+          metaResolver: (row) => `${row.productName} · ${formatInteger(row.totalDeliveries)} entrega(s) · ${formatTonnes(row.totalTonnes)}`,
+        }))}
+        ${analyticsSectionMarkup("Fretes por volume", "Rotas com maior carga acumulada", analyticsBarChartMarkup(volumeRows, {
+          valueFormatter: formatTonnes,
+          valueResolver: (row) => row.totalTonnes,
+          metaResolver: (row) => `${row.productName} · ${formatCurrency(row.totalProfitBrl)}`,
+        }))}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Fretes ativos agora", "Carteira em execucao", analyticsBarChartMarkup(activeRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.value,
+          colorResolver: (row) => row.color,
+          metaResolver: (row) => `${row.playerLabel} · ${row.statusLabel} · ${formatTonnes(row.tonnes)}`,
+        }))}
+        ${analyticsSectionMarkup("Produtos puxando os fretes", "Leitura da carteira por produto", analyticsBarChartMarkup(productRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.profitBrl,
+          metaResolver: (row) => `${formatInteger(row.deliveries)} entrega(s) · ${formatTonnes(row.tonnes)} · ${formatInteger(row.activeFreights)} ativo(s)`,
+        }))}
+      </div>
+    </div>
+  `;
+}
+
+function analyticsTrucksContentMarkup() {
+  const truckRows = analyticsTruckStatsList().map((row) => ({ ...row, utilizationPercent: analyticsTruckUtilizationPercent(row) }));
+  const profitRows = analyticsTopEntries(truckRows, 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+  const deliveryRows = analyticsTopEntries(truckRows, 8, (left, right) => Number(right.deliveries || 0) - Number(left.deliveries || 0));
+  const modelRows = analyticsTopEntries(analyticsTruckModelRows(), 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+  const totalTruckCount = truckRows.length;
+  return `
+    <div class="game-runtime-analytics-stack">
+      <div class="game-runtime-analytics-metric-grid">
+        ${analyticsMetricCardMarkup({ label: "Caminhoes rastreados", value: formatInteger(totalTruckCount), meta: `${formatInteger(state.players.reduce((total, player) => total + playerIdleTruckCount(player), 0))} parados agora` })}
+        ${analyticsMetricCardMarkup({ label: "Lucro medio", value: formatCurrency(totalTruckCount ? analyticsAverage(truckRows, (row) => row.profitBrl) : 0), meta: "Por unidade" })}
+        ${analyticsMetricCardMarkup({ label: "Diesel acumulado", value: formatCurrency(analyticsSum(truckRows, (row) => row.fuelCostBrl)), meta: "Compra registrada" })}
+        ${analyticsMetricCardMarkup({ label: "Uso medio", value: formatPercent(analyticsAverage(truckRows, (row) => row.utilizationPercent)), meta: "Tempo operacional" })}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Caminhoes por lucro", "Quem esta rendendo mais", analyticsBarChartMarkup(profitRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.profitBrl,
+          metaResolver: (row) => `${row.playerLabel} · ${formatInteger(row.deliveries)} entrega(s) · ${formatPercent(row.utilizationPercent)} de uso`,
+        }))}
+        ${analyticsSectionMarkup("Caminhoes por entregas", "Produtividade da frota", analyticsBarChartMarkup(deliveryRows, {
+          valueFormatter: formatInteger,
+          valueResolver: (row) => row.deliveries,
+          metaResolver: (row) => `${row.playerLabel} · ${formatTonnes(row.tonnes)} · ${formatCurrency(row.profitBrl)}`,
+        }))}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Modelos de caminhao", "Qual modelo esta pagando melhor", analyticsBarChartMarkup(modelRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.profitBrl,
+          metaResolver: (row) => `${formatInteger(row.truckCount)} unid. · ${formatInteger(row.deliveries)} entrega(s) · diesel ${formatCurrency(row.fuelCostBrl)}`,
+        }))}
+        ${analyticsSectionMarkup("Uso da frota", "Tempo em rota, carga, descarga e parado", truckRows.length
+          ? `<div class="game-runtime-analytics-bar-list">${analyticsTopEntries(truckRows, 6, (left, right) => Number(right.utilizationPercent || 0) - Number(left.utilizationPercent || 0)).map((row) => `
+              <article class="game-runtime-analytics-bar-row">
+                <div class="game-runtime-analytics-bar-head">
+                  <strong>${escapeHtml(row.truckLabel)}</strong>
+                  <span>${escapeHtml(formatPercent(row.utilizationPercent))}</span>
+                </div>
+                <small>${escapeHtml(`${row.playerLabel} · ${formatDistanceKm(row.estimatedDistanceKm)} · ${formatCurrency(row.fuelCostBrl)} diesel`)}</small>
+                ${analyticsStatusBarMarkup(row.statusHours)}
+              </article>
+            `).join("")}</div>`
+          : analyticsEmptyMarkup("A frota ainda nao acumulou tempo suficiente."))}
+      </div>
+    </div>
+  `;
+}
+
+function analyticsProductsContentMarkup() {
+  const productRows = analyticsTopEntries(analyticsGlobalProductRows(), 10, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
+  return `
+    <div class="game-runtime-analytics-stack">
+      <div class="game-runtime-analytics-metric-grid">
+        ${analyticsMetricCardMarkup({ label: "Produtos ativos", value: formatInteger(productRows.filter((row) => row.activeFreights > 0).length), meta: `${formatInteger(productRows.length)} monitorados` })}
+        ${analyticsMetricCardMarkup({ label: "Lucro total", value: formatCurrency(analyticsSum(productRows, (row) => row.profitBrl)), meta: "Entregas concluidas" })}
+        ${analyticsMetricCardMarkup({ label: "Volume total", value: formatTonnes(analyticsSum(productRows, (row) => row.tonnes)), meta: "Carga movimentada" })}
+        ${analyticsMetricCardMarkup({ label: "Fretes ativos", value: formatInteger(analyticsSum(productRows, (row) => row.activeFreights)), meta: "Distribuidos por produto" })}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Produtos por lucro", "Melhor retorno acumulado", analyticsBarChartMarkup(productRows, {
+          valueFormatter: formatCurrency,
+          valueResolver: (row) => row.profitBrl,
+          metaResolver: (row) => `${formatInteger(row.deliveries)} entrega(s) · ${formatTonnes(row.tonnes)}`,
+        }))}
+        ${analyticsSectionMarkup("Produtos por volume", "Tonelagem movimentada", analyticsBarChartMarkup(productRows.slice().sort((left, right) => Number(right.tonnes || 0) - Number(left.tonnes || 0)), {
+          valueFormatter: formatTonnes,
+          valueResolver: (row) => row.tonnes,
+          metaResolver: (row) => `${formatCurrency(row.profitBrl)} · ${formatInteger(row.activeFreights)} ativo(s)`,
+        }))}
+      </div>
+    </div>
+  `;
+}
+
+function analyticsCitiesContentMarkup() {
+  const player = analyticsCurrentPlayer();
+  const playerCityRows = player ? analyticsTopEntries(analyticsPlayerCityRows(player), 8, (left, right) => Number(right.currentContracts || 0) - Number(left.currentContracts || 0) || Number(right.marketTonnes || 0) - Number(left.marketTonnes || 0)) : [];
+  const outboundRows = analyticsTopCityList("outboundTonnes", 8);
+  const inboundRows = analyticsTopCityList("inboundTonnes", 8);
+  return `
+    <div class="game-runtime-analytics-stack">
+      <div class="game-runtime-analytics-metric-grid">
+        ${analyticsMetricCardMarkup({ label: "Cidades com mercado", value: formatInteger(state.cities.filter((city) => {
+          const stats = state.cityMarketStatsById[city.id] || { outboundCount: 0, inboundCount: 0 };
+          return Number(stats.outboundCount || 0) > 0 || Number(stats.inboundCount || 0) > 0;
+        }).length), meta: "Oferta ou demanda ativa" })}
+        ${analyticsMetricCardMarkup({ label: "Saidas", value: formatInteger(analyticsSum(Object.values(state.cityMarketStatsById), (row) => row.outboundCount)), meta: "Fretes de origem" })}
+        ${analyticsMetricCardMarkup({ label: "Entradas", value: formatInteger(analyticsSum(Object.values(state.cityMarketStatsById), (row) => row.inboundCount)), meta: "Fretes de destino" })}
+        ${analyticsMetricCardMarkup({ label: "Sede do jogador", value: player ? cityLabel(player.hqCityId) : "-", meta: "Base principal" })}
+      </div>
+      <div class="game-runtime-analytics-two-column">
+        ${analyticsSectionMarkup("Cidades por saida", "Onde o mercado mais despacha", analyticsBarChartMarkup(outboundRows, {
+          valueFormatter: formatTonnes,
+          valueResolver: (row) => row.value,
+          metaResolver: (row) => row.ownerLabel,
+        }))}
+        ${analyticsSectionMarkup("Cidades por chegada", "Onde o mercado mais recebe", analyticsBarChartMarkup(inboundRows, {
+          valueFormatter: formatTonnes,
+          valueResolver: (row) => row.value,
+          metaResolver: (row) => row.ownerLabel,
+        }))}
+      </div>
+      ${analyticsSectionMarkup("Cidades do jogador", "Presenca operacional da empresa principal", analyticsBarChartMarkup(playerCityRows, {
+        valueFormatter: formatInteger,
+        valueResolver: (row) => row.currentContracts,
+        metaResolver: (row) => `${row.isHq ? "Sede" : "Operacao"} · mercado ${formatTonnes(row.marketTonnes)} · ${formatInteger(row.outboundContracts)} origem / ${formatInteger(row.inboundContracts)} destino`,
+      }))}
+    </div>
+  `;
+}
+
+function analyticsTabContentMarkup(tabId) {
+  if (tabId === "player") {
+    return analyticsPlayerContentMarkup();
+  }
+  if (tabId === "competition") {
+    return analyticsCompetitionContentMarkup();
+  }
+  if (tabId === "freights") {
+    return analyticsFreightsContentMarkup();
+  }
+  if (tabId === "trucks") {
+    return analyticsTrucksContentMarkup();
+  }
+  if (tabId === "products") {
+    return analyticsProductsContentMarkup();
+  }
+  if (tabId === "cities") {
+    return analyticsCitiesContentMarkup();
+  }
+  return analyticsOverviewContentMarkup();
+}
+
+function renderAnalyticsModal() {
+  if (!refs.analyticsTabs || !refs.analyticsContent) {
+    return;
+  }
+  const activeTabId = ANALYTICS_TABS.some((tab) => tab.id === state.analytics.activeTabId)
+    ? state.analytics.activeTabId
+    : ANALYTICS_TABS[0].id;
+  state.analytics.activeTabId = activeTabId;
+  if (refs.analyticsButton) {
+    refs.analyticsButton.classList.toggle("is-active", state.setup.activeModal === "analytics");
+  }
+  refs.analyticsTabs.innerHTML = ANALYTICS_TABS.map((tab) => `
+    <button class="segmented-button${tab.id === activeTabId ? " is-active" : ""}" type="button" role="tab" aria-selected="${tab.id === activeTabId ? "true" : "false"}" data-runtime-analytics-tab="${escapeHtml(tab.id)}">
+      <span>${escapeHtml(tab.label)}</span>
+    </button>
+  `).join("");
+  if (state.setup.activeModal !== "analytics") {
+    return;
+  }
+  refs.analyticsContent.innerHTML = analyticsTabContentMarkup(activeTabId);
+}
+
 function hexColorRgb(rawColor) {
   const source = String(rawColor || "").trim();
   if (!source) {
@@ -4855,6 +6077,48 @@ function humanHighlightsMarkup(player) {
   return playerRouteCardsMarkup(player, { interactiveIdle: true });
 }
 
+function playerOperationSubtitle(player) {
+  if (!player) {
+    return "";
+  }
+  return `${player.isHuman ? "🧑" : "🤖"} ${cityLabel(player.hqCityId)}`;
+}
+
+function playerDrawerMetricsMarkup(player) {
+  return `
+    <div class="game-runtime-metric-grid game-runtime-drawer-metric-grid">
+      <article class="game-runtime-metric-card">
+        <span>Caixa</span>
+        <strong>${escapeHtml(formatCurrency(player.cashBrl))}</strong>
+      </article>
+      <article class="game-runtime-metric-card">
+        <span>Saldo</span>
+        <strong class="${playerCashDelta(player) >= 0 ? "is-positive" : "is-negative"}">${escapeHtml(formatCurrency(playerCashDelta(player)))}</strong>
+      </article>
+      <article class="game-runtime-metric-card">
+        <span>Entregas</span>
+        <strong>${escapeHtml(formatInteger(player.deliveries))}</strong>
+      </article>
+      <article class="game-runtime-metric-card">
+        <span>Toneladas</span>
+        <strong>${escapeHtml(formatTonnes(player.tonnesMoved))}</strong>
+      </article>
+    </div>
+  `;
+}
+
+function playerDrawerRoutesMarkup(player, { interactiveIdle = false } = {}) {
+  return `
+    <div class="game-runtime-inline-stack">
+      <div class="game-runtime-panel-title">
+        <strong>Rotas</strong>
+        <span>${escapeHtml(`${formatInteger(playerActiveContractCount(player))} ativos · ${formatInteger(playerIdleTruckCount(player))} parados`)}</span>
+      </div>
+      ${playerRouteCardsMarkup(player, { interactiveIdle })}
+    </div>
+  `;
+}
+
 function renderHumanHud() {
   if (!refs.humanHud) {
     return;
@@ -4869,16 +6133,29 @@ function renderHumanHud() {
   const dispatchPicking = mainMapDispatchSelectionActive();
   const dispatchAssignment = dispatchPicking ? state.setup.activeHumanAssignment : null;
   const dispatchTruckUnit = dispatchPicking ? assignmentTruckUnit() : null;
+  const drawerOpen = player.id === state.activeDrawerPlayerId;
+  const playerFocused = player.id === state.focusedPlayerId;
 
   refs.humanHud.innerHTML = `
     <div class="game-runtime-panel-head">
-      <div class="game-runtime-panel-title">
-        <strong>${escapeHtml(player.label)}</strong>
-        <span>${escapeHtml(`${cityLabel(player.hqCityId)} · ${player.note || "Operacao ativa"}`)}</span>
-      </div>
-      <button class="ghost-button game-runtime-mini-action" type="button" data-focus-player-id="${escapeHtml(player.id)}" aria-label="Focar sede" title="Focar sede">
-        <span class="material-symbols-outlined" aria-hidden="true">my_location</span>
+      <button class="game-runtime-human-toggle${drawerOpen ? " is-active" : ""}${playerFocused ? " is-focused" : ""}" type="button" data-player-id="${escapeHtml(player.id)}" style="--player-color:${escapeHtml(player.color)}" aria-controls="game-runtime-drawer" aria-expanded="${drawerOpen ? "true" : "false"}">
+        <div class="game-runtime-panel-title">
+          <strong>${escapeHtml(player.label)}</strong>
+          <span>${escapeHtml(playerOperationSubtitle(player))}</span>
+        </div>
+        <span class="material-symbols-outlined" aria-hidden="true">${drawerOpen ? "chevron_left" : "chevron_right"}</span>
       </button>
+      <div class="game-runtime-drawer-actions">
+        ${runtimeTruckMarketEnabled() ? `
+          <button class="ghost-button game-runtime-mini-action" type="button" data-runtime-open-market="${escapeHtml(player.id)}">
+            <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+            <span>Novo</span>
+          </button>
+        ` : ""}
+        <button class="ghost-button game-runtime-mini-action" type="button" data-focus-player-id="${escapeHtml(player.id)}" aria-label="Focar sede" title="Focar sede">
+          <span class="material-symbols-outlined" aria-hidden="true">my_location</span>
+        </button>
+      </div>
     </div>
 
     ${state.humanPrepared ? "" : `
@@ -4901,40 +6178,15 @@ function renderHumanHud() {
       </div>
     ` : ""}
 
-    <div class="game-runtime-metric-grid">
-      <article class="game-runtime-metric-card">
-        <span>Caixa</span>
-        <strong>${escapeHtml(formatCurrency(player.cashBrl))}</strong>
-      </article>
-      <article class="game-runtime-metric-card">
-        <span>Frota</span>
-        <strong>${escapeHtml(formatInteger(player.truckUnits.length))}</strong>
-      </article>
-      <article class="game-runtime-metric-card">
-        <span>Fretes</span>
-        <strong>${escapeHtml(formatInteger(playerActiveContractCount(player)))}</strong>
-      </article>
-      <article class="game-runtime-metric-card">
-        <span>Entregas</span>
-        <strong>${escapeHtml(formatInteger(player.deliveries))}</strong>
-      </article>
-    </div>
+    ${playerDrawerMetricsMarkup(player)}
 
-    <div class="game-runtime-inline-stack">
-      ${humanHighlightsMarkup(player)}
-    </div>
+    ${playerDrawerRoutesMarkup(player, { interactiveIdle: true })}
 
     <div class="game-runtime-panel-footer">
       ${dispatchPicking ? `
         <button class="ghost-button game-runtime-mini-link" type="button" data-runtime-cancel-dispatch-pick="true">
           <span class="material-symbols-outlined" aria-hidden="true">close</span>
           <span>Cancelar escolha</span>
-        </button>
-      ` : ""}
-      ${runtimeTruckMarketEnabled() ? `
-        <button class="ghost-button game-runtime-mini-link" type="button" data-runtime-open-market="${escapeHtml(player.id)}">
-          <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
-          <span>Novo caminhao</span>
         </button>
       ` : ""}
     </div>
@@ -4946,7 +6198,7 @@ function renderLogPanel() {
     return;
   }
   const logMarkup = state.logs.length
-    ? state.logs.slice(0, 8).map((entry) => {
+    ? state.logs.slice(0, LOG_HISTORY_LIMIT).map((entry) => {
       const presentation = logEntryPresentation(entry);
       return `
         <article class="game-runtime-log-line is-${escapeHtml(entry.tone || "neutral")}">
@@ -4964,7 +6216,6 @@ function renderLogPanel() {
     <div class="game-runtime-panel-head">
       <div class="game-runtime-panel-title">
         <strong>Log</strong>
-        <span>${escapeHtml(`${state.runtime?.metadata?.city_count || state.cities.length} cidades · ${state.runtime?.metadata?.route_edge_count || state.edges.length} rotas`)}</span>
       </div>
     </div>
     <div class="game-runtime-log-list">
@@ -5062,7 +6313,7 @@ function renderDrawer() {
     return;
   }
   const player = state.playersById[state.activeDrawerPlayerId] || null;
-  if (!player || player.isHuman) {
+  if (!player) {
     refs.drawer.hidden = true;
     refs.drawer.innerHTML = "";
     syncRobotDrawerLayout();
@@ -5074,13 +6325,13 @@ function renderDrawer() {
     <div class="game-runtime-panel-head game-runtime-drawer-head">
       <div class="game-runtime-panel-title">
         <strong>${escapeHtml(player.label)}</strong>
-        <span>${escapeHtml(`${cityLabel(player.hqCityId)} · ${player.isHuman ? "Operacao humana" : "Operacao robotica"}`)}</span>
+        <span>${escapeHtml(playerOperationSubtitle(player))}</span>
       </div>
       <div class="game-runtime-drawer-actions">
         ${player.isHuman && runtimeTruckMarketEnabled() ? `
           <button class="ghost-button game-runtime-mini-action" type="button" data-runtime-open-market="${escapeHtml(player.id)}">
             <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
-            <span>Novo caminhao</span>
+            <span>Novo</span>
           </button>
         ` : ""}
         <button class="ghost-button game-runtime-mini-action" type="button" data-focus-player-id="${escapeHtml(player.id)}" aria-label="Focar sede" title="Focar sede">
@@ -5093,32 +6344,9 @@ function renderDrawer() {
       </div>
     </div>
 
-    <div class="game-runtime-metric-grid game-runtime-drawer-metric-grid">
-      <article class="game-runtime-metric-card">
-        <span>Caixa</span>
-        <strong>${escapeHtml(formatCurrency(player.cashBrl))}</strong>
-      </article>
-      <article class="game-runtime-metric-card">
-        <span>Saldo</span>
-        <strong class="${playerCashDelta(player) >= 0 ? "is-positive" : "is-negative"}">${escapeHtml(formatCurrency(playerCashDelta(player)))}</strong>
-      </article>
-      <article class="game-runtime-metric-card">
-        <span>Entregas</span>
-        <strong>${escapeHtml(formatInteger(player.deliveries))}</strong>
-      </article>
-      <article class="game-runtime-metric-card">
-        <span>Toneladas</span>
-        <strong>${escapeHtml(formatTonnes(player.tonnesMoved))}</strong>
-      </article>
-    </div>
+    ${playerDrawerMetricsMarkup(player)}
 
-    <div class="game-runtime-inline-stack">
-      <div class="game-runtime-panel-title">
-        <strong>Rotas</strong>
-        <span>${escapeHtml(`${formatInteger(playerActiveContractCount(player))} ativos · ${formatInteger(playerIdleTruckCount(player))} parados`)}</span>
-      </div>
-      ${playerRouteCardsMarkup(player)}
-    </div>
+    ${playerDrawerRoutesMarkup(player)}
   `;
   syncRobotDrawerLayout();
 }
@@ -5131,6 +6359,7 @@ function renderStaticUi() {
   renderLogPanel();
   renderPlayerBar();
   renderDrawer();
+  renderAnalyticsModal();
 }
 
 function renderDynamicUi() {
@@ -5139,6 +6368,7 @@ function renderDynamicUi() {
   renderLogPanel();
   renderPlayerBar();
   renderDrawer();
+  renderAnalyticsModal();
 }
 
 function renderMapUi({ refreshIcons = false } = {}) {
@@ -5190,13 +6420,17 @@ function focusPlayerHeadquartersOnMap(player) {
   });
 }
 
-function setFocusedPlayer(playerId, { closeDrawer = false, mapTarget = "activity" } = {}) {
+function setFocusedPlayer(playerId, { closeDrawer = false, openDrawer = true, mapTarget = "activity" } = {}) {
   const player = state.playersById[playerId] || null;
   if (!player) {
     return;
   }
   state.focusedPlayerId = player.id;
-  state.activeDrawerPlayerId = closeDrawer || player.isHuman ? "" : player.id;
+  if (closeDrawer) {
+    state.activeDrawerPlayerId = "";
+  } else if (openDrawer) {
+    state.activeDrawerPlayerId = player.id;
+  }
   renderPlayerBar();
   renderDrawer();
   renderCityMarkers();
@@ -5214,9 +6448,22 @@ function handleClicks(event) {
     return;
   }
 
+  const runtimeOpenModalButton = target.closest("[data-runtime-open-modal]");
+  if (runtimeOpenModalButton) {
+    openSetupModal(runtimeOpenModalButton.getAttribute("data-runtime-open-modal") || "");
+    return;
+  }
+
   const runtimeCloseButton = target.closest("[data-runtime-close-modal]");
   if (runtimeCloseButton) {
     closeSetupModal();
+    return;
+  }
+
+  const analyticsTabButton = target.closest("[data-runtime-analytics-tab]");
+  if (analyticsTabButton) {
+    state.analytics.activeTabId = analyticsTabButton.getAttribute("data-runtime-analytics-tab") || ANALYTICS_TABS[0].id;
+    renderAnalyticsModal();
     return;
   }
 
@@ -5321,7 +6568,7 @@ function handleClicks(event) {
 
   const focusButton = target.closest("[data-focus-player-id]");
   if (focusButton) {
-    setFocusedPlayer(focusButton.getAttribute("data-focus-player-id") || "", { mapTarget: "hq" });
+    setFocusedPlayer(focusButton.getAttribute("data-focus-player-id") || "", { openDrawer: false, mapTarget: "hq" });
     return;
   }
 
@@ -5372,10 +6619,12 @@ function tickSimulation() {
   const deltaHours = deltaSeconds * speed.hours_per_second;
   if (deltaHours > 0) {
     state.simulation.currentTime = new Date(state.simulation.currentTime.getTime() + (deltaHours * 60 * 60 * 1000));
+    analyticsRecordTruckActivity(deltaHours);
     state.players.forEach((player) => {
       player.contracts.slice().forEach((contract) => advanceContract(player, contract, deltaHours));
       player.contracts = player.contracts.filter((contract) => !contract.isCompleted);
     });
+    analyticsRecordSnapshot();
   }
 
   renderDynamicUi();

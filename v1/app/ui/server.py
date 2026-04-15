@@ -103,6 +103,7 @@ from app.services import (
     save_active_map,
     save_active_map_as,
     save_diesel_cost_editor_document,
+    save_freight_editor_document,
     save_pricing_editor_document,
     save_map_bundle,
     save_product_field_baked_document,
@@ -137,6 +138,8 @@ from app.ui.editor_models import (
     AutoRouteSaveRequest,
     DieselCostSaveRequest,
     DieselCostSaveResponse,
+    FreightEditorSaveRequest,
+    FreightEditorSaveResponse,
     PricingEditorSaveRequest,
     PricingEditorSaveResponse,
     MapCityCatalogDocument,
@@ -1673,6 +1676,15 @@ def create_app() -> FastAPI:
     @app.get("/api/editor/fretes/bootstrap")
     async def freight_editor_bootstrap() -> dict[str, Any]:
         return build_freight_editor_bootstrap_payload()
+
+    @app.put("/api/editor/fretes/document", response_model=FreightEditorSaveResponse)
+    async def save_freight_editor(document: FreightEditorSaveRequest) -> FreightEditorSaveResponse:
+        saved_document = save_freight_editor_document(
+            map_id=document.map_id,
+            document=dict(document.document or {}),
+            updated_at=document.updated_at,
+        )
+        return FreightEditorSaveResponse(document=saved_document)
 
     @app.get("/api/editor/cidade/bootstrap")
     async def city_editor_bootstrap() -> dict[str, Any]:
