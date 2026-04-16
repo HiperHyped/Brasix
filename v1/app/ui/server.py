@@ -67,6 +67,8 @@ from app.services import (
     load_product_editor_v1_payload,
     load_product_editor_v2_payload,
     load_product_editor_v3_payload,
+    load_robot_ai_v1_3_config_payload,
+    load_robot_ai_v1_3_rules_payload,
     load_product_family_catalog_payload,
     load_product_field_baked_document,
     load_product_field_edit_document,
@@ -1475,7 +1477,56 @@ def create_app() -> FastAPI:
         return templates.TemplateResponse(
             request=request,
             name="game_runtime_v1_2.html",
-            context={"page_title": "Brasix | Jogo 1.2"},
+            context={
+                "page_title": "Brasix | Jogo 1.2",
+                "robots_only": False,
+                "runtime_label": "Jogo 1.2",
+                "opening_robot_max": 20,
+            },
+        )
+
+    @app.get("/robo/v1-2", response_class=HTMLResponse, include_in_schema=False)
+    async def robot_runtime_v1_2(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="game_runtime_v1_2.html",
+            context={
+                "page_title": "Brasix | Robos 1.2",
+                "robots_only": True,
+                "runtime_label": "Robos 1.2",
+                "opening_robot_max": 30,
+            },
+        )
+
+    @app.get("/jogo/v1-3", response_class=HTMLResponse, include_in_schema=False)
+    @app.get("/game/v1-3", response_class=HTMLResponse, include_in_schema=False)
+    async def game_runtime_v1_3(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="game_runtime_v1_3.html",
+            context={
+                "page_title": "Brasix | Jogo 1.3",
+                "robots_only": False,
+                "runtime_label": "Jogo 1.3",
+                "opening_robot_max": 20,
+                "robot_ai_config": load_robot_ai_v1_3_config_payload(),
+                "robot_ai_rules": load_robot_ai_v1_3_rules_payload(),
+            },
+        )
+
+    @app.get("/robo/v1-3", response_class=HTMLResponse, include_in_schema=False)
+    async def robot_runtime_v1_3(request: Request) -> HTMLResponse:
+        return templates.TemplateResponse(
+            request=request,
+            name="game_runtime_v1_3.html",
+            context={
+                "page_title": "Brasix | Robos 1.3",
+                "robots_only": True,
+                "runtime_label": "Robos 1.3",
+                "opening_robot_max": 30,
+                "robot_ai_config": load_robot_ai_v1_3_config_payload(),
+                "robot_ai_rules": load_robot_ai_v1_3_rules_payload(),
+            },
         )
 
     @app.get("/editor/map", response_class=HTMLResponse, include_in_schema=False)

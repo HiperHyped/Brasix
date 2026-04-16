@@ -11,6 +11,8 @@ import {
 } from "./shared/leaflet-map.js?v=20260414-game-runtime-1";
 import { escapeHtml, numberFormatter, roundNumber } from "./shared/formatters.js?v=20260414-game-runtime-1";
 import { buildOpeningContextState } from "./shared/opening-pricing.js?v=20260413-opening-2";
+import { brasixRobotAiEngine } from "./game-runtime-robot-ai-engine-v1-3.js?v=20260416-game-runtime-13";
+import { brasixRobotAiProfiles } from "./game-runtime-robot-ai-profiles-v1-3.js?v=20260416-game-runtime-13";
 
 const RUNTIME_CONFIG = {
   version: "1.0",
@@ -61,8 +63,12 @@ const SIZE_TIER_ORDER = ["super_leve", "leve", "medio", "pesado", "super_pesado"
 const DEFAULT_CAPITAL_BASE_INITIAL_CASH_BRL = 1000000;
 const RECOMMENDED_FREIGHT_LIMIT = 4;
 const LOG_HISTORY_LIMIT = 100;
-const MIN_ROBOT_COUNT = 2;
-const MAX_ROBOT_COUNT = 20;
+const CONFIGURED_MIN_ROBOT_COUNT = Number(RUNTIME_CONFIG.minRobotCount);
+const CONFIGURED_MAX_ROBOT_COUNT = Number(RUNTIME_CONFIG.maxRobotCount);
+const MIN_ROBOT_COUNT = Number.isFinite(CONFIGURED_MIN_ROBOT_COUNT) ? Math.max(2, Math.round(CONFIGURED_MIN_ROBOT_COUNT)) : 2;
+const MAX_ROBOT_COUNT = Number.isFinite(CONFIGURED_MAX_ROBOT_COUNT)
+  ? Math.max(MIN_ROBOT_COUNT, Math.round(CONFIGURED_MAX_ROBOT_COUNT))
+  : 20;
 const GAME_SETUP_TRUCK_ID_SEED = `${Date.now()}${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
 const SPEED_OPTIONS = [
   { id: "pause", label: "Pausa", hours_per_second: 0 },
@@ -91,6 +97,16 @@ const ROBOT_NAMES = [
   "Ponte Alta",
   "Nova Faixa",
   "Carga Prisma",
+  "Delta Pampa",
+  "Linha Aurora",
+  "Orla Forte",
+  "Rastro Central",
+  "Carga Boreal",
+  "Polo Norte Sul",
+  "Malha Titan",
+  "Rota Coral",
+  "Eixo Real",
+  "Trama Federal",
 ];
 const ROBOT_COLORS = [
   "#d83a4b",
@@ -113,10 +129,20 @@ const ROBOT_COLORS = [
   "#2a9d8f",
   "#bc6c25",
   "#577590",
+  "#e76f51",
+  "#3a86ff",
+  "#43aa8b",
+  "#f4a261",
+  "#5e60ce",
+  "#219ebc",
+  "#c1121f",
+  "#588157",
+  "#ff9f1c",
+  "#6c757d",
 ];
 const NETWORK_OPACITY_SCALE = 0.92;
 const SIMULATION_TICK_MS = 250;
-const ANALYTICS_HISTORY_MAX_POINTS = 72;
+const ANALYTICS_HISTORY_MAX_POINTS = 0;
 const ANALYTICS_SNAPSHOT_INTERVAL_HOURS = 6;
 const WEEKDAY_LABELS = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
 const ANALYTICS_TABS = [
@@ -168,7 +194,7 @@ const state = {
   players: [],
   playersById: {},
   activeDrawerPlayerId: "",
-  focusedPlayerId: "human",
+  focusedPlayerId: RUNTIME_CONFIG.robotsOnly ? "" : "human",
   humanPrepared: false,
   logs: [],
   contractSequence: 1,
@@ -177,6 +203,14 @@ const state = {
     activeModal: "",
     selectedDifficulty: "standard",
     robotCount: 10,
+    robotAi: {
+      enabled: Boolean(RUNTIME_CONFIG.robotAiSetup),
+      editorMode: "basic",
+      basicModeId: "balanced",
+      selectedRobotSlot: -1,
+      tableConfig: null,
+      manualConfigs: {},
+    },
     company: {
       name: "Brasix",
       color: "#000000",
@@ -211,16 +245,24 @@ const state = {
   },
   analytics: {
     activeTabId: ANALYTICS_TABS[0].id,
+    selectedPlayerId: "",
     history: [],
     lastSnapshotBucket: "",
     flowStatsById: {},
     truckStatsById: {},
+  },
+  truckPopup: {
+    playerId: "",
+    truckUnitId: "",
+    screenX: 0,
+    screenY: 0,
   },
 };
 
 const refs = {
   status: document.getElementById("game-runtime-status"),
   themeToggle: document.getElementById("game-runtime-theme-toggle"),
+  robotAiButton: document.getElementById("game-runtime-robot-ai-button"),
   analyticsButton: document.getElementById("game-runtime-analytics-button"),
   speedControls: document.getElementById("game-runtime-speed-controls"),
   clock: document.getElementById("game-runtime-clock"),
@@ -230,9 +272,11 @@ const refs = {
   drawer: document.getElementById("game-runtime-drawer"),
   playerBar: document.getElementById("game-runtime-player-bar"),
   modalRoot: document.getElementById("game-runtime-modal-root"),
+  truckPopup: document.getElementById("game-runtime-truck-popup"),
   openingDifficultySelect: document.getElementById("game-runtime-opening-difficulty-select"),
   openingRobotCountInput: document.getElementById("game-runtime-opening-robot-count"),
   openingRobotCountValue: document.getElementById("game-runtime-opening-robot-count-value"),
+  openingRobotAiSummary: document.getElementById("game-runtime-opening-robot-ai-summary"),
   openingCompanyNameInput: document.getElementById("game-runtime-opening-company-name"),
   openingCompanyColorInput: document.getElementById("game-runtime-opening-company-color"),
   openingCompanyColorTextInput: document.getElementById("game-runtime-opening-company-color-text"),
@@ -250,6 +294,12 @@ const refs = {
   freightRailMeta: document.getElementById("game-runtime-freight-rail-meta"),
   freightRailTitle: document.getElementById("game-runtime-freight-rail-title"),
   freightSelection: document.getElementById("game-runtime-freight-selection"),
+  robotAiModeToggle: document.getElementById("game-runtime-robot-ai-mode-toggle"),
+  robotAiBasicModes: document.getElementById("game-runtime-robot-ai-basic-modes"),
+  robotAiSummary: document.getElementById("game-runtime-robot-ai-summary"),
+  robotAiPresetButtons: document.getElementById("game-runtime-robot-ai-preset-buttons"),
+  robotAiRobotTabs: document.getElementById("game-runtime-robot-ai-robot-tabs"),
+  robotAiParameterGrid: document.getElementById("game-runtime-robot-ai-parameter-grid"),
   analyticsTabs: document.getElementById("game-runtime-analytics-tabs"),
   analyticsContent: document.getElementById("game-runtime-analytics-content"),
 };
@@ -262,6 +312,10 @@ function initialSimulationDate() {
 
 function numberFormat(digits = 0) {
   return numberFormatter(digits);
+}
+
+function cloneJson(value) {
+  return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 }
 
 function formatInteger(value) {
@@ -383,6 +437,10 @@ function openingWizardEnabled() {
   return Boolean(state.setup.openingWizard);
 }
 
+function robotsOnlyEnabled() {
+  return Boolean(RUNTIME_CONFIG.robotsOnly);
+}
+
 function fuelSystemEnabled() {
   return Boolean(RUNTIME_CONFIG.fuelSystem);
 }
@@ -397,6 +455,364 @@ function exclusiveFreightsEnabled() {
 
 function runtimeTruckMarketEnabled() {
   return Boolean(RUNTIME_CONFIG.runtimeTruckMarket);
+}
+
+function robotAiSetupEnabled() {
+  return Boolean(RUNTIME_CONFIG.robotAiSetup && state.setup?.robotAi?.enabled);
+}
+
+function clampIndex(value, length) {
+  const maxIndex = Math.max(0, Number(length || 0) - 1);
+  const numericValue = Number(value || 0);
+  if (!(numericValue >= 0)) {
+    return 0;
+  }
+  return Math.min(maxIndex, Math.floor(numericValue));
+}
+
+function normalizeRobotAiSelectedSlot(value, slotCount) {
+  return Number(value) === -1 ? -1 : clampIndex(value, slotCount);
+}
+
+function normalizeByMax(value, maxValue) {
+  const numericValue = Math.max(0, Number(value || 0));
+  const numericMax = Math.max(0, Number(maxValue || 0));
+  if (!(numericMax > 0)) {
+    return 0;
+  }
+  return clamp(numericValue / numericMax, 0, 1);
+}
+
+function normalizeInverseByMax(value, maxValue) {
+  const numericValue = Math.max(0, Number(value || 0));
+  const numericMax = Math.max(0, Number(maxValue || 0));
+  if (!(numericMax > 0)) {
+    return 1;
+  }
+  return clamp(1 - (numericValue / numericMax), 0, 1);
+}
+
+function valuesMax(values = []) {
+  return (Array.isArray(values) ? values : [])
+    .map((value) => Number(value || 0))
+    .filter((value) => Number.isFinite(value))
+    .reduce((maxValue, value) => Math.max(maxValue, value), 0);
+}
+
+function averageValue(values = []) {
+  const filtered = (Array.isArray(values) ? values : [])
+    .map((value) => Number(value || 0))
+    .filter((value) => Number.isFinite(value));
+  return filtered.length
+    ? filtered.reduce((total, value) => total + value, 0) / filtered.length
+    : 0;
+}
+
+function robotAiSlotCount() {
+  const liveRobots = state.players.filter((player) => !player.isHuman).length;
+  if (liveRobots) {
+    return liveRobots;
+  }
+  if (openingWizardEnabled()) {
+    return clamp(Number(state.setup.robotCount || MIN_ROBOT_COUNT), MIN_ROBOT_COUNT, MAX_ROBOT_COUNT);
+  }
+  return 3;
+}
+
+function robotAiSlotName(slotIndex) {
+  return ROBOT_NAMES[slotIndex] || `Adversario ${slotIndex + 1}`;
+}
+
+function robotAiSlotColor(slotIndex) {
+  return ROBOT_COLORS[slotIndex] || ROBOT_COLORS[ROBOT_COLORS.length - 1] || "#356d63";
+}
+
+function buildRobotAiTableConfig(modeId = "balanced", difficultyId = setupCurrentDifficultyId()) {
+  return brasixRobotAiProfiles.buildTableConfig({
+    modeId,
+    difficultyId,
+  });
+}
+
+function syncRobotAiSetupState({ preserveManual = true } = {}) {
+  if (!robotAiSetupEnabled()) {
+    return null;
+  }
+  const previous = state.setup.robotAi || {};
+  const tableConfig = buildRobotAiTableConfig(previous.basicModeId || "balanced", setupCurrentDifficultyId());
+  const slotCount = robotAiSlotCount();
+  state.setup.robotAi = {
+    enabled: true,
+    editorMode: previous.editorMode === "detailed" ? "detailed" : "basic",
+    basicModeId: tableConfig.basicModeId,
+    selectedRobotSlot: normalizeRobotAiSelectedSlot(previous.selectedRobotSlot, slotCount),
+    tableConfig,
+    manualConfigs: brasixRobotAiProfiles.normalizeManualRobotConfigs(
+      preserveManual ? previous.manualConfigs : null,
+      slotCount,
+      {
+        fallbackOrder: tableConfig.robotArchetypeOrder,
+        difficultyId: setupCurrentDifficultyId(),
+      },
+    ),
+  };
+  return state.setup.robotAi;
+}
+
+function ensureRobotAiSetupState() {
+  if (!robotAiSetupEnabled()) {
+    return null;
+  }
+  if (!state.setup.robotAi?.tableConfig) {
+    return syncRobotAiSetupState({ preserveManual: true });
+  }
+  return state.setup.robotAi;
+}
+
+function robotAiTableConfig() {
+  return ensureRobotAiSetupState()?.tableConfig || null;
+}
+
+function robotAiSelectedScope() {
+  return Number(state.setup.robotAi?.selectedRobotSlot) === -1 ? "all" : "slot";
+}
+
+function robotAiEffectiveSlotConfig(slotIndex) {
+  const setupState = ensureRobotAiSetupState();
+  const tableConfig = setupState?.tableConfig || buildRobotAiTableConfig("balanced", setupCurrentDifficultyId());
+  const fallbackOrder = Array.isArray(tableConfig.robotArchetypeOrder) && tableConfig.robotArchetypeOrder.length
+    ? tableConfig.robotArchetypeOrder
+    : Object.keys(brasixRobotAiProfiles.archetypes || {});
+  const fallbackArchetypeId = fallbackOrder[slotIndex % Math.max(1, fallbackOrder.length)]
+    || Object.keys(brasixRobotAiProfiles.archetypes || {})[0]
+    || "balanced_operator";
+  if (setupState?.editorMode === "detailed") {
+    const manualConfig = brasixRobotAiProfiles.normalizeManualRobotConfig(setupState.manualConfigs?.[slotIndex], {
+      fallbackArchetypeId,
+      difficultyId: setupCurrentDifficultyId(),
+    });
+    return {
+      slotIndex,
+      manual: true,
+      archetypeId: manualConfig.archetypeId,
+      overrides: cloneJson(manualConfig.overrides || {}),
+      tableConfig,
+      profile: brasixRobotAiProfiles.buildProfile({
+        archetypeId: manualConfig.archetypeId,
+        overrides: cloneJson(manualConfig.overrides || {}),
+        forcedSkillPresetId: tableConfig.forcedSkillPresetId,
+      }),
+    };
+  }
+  return {
+    slotIndex,
+    manual: false,
+    archetypeId: fallbackArchetypeId,
+    overrides: null,
+    tableConfig,
+    profile: brasixRobotAiProfiles.buildProfile({
+      archetypeId: fallbackArchetypeId,
+      forcedSkillPresetId: tableConfig.forcedSkillPresetId,
+    }),
+  };
+}
+
+function robotAiSelectedSlotIndex() {
+  return clampIndex(state.setup.robotAi?.selectedRobotSlot || 0, robotAiSlotCount());
+}
+
+function robotAiSelectedSlotIndexes() {
+  if (robotAiSelectedScope() === "all") {
+    return Array.from({ length: robotAiSlotCount() }, (_unused, slotIndex) => slotIndex);
+  }
+  return [robotAiSelectedSlotIndex()];
+}
+
+function robotAiSetSelectedSlot(slotIndex) {
+  if (!robotAiSetupEnabled()) {
+    return;
+  }
+  ensureRobotAiSetupState();
+  state.setup.robotAi.selectedRobotSlot = Number(slotIndex) === -1 ? -1 : clampIndex(slotIndex, robotAiSlotCount());
+}
+
+function robotAiModeLabel() {
+  return state.setup.robotAi?.editorMode === "detailed" ? "Detalhado" : "Basico";
+}
+
+function robotAiSkillPresetLabel(tableConfig = robotAiTableConfig()) {
+  const skillPreset = brasixRobotAiProfiles.skillPresets?.[tableConfig?.forcedSkillPresetId || ""] || null;
+  return skillPreset?.label || difficultyLabel(setupCurrentDifficultyId());
+}
+
+function robotAiSelectedTargetLabel() {
+  if (robotAiSelectedScope() === "all") {
+    return `Todos · ${formatInteger(robotAiSlotCount())} robos`;
+  }
+  const slotIndex = robotAiSelectedSlotIndex();
+  const slotConfig = robotAiEffectiveSlotConfig(slotIndex);
+  return `${robotAiSlotName(slotIndex)} · ${slotConfig.profile?.label || slotConfig.archetypeId}`;
+}
+
+function robotAiGroupPresetLookup(groupId) {
+  return {
+    economy: brasixRobotAiProfiles.economyPresets,
+    network: brasixRobotAiProfiles.networkPresets,
+    operations: brasixRobotAiProfiles.operationsPresets,
+    skill: brasixRobotAiProfiles.skillPresets,
+  }[groupId] || {};
+}
+
+function robotAiGroupPresetEntries(groupId) {
+  return Object.values(robotAiGroupPresetLookup(groupId) || {});
+}
+
+function robotAiGroupPresetMatchesProfile(groupId, presetId, profile) {
+  const preset = robotAiGroupPresetLookup(groupId)?.[presetId] || null;
+  if (!preset || !profile?.[groupId]) {
+    return false;
+  }
+  return Object.entries(preset.values || {}).every(([parameterId, expectedValue]) => {
+    return Math.abs(Number(profile[groupId]?.[parameterId] || 0) - Number(expectedValue || 0)) < 0.0001;
+  });
+}
+
+function robotAiRepresentativeSlotIndex() {
+  return robotAiSelectedScope() === "all" ? 0 : robotAiSelectedSlotIndex();
+}
+
+function robotAiRepresentativeProfile() {
+  return robotAiEffectiveSlotConfig(robotAiRepresentativeSlotIndex()).profile || {};
+}
+
+function robotAiModeButtonsMarkup({ compact = false } = {}) {
+  if (compact) {
+    return [
+      { id: "basic", label: "Basico", description: "Mesa pronta", action: 'data-runtime-robot-ai-editor-mode="basic"' },
+      { id: "detailed", label: "Detalhado", description: "Abrir editor", action: 'data-runtime-robot-ai-open-detailed="true"' },
+    ].map((mode) => `
+      <button class="game-runtime-robot-ai-toggle-button${state.setup.robotAi?.editorMode === mode.id ? " is-active" : ""} is-compact" type="button" ${mode.action}>
+        <strong>${escapeHtml(mode.label)}</strong>
+        <span>${escapeHtml(mode.description)}</span>
+      </button>
+    `).join("");
+  }
+  return [
+    { id: "basic", label: compact ? "Basico" : "Modo basico", description: compact ? "Mesa pronta" : "Mesa pronta" },
+    { id: "detailed", label: compact ? "Detalhado" : "Modo detalhado", description: compact ? "Robo a robo" : "Robo a robo" },
+  ].map((mode) => `
+    <button class="game-runtime-robot-ai-toggle-button${state.setup.robotAi?.editorMode === mode.id ? " is-active" : ""}${compact ? " is-compact" : ""}" type="button" data-runtime-robot-ai-editor-mode="${escapeHtml(mode.id)}">
+      <strong>${escapeHtml(mode.label)}</strong>
+      <span>${escapeHtml(mode.description)}</span>
+    </button>
+  `).join("");
+}
+
+function robotAiBasicModeButtonsMarkup({ compact = false } = {}) {
+  const tableConfig = robotAiTableConfig() || buildRobotAiTableConfig("balanced", setupCurrentDifficultyId());
+  return Object.values(brasixRobotAiProfiles.basicModes || {}).map((mode) => `
+    <button class="game-runtime-robot-ai-basic-mode-button${tableConfig.basicModeId === mode.id ? " is-active" : ""}${compact ? " is-compact" : ""}" type="button" data-runtime-robot-ai-basic-mode="${escapeHtml(mode.id)}" title="${escapeHtml(mode.description || mode.label || mode.id)}">
+      <strong>${escapeHtml(mode.label || mode.id)}</strong>
+      <span>${escapeHtml(mode.description || "")}</span>
+    </button>
+  `).join("");
+}
+
+function cityOutgoingFlows(cityId) {
+  return state.outboundFreightsByCityId[String(cityId || "").trim()] || [];
+}
+
+function cityNetworkCoverageValue(cityId) {
+  return cityOutgoingFlows(cityId).length;
+}
+
+function cityLongChainPotentialValue(cityId) {
+  return cityOutgoingFlows(cityId)
+    .map((flow) => flowScore(flow))
+    .sort((left, right) => right - left)
+    .slice(0, 3)
+    .reduce((total, value) => total + value, 0);
+}
+
+function cityStableSupplyValue(cityId) {
+  const flows = cityOutgoingFlows(cityId);
+  const totalTonnes = flows.reduce((total, flow) => total + flowQuantityBaseTons(flow), 0);
+  const productCount = new Set(flows.map((flow) => String(flow?.product_id || "").trim()).filter(Boolean)).size;
+  return totalTonnes + (productCount * 180);
+}
+
+function cityScaleValue(cityId) {
+  return Number(state.citiesById[String(cityId || "").trim()]?.population_thousands || 0);
+}
+
+function cityOpportunityValue(cityId) {
+  const city = state.citiesById[String(cityId || "").trim()] || null;
+  return city ? cityOpportunityScore(city) : 0;
+}
+
+function cityDistanceValue(originCityId, destinationCityId) {
+  if (!originCityId || !destinationCityId || originCityId === destinationCityId) {
+    return 0;
+  }
+  return Number(getTrack(originCityId, destinationCityId, "fastest")?.distanceKm || getTrack(destinationCityId, originCityId, "fastest")?.distanceKm || 0);
+}
+
+function flowSpecializationValue(flow) {
+  return clamp((logisticsMultiplier(flow) - 0.95) / 0.45, 0, 1);
+}
+
+function flowMarginValue(flow, truck, player, preparedEntry = null, trackDistanceKm = Number(flow?.distance_km || 0)) {
+  const payloadTons = flowPayloadTons(flow, truck, preparedEntry);
+  const revenue = estimateDeliveryRevenue(flow, truck, player, preparedEntry, trackDistanceKm);
+  const cycleCost = estimateCycleCost(flow, truck, payloadTons, trackDistanceKm);
+  return roundNumber(revenue - cycleCost, 2);
+}
+
+function buildRobotAiSeedPlayer(slotIndex, playerId) {
+  const slotConfig = robotAiEffectiveSlotConfig(slotIndex);
+  const playerSeed = {
+    id: playerId,
+    label: robotAiSlotName(slotIndex),
+    color: robotAiSlotColor(slotIndex),
+    isHuman: false,
+    hqCityId: "",
+    ai_slot_index: slotIndex,
+    ai_manual_profile: slotConfig.manual,
+    ai_archetype_id: slotConfig.archetypeId,
+    ai_profile_overrides: cloneJson(slotConfig.overrides || null),
+  };
+  brasixRobotAiEngine.ensureProfile(playerSeed, slotConfig.tableConfig);
+  return {
+    slotConfig,
+    playerSeed,
+  };
+}
+
+function robotAiApplyToPlayer(player, slotIndex) {
+  if (!robotAiSetupEnabled() || !player || player.isHuman) {
+    return;
+  }
+  const slotConfig = robotAiEffectiveSlotConfig(slotIndex);
+  player.ai_slot_index = slotIndex;
+  player.ai_manual_profile = slotConfig.manual;
+  player.ai_archetype_id = slotConfig.archetypeId;
+  player.ai_profile_overrides = cloneJson(slotConfig.overrides || null);
+  brasixRobotAiEngine.ensureProfile(player, slotConfig.tableConfig);
+}
+
+function applyRobotAiStateToLivePlayers() {
+  if (!robotAiSetupEnabled() || !state.players.length) {
+    return;
+  }
+  syncRobotAiSetupState({ preserveManual: true });
+  let robotIndex = 0;
+  state.players.forEach((player) => {
+    if (player.isHuman) {
+      return;
+    }
+    robotAiApplyToPlayer(player, robotIndex);
+    robotIndex += 1;
+  });
 }
 
 function setupCompany() {
@@ -2604,7 +3020,178 @@ function buildHumanPlayerConfig() {
   };
 }
 
+function buildRobotOpeningHqCandidates(playerSeed, humanHqCityId, candidateCities) {
+  const coverageValues = Object.fromEntries(candidateCities.map((city) => [city.id, cityNetworkCoverageValue(city.id)]));
+  const flowPotentialValues = Object.fromEntries(candidateCities.map((city) => [city.id, cityOpportunityValue(city.id)]));
+  const cityScaleValues = Object.fromEntries(candidateCities.map((city) => [city.id, cityScaleValue(city.id)]));
+  const longChainValues = Object.fromEntries(candidateCities.map((city) => [city.id, cityLongChainPotentialValue(city.id)]));
+  const stableSupplyValues = Object.fromEntries(candidateCities.map((city) => [city.id, cityStableSupplyValue(city.id)]));
+  const separationValues = Object.fromEntries(candidateCities.map((city) => [city.id, cityDistanceValue(city.id, humanHqCityId)]));
+  const maxCoverage = valuesMax(Object.values(coverageValues));
+  const maxFlowPotential = valuesMax(Object.values(flowPotentialValues));
+  const maxCityScale = valuesMax(Object.values(cityScaleValues));
+  const maxLongChain = valuesMax(Object.values(longChainValues));
+  const maxStableSupply = valuesMax(Object.values(stableSupplyValues));
+  const maxSeparation = valuesMax(Object.values(separationValues));
+  return candidateCities.map((city) => ({
+    city,
+    runtimeSignals: {
+      city_flow_potential_norm: normalizeByMax(flowPotentialValues[city.id], maxFlowPotential),
+      city_scale_norm: normalizeByMax(cityScaleValues[city.id], maxCityScale),
+      network_coverage_norm: normalizeByMax(coverageValues[city.id], maxCoverage),
+      long_chain_potential_norm: normalizeByMax(longChainValues[city.id], maxLongChain),
+      separation_from_human_norm: normalizeByMax(separationValues[city.id], maxSeparation),
+      early_expansion_room_norm: normalizeByMax(stableSupplyValues[city.id], maxStableSupply),
+      stable_supply_norm: normalizeByMax(stableSupplyValues[city.id], maxStableSupply),
+    },
+    player: playerSeed,
+  }));
+}
+
+function buildRobotOpeningAssignmentPlan(playerSeed, hqCityId, blockedFlowIds = new Set(), availableCashBrl = openingCashForDifficulty(setupCurrentDifficultyId())) {
+  const profile = playerSeed.ai_profile || brasixRobotAiEngine.ensureProfile(playerSeed, robotAiTableConfig());
+  const candidateFlows = [...cityOutgoingFlows(hqCityId)]
+    .filter((flow) => !blockedFlowIds.has(flow.id))
+    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
+    .filter((flow) => getTrack(flow.origin_id, flow.destination_id, "fastest")?.points?.length)
+    .map((flow) => {
+      const truck = bestTruckForFlow(flow);
+      if (!truck) {
+        return null;
+      }
+      const trackDistanceKm = Number(getTrack(flow.origin_id, flow.destination_id, "fastest")?.distanceKm || flow.distance_km || 0);
+      const payloadTons = flowPayloadTons(flow, truck, null);
+      const revenueBrl = estimateDeliveryRevenue(flow, truck, playerSeed, null, trackDistanceKm);
+      const marginBrl = flowMarginValue(flow, truck, playerSeed, null, trackDistanceKm);
+      const payloadCapacityTons = Math.max(0.5, payloadTonsForTruck(truck));
+      const destinationFollowupValue = cityLongChainPotentialValue(flow.destination_id);
+      const routeStabilityValue = cityStableSupplyValue(flow.destination_id) + (destinationFollowupValue * 0.6);
+      return {
+        flow,
+        truck,
+        trackDistanceKm,
+        payloadTons,
+        revenueBrl,
+        marginBrl,
+        payloadFitValue: clamp(payloadTons / payloadCapacityTons, 0, 1),
+        specializationValue: flowSpecializationValue(flow),
+        destinationFollowupValue,
+        routeStabilityValue,
+      };
+    })
+    .filter(Boolean);
+
+  if (!candidateFlows.length) {
+    const fallbackPlan = autoAssignContractsForTruckUnits(playerSeed.id, hqCityId, [], 2, blockedFlowIds);
+    return {
+      truckUnits: fallbackPlan.truckUnits,
+      contractSpecs: fallbackPlan.contractSpecs,
+      selectedFlowIds: new Set(fallbackPlan.contractSpecs.map((spec) => spec.flow.id)),
+    };
+  }
+
+  const maxRevenue = valuesMax(candidateFlows.map((entry) => entry.revenueBrl));
+  const maxMargin = valuesMax(candidateFlows.map((entry) => Math.max(0, entry.marginBrl)));
+  const maxDistance = valuesMax(candidateFlows.map((entry) => entry.trackDistanceKm));
+  const maxFollowup = valuesMax(candidateFlows.map((entry) => entry.destinationFollowupValue));
+  const maxRouteStability = valuesMax(candidateFlows.map((entry) => entry.routeStabilityValue));
+  const rankedCandidates = brasixRobotAiEngine.rankCandidates("opening", "flow_selection", {
+    player: playerSeed,
+    tableConfig: robotAiTableConfig(),
+    candidates: candidateFlows.map((entry) => ({
+      ...entry,
+      runtimeSignals: {
+        revenue_norm: normalizeByMax(entry.revenueBrl, maxRevenue),
+        margin_norm: normalizeByMax(Math.max(0, entry.marginBrl), maxMargin),
+        distance_efficiency_norm: normalizeInverseByMax(entry.trackDistanceKm, maxDistance),
+        payload_fit_norm: entry.payloadFitValue,
+        specialization_fit_norm: entry.specializationValue,
+        hq_origin_bonus_norm: entry.flow.origin_id === hqCityId ? 1 : 0,
+        destination_followup_norm: normalizeByMax(entry.destinationFollowupValue, maxFollowup),
+        route_stability_norm: normalizeByMax(entry.routeStabilityValue, maxRouteStability),
+      },
+    })),
+  });
+
+  const targetTruckCount = Math.max(1, Math.min(3, 1 + Math.round(Number(profile?.economy?.fleet_growth_bias || 0) * 2)));
+  const reserveShare = clamp(Number(profile?.economy?.cash_reserve_ratio || 0.3) * 0.55, 0.08, 0.7);
+  const riskTolerance = clamp(Number(profile?.economy?.risk_tolerance || 0.5), 0, 1);
+  let remainingCash = Number(availableCashBrl || 0) - Number(openingContextForCity(state.citiesById[hqCityId])?.openingPrice || 0);
+  const minimumCashAfterPurchase = Math.max(0, Number(availableCashBrl || 0) * reserveShare * (1 - (riskTolerance * 0.35)));
+  const truckUnits = [];
+  const contractSpecs = [];
+  const usedFlowIds = new Set();
+
+  rankedCandidates.forEach((entry) => {
+    if (contractSpecs.length >= targetTruckCount || usedFlowIds.has(entry.flow.id)) {
+      return;
+    }
+    const truckPrice = Number(entry.truck.purchase_price_brl || 0);
+    if (remainingCash - truckPrice < minimumCashAfterPurchase && contractSpecs.length) {
+      return;
+    }
+    const truckUnit = buildTruckUnit(playerSeed.id, entry.truck, truckUnits.length + 1, hqCityId);
+    if (!truckCanExecuteFlow(truckUnit, entry.flow)) {
+      return;
+    }
+    truckUnits.push(truckUnit);
+    contractSpecs.push({ flow: entry.flow, truckUnit, preparedEntry: null });
+    usedFlowIds.add(entry.flow.id);
+    remainingCash -= truckPrice;
+  });
+
+  if (!contractSpecs.length) {
+    const fallbackPlan = autoAssignContractsForTruckUnits(playerSeed.id, hqCityId, [], 2, blockedFlowIds);
+    return {
+      truckUnits: fallbackPlan.truckUnits,
+      contractSpecs: fallbackPlan.contractSpecs,
+      selectedFlowIds: new Set(fallbackPlan.contractSpecs.map((spec) => spec.flow.id)),
+    };
+  }
+
+  return {
+    truckUnits,
+    contractSpecs,
+    selectedFlowIds: usedFlowIds,
+  };
+}
+
 function buildRobotPlayerConfigs(humanHqCityId, blockedFlowIds = new Set()) {
+  if (!robotAiSetupEnabled()) {
+    const robotCount = openingWizardEnabled()
+      ? clamp(state.setup.robotCount, MIN_ROBOT_COUNT, MAX_ROBOT_COUNT)
+      : 3;
+    const baseDifficulty = openingWizardEnabled() ? state.setup.selectedDifficulty : "standard";
+    const robotBaseCash = openingCashForDifficulty(baseDifficulty);
+    const candidateCities = [...state.cities]
+      .filter((city) => city.id !== humanHqCityId)
+      .sort((left, right) => cityOpportunityScore(right) - cityOpportunityScore(left));
+
+    return Array.from({ length: robotCount }, (_unused, index) => {
+      const name = ROBOT_NAMES[index] || `Adversario ${index + 1}`;
+      const city = candidateCities[index] || candidateCities[0] || state.cities[0] || null;
+      const hqCityId = city?.id || humanHqCityId;
+      const assignmentPlan = autoAssignContractsForTruckUnits(`robot-${index + 1}`, hqCityId, [], 2, blockedFlowIds);
+      const headquartersCost = Number(openingContextForCity(city)?.openingPrice || 0);
+      const fleetInvestment = assignmentPlan.truckUnits.reduce((total, truckUnit) => total + Number(truckUnit.truck?.purchase_price_brl || 0), 0);
+      const currentCash = roundNumber((robotBaseCash * (0.92 + (index * 0.025))) - headquartersCost - fleetInvestment, 0);
+      return {
+        id: `robot-${index + 1}`,
+        label: name,
+        color: ROBOT_COLORS[index] || ROBOT_COLORS[ROBOT_COLORS.length - 1],
+        isHuman: false,
+        hqCityId,
+        truckUnits: assignmentPlan.truckUnits,
+        contractSpecs: assignmentPlan.contractSpecs,
+        cashBrl: currentCash,
+        startingCashBrl: currentCash,
+        prepared: true,
+        note: "Operacao automatica",
+      };
+    }).filter((config) => config.hqCityId && config.truckUnits.length && config.contractSpecs.length);
+  }
+
+  syncRobotAiSetupState({ preserveManual: true });
   const robotCount = openingWizardEnabled()
     ? clamp(state.setup.robotCount, MIN_ROBOT_COUNT, MAX_ROBOT_COUNT)
     : 3;
@@ -2613,19 +3200,34 @@ function buildRobotPlayerConfigs(humanHqCityId, blockedFlowIds = new Set()) {
   const candidateCities = [...state.cities]
     .filter((city) => city.id !== humanHqCityId)
     .sort((left, right) => cityOpportunityScore(right) - cityOpportunityScore(left));
+  const usedFlowIds = new Set(blockedFlowIds);
+  const usedHqCityIds = new Set([humanHqCityId].filter(Boolean));
 
   return Array.from({ length: robotCount }, (_unused, index) => {
-    const name = ROBOT_NAMES[index] || `Adversario ${index + 1}`;
-    const city = candidateCities[index] || candidateCities[0] || state.cities[0] || null;
+    const playerId = `robot-${index + 1}`;
+    const { slotConfig, playerSeed } = buildRobotAiSeedPlayer(index, playerId);
+    const hqPool = candidateCities.filter((city) => !usedHqCityIds.has(city.id));
+    const rankedHqCandidates = brasixRobotAiEngine.rankCandidates("opening", "hq_selection", {
+      player: playerSeed,
+      tableConfig: slotConfig.tableConfig,
+      candidates: buildRobotOpeningHqCandidates(playerSeed, humanHqCityId, hqPool.length ? hqPool : candidateCities),
+    });
+    const city = rankedHqCandidates[0]?.city || hqPool[0] || candidateCities[0] || state.cities[0] || null;
     const hqCityId = city?.id || humanHqCityId;
-    const assignmentPlan = autoAssignContractsForTruckUnits(`robot-${index + 1}`, hqCityId, [], 2, blockedFlowIds);
+    playerSeed.hqCityId = hqCityId;
+    const robotOpeningBudgetBrl = robotBaseCash * (0.92 + (index * 0.025));
+    const assignmentPlan = buildRobotOpeningAssignmentPlan(playerSeed, hqCityId, usedFlowIds, robotOpeningBudgetBrl);
+    assignmentPlan.selectedFlowIds.forEach((flowId) => usedFlowIds.add(flowId));
+    if (hqCityId) {
+      usedHqCityIds.add(hqCityId);
+    }
     const headquartersCost = Number(openingContextForCity(city)?.openingPrice || 0);
     const fleetInvestment = assignmentPlan.truckUnits.reduce((total, truckUnit) => total + Number(truckUnit.truck?.purchase_price_brl || 0), 0);
-    const currentCash = roundNumber((robotBaseCash * (0.92 + (index * 0.025))) - headquartersCost - fleetInvestment, 0);
+    const currentCash = roundNumber(robotOpeningBudgetBrl - headquartersCost - fleetInvestment, 0);
     return {
-      id: `robot-${index + 1}`,
-      label: name,
-      color: ROBOT_COLORS[index] || ROBOT_COLORS[ROBOT_COLORS.length - 1],
+      id: playerId,
+      label: playerSeed.label,
+      color: playerSeed.color,
       isHuman: false,
       hqCityId,
       truckUnits: assignmentPlan.truckUnits,
@@ -2633,7 +3235,12 @@ function buildRobotPlayerConfigs(humanHqCityId, blockedFlowIds = new Set()) {
       cashBrl: currentCash,
       startingCashBrl: currentCash,
       prepared: true,
-      note: "Operacao automatica",
+      note: playerSeed.ai_profile?.label || "Operacao automatica",
+      ai_slot_index: index,
+      ai_manual_profile: slotConfig.manual,
+      ai_archetype_id: slotConfig.archetypeId,
+      ai_profile_overrides: cloneJson(slotConfig.overrides || null),
+      ai_profile_label: playerSeed.ai_profile?.label || slotConfig.archetypeId,
     };
   }).filter((config) => config.hqCityId && config.truckUnits.length && config.contractSpecs.length);
 }
@@ -2870,7 +3477,64 @@ function assignDispatchToTruck(player, truckUnit, destinationCityId, dispatchMod
   return contract;
 }
 
+function buildRobotNextFlowCandidates(player, truckUnit, originCityId) {
+  const flows = (state.outboundFreightsByCityId[originCityId] || [])
+    .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
+    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
+    .filter((flow) => truckCanExecuteFlow(truckUnit, flow, {
+      currentCityId: originCityId,
+      startingFuelLiters: truckUnit.fuelLevelLiters,
+    }));
+  if (!flows.length) {
+    return [];
+  }
+  const candidates = flows.map((flow) => {
+    const trackDistanceKm = Number(getTrack(flow.origin_id, flow.destination_id, "fastest")?.distanceKm || flow.distance_km || 0);
+    const payloadTons = flowPayloadTons(flow, truckUnit.truck, null);
+    const revenueBrl = estimateDeliveryRevenue(flow, truckUnit.truck, player, null, trackDistanceKm);
+    const marginBrl = flowMarginValue(flow, truckUnit.truck, player, null, trackDistanceKm);
+    const followupValue = cityLongChainPotentialValue(flow.destination_id);
+    const routeStabilityValue = cityStableSupplyValue(flow.destination_id) + (followupValue * 0.6);
+    return {
+      flow,
+      trackDistanceKm,
+      payloadFitValue: clamp(payloadTons / Math.max(0.5, payloadTonsForTruck(truckUnit.truck)), 0, 1),
+      revenueBrl,
+      marginBrl,
+      specializationValue: flowSpecializationValue(flow),
+      followupValue,
+      routeStabilityValue,
+    };
+  });
+  const maxRevenue = valuesMax(candidates.map((entry) => entry.revenueBrl));
+  const maxMargin = valuesMax(candidates.map((entry) => Math.max(0, entry.marginBrl)));
+  const maxDistance = valuesMax(candidates.map((entry) => entry.trackDistanceKm));
+  const maxFollowup = valuesMax(candidates.map((entry) => entry.followupValue));
+  const maxRouteStability = valuesMax(candidates.map((entry) => entry.routeStabilityValue));
+  return brasixRobotAiEngine.rankCandidates("operations", "next_flow_selection", {
+    player,
+    tableConfig: robotAiTableConfig(),
+    candidates: candidates.map((entry) => ({
+      ...entry,
+      runtimeSignals: {
+        revenue_norm: normalizeByMax(entry.revenueBrl, maxRevenue),
+        margin_norm: normalizeByMax(Math.max(0, entry.marginBrl), maxMargin),
+        distance_efficiency_norm: normalizeInverseByMax(entry.trackDistanceKm, maxDistance),
+        payload_fit_norm: entry.payloadFitValue,
+        specialization_fit_norm: entry.specializationValue,
+        hq_origin_bonus_norm: entry.flow.origin_id === player.hqCityId ? 1 : 0,
+        destination_followup_norm: normalizeByMax(entry.followupValue, maxFollowup),
+        route_stability_norm: normalizeByMax(entry.routeStabilityValue, maxRouteStability),
+      },
+    })),
+  });
+}
+
 function bestNextFlowForTruck(player, truckUnit, originCityId) {
+  if (robotAiSetupEnabled() && player && !player.isHuman) {
+    const rankedCandidates = buildRobotNextFlowCandidates(player, truckUnit, originCityId);
+    return rankedCandidates[0]?.flow || null;
+  }
   return (state.outboundFreightsByCityId[originCityId] || [])
     .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
     .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
@@ -2887,7 +3551,104 @@ function bestNextFlowForTruck(player, truckUnit, originCityId) {
     })[0] || null;
 }
 
+function buildRobotRecoveryCandidates(player, truckUnit, originCityId) {
+  const currentCityId = String(originCityId || truckUnit?.currentCityId || player?.hqCityId || "").trim();
+  const candidates = state.freightFlows
+    .filter((flow) => String(flow?.origin_id || "").trim() && String(flow.origin_id).trim() !== currentCityId)
+    .filter((flow) => truckSupportsFlow(truckUnit.truck, flow))
+    .filter((flow) => !exclusiveFreightsEnabled() || freightFlowAvailability(flow.id).available)
+    .map((flow) => {
+      const executionPlan = buildTruckFlowExecutionPlan(truckUnit, flow, {
+        currentCityId,
+        startingFuelLiters: truckUnit.fuelLevelLiters,
+      });
+      if (!executionPlan.feasible) {
+        return null;
+      }
+      const repositionDistanceKm = Math.max(0, Number(executionPlan.repositionPlan?.distanceKm || 0));
+      const deliveryTrack = getTrack(flow.origin_id, flow.destination_id, "fastest");
+      const revenueBrl = estimateDeliveryRevenue(flow, truckUnit.truck, player, null, deliveryTrack.distanceKm);
+      const destinationCityId = flow.origin_id;
+      return {
+        destinationCityId,
+        dispatchMode: "reposition",
+        targetFlow: flow,
+        repositionDistanceKm,
+        destinationOpportunityValue: cityOpportunityValue(destinationCityId),
+        targetFlowValue: revenueBrl,
+        destinationFollowupValue: cityLongChainPotentialValue(destinationCityId),
+        routeStabilityValue: cityStableSupplyValue(destinationCityId),
+        destinationHqValue: destinationCityId === player.hqCityId ? 1 : 0,
+        frontierBonusValue: destinationCityId !== player.hqCityId && destinationCityId !== currentCityId ? 1 : 0,
+        returnHomeValue: 0,
+      };
+    })
+    .filter(Boolean);
+
+  const hqCityId = String(player?.hqCityId || "").trim();
+  if (hqCityId && hqCityId !== currentCityId) {
+    const returnPlan = buildTravelFuelPlan({
+      track: getTrack(currentCityId, hqCityId, "fastest"),
+      truck: truckUnit.truck,
+      loaded: false,
+      startingFuelLiters: truckUnit.fuelLevelLiters,
+    });
+    if (returnPlan.feasible) {
+      candidates.push({
+        destinationCityId: hqCityId,
+        dispatchMode: "return_hq",
+        targetFlow: null,
+        repositionDistanceKm: Number(returnPlan.distanceKm || 0),
+        destinationOpportunityValue: cityOpportunityValue(hqCityId),
+        targetFlowValue: 0,
+        destinationFollowupValue: cityLongChainPotentialValue(hqCityId),
+        routeStabilityValue: cityStableSupplyValue(hqCityId),
+        destinationHqValue: 1,
+        frontierBonusValue: 0,
+        returnHomeValue: 1,
+      });
+    }
+  }
+
+  if (!candidates.length) {
+    return [];
+  }
+  const maxDistance = valuesMax(candidates.map((entry) => entry.repositionDistanceKm));
+  const maxDestinationOpportunity = valuesMax(candidates.map((entry) => entry.destinationOpportunityValue));
+  const maxTargetFlowValue = valuesMax(candidates.map((entry) => entry.targetFlowValue));
+  const maxFollowup = valuesMax(candidates.map((entry) => entry.destinationFollowupValue));
+  const maxRouteStability = valuesMax(candidates.map((entry) => entry.routeStabilityValue));
+  return brasixRobotAiEngine.rankCandidates("operations", "recovery_dispatch", {
+    player,
+    tableConfig: robotAiTableConfig(),
+    candidates: candidates.map((entry) => ({
+      ...entry,
+      runtimeSignals: {
+        destination_opportunity_norm: normalizeByMax(entry.destinationOpportunityValue, maxDestinationOpportunity),
+        distance_efficiency_norm: normalizeInverseByMax(entry.repositionDistanceKm, maxDistance),
+        return_home_norm: entry.returnHomeValue,
+        target_flow_value_norm: normalizeByMax(entry.targetFlowValue, maxTargetFlowValue),
+        destination_followup_norm: normalizeByMax(entry.destinationFollowupValue, maxFollowup),
+        route_stability_norm: normalizeByMax(entry.routeStabilityValue, maxRouteStability),
+        frontier_bonus_norm: entry.frontierBonusValue,
+        destination_hq_norm: entry.destinationHqValue,
+      },
+    })),
+  });
+}
+
 function bestRobotRecoveryDispatch(player, truckUnit, originCityId) {
+  if (robotAiSetupEnabled() && player && !player.isHuman) {
+    const rankedCandidates = buildRobotRecoveryCandidates(player, truckUnit, originCityId);
+    return rankedCandidates[0]
+      ? {
+        destinationCityId: rankedCandidates[0].destinationCityId,
+        dispatchMode: rankedCandidates[0].dispatchMode,
+        targetFlow: rankedCandidates[0].targetFlow,
+        repositionDistanceKm: rankedCandidates[0].repositionDistanceKm,
+      }
+      : null;
+  }
   const currentCityId = String(originCityId || truckUnit?.currentCityId || player?.hqCityId || "").trim();
   if (!player || !truckUnit || !currentCityId) {
     return null;
@@ -3272,36 +4033,54 @@ function createPlayer(config) {
     contracts: [],
     deliveries: 0,
     tonnesMoved: 0,
+    ai_slot_index: Number.isInteger(config.ai_slot_index) ? config.ai_slot_index : null,
+    ai_manual_profile: Boolean(config.ai_manual_profile),
+    ai_archetype_id: config.ai_archetype_id || "",
+    ai_profile_overrides: cloneJson(config.ai_profile_overrides || null),
+    ai_profile_label: config.ai_profile_label || "",
   };
   player.contracts = config.contractSpecs.map((spec) => createContractState(player, {
     ...spec,
     truckUnit: truckUnitsById[spec.truckUnit.id] || spec.truckUnit,
   }));
+  if (!player.isHuman && robotAiSetupEnabled()) {
+    robotAiApplyToPlayer(player, Number.isInteger(player.ai_slot_index) ? player.ai_slot_index : 0);
+  }
   return player;
 }
 
 function buildPlayers() {
-  const humanConfig = buildHumanPlayerConfig();
-  const reservedFlowIds = new Set((humanConfig.contractSpecs || []).map((spec) => spec.flow.id));
-  const robotConfigs = buildRobotPlayerConfigs(humanConfig.hqCityId, reservedFlowIds);
-  const players = [humanConfig, ...robotConfigs].map(createPlayer);
+  if (robotAiSetupEnabled()) {
+    syncRobotAiSetupState({ preserveManual: true });
+  }
+  const humanConfig = robotsOnlyEnabled() ? null : buildHumanPlayerConfig();
+  const reservedFlowIds = new Set((humanConfig?.contractSpecs || []).map((spec) => spec.flow.id));
+  const robotConfigs = buildRobotPlayerConfigs(humanConfig?.hqCityId || "", reservedFlowIds);
+  const players = (robotsOnlyEnabled() ? robotConfigs : [humanConfig, ...robotConfigs]).map(createPlayer);
+  const primaryPlayer = (!robotsOnlyEnabled() && players.length ? players[0] : null) || players[0] || null;
   state.players = players;
   state.playersById = Object.fromEntries(players.map((player) => [player.id, player]));
-  state.humanPrepared = Boolean(players[0]?.prepared);
+  state.humanPrepared = robotsOnlyEnabled() ? true : Boolean(players[0]?.prepared);
   state.activeDrawerPlayerId = "";
-  state.focusedPlayerId = players[0]?.id || "";
+  state.focusedPlayerId = primaryPlayer?.id || "";
+  state.analytics.selectedPlayerId = primaryPlayer?.id || "";
   state.analytics.flowStatsById = {};
   state.analytics.truckStatsById = {};
   state.analytics.history = [];
   state.analytics.lastSnapshotBucket = "";
+  applyRobotAiStateToLivePlayers();
   analyticsHydrateCurrentState();
 
   appendLog("system", "neutral", `${state.bootstrap?.active_map?.name || state.runtime?.metadata?.map_name || "Mapa"} carregado.`);
-  appendLog(players[0]?.id || "human", state.humanPrepared ? "positive" : "neutral", openingWizardEnabled()
-    ? `Abertura ${RUNTIME_CONFIG.version || "1.1"} confirmada com ${formatInteger(robotConfigs.length)} adversarios.`
-    : (state.humanPrepared
-      ? "Preparacao carregada na partida."
-      : "Preparacao nao foi encontrada; a operacao abriu com selecao automatica."));
+  appendLog(primaryPlayer?.id || "system", state.humanPrepared ? "positive" : "neutral", openingWizardEnabled()
+    ? (robotsOnlyEnabled()
+      ? `Abertura ${RUNTIME_CONFIG.version || "1.1"} confirmada com ${formatInteger(robotConfigs.length)} robos automatizados.`
+      : `Abertura ${RUNTIME_CONFIG.version || "1.1"} confirmada com ${formatInteger(robotConfigs.length)} adversarios.`)
+    : (robotsOnlyEnabled()
+      ? "Operacao automatica iniciada."
+      : (state.humanPrepared
+        ? "Preparacao carregada na partida."
+        : "Preparacao nao foi encontrada; a operacao abriu com selecao automatica.")));
   analyticsRecordSnapshot(true);
 }
 
@@ -3588,6 +4367,449 @@ function renderOpeningPalette() {
   refs.openingPalette.innerHTML = ROBOT_COLORS.slice(0, robotCount).map((color, index) => `
     <span class="game-runtime-color-chip" style="--player-color:${escapeHtml(color)}" title="${escapeHtml(`${ROBOT_NAMES[index] || `Adversario ${index + 1}`}`)}"></span>
   `).join("");
+}
+
+function robotAiArchetypeDistribution() {
+  const distribution = {};
+  for (let slotIndex = 0; slotIndex < robotAiSlotCount(); slotIndex += 1) {
+    const slotConfig = robotAiEffectiveSlotConfig(slotIndex);
+    const label = slotConfig.profile?.label || slotConfig.archetypeId || `Robo ${slotIndex + 1}`;
+    if (!distribution[label]) {
+      distribution[label] = {
+        id: slotConfig.archetypeId,
+        label,
+        count: 0,
+      };
+    }
+    distribution[label].count += 1;
+  }
+  return Object.values(distribution)
+    .sort((left, right) => right.count - left.count || String(left.label).localeCompare(String(right.label), "pt-BR"));
+}
+
+function robotAiParameterValueLabel(parameterId, value) {
+  if (parameterId === "planning_horizon_turns") {
+    return `${formatHours(Math.max(1, Math.round(Number(value || 0) * 24)))}`;
+  }
+  return formatPercent(Number(value || 0) * 100, 0);
+}
+
+const ROBOT_AI_EDITOR_GROUP_ORDER = ["operations", "network", "economy", "skill"];
+
+const ROBOT_AI_EDITOR_GROUP_META = {
+  operations: {
+    label: "Negociacao",
+    description: "Controla o apetite do robo para iniciar, aceitar prioridade e travar negociacoes por ativos importantes.",
+  },
+  network: {
+    label: "Visao",
+    description: "Define para onde a IA direciona capital e atencao estrategica entre portos, permissoes, pedagios, monopolios, origem e horizonte.",
+  },
+  economy: {
+    label: "Personalidade",
+    description: "Controla como a IA lida com caixa, risco, impulso, paciencia tatica e apego ao proprio patrimonio.",
+  },
+  skill: {
+    label: "Habilidades",
+    description: "Controla a quantidade de leituras, a disciplina de execucao, a visao combinatoria, o tempo de acao e o ruido comportamental da IA.",
+  },
+};
+
+function sliderNumericLabel(value, step) {
+  const precision = String(step ?? "").includes(".") ? String(step).split(".")[1].length : 1;
+  return Number(value || 0).toFixed(Math.min(2, Math.max(1, precision)));
+}
+
+function robotAiHelpBadgeMarkup(description) {
+  if (!description) {
+    return "";
+  }
+  return `<span class="game-runtime-robot-ai-help-badge" title="${escapeHtml(description)}">?</span>`;
+}
+
+function robotAiSummaryMarkup({ compact = false } = {}) {
+  if (!robotAiSetupEnabled()) {
+    return `<div class="truck-gallery-empty">Configurador de robos indisponivel.</div>`;
+  }
+  const setupState = ensureRobotAiSetupState();
+  const tableConfig = setupState?.tableConfig || buildRobotAiTableConfig("balanced", setupCurrentDifficultyId());
+  const distribution = robotAiArchetypeDistribution();
+  const visibleDistribution = compact ? distribution.slice(0, 3) : distribution;
+  if (compact) {
+    return `
+      <section class="game-runtime-robot-ai-summary-card is-compact is-opening">
+        <div class="game-runtime-robot-ai-summary-head">
+          <div>
+            <strong>${escapeHtml("Configure a mesa de robos")}</strong>
+            <span>${escapeHtml(`${robotAiSkillPresetLabel(tableConfig)} · ${formatInteger(robotAiSlotCount())} robos`)}</span>
+          </div>
+        </div>
+
+        <div class="game-runtime-robot-ai-opening-block">
+          <span class="game-runtime-robot-ai-section-label">Modo de configuracao</span>
+          <div class="game-runtime-robot-ai-mode-toggle is-opening">${robotAiModeButtonsMarkup({ compact: true })}</div>
+        </div>
+
+        <div class="game-runtime-robot-ai-opening-block">
+          <span class="game-runtime-robot-ai-section-label">Perfis da mesa</span>
+          <div class="game-runtime-robot-ai-basic-modes is-opening">${robotAiBasicModeButtonsMarkup({ compact: true })}</div>
+        </div>
+
+        <div class="game-runtime-robot-ai-metric-row is-compact">
+          <article><span>Mesa</span><strong>${escapeHtml(tableConfig.label || "Balanceada")}</strong></article>
+          <article><span>Dificuldade AI</span><strong>${escapeHtml(robotAiSkillPresetLabel(tableConfig))}</strong></article>
+          <article><span>Alvo atual</span><strong>${escapeHtml(robotAiSelectedTargetLabel())}</strong></article>
+        </div>
+
+        <div class="game-runtime-robot-ai-chip-row">
+          ${visibleDistribution.map((entry) => `
+            <span class="game-runtime-robot-ai-chip">
+              <strong>${escapeHtml(`${entry.count}x`)}</strong>
+              <span>${escapeHtml(entry.label)}</span>
+            </span>
+          `).join("")}
+        </div>
+      </section>
+    `;
+  }
+  return `
+    <section class="game-runtime-robot-ai-summary-card">
+      <div class="game-runtime-robot-ai-summary-head">
+        <div>
+          <strong>${escapeHtml("Leitura atual")}</strong>
+          <span>${escapeHtml(tableConfig.description || "Perfil base da mesa")}</span>
+        </div>
+        <span class="game-setup-pill ${escapeHtml(state.setup.robotAi?.editorMode === "detailed" ? "is-recommended" : "is-available")}">${escapeHtml(robotAiModeLabel())}</span>
+      </div>
+
+      <div class="game-runtime-robot-ai-metric-row">
+        <article><span>Mesa</span><strong>${escapeHtml(tableConfig.label || "Balanceada")}</strong></article>
+        <article><span>Dificuldade AI</span><strong>${escapeHtml(robotAiSkillPresetLabel(tableConfig))}</strong></article>
+        <article><span>Alvo atual</span><strong>${escapeHtml(robotAiSelectedTargetLabel())}</strong></article>
+        <article><span>Robos</span><strong>${escapeHtml(formatInteger(robotAiSlotCount()))}</strong></article>
+      </div>
+
+      <div class="game-runtime-robot-ai-chip-row">
+        ${visibleDistribution.map((entry) => `
+          <span class="game-runtime-robot-ai-chip">
+            <strong>${escapeHtml(`${entry.count}x`)}</strong>
+            <span>${escapeHtml(entry.label)}</span>
+          </span>
+        `).join("") || `<span class="game-runtime-robot-ai-chip"><span>Sem robos configurados</span></span>`}
+      </div>
+    </section>
+  `;
+}
+
+function renderOpeningRobotAiSummary() {
+  if (!refs.openingRobotAiSummary) {
+    return;
+  }
+  refs.openingRobotAiSummary.innerHTML = robotAiSetupEnabled()
+    ? robotAiSummaryMarkup({ compact: true })
+    : `<div class="truck-gallery-empty">Sem configurador nesta versao.</div>`;
+}
+
+function renderRobotAiModeToggle() {
+  if (!refs.robotAiModeToggle) {
+    return;
+  }
+  const currentMode = state.setup.robotAi?.editorMode === "detailed" ? "detailed" : "basic";
+  const nextMode = currentMode === "detailed" ? "basic" : "detailed";
+  refs.robotAiModeToggle.innerHTML = `
+    <button class="game-runtime-robot-ai-top-button" type="button" data-runtime-robot-ai-editor-mode="${escapeHtml(nextMode)}" title="${escapeHtml(nextMode === "basic" ? "Trocar para modo basico" : "Trocar para modo detalhado")}">
+      ${escapeHtml(currentMode === "basic" ? "Modo basico" : "Modo detalhado")}
+    </button>
+  `;
+}
+
+function renderRobotAiBasicModes() {
+  if (!refs.robotAiBasicModes) {
+    return;
+  }
+  const tableConfig = robotAiTableConfig() || buildRobotAiTableConfig("balanced", setupCurrentDifficultyId());
+  refs.robotAiBasicModes.innerHTML = Object.values(brasixRobotAiProfiles.basicModes || {}).map((mode) => `
+    <button class="game-runtime-robot-ai-basic-mode-chip${tableConfig.basicModeId === mode.id ? " is-active" : ""}" type="button" data-runtime-robot-ai-basic-mode="${escapeHtml(mode.id)}" title="${escapeHtml(mode.description || mode.label || mode.id)}">
+      ${escapeHtml(mode.label || mode.id)}
+    </button>
+  `).join("");
+}
+
+function renderRobotAiSummaryPanel() {
+  if (!refs.robotAiSummary) {
+    return;
+  }
+  refs.robotAiSummary.innerHTML = robotAiSummaryMarkup({ compact: false });
+}
+
+function renderRobotAiPresetButtons() {
+  if (!refs.robotAiPresetButtons) {
+    return;
+  }
+  const selectedSlot = robotAiRepresentativeSlotIndex();
+  const selectedConfig = robotAiEffectiveSlotConfig(selectedSlot);
+  const tableConfig = robotAiTableConfig() || buildRobotAiTableConfig("balanced", setupCurrentDifficultyId());
+  const fallbackArchetypeId = tableConfig.robotArchetypeOrder?.[selectedSlot % Math.max(1, tableConfig.robotArchetypeOrder?.length || 1)] || selectedConfig.archetypeId;
+  const tableResetDescription = robotAiSelectedScope() === "all"
+    ? "Volta todos os robos para os perfis definidos pela mesa."
+    : "Volta este robo para o perfil base definido pela mesa.";
+  const options = [
+    {
+      id: "__table__",
+      label: "Da mesa",
+      description: tableResetDescription,
+    },
+    ...brasixRobotAiProfiles.archetypeOptions(),
+  ];
+  refs.robotAiPresetButtons.innerHTML = options.map((option) => {
+    const isTableOption = option.id === "__table__";
+    const isActive = isTableOption
+      ? robotAiSelectedScope() === "all" || state.setup.robotAi?.editorMode === "basic"
+      : selectedConfig.archetypeId === option.id;
+    return `
+      <button class="game-runtime-robot-ai-preset-button${isActive ? " is-active" : ""}" type="button" data-runtime-robot-ai-archetype="${escapeHtml(option.id)}" title="${escapeHtml(option.description || option.label)}">
+        <strong>${escapeHtml(option.label)}</strong>
+        <span>${escapeHtml(option.description || "")}</span>
+      </button>
+    `;
+  }).join("");
+}
+
+function renderRobotAiTabs() {
+  if (!refs.robotAiRobotTabs) {
+    return;
+  }
+  refs.robotAiRobotTabs.innerHTML = [
+    `
+      <button class="game-runtime-robot-ai-tab is-table${robotAiSelectedScope() === "all" ? " is-active" : ""}" type="button" data-runtime-robot-ai-slot="-1">
+        <strong>Todos</strong>
+      </button>
+    `,
+    ...Array.from({ length: robotAiSlotCount() }, (_unused, slotIndex) => {
+    const slotConfig = robotAiEffectiveSlotConfig(slotIndex);
+    return `
+      <button class="game-runtime-robot-ai-tab${robotAiSelectedScope() === "slot" && robotAiSelectedSlotIndex() === slotIndex ? " is-active" : ""}" type="button" data-runtime-robot-ai-slot="${escapeHtml(String(slotIndex))}" style="--player-color:${escapeHtml(robotAiSlotColor(slotIndex))}" title="${escapeHtml(`${robotAiSlotName(slotIndex)} · ${slotConfig.profile?.label || slotConfig.archetypeId || "Perfil"}`)}">
+        <span class="game-runtime-robot-ai-tab-dot" aria-hidden="true"></span>
+        <strong>${escapeHtml(String(slotIndex + 1))}</strong>
+      </button>
+    `;
+  }),
+  ].join("");
+  bindWheelRail(refs.robotAiRobotTabs);
+}
+
+function robotAiGroupPresetButtonsMarkup(groupId, profile) {
+  return robotAiGroupPresetEntries(groupId).map((preset) => `
+    <button class="game-runtime-robot-ai-group-preset-button${robotAiGroupPresetMatchesProfile(groupId, preset.id, profile) ? " is-active" : ""}" type="button" data-runtime-robot-ai-group="${escapeHtml(groupId)}" data-runtime-robot-ai-group-preset="${escapeHtml(preset.id)}">
+      <span>${escapeHtml(preset.label || preset.id)}</span>
+      ${robotAiHelpBadgeMarkup(preset.description || "")}
+    </button>
+  `).join("");
+}
+
+function renderRobotAiParameterGrid() {
+  if (!refs.robotAiParameterGrid) {
+    return;
+  }
+  const profile = robotAiRepresentativeProfile();
+  const applyingToAll = robotAiSelectedScope() === "all";
+  const groupIds = ROBOT_AI_EDITOR_GROUP_ORDER.filter((groupId) => brasixRobotAiProfiles.parameterGroups?.[groupId]);
+  refs.robotAiParameterGrid.innerHTML = `
+    ${groupIds.map((groupId) => {
+      const group = brasixRobotAiProfiles.parameterGroups?.[groupId] || null;
+      if (!group) {
+        return "";
+      }
+      const meta = ROBOT_AI_EDITOR_GROUP_META[groupId] || {};
+      return `
+      <section class="game-runtime-robot-ai-group">
+        <div class="game-runtime-robot-ai-group-shell">
+          <div class="game-runtime-robot-ai-group-presets">
+            ${robotAiGroupPresetButtonsMarkup(groupId, profile)}
+          </div>
+          <div class="game-runtime-robot-ai-group-panel">
+            <div class="game-runtime-robot-ai-group-card-head">
+              <div>
+                <strong>${escapeHtml(meta.label || group.label || group.id)}</strong>
+                <p>${escapeHtml(meta.description || group.description || "")}</p>
+              </div>
+              ${applyingToAll ? `<span class="game-runtime-robot-ai-target-chip">Todos</span>` : ""}
+            </div>
+            <div class="game-runtime-robot-ai-parameter-list">
+            ${(group.parameters || []).map((parameter) => {
+              const value = Number(profile?.[groupId]?.[parameter.id] || 0);
+              const step = Number(parameter.step ?? 0.1);
+              return `
+                <label class="game-runtime-robot-ai-slider-row">
+                  <div class="game-runtime-robot-ai-slider-meta">
+                    <span class="game-runtime-robot-ai-slider-label">${escapeHtml(parameter.label || parameter.id)} ${robotAiHelpBadgeMarkup(parameter.description || "")}</span>
+                    <strong class="game-runtime-robot-ai-slider-value">${escapeHtml(sliderNumericLabel(value, step))}</strong>
+                  </div>
+                  <input
+                    class="game-runtime-robot-ai-slider"
+                    type="range"
+                    min="${escapeHtml(String(parameter.min ?? 0))}"
+                    max="${escapeHtml(String(parameter.max ?? 1))}"
+                    step="${escapeHtml(String(step))}"
+                    value="${escapeHtml(String(value))}"
+                    data-runtime-robot-ai-group="${escapeHtml(groupId)}"
+                    data-runtime-robot-ai-parameter="${escapeHtml(parameter.id)}"
+                  />
+                </label>
+              `;
+            }).join("")}
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+    }).join("")}
+  `;
+}
+
+function renderRobotAiModal() {
+  if (!robotAiSetupEnabled()) {
+    return;
+  }
+  syncRobotAiSetupState({ preserveManual: true });
+  renderRobotAiModeToggle();
+  renderRobotAiBasicModes();
+  renderRobotAiSummaryPanel();
+  renderRobotAiPresetButtons();
+  renderRobotAiTabs();
+  renderRobotAiParameterGrid();
+  if (refs.robotAiButton) {
+    refs.robotAiButton.classList.toggle("is-active", state.setup.activeModal === "robot-ai");
+  }
+}
+
+function buildRobotAiManualConfigFromEffective(slotIndex) {
+  const slotConfig = robotAiEffectiveSlotConfig(slotIndex);
+  return {
+    archetypeId: slotConfig.archetypeId,
+    overrides: {
+      economy: cloneJson(slotConfig.profile?.economy || {}),
+      network: cloneJson(slotConfig.profile?.network || {}),
+      operations: cloneJson(slotConfig.profile?.operations || {}),
+      skill: cloneJson(slotConfig.profile?.skill || {}),
+      metadata: {
+        ...(cloneJson(slotConfig.profile?.metadata || {}) || {}),
+        setup_customized: true,
+        setup_archetype_id: slotConfig.archetypeId,
+      },
+    },
+  };
+}
+
+function commitRobotAiChanges({ applyLive = true } = {}) {
+  if (!robotAiSetupEnabled()) {
+    return;
+  }
+  syncRobotAiSetupState({ preserveManual: true });
+  if (applyLive && state.players.length) {
+    applyRobotAiStateToLivePlayers();
+  }
+  renderStaticUi();
+  if (state.setup.activeModal) {
+    renderSetupModal();
+  }
+}
+
+function applyRobotAiArchetypeToSlots(slotIndexes, archetypeId) {
+  const tableConfig = robotAiTableConfig() || buildRobotAiTableConfig("balanced", setupCurrentDifficultyId());
+  (slotIndexes || []).forEach((slotIndex) => {
+    state.setup.robotAi.manualConfigs[slotIndex] = brasixRobotAiProfiles.buildManualRobotConfig(archetypeId, {
+      difficultyId: setupCurrentDifficultyId(),
+    });
+    state.setup.robotAi.manualConfigs[slotIndex].overrides.metadata = {
+      ...(state.setup.robotAi.manualConfigs[slotIndex].overrides.metadata || {}),
+      skill_preset_id: tableConfig.forcedSkillPresetId,
+    };
+  });
+}
+
+function setRobotAiEditorMode(modeId) {
+  if (!robotAiSetupEnabled()) {
+    return;
+  }
+  ensureRobotAiSetupState();
+  state.setup.robotAi.editorMode = modeId === "detailed" ? "detailed" : "basic";
+  commitRobotAiChanges({ applyLive: true });
+}
+
+function setRobotAiBasicMode(modeId) {
+  if (!robotAiSetupEnabled()) {
+    return;
+  }
+  ensureRobotAiSetupState();
+  state.setup.robotAi.basicModeId = brasixRobotAiProfiles.basicModes?.[modeId] ? modeId : "balanced";
+  state.setup.robotAi.editorMode = "basic";
+  syncRobotAiSetupState({ preserveManual: true });
+  commitRobotAiChanges({ applyLive: true });
+}
+
+function applyRobotAiArchetypeToSelectedSlot(archetypeId) {
+  if (!robotAiSetupEnabled()) {
+    return;
+  }
+  ensureRobotAiSetupState();
+  if (archetypeId === "__table__" && robotAiSelectedScope() === "all") {
+    state.setup.robotAi.editorMode = "basic";
+    commitRobotAiChanges({ applyLive: true });
+    return;
+  }
+  const slotIndexes = robotAiSelectedSlotIndexes();
+  const tableConfig = robotAiTableConfig() || buildRobotAiTableConfig("balanced", setupCurrentDifficultyId());
+  const fallbackArchetypeId = tableConfig.robotArchetypeOrder?.[robotAiRepresentativeSlotIndex() % Math.max(1, tableConfig.robotArchetypeOrder?.length || 1)]
+    || Object.keys(brasixRobotAiProfiles.archetypes || {})[0]
+    || "balanced_operator";
+  const resolvedArchetypeId = archetypeId === "__table__"
+    ? fallbackArchetypeId
+    : archetypeId;
+  state.setup.robotAi.editorMode = "detailed";
+  applyRobotAiArchetypeToSlots(slotIndexes, resolvedArchetypeId);
+  commitRobotAiChanges({ applyLive: true });
+}
+
+function applyRobotAiGroupPreset(groupId, presetId) {
+  if (!robotAiSetupEnabled()) {
+    return;
+  }
+  ensureRobotAiSetupState();
+  const preset = robotAiGroupPresetLookup(groupId)?.[presetId] || null;
+  if (!preset) {
+    return;
+  }
+  state.setup.robotAi.editorMode = "detailed";
+  robotAiSelectedSlotIndexes().forEach((slotIndex) => {
+    const manualConfig = buildRobotAiManualConfigFromEffective(slotIndex);
+    manualConfig.overrides[groupId] = cloneJson(preset.values || {});
+    state.setup.robotAi.manualConfigs[slotIndex] = brasixRobotAiProfiles.normalizeManualRobotConfig(manualConfig, {
+      fallbackArchetypeId: manualConfig.archetypeId,
+      difficultyId: setupCurrentDifficultyId(),
+    });
+  });
+  commitRobotAiChanges({ applyLive: true });
+}
+
+function updateRobotAiParameter(groupId, parameterId, rawValue) {
+  if (!robotAiSetupEnabled()) {
+    return;
+  }
+  ensureRobotAiSetupState();
+  state.setup.robotAi.editorMode = "detailed";
+  robotAiSelectedSlotIndexes().forEach((slotIndex) => {
+    const manualConfig = buildRobotAiManualConfigFromEffective(slotIndex);
+    if (!manualConfig.overrides?.[groupId] || !Object.prototype.hasOwnProperty.call(manualConfig.overrides[groupId], parameterId)) {
+      return;
+    }
+    manualConfig.overrides[groupId][parameterId] = Number(rawValue || 0);
+    state.setup.robotAi.manualConfigs[slotIndex] = brasixRobotAiProfiles.normalizeManualRobotConfig(manualConfig, {
+      fallbackArchetypeId: manualConfig.archetypeId,
+      difficultyId: setupCurrentDifficultyId(),
+    });
+  });
+  commitRobotAiChanges({ applyLive: true });
 }
 
 function renderOpeningLogoGrid() {
@@ -3985,6 +5207,7 @@ function startMainMapDispatchSelection() {
   if (!state.setup.activeHumanAssignment) {
     return;
   }
+  hideTruckPopup();
   state.setup.mainMapDispatchSelection = true;
   state.setup.dispatchSelectedCityId = "";
   state.setup.activeModal = "";
@@ -4479,6 +5702,8 @@ function renderSetupModal() {
     refs.openingDifficultySelect.value = setupCurrentDifficultyId();
   }
   if (refs.openingRobotCountInput) {
+    refs.openingRobotCountInput.min = String(MIN_ROBOT_COUNT);
+    refs.openingRobotCountInput.max = String(MAX_ROBOT_COUNT);
     refs.openingRobotCountInput.value = String(clamp(state.setup.robotCount, MIN_ROBOT_COUNT, MAX_ROBOT_COUNT));
   }
   if (refs.openingCompanyNameInput) {
@@ -4492,6 +5717,7 @@ function renderSetupModal() {
   }
   renderStatus();
   renderOpeningPalette();
+  renderOpeningRobotAiSummary();
   renderOpeningLogoGrid();
   renderOpeningCompanyPreview();
   renderOpeningEconomyPanel();
@@ -4500,6 +5726,7 @@ function renderSetupModal() {
   renderSetupFleetSelection();
   renderSetupFreightRail();
   renderSetupFreightSelection();
+  renderRobotAiModal();
   updateSetupModalVisibility();
 }
 
@@ -4507,8 +5734,11 @@ function setupModalCanClose() {
   if (state.setup.activeHumanAssignment) {
     return true;
   }
+  if (state.setup.activeModal === "opening-setup") {
+    return false;
+  }
   if (state.setup.activeModal === "opening") {
-    return setupHeadquartersPurchased();
+    return robotsOnlyEnabled() || setupHeadquartersPurchased();
   }
   if (state.setup.activeModal === "fleet") {
     if (purchaseFlowActive() || (openingWizardEnabled() && !state.players.length)) {
@@ -4553,11 +5783,37 @@ function updateSetupModalVisibility() {
 }
 
 function openSetupModal(modalName) {
+  if (modalName === "robot-ai" && !robotAiSetupEnabled()) {
+    return;
+  }
+  hideTruckPopup();
   if (modalName !== "freights") {
     clearCityFreightBrowseState();
   }
   state.setup.activeModal = modalName;
   renderSetupModal();
+}
+
+function finalizeRobotsOnlyOpening() {
+  state.setup.activeModal = "";
+  updateSetupModalVisibility();
+  buildPlayers();
+  renderStaticUi();
+  renderMapUi({ refreshIcons: true });
+  focusPlayerOnMap(state.playersById[state.focusedPlayerId] || state.players[0] || null);
+  startSimulation();
+}
+
+function proceedOpeningSetupModal() {
+  if (!openingWizardEnabled() || state.players.length || purchaseFlowActive()) {
+    return;
+  }
+  clearCityFreightBrowseState();
+  if (robotsOnlyEnabled()) {
+    finalizeRobotsOnlyOpening();
+    return;
+  }
+  openSetupModal("opening");
 }
 
 function closeSetupModal() {
@@ -4570,6 +5826,10 @@ function closeSetupModal() {
     updateSetupModalVisibility();
     renderStaticUi();
     renderMapUi({ refreshIcons: true });
+    return;
+  }
+  if (state.setup.activeModal === "robot-ai" && openingWizardEnabled() && !state.players.length && !purchaseFlowActive()) {
+    openSetupModal("opening-setup");
     return;
   }
   clearCityFreightBrowseState();
@@ -4605,6 +5865,11 @@ function handleRuntimeKeydown(event) {
     return;
   }
   if (event.key !== "Escape") {
+    return;
+  }
+  if (truckPopupVisible()) {
+    event.preventDefault();
+    hideTruckPopup();
     return;
   }
   if (mainMapDispatchSelectionActive()) {
@@ -4711,7 +5976,10 @@ function initializeOpeningWizard() {
   state.setup.cityFreightBrowseCityId = "";
   state.setup.dispatchSelectedCityId = "";
   state.setup.mainMapDispatchSelection = false;
-  openSetupModal("opening");
+  if (robotAiSetupEnabled()) {
+    syncRobotAiSetupState({ preserveManual: false });
+  }
+  openSetupModal("opening-setup");
 }
 
 function findWheelRailTarget(eventTarget) {
@@ -4803,12 +6071,22 @@ function handleRuntimeInputs(event) {
     state.setup.selectedDifficulty = normalizeDifficultyId(target.value);
     state.setup.company.hqPurchased = false;
     state.setup.company.fleetPurchased = false;
+    if (robotAiSetupEnabled()) {
+      syncRobotAiSetupState({ preserveManual: true });
+      renderOpeningRobotAiSummary();
+      renderRobotAiModal();
+    }
     renderStatus();
     renderOpeningEconomyPanel();
     return;
   }
   if (target === refs.openingRobotCountInput && (target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) {
     state.setup.robotCount = clamp(Number(target.value || 10), MIN_ROBOT_COUNT, MAX_ROBOT_COUNT);
+    if (robotAiSetupEnabled()) {
+      syncRobotAiSetupState({ preserveManual: true });
+      renderOpeningRobotAiSummary();
+      renderRobotAiModal();
+    }
     renderStatus();
     renderOpeningPalette();
     return;
@@ -4829,6 +6107,15 @@ function handleRuntimeInputs(event) {
       state.setup.company.color = normalizedColor;
       renderSetupModal();
     }
+    return;
+  }
+
+  if (target instanceof HTMLInputElement && target.hasAttribute("data-runtime-robot-ai-parameter")) {
+    updateRobotAiParameter(
+      target.getAttribute("data-runtime-robot-ai-group") || "",
+      target.getAttribute("data-runtime-robot-ai-parameter") || "",
+      target.value,
+    );
   }
 }
 
@@ -5017,9 +6304,7 @@ function syncVehicleMarkers({ refreshIcons = false } = {}) {
       }
       marker.setLatLng([position.lat, position.lng]);
       marker.off("click");
-      if (openingWizardEnabled() && player.isHuman && !contract) {
-        marker.on("click", () => startHumanTruckDispatchSelection(truckUnit.id));
-      }
+      marker.on("click", (event) => handleTruckMarkerClick(player, truckUnit, contract, event));
       if (marker.getElement()) {
         marker.getElement().title = title;
       }
@@ -5033,6 +6318,140 @@ function syncVehicleMarkers({ refreshIcons = false } = {}) {
     state.layers.vehicles.removeLayer(marker);
     delete state.vehicleMarkersByTruckId[truckUnitId];
   });
+}
+
+function truckPopupVisible() {
+  return Boolean(state.truckPopup.playerId && state.truckPopup.truckUnitId);
+}
+
+function activeTruckPopupContext() {
+  if (!truckPopupVisible()) {
+    return null;
+  }
+  const player = state.playersById[state.truckPopup.playerId] || null;
+  if (!player) {
+    return null;
+  }
+  const truckUnit = (player.truckUnits || []).find((unit) => unit.id === state.truckPopup.truckUnitId) || null;
+  if (!truckUnit) {
+    return null;
+  }
+  const contract = (player.contracts || []).find((item) => item.truckUnitId === truckUnit.id) || null;
+  return { player, truckUnit, contract };
+}
+
+function hideTruckPopup() {
+  state.truckPopup = {
+    playerId: "",
+    truckUnitId: "",
+    screenX: 0,
+    screenY: 0,
+  };
+  if (refs.truckPopup) {
+    refs.truckPopup.hidden = true;
+    refs.truckPopup.innerHTML = "";
+  }
+}
+
+function truckPopupScreenPosition(mapEvent, player, truckUnit, contract) {
+  const nativeEvent = mapEvent?.originalEvent || null;
+  if (Number.isFinite(nativeEvent?.clientX) && Number.isFinite(nativeEvent?.clientY)) {
+    return {
+      screenX: Number(nativeEvent.clientX),
+      screenY: Number(nativeEvent.clientY),
+    };
+  }
+  const position = truckUnitMapPosition(player, truckUnit, contract);
+  const rect = refs.mapStage?.getBoundingClientRect?.();
+  if (state.map && rect && position) {
+    const point = state.map.latLngToContainerPoint([position.lat, position.lng]);
+    return {
+      screenX: Number(rect.left || 0) + Number(point.x || 0),
+      screenY: Number(rect.top || 0) + Number(point.y || 0),
+    };
+  }
+  return {
+    screenX: Math.round(window.innerWidth / 2),
+    screenY: Math.round(window.innerHeight / 2),
+  };
+}
+
+function truckPopupMarkup(player, truckUnit, contract) {
+  return playerRouteCardMarkup(player, truckUnit, contract, { interactiveIdle: false });
+}
+
+function positionTruckPopup() {
+  if (!refs.truckPopup || refs.truckPopup.hidden) {
+    return;
+  }
+  const popupRect = refs.truckPopup.getBoundingClientRect();
+  const margin = 16;
+  const offsetX = 18;
+  const offsetY = 12;
+  const anchorX = Number(state.truckPopup.screenX || 0);
+  const anchorY = Number(state.truckPopup.screenY || 0);
+  let left = anchorX + offsetX;
+  let top = anchorY + offsetY;
+
+  if (left + popupRect.width > window.innerWidth - margin) {
+    left = anchorX - popupRect.width - offsetX;
+  }
+  if (top + popupRect.height > window.innerHeight - margin) {
+    top = window.innerHeight - popupRect.height - margin;
+  }
+
+  left = Math.max(margin, left);
+  top = Math.max(margin, top);
+
+  refs.truckPopup.style.left = `${Math.round(left)}px`;
+  refs.truckPopup.style.top = `${Math.round(top)}px`;
+}
+
+function renderTruckPopup() {
+  if (!refs.truckPopup) {
+    return;
+  }
+  if (state.setup.activeModal || mainMapDispatchSelectionActive()) {
+    refs.truckPopup.hidden = true;
+    refs.truckPopup.innerHTML = "";
+    return;
+  }
+  const context = activeTruckPopupContext();
+  if (!context) {
+    refs.truckPopup.hidden = true;
+    refs.truckPopup.innerHTML = "";
+    return;
+  }
+  refs.truckPopup.innerHTML = truckPopupMarkup(context.player, context.truckUnit, context.contract);
+  refs.truckPopup.hidden = false;
+  positionTruckPopup();
+}
+
+function showTruckPopup(player, truckUnit, contract, mapEvent) {
+  if (!player || !truckUnit) {
+    hideTruckPopup();
+    return;
+  }
+  const position = truckPopupScreenPosition(mapEvent, player, truckUnit, contract);
+  state.truckPopup = {
+    playerId: player.id,
+    truckUnitId: truckUnit.id,
+    screenX: position.screenX,
+    screenY: position.screenY,
+  };
+  renderTruckPopup();
+}
+
+function handleTruckMarkerClick(player, truckUnit, contract, mapEvent) {
+  mapEvent?.originalEvent?.preventDefault?.();
+  mapEvent?.originalEvent?.stopPropagation?.();
+  const sameTruck = state.truckPopup.playerId === player?.id && state.truckPopup.truckUnitId === truckUnit?.id;
+  if (sameTruck && openingWizardEnabled() && player?.isHuman && !contract) {
+    hideTruckPopup();
+    startHumanTruckDispatchSelection(truckUnit.id);
+    return;
+  }
+  showTruckPopup(player, truckUnit, contract, mapEvent);
 }
 
 function playerCashDelta(player) {
@@ -5076,6 +6495,51 @@ function analyticsProductLabel(productId) {
   return runtimeProduct?.name || String(productId || "Carga").trim() || "Carga";
 }
 
+function analyticsProductEmoji(productId, fallbackEmoji = "📦") {
+  const runtimeProduct = state.productsById[String(productId || "").trim()] || null;
+  const emoji = String(runtimeProduct?.emoji || fallbackEmoji || "📦").trim();
+  return emoji || "📦";
+}
+
+function analyticsProductTitle(productId, productName, fallbackEmoji = "📦") {
+  const label = String(productName || analyticsProductLabel(productId) || "Carga").trim() || "Carga";
+  return `${analyticsProductEmoji(productId, fallbackEmoji)} ${label}`;
+}
+
+function analyticsPlayerRoleLabel(player) {
+  return player?.isHuman ? "Jogador" : "Robo";
+}
+
+function analyticsDefaultPlayerId() {
+  return state.playersById.human?.id || state.players[0]?.id || "";
+}
+
+function analyticsSelectedPlayer() {
+  const selectedPlayerId = String(state.analytics.selectedPlayerId || "").trim();
+  return state.playersById[selectedPlayerId]
+    || state.playersById[analyticsDefaultPlayerId()]
+    || state.players[0]
+    || null;
+}
+
+function analyticsPlayerSelectorMarkup(selectedPlayerId) {
+  const players = state.players.slice();
+  if (players.length <= 1) {
+    return "";
+  }
+  return `
+    <div class="game-runtime-analytics-player-selector" data-wheel-rail="analytics-player-selector" role="tablist" aria-label="Selecao de empresa nos graficos">
+      ${players.map((player) => `
+        <button class="segmented-button game-runtime-analytics-player-button${player.id === selectedPlayerId ? " is-active" : ""}" type="button" role="tab" aria-selected="${player.id === selectedPlayerId ? "true" : "false"}" data-runtime-analytics-player="${escapeHtml(player.id)}" style="--analytics-player-color:${escapeHtml(player.color || "#356d63")}">
+          <i aria-hidden="true"></i>
+          <span>${escapeHtml(player.label)}</span>
+          <small>${escapeHtml(`${analyticsPlayerRoleLabel(player)} · ${cityLabel(player.hqCityId)}`)}</small>
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
 function analyticsTopEntries(entries, limit = 8, comparator = null) {
   const nextEntries = Array.isArray(entries) ? entries.slice() : [];
   if (typeof comparator === "function") {
@@ -5094,6 +6558,7 @@ function analyticsEnsureFlowStat(flow) {
       flowId,
       productId: String(flow?.product_id || "").trim(),
       productName: flow?.product_name || analyticsProductLabel(flow?.product_id),
+      productEmoji: flow?.product_emoji || analyticsProductEmoji(flow?.product_id),
       originId: String(flow?.origin_id || "").trim(),
       destinationId: String(flow?.destination_id || "").trim(),
       routeLabel: `${cityLabel(flow?.origin_id)} -> ${cityLabel(flow?.destination_id)}`,
@@ -5182,7 +6647,7 @@ function analyticsRecordSnapshot(force = false) {
     label: formatClock(state.simulation.currentTime),
     players: playerEntries,
   });
-  if (state.analytics.history.length > ANALYTICS_HISTORY_MAX_POINTS) {
+  if (ANALYTICS_HISTORY_MAX_POINTS > 0 && state.analytics.history.length > ANALYTICS_HISTORY_MAX_POINTS) {
     state.analytics.history = state.analytics.history.slice(-ANALYTICS_HISTORY_MAX_POINTS);
   }
   state.analytics.lastSnapshotBucket = bucket;
@@ -5225,12 +6690,14 @@ function analyticsTopCityList(metricKey, limit = 8) {
 }
 
 function analyticsPlayerContracts(player) {
-  return Array.isArray(player?.contracts) ? player.contracts.slice() : [];
+  return Array.isArray(player?.contracts) ? player.contracts.filter((contract) => !contract.dispatchOnly) : [];
 }
 
 function analyticsPlayerFreightRows(player) {
   return analyticsPlayerContracts(player).map((contract) => ({
     flowId: contract.flowId,
+    productId: String(contract.flow.product_id || "").trim(),
+    productEmoji: contract.flow.product_emoji || analyticsProductEmoji(contract.flow.product_id),
     routeLabel: `${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)}`,
     productName: contract.flow.product_name || analyticsProductLabel(contract.flow.product_id),
     distanceKm: Number(contract.flow.distance_km || contract.deliveryTrack?.distanceKm || 0),
@@ -5382,6 +6849,76 @@ function analyticsGlobalProductRows() {
   return Object.values(rows).sort((left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
 }
 
+function analyticsGameplayCityRows() {
+  const rows = {};
+  const ensureRow = (cityId) => {
+    const normalizedCityId = String(cityId || "").trim();
+    if (!normalizedCityId || !state.citiesById[normalizedCityId]) {
+      return null;
+    }
+    if (!rows[normalizedCityId]) {
+      rows[normalizedCityId] = {
+        cityId: normalizedCityId,
+        label: cityLabel(normalizedCityId),
+        outboundDeliveries: 0,
+        inboundDeliveries: 0,
+        outboundTonnes: 0,
+        inboundTonnes: 0,
+        activeOutbound: 0,
+        activeInbound: 0,
+        activeOutboundTonnes: 0,
+        activeInboundTonnes: 0,
+        hqLabels: [],
+      };
+    }
+    return rows[normalizedCityId];
+  };
+
+  state.players.forEach((player) => {
+    const row = ensureRow(player?.hqCityId);
+    if (row && !row.hqLabels.includes(player.label)) {
+      row.hqLabels.push(player.label);
+    }
+  });
+
+  analyticsFlowStatsList().forEach((flowStat) => {
+    const originRow = ensureRow(flowStat.originId);
+    const destinationRow = ensureRow(flowStat.destinationId);
+    if (originRow) {
+      originRow.outboundDeliveries += Number(flowStat.totalDeliveries || 0);
+      originRow.outboundTonnes = roundNumber(Number(originRow.outboundTonnes || 0) + Number(flowStat.totalTonnes || 0), 2);
+    }
+    if (destinationRow) {
+      destinationRow.inboundDeliveries += Number(flowStat.totalDeliveries || 0);
+      destinationRow.inboundTonnes = roundNumber(Number(destinationRow.inboundTonnes || 0) + Number(flowStat.totalTonnes || 0), 2);
+    }
+  });
+
+  state.players.forEach((player) => {
+    analyticsPlayerContracts(player).forEach((contract) => {
+      const payloadTons = Number(contract.payloadTons || 0);
+      const originRow = ensureRow(contract.flow.origin_id);
+      const destinationRow = ensureRow(contract.flow.destination_id);
+      if (originRow) {
+        originRow.activeOutbound += 1;
+        originRow.activeOutboundTonnes = roundNumber(Number(originRow.activeOutboundTonnes || 0) + payloadTons, 2);
+      }
+      if (destinationRow) {
+        destinationRow.activeInbound += 1;
+        destinationRow.activeInboundTonnes = roundNumber(Number(destinationRow.activeInboundTonnes || 0) + payloadTons, 2);
+      }
+    });
+  });
+
+  return Object.values(rows)
+    .filter((row) => row.outboundDeliveries || row.inboundDeliveries || row.activeOutbound || row.activeInbound || row.hqLabels.length)
+    .map((row) => ({
+      ...row,
+      outboundGameTonnes: roundNumber(Number(row.outboundTonnes || 0) + Number(row.activeOutboundTonnes || 0), 2),
+      inboundGameTonnes: roundNumber(Number(row.inboundTonnes || 0) + Number(row.activeInboundTonnes || 0), 2),
+    }));
+}
+
 function analyticsPlayerCityRows(player) {
   const rows = {};
   const ensureRow = (cityId) => {
@@ -5390,14 +6927,13 @@ function analyticsPlayerCityRows(player) {
       return null;
     }
     if (!rows[normalizedCityId]) {
-      const marketStats = state.cityMarketStatsById[normalizedCityId] || { outboundCount: 0, outboundTonnes: 0, inboundCount: 0, inboundTonnes: 0 };
       rows[normalizedCityId] = {
         cityId: normalizedCityId,
         label: cityLabel(normalizedCityId),
         currentContracts: 0,
         outboundContracts: 0,
         inboundContracts: 0,
-        marketTonnes: Number(marketStats.outboundTonnes || 0) + Number(marketStats.inboundTonnes || 0),
+        activeTonnes: 0,
         isHq: normalizedCityId === player?.hqCityId,
       };
     }
@@ -5406,20 +6942,23 @@ function analyticsPlayerCityRows(player) {
 
   ensureRow(player?.hqCityId);
   analyticsPlayerContracts(player).forEach((contract) => {
+    const payloadTons = Number(contract.payloadTons || 0);
     const originRow = ensureRow(contract.flow.origin_id);
     const destinationRow = ensureRow(contract.flow.destination_id);
     if (originRow) {
       originRow.currentContracts += 1;
       originRow.outboundContracts += 1;
+      originRow.activeTonnes = roundNumber(Number(originRow.activeTonnes || 0) + payloadTons, 2);
     }
     if (destinationRow) {
       destinationRow.currentContracts += 1;
       destinationRow.inboundContracts += 1;
+      destinationRow.activeTonnes = roundNumber(Number(destinationRow.activeTonnes || 0) + payloadTons, 2);
     }
   });
 
   return Object.values(rows).sort((left, right) => Number(right.currentContracts || 0) - Number(left.currentContracts || 0)
-    || Number(right.marketTonnes || 0) - Number(left.marketTonnes || 0)
+    || Number(right.activeTonnes || 0) - Number(left.activeTonnes || 0)
     || String(left.label).localeCompare(String(right.label), "pt-BR"));
 }
 
@@ -5427,7 +6966,10 @@ function analyticsActiveFreightRows() {
   return state.players.flatMap((player) => (player.contracts || [])
     .filter((contract) => !contract.dispatchOnly)
     .map((contract) => ({
-      label: `${contract.flow.product_name || analyticsProductLabel(contract.flow.product_id)} · ${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)}`,
+      productId: String(contract.flow.product_id || "").trim(),
+      productName: contract.flow.product_name || analyticsProductLabel(contract.flow.product_id),
+      productEmoji: contract.flow.product_emoji || analyticsProductEmoji(contract.flow.product_id),
+      routeLabel: `${cityLabel(contract.flow.origin_id)} -> ${cityLabel(contract.flow.destination_id)}`,
       playerLabel: player.label,
       color: player.color,
       value: Number(contract.profitPerDeliveryBrl || 0),
@@ -5465,13 +7007,42 @@ function analyticsSectionMarkup(title, subtitle, content) {
   `;
 }
 
+function analyticsBarLabel(item) {
+  if (!item || typeof item !== "object") {
+    return "Item";
+  }
+  if (item.routeLabel && (item.productName || item.productId)) {
+    return `${analyticsProductTitle(item.productId, item.productName, item.productEmoji)} · ${item.routeLabel}`;
+  }
+  if (item.label && item.productId) {
+    return analyticsProductTitle(item.productId, item.label, item.productEmoji);
+  }
+  if (item.label) {
+    return String(item.label);
+  }
+  if (item.truckLabel) {
+    return String(item.truckLabel);
+  }
+  if (item.modelLabel) {
+    return String(item.modelLabel);
+  }
+  if (item.routeLabel) {
+    return String(item.routeLabel);
+  }
+  if (item.productName || item.productId) {
+    return analyticsProductTitle(item.productId, item.productName, item.productEmoji);
+  }
+  return "Item";
+}
+
 function analyticsBarChartMarkup(items, {
   valueFormatter = formatInteger,
   colorResolver = (item) => item.color || "#356d63",
   metaResolver = null,
   emptyMessage = "Sem dados suficientes.",
-  labelResolver = (item) => item.label || "Item",
+  labelResolver = (item) => analyticsBarLabel(item),
   valueResolver = (item) => item.value,
+  compact = false,
 } = {}) {
   const rows = Array.isArray(items) ? items.filter(Boolean) : [];
   if (!rows.length) {
@@ -5484,13 +7055,17 @@ function analyticsBarChartMarkup(items, {
         const value = Number(valueResolver(item) || 0);
         const ratio = Math.max(0.06, Math.abs(value) / maxValue);
         const meta = typeof metaResolver === "function" ? metaResolver(item) : "";
+        const label = String(labelResolver(item) || analyticsBarLabel(item));
         return `
           <article class="game-runtime-analytics-bar-row">
-            <div class="game-runtime-analytics-bar-head">
-              <strong>${escapeHtml(labelResolver(item))}</strong>
+            <div class="game-runtime-analytics-bar-head${compact ? " is-compact" : ""}">
+              <div class="game-runtime-analytics-bar-label">
+                <strong>${escapeHtml(label)}</strong>
+                ${compact && meta ? `<span class="game-runtime-analytics-inline-meta">${escapeHtml(meta)}</span>` : ""}
+              </div>
               <span>${escapeHtml(valueFormatter(value))}</span>
             </div>
-            ${meta ? `<small>${escapeHtml(meta)}</small>` : ""}
+            ${!compact && meta ? `<small>${escapeHtml(meta)}</small>` : ""}
             <div class="game-runtime-analytics-bar-track">
               <span style="width:${escapeHtml(String(Math.round(ratio * 100)))}%;--analytics-bar-color:${escapeHtml(colorResolver(item))}"></span>
             </div>
@@ -5602,7 +7177,7 @@ function analyticsOverviewContentMarkup() {
   return `
     <div class="game-runtime-analytics-stack">
       <div class="game-runtime-analytics-metric-grid">${metricsMarkup}</div>
-      ${analyticsSectionMarkup("Caixa das empresas", "Evolucao do caixa por janelas de tempo do jogo", analyticsLineChartMarkup(cashSeries, { valueFormatter: formatCurrency }))}
+      ${analyticsSectionMarkup("Caixa das empresas", "Evolucao do caixa desde o inicio da partida", analyticsLineChartMarkup(cashSeries, { valueFormatter: formatCurrency }))}
       <div class="game-runtime-analytics-two-column">
         ${analyticsSectionMarkup("Ranking por caixa", "Quem esta mais forte agora", analyticsBarChartMarkup(companyRows, {
           valueFormatter: formatCurrency,
@@ -5622,16 +7197,17 @@ function analyticsOverviewContentMarkup() {
 }
 
 function analyticsPlayerContentMarkup() {
-  const player = analyticsCurrentPlayer();
+  const player = analyticsSelectedPlayer();
   if (!player) {
-    return analyticsEmptyMarkup("Ainda nao ha empresa principal carregada.");
+    return analyticsEmptyMarkup("Ainda nao ha empresa carregada.");
   }
+  state.analytics.selectedPlayerId = player.id;
   const playerRow = analyticsCompanyRows().find((row) => row.playerId === player.id) || null;
   const playerHistory = analyticsPlayerHistory(player.id);
   const freightRows = analyticsTopEntries(analyticsPlayerFreightRows(player), 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
   const truckRows = analyticsTopEntries(analyticsPlayerTruckRows(player), 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
   const productRows = analyticsTopEntries(analyticsPlayerProductRows(player), 8, (left, right) => Number(right.profitBrl || 0) - Number(left.profitBrl || 0));
-  const cityRows = analyticsTopEntries(analyticsPlayerCityRows(player), 8, (left, right) => Number(right.currentContracts || 0) - Number(left.currentContracts || 0) || Number(right.marketTonnes || 0) - Number(left.marketTonnes || 0));
+  const cityRows = analyticsTopEntries(analyticsPlayerCityRows(player), 8, (left, right) => Number(right.currentContracts || 0) - Number(left.currentContracts || 0) || Number(right.activeTonnes || 0) - Number(left.activeTonnes || 0));
   const series = [{
     label: player.label,
     color: player.color,
@@ -5641,20 +7217,21 @@ function analyticsPlayerContentMarkup() {
 
   return `
     <div class="game-runtime-analytics-stack">
+      ${analyticsPlayerSelectorMarkup(player.id)}
       <div class="game-runtime-analytics-metric-grid">
         ${analyticsMetricCardMarkup({ label: "Caixa", value: formatCurrency(player.cashBrl), meta: cityLabel(player.hqCityId) })}
         ${analyticsMetricCardMarkup({ label: "Saldo", value: formatCurrency(playerCashDelta(player)), meta: "Contra o capital inicial", tone: playerCashDelta(player) >= 0 ? "positive" : "negative" })}
         ${analyticsMetricCardMarkup({ label: "Fretes ativos", value: formatInteger(playerRow?.activeContracts || 0), meta: `${formatInteger(playerIdleTruckCount(player))} caminhao(es) parado(s)` })}
         ${analyticsMetricCardMarkup({ label: "Toneladas", value: formatTonnes(player.tonnesMoved), meta: `${formatInteger(player.deliveries)} entregas` })}
       </div>
-      ${analyticsSectionMarkup("Financeiro do jogador", "Caixa da empresa ao longo da partida", analyticsLineChartMarkup(series, { valueFormatter: formatCurrency }))}
+      ${analyticsSectionMarkup("Financeiro da empresa", `${player.label} ao longo da partida`, analyticsLineChartMarkup(series, { valueFormatter: formatCurrency }))}
       <div class="game-runtime-analytics-two-column">
-        ${analyticsSectionMarkup("Fretes do jogador", "Lucro dos contratos atuais", analyticsBarChartMarkup(freightRows, {
+        ${analyticsSectionMarkup("Fretes da empresa", `${player.label} · contratos atuais`, analyticsBarChartMarkup(freightRows, {
           valueFormatter: formatCurrency,
           valueResolver: (row) => row.profitBrl,
           metaResolver: (row) => `${row.statusLabel} · ${formatTonnes(row.payloadTons)} · ${formatDistanceKm(row.distanceKm)}`,
         }))}
-        ${analyticsSectionMarkup("Caminhoes do jogador", "Resultado por unidade", truckRows.length
+        ${analyticsSectionMarkup("Caminhoes da empresa", `${player.label} · resultado por unidade`, truckRows.length
           ? `<div class="game-runtime-analytics-bar-list">${truckRows.map((row) => `
               <article class="game-runtime-analytics-bar-row">
                 <div class="game-runtime-analytics-bar-head">
@@ -5668,15 +7245,15 @@ function analyticsPlayerContentMarkup() {
           : analyticsEmptyMarkup("Nenhum caminhao com historico ainda."))}
       </div>
       <div class="game-runtime-analytics-two-column">
-        ${analyticsSectionMarkup("Produtos do jogador", "Carteira operacional atual", analyticsBarChartMarkup(productRows, {
+        ${analyticsSectionMarkup("Produtos da empresa", `${player.label} · carteira operacional atual`, analyticsBarChartMarkup(productRows, {
           valueFormatter: formatCurrency,
           valueResolver: (row) => row.profitBrl,
           metaResolver: (row) => `${formatInteger(row.contracts)} contrato(s) · ${formatTonnes(row.tonnes)}`,
         }))}
-        ${analyticsSectionMarkup("Cidades do jogador", "Onde a empresa esta mais presente", analyticsBarChartMarkup(cityRows, {
+        ${analyticsSectionMarkup("Cidades da empresa", `${player.label} · presenca operacional atual`, analyticsBarChartMarkup(cityRows, {
           valueFormatter: formatInteger,
           valueResolver: (row) => row.currentContracts,
-          metaResolver: (row) => `${row.isHq ? "Sede" : "Operacao"} · mercado ${formatTonnes(row.marketTonnes)}`,
+          metaResolver: (row) => `${row.isHq ? "Sede" : "Operacao"} · ${formatTonnes(row.activeTonnes)} · ${formatInteger(row.outboundContracts)} origem / ${formatInteger(row.inboundContracts)} destino`,
         }))}
       </div>
     </div>
@@ -5744,12 +7321,14 @@ function analyticsFreightsContentMarkup() {
         ${analyticsSectionMarkup("Fretes mais lucrativos", "Resultado acumulado por rota", analyticsBarChartMarkup(profitRows, {
           valueFormatter: formatCurrency,
           valueResolver: (row) => row.totalProfitBrl,
-          metaResolver: (row) => `${row.productName} · ${formatInteger(row.totalDeliveries)} entrega(s) · ${formatTonnes(row.totalTonnes)}`,
+          metaResolver: (row) => `${formatInteger(row.totalDeliveries)} entrega(s) · ${formatTonnes(row.totalTonnes)}`,
+          compact: true,
         }))}
         ${analyticsSectionMarkup("Fretes por volume", "Rotas com maior carga acumulada", analyticsBarChartMarkup(volumeRows, {
           valueFormatter: formatTonnes,
           valueResolver: (row) => row.totalTonnes,
-          metaResolver: (row) => `${row.productName} · ${formatCurrency(row.totalProfitBrl)}`,
+          metaResolver: (row) => `${formatCurrency(row.totalProfitBrl)}`,
+          compact: true,
         }))}
       </div>
       <div class="game-runtime-analytics-two-column">
@@ -5758,11 +7337,13 @@ function analyticsFreightsContentMarkup() {
           valueResolver: (row) => row.value,
           colorResolver: (row) => row.color,
           metaResolver: (row) => `${row.playerLabel} · ${row.statusLabel} · ${formatTonnes(row.tonnes)}`,
+          compact: true,
         }))}
-        ${analyticsSectionMarkup("Produtos puxando os fretes", "Leitura da carteira por produto", analyticsBarChartMarkup(productRows, {
+        ${analyticsSectionMarkup("Produtos na carteira", "Leitura da carteira por produto", analyticsBarChartMarkup(productRows, {
           valueFormatter: formatCurrency,
           valueResolver: (row) => row.profitBrl,
           metaResolver: (row) => `${formatInteger(row.deliveries)} entrega(s) · ${formatTonnes(row.tonnes)} · ${formatInteger(row.activeFreights)} ativo(s)`,
+          compact: true,
         }))}
       </div>
     </div>
@@ -5788,11 +7369,13 @@ function analyticsTrucksContentMarkup() {
           valueFormatter: formatCurrency,
           valueResolver: (row) => row.profitBrl,
           metaResolver: (row) => `${row.playerLabel} · ${formatInteger(row.deliveries)} entrega(s) · ${formatPercent(row.utilizationPercent)} de uso`,
+          compact: true,
         }))}
         ${analyticsSectionMarkup("Caminhoes por entregas", "Produtividade da frota", analyticsBarChartMarkup(deliveryRows, {
           valueFormatter: formatInteger,
           valueResolver: (row) => row.deliveries,
           metaResolver: (row) => `${row.playerLabel} · ${formatTonnes(row.tonnes)} · ${formatCurrency(row.profitBrl)}`,
+          compact: true,
         }))}
       </div>
       <div class="game-runtime-analytics-two-column">
@@ -5800,15 +7383,18 @@ function analyticsTrucksContentMarkup() {
           valueFormatter: formatCurrency,
           valueResolver: (row) => row.profitBrl,
           metaResolver: (row) => `${formatInteger(row.truckCount)} unid. · ${formatInteger(row.deliveries)} entrega(s) · diesel ${formatCurrency(row.fuelCostBrl)}`,
+          compact: true,
         }))}
         ${analyticsSectionMarkup("Uso da frota", "Tempo em rota, carga, descarga e parado", truckRows.length
           ? `<div class="game-runtime-analytics-bar-list">${analyticsTopEntries(truckRows, 6, (left, right) => Number(right.utilizationPercent || 0) - Number(left.utilizationPercent || 0)).map((row) => `
               <article class="game-runtime-analytics-bar-row">
-                <div class="game-runtime-analytics-bar-head">
-                  <strong>${escapeHtml(row.truckLabel)}</strong>
+                <div class="game-runtime-analytics-bar-head is-compact">
+                  <div class="game-runtime-analytics-bar-label">
+                    <strong>${escapeHtml(row.truckLabel)}</strong>
+                    <span class="game-runtime-analytics-inline-meta">${escapeHtml(`${row.playerLabel} · ${formatDistanceKm(row.estimatedDistanceKm)} · diesel ${formatCurrency(row.fuelCostBrl)}`)}</span>
+                  </div>
                   <span>${escapeHtml(formatPercent(row.utilizationPercent))}</span>
                 </div>
-                <small>${escapeHtml(`${row.playerLabel} · ${formatDistanceKm(row.estimatedDistanceKm)} · ${formatCurrency(row.fuelCostBrl)} diesel`)}</small>
                 ${analyticsStatusBarMarkup(row.statusHours)}
               </article>
             `).join("")}</div>`
@@ -5833,11 +7419,13 @@ function analyticsProductsContentMarkup() {
           valueFormatter: formatCurrency,
           valueResolver: (row) => row.profitBrl,
           metaResolver: (row) => `${formatInteger(row.deliveries)} entrega(s) · ${formatTonnes(row.tonnes)}`,
+          compact: true,
         }))}
         ${analyticsSectionMarkup("Produtos por volume", "Tonelagem movimentada", analyticsBarChartMarkup(productRows.slice().sort((left, right) => Number(right.tonnes || 0) - Number(left.tonnes || 0)), {
           valueFormatter: formatTonnes,
           valueResolver: (row) => row.tonnes,
           metaResolver: (row) => `${formatCurrency(row.profitBrl)} · ${formatInteger(row.activeFreights)} ativo(s)`,
+          compact: true,
         }))}
       </div>
     </div>
@@ -5846,36 +7434,34 @@ function analyticsProductsContentMarkup() {
 
 function analyticsCitiesContentMarkup() {
   const player = analyticsCurrentPlayer();
-  const playerCityRows = player ? analyticsTopEntries(analyticsPlayerCityRows(player), 8, (left, right) => Number(right.currentContracts || 0) - Number(left.currentContracts || 0) || Number(right.marketTonnes || 0) - Number(left.marketTonnes || 0)) : [];
-  const outboundRows = analyticsTopCityList("outboundTonnes", 8);
-  const inboundRows = analyticsTopCityList("inboundTonnes", 8);
+  const gameplayCityRows = analyticsGameplayCityRows();
+  const playerCityRows = player ? analyticsTopEntries(analyticsPlayerCityRows(player), 8, (left, right) => Number(right.currentContracts || 0) - Number(left.currentContracts || 0) || Number(right.activeTonnes || 0) - Number(left.activeTonnes || 0)) : [];
+  const outboundRows = analyticsTopEntries(gameplayCityRows, 8, (left, right) => Number(right.outboundGameTonnes || 0) - Number(left.outboundGameTonnes || 0) || Number(right.outboundDeliveries || 0) - Number(left.outboundDeliveries || 0));
+  const inboundRows = analyticsTopEntries(gameplayCityRows, 8, (left, right) => Number(right.inboundGameTonnes || 0) - Number(left.inboundGameTonnes || 0) || Number(right.inboundDeliveries || 0) - Number(left.inboundDeliveries || 0));
   return `
     <div class="game-runtime-analytics-stack">
       <div class="game-runtime-analytics-metric-grid">
-        ${analyticsMetricCardMarkup({ label: "Cidades com mercado", value: formatInteger(state.cities.filter((city) => {
-          const stats = state.cityMarketStatsById[city.id] || { outboundCount: 0, inboundCount: 0 };
-          return Number(stats.outboundCount || 0) > 0 || Number(stats.inboundCount || 0) > 0;
-        }).length), meta: "Oferta ou demanda ativa" })}
-        ${analyticsMetricCardMarkup({ label: "Saidas", value: formatInteger(analyticsSum(Object.values(state.cityMarketStatsById), (row) => row.outboundCount)), meta: "Fretes de origem" })}
-        ${analyticsMetricCardMarkup({ label: "Entradas", value: formatInteger(analyticsSum(Object.values(state.cityMarketStatsById), (row) => row.inboundCount)), meta: "Fretes de destino" })}
+        ${analyticsMetricCardMarkup({ label: "Cidades ativas", value: formatInteger(gameplayCityRows.length), meta: "Operacao registrada na partida" })}
+        ${analyticsMetricCardMarkup({ label: "Saidas", value: formatInteger(analyticsSum(gameplayCityRows, (row) => row.outboundDeliveries + row.activeOutbound)), meta: "Entregas + fretes ativos" })}
+        ${analyticsMetricCardMarkup({ label: "Entradas", value: formatInteger(analyticsSum(gameplayCityRows, (row) => row.inboundDeliveries + row.activeInbound)), meta: "Entregas + fretes ativos" })}
         ${analyticsMetricCardMarkup({ label: "Sede do jogador", value: player ? cityLabel(player.hqCityId) : "-", meta: "Base principal" })}
       </div>
       <div class="game-runtime-analytics-two-column">
-        ${analyticsSectionMarkup("Cidades por saida", "Onde o mercado mais despacha", analyticsBarChartMarkup(outboundRows, {
+        ${analyticsSectionMarkup("Cidades por saida", "Origens mais usadas na partida", analyticsBarChartMarkup(outboundRows, {
           valueFormatter: formatTonnes,
-          valueResolver: (row) => row.value,
-          metaResolver: (row) => row.ownerLabel,
+          valueResolver: (row) => row.outboundGameTonnes,
+          metaResolver: (row) => `${formatInteger(row.outboundDeliveries)} entrega(s) · ${formatInteger(row.activeOutbound)} ativa(s)`,
         }))}
-        ${analyticsSectionMarkup("Cidades por chegada", "Onde o mercado mais recebe", analyticsBarChartMarkup(inboundRows, {
+        ${analyticsSectionMarkup("Cidades por chegada", "Destinos mais usados na partida", analyticsBarChartMarkup(inboundRows, {
           valueFormatter: formatTonnes,
-          valueResolver: (row) => row.value,
-          metaResolver: (row) => row.ownerLabel,
+          valueResolver: (row) => row.inboundGameTonnes,
+          metaResolver: (row) => `${formatInteger(row.inboundDeliveries)} entrega(s) · ${formatInteger(row.activeInbound)} ativa(s)`,
         }))}
       </div>
       ${analyticsSectionMarkup("Cidades do jogador", "Presenca operacional da empresa principal", analyticsBarChartMarkup(playerCityRows, {
         valueFormatter: formatInteger,
         valueResolver: (row) => row.currentContracts,
-        metaResolver: (row) => `${row.isHq ? "Sede" : "Operacao"} · mercado ${formatTonnes(row.marketTonnes)} · ${formatInteger(row.outboundContracts)} origem / ${formatInteger(row.inboundContracts)} destino`,
+        metaResolver: (row) => `${row.isHq ? "Sede" : "Operacao"} · ${formatTonnes(row.activeTonnes)} · ${formatInteger(row.outboundContracts)} origem / ${formatInteger(row.inboundContracts)} destino`,
       }))}
     </div>
   `;
@@ -5923,6 +7509,7 @@ function renderAnalyticsModal() {
     return;
   }
   refs.analyticsContent.innerHTML = analyticsTabContentMarkup(activeTabId);
+  refs.analyticsContent.querySelectorAll("[data-wheel-rail]").forEach((element) => bindWheelRail(element));
 }
 
 function hexColorRgb(rawColor) {
@@ -5982,16 +7569,18 @@ function renderStatus() {
     refs.status.innerHTML = `
       <span class="game-runtime-status-pill">${escapeHtml(state.bootstrap?.active_map?.name || state.runtime?.metadata?.map_name || "Mapa ativo")}</span>
       <span class="game-runtime-status-pill">${escapeHtml(difficultyLabel(state.setup.selectedDifficulty))}</span>
-      <span class="game-runtime-status-pill">${escapeHtml(`${formatInteger(state.setup.robotCount)} adversarios`)}</span>
-      <span class="game-runtime-status-pill is-draft">${escapeHtml(`Abertura v${RUNTIME_CONFIG.version || "1.1"}`)}</span>
+      <span class="game-runtime-status-pill">${escapeHtml(`${formatInteger(state.setup.robotCount)} ${robotsOnlyEnabled() ? "robos" : "adversarios"}`)}</span>
+      ${robotAiSetupEnabled() ? `<span class="game-runtime-status-pill">${escapeHtml(`${robotAiModeLabel()} · ${robotAiTableConfig()?.label || "Mesa"}`)}</span>` : ""}
+      <span class="game-runtime-status-pill ${robotsOnlyEnabled() ? "is-ready" : "is-draft"}">${escapeHtml(robotsOnlyEnabled() ? "Modo robo" : `Abertura v${RUNTIME_CONFIG.version || "1.1"}`)}</span>
     `;
     return;
   }
   refs.status.innerHTML = `
     <span class="game-runtime-status-pill">${escapeHtml(state.bootstrap?.active_map?.name || state.runtime?.metadata?.map_name || "Mapa ativo")}</span>
-    <span class="game-runtime-status-pill">${escapeHtml(`${formatInteger(state.players.length)} jogadores`)}</span>
+    <span class="game-runtime-status-pill">${escapeHtml(`${formatInteger(state.players.length)} ${robotsOnlyEnabled() ? "robos" : "jogadores"}`)}</span>
     <span class="game-runtime-status-pill">${escapeHtml(`${formatInteger(state.runtime?.metadata?.route_edge_count || state.edges.length)} rotas`)}</span>
-    <span class="game-runtime-status-pill ${state.humanPrepared ? "is-ready" : "is-draft"}">${escapeHtml(state.humanPrepared ? "Preparacao salva" : "Abertura automatica")}</span>
+    ${robotAiSetupEnabled() ? `<span class="game-runtime-status-pill">${escapeHtml(`${robotAiModeLabel()} · ${robotAiTableConfig()?.label || "Mesa"}`)}</span>` : ""}
+    <span class="game-runtime-status-pill ${state.humanPrepared ? "is-ready" : "is-draft"}">${escapeHtml(robotsOnlyEnabled() ? "Operacao automatica" : (state.humanPrepared ? "Preparacao salva" : "Abertura automatica"))}</span>
   `;
 }
 
@@ -6123,6 +7712,12 @@ function renderHumanHud() {
   if (!refs.humanHud) {
     return;
   }
+  if (robotsOnlyEnabled()) {
+    refs.humanHud.hidden = true;
+    refs.humanHud.innerHTML = "";
+    return;
+  }
+  refs.humanHud.hidden = false;
   const player = state.playersById.human || state.players[0] || null;
   if (!player) {
     refs.humanHud.innerHTML = openingWizardEnabled()
@@ -6360,6 +7955,7 @@ function renderStaticUi() {
   renderPlayerBar();
   renderDrawer();
   renderAnalyticsModal();
+  renderTruckPopup();
 }
 
 function renderDynamicUi() {
@@ -6369,6 +7965,7 @@ function renderDynamicUi() {
   renderPlayerBar();
   renderDrawer();
   renderAnalyticsModal();
+  renderTruckPopup();
 }
 
 function renderMapUi({ refreshIcons = false } = {}) {
@@ -6448,6 +8045,26 @@ function handleClicks(event) {
     return;
   }
 
+  if (truckPopupVisible() && !target.closest(".game-runtime-vehicle-icon")) {
+    hideTruckPopup();
+  }
+
+  const proceedOpeningSetupButton = target.closest("[data-runtime-proceed-opening-setup]");
+  if (proceedOpeningSetupButton) {
+    proceedOpeningSetupModal();
+    return;
+  }
+
+  const robotAiOpenDetailedButton = target.closest("[data-runtime-robot-ai-open-detailed]");
+  if (robotAiOpenDetailedButton) {
+    ensureRobotAiSetupState();
+    if (state.setup.robotAi) {
+      state.setup.robotAi.editorMode = "detailed";
+    }
+    openSetupModal("robot-ai");
+    return;
+  }
+
   const runtimeOpenModalButton = target.closest("[data-runtime-open-modal]");
   if (runtimeOpenModalButton) {
     openSetupModal(runtimeOpenModalButton.getAttribute("data-runtime-open-modal") || "");
@@ -6460,10 +8077,51 @@ function handleClicks(event) {
     return;
   }
 
+  const analyticsPlayerButton = target.closest("[data-runtime-analytics-player]");
+  if (analyticsPlayerButton) {
+    state.analytics.selectedPlayerId = analyticsPlayerButton.getAttribute("data-runtime-analytics-player") || analyticsDefaultPlayerId();
+    renderAnalyticsModal();
+    return;
+  }
+
   const analyticsTabButton = target.closest("[data-runtime-analytics-tab]");
   if (analyticsTabButton) {
     state.analytics.activeTabId = analyticsTabButton.getAttribute("data-runtime-analytics-tab") || ANALYTICS_TABS[0].id;
     renderAnalyticsModal();
+    return;
+  }
+
+  const robotAiModeButton = target.closest("[data-runtime-robot-ai-editor-mode]");
+  if (robotAiModeButton) {
+    setRobotAiEditorMode(robotAiModeButton.getAttribute("data-runtime-robot-ai-editor-mode") || "basic");
+    return;
+  }
+
+  const robotAiBasicModeButton = target.closest("[data-runtime-robot-ai-basic-mode]");
+  if (robotAiBasicModeButton) {
+    setRobotAiBasicMode(robotAiBasicModeButton.getAttribute("data-runtime-robot-ai-basic-mode") || "balanced");
+    return;
+  }
+
+  const robotAiTabButton = target.closest("[data-runtime-robot-ai-slot]");
+  if (robotAiTabButton) {
+    robotAiSetSelectedSlot(Number(robotAiTabButton.getAttribute("data-runtime-robot-ai-slot") || 0));
+    renderRobotAiModal();
+    return;
+  }
+
+  const robotAiPresetButton = target.closest("[data-runtime-robot-ai-archetype]");
+  if (robotAiPresetButton) {
+    applyRobotAiArchetypeToSelectedSlot(robotAiPresetButton.getAttribute("data-runtime-robot-ai-archetype") || "balanced_operator");
+    return;
+  }
+
+  const robotAiGroupPresetButton = target.closest("[data-runtime-robot-ai-group-preset]");
+  if (robotAiGroupPresetButton) {
+    applyRobotAiGroupPreset(
+      robotAiGroupPresetButton.getAttribute("data-runtime-robot-ai-group") || "",
+      robotAiGroupPresetButton.getAttribute("data-runtime-robot-ai-group-preset") || "",
+    );
     return;
   }
 
@@ -6593,6 +8251,7 @@ function bindEvents() {
     if (state.setup.openingMap) {
       state.setup.openingMap.invalidateSize();
     }
+    renderTruckPopup();
   });
   window.addEventListener("beforeunload", () => {
     if (state.simulation.timerId) {

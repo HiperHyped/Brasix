@@ -1,0 +1,284 @@
+{
+  "version": "brasix-robot-ai-rules-v1-3",
+  "description": "Catalogo declarativo das decisoes dos robos do Brasix runtime 1.3. O engine combina sinais do perfil com sinais normalizados do contexto logistico do candidato atual.",
+  "normalization": {
+    "range": "0..1",
+    "planning_horizon_turns": {
+      "stored_range": "0..1",
+      "runtime_hours": "0..24"
+    }
+  },
+  "profile_signal_paths": {
+    "cash_reserve_ratio": ["economy", "cash_reserve_ratio"],
+    "risk_tolerance": ["economy", "risk_tolerance"],
+    "fleet_growth_bias": ["economy", "fleet_growth_bias"],
+    "margin_discipline": ["economy", "margin_discipline"],
+    "emergency_return_bias": ["economy", "emergency_return_bias"],
+    "weight_hq_strength": ["network", "weight_hq_strength"],
+    "weight_city_scale": ["network", "weight_city_scale"],
+    "weight_network_coverage": ["network", "weight_network_coverage"],
+    "weight_distance_efficiency": ["network", "weight_distance_efficiency"],
+    "planning_horizon_turns": ["network", "planning_horizon_turns"],
+    "weight_revenue": ["operations", "weight_revenue"],
+    "weight_payload_fit": ["operations", "weight_payload_fit"],
+    "weight_specialization_fit": ["operations", "weight_specialization_fit"],
+    "weight_hq_origin_bonus": ["operations", "weight_hq_origin_bonus"],
+    "weight_reposition_opportunity": ["operations", "weight_reposition_opportunity"],
+    "foresight": ["skill", "foresight"],
+    "evaluation_noise": ["skill", "evaluation_noise"],
+    "recovery_quality": ["skill", "recovery_quality"],
+    "consistency": ["skill", "consistency"],
+    "adaptation_speed": ["skill", "adaptation_speed"]
+  },
+  "decision_families": {
+    "opening": {
+      "label": "Abertura",
+      "goal": "Escolher sede e primeira composicao de fretes de acordo com o perfil do robo.",
+      "decisions": {
+        "hq_selection": {
+          "mode": "rank_then_select",
+          "description": "Ordena cidades candidatas para a sede inicial do robo.",
+          "ranking_formula": {
+            "type": "profile_weighted_score",
+            "base": 0.08,
+            "terms": [
+              {
+                "profile_signal": "weight_hq_strength",
+                "runtime_signal": "city_flow_potential_norm",
+                "weight": 0.3
+              },
+              {
+                "profile_signal": "weight_city_scale",
+                "runtime_signal": "city_scale_norm",
+                "weight": 0.18
+              },
+              {
+                "profile_signal": "weight_network_coverage",
+                "runtime_signal": "network_coverage_norm",
+                "weight": 0.18
+              },
+              {
+                "profile_signal": "planning_horizon_turns",
+                "runtime_signal": "long_chain_potential_norm",
+                "weight": 0.1
+              },
+              {
+                "profile_signal": "foresight",
+                "runtime_signal": "long_chain_potential_norm",
+                "weight": 0.08
+              },
+              {
+                "profile_signal": "adaptation_speed",
+                "runtime_signal": "separation_from_human_norm",
+                "weight": 0.06
+              },
+              {
+                "profile_signal": "risk_tolerance",
+                "runtime_signal": "early_expansion_room_norm",
+                "weight": 0.06
+              },
+              {
+                "profile_signal": "consistency",
+                "runtime_signal": "stable_supply_norm",
+                "weight": 0.08
+              }
+            ],
+            "noise": {
+              "profile_signal": "evaluation_noise",
+              "amplitude": 0.04
+            },
+            "clamp": {
+              "min": 0,
+              "max": 1
+            }
+          }
+        },
+        "flow_selection": {
+          "mode": "rank_then_select",
+          "description": "Ordena fretes candidatos para a composicao inicial do robo.",
+          "ranking_formula": {
+            "type": "profile_weighted_score",
+            "base": 0.04,
+            "terms": [
+              {
+                "profile_signal": "weight_revenue",
+                "runtime_signal": "revenue_norm",
+                "weight": 0.24
+              },
+              {
+                "profile_signal": "margin_discipline",
+                "runtime_signal": "margin_norm",
+                "weight": 0.18
+              },
+              {
+                "profile_signal": "weight_distance_efficiency",
+                "runtime_signal": "distance_efficiency_norm",
+                "weight": 0.18
+              },
+              {
+                "profile_signal": "weight_payload_fit",
+                "runtime_signal": "payload_fit_norm",
+                "weight": 0.14
+              },
+              {
+                "profile_signal": "weight_specialization_fit",
+                "runtime_signal": "specialization_fit_norm",
+                "weight": 0.1
+              },
+              {
+                "profile_signal": "weight_hq_origin_bonus",
+                "runtime_signal": "hq_origin_bonus_norm",
+                "weight": 0.08
+              },
+              {
+                "profile_signal": "planning_horizon_turns",
+                "runtime_signal": "destination_followup_norm",
+                "weight": 0.08
+              },
+              {
+                "profile_signal": "foresight",
+                "runtime_signal": "route_stability_norm",
+                "weight": 0.06
+              },
+              {
+                "profile_signal": "fleet_growth_bias",
+                "runtime_signal": "revenue_norm",
+                "weight": 0.04
+              }
+            ],
+            "noise": {
+              "profile_signal": "evaluation_noise",
+              "amplitude": 0.05
+            },
+            "clamp": {
+              "min": 0,
+              "max": 1
+            }
+          }
+        }
+      }
+    },
+    "operations": {
+      "label": "Operacao",
+      "goal": "Manter os caminhoes com melhor continuidade de frete e reposicionamento possivel.",
+      "decisions": {
+        "next_flow_selection": {
+          "mode": "rank_then_select",
+          "description": "Ordena os proximos fretes do caminhao apos cada entrega.",
+          "ranking_formula": {
+            "type": "profile_weighted_score",
+            "base": 0.04,
+            "terms": [
+              {
+                "profile_signal": "weight_revenue",
+                "runtime_signal": "revenue_norm",
+                "weight": 0.22
+              },
+              {
+                "profile_signal": "margin_discipline",
+                "runtime_signal": "margin_norm",
+                "weight": 0.18
+              },
+              {
+                "profile_signal": "weight_distance_efficiency",
+                "runtime_signal": "distance_efficiency_norm",
+                "weight": 0.16
+              },
+              {
+                "profile_signal": "weight_payload_fit",
+                "runtime_signal": "payload_fit_norm",
+                "weight": 0.12
+              },
+              {
+                "profile_signal": "weight_specialization_fit",
+                "runtime_signal": "specialization_fit_norm",
+                "weight": 0.08
+              },
+              {
+                "profile_signal": "weight_hq_origin_bonus",
+                "runtime_signal": "hq_origin_bonus_norm",
+                "weight": 0.07
+              },
+              {
+                "profile_signal": "planning_horizon_turns",
+                "runtime_signal": "destination_followup_norm",
+                "weight": 0.1
+              },
+              {
+                "profile_signal": "foresight",
+                "runtime_signal": "route_stability_norm",
+                "weight": 0.07
+              }
+            ],
+            "noise": {
+              "profile_signal": "evaluation_noise",
+              "amplitude": 0.05
+            },
+            "clamp": {
+              "min": 0,
+              "max": 1
+            }
+          }
+        },
+        "recovery_dispatch": {
+          "mode": "rank_then_select",
+          "description": "Escolhe o melhor reposicionamento quando o caminhao termina sem carga imediata na cidade atual.",
+          "ranking_formula": {
+            "type": "profile_weighted_score",
+            "base": 0.02,
+            "terms": [
+              {
+                "profile_signal": "weight_reposition_opportunity",
+                "runtime_signal": "destination_opportunity_norm",
+                "weight": 0.28
+              },
+              {
+                "profile_signal": "weight_distance_efficiency",
+                "runtime_signal": "distance_efficiency_norm",
+                "weight": 0.24
+              },
+              {
+                "profile_signal": "emergency_return_bias",
+                "runtime_signal": "return_home_norm",
+                "weight": 0.18
+              },
+              {
+                "profile_signal": "recovery_quality",
+                "runtime_signal": "target_flow_value_norm",
+                "weight": 0.14
+              },
+              {
+                "profile_signal": "planning_horizon_turns",
+                "runtime_signal": "destination_followup_norm",
+                "weight": 0.08
+              },
+              {
+                "profile_signal": "consistency",
+                "runtime_signal": "route_stability_norm",
+                "weight": 0.05
+              },
+              {
+                "profile_signal": "adaptation_speed",
+                "runtime_signal": "frontier_bonus_norm",
+                "weight": 0.05
+              },
+              {
+                "profile_signal": "weight_hq_origin_bonus",
+                "runtime_signal": "destination_hq_norm",
+                "weight": 0.04
+              }
+            ],
+            "noise": {
+              "profile_signal": "evaluation_noise",
+              "amplitude": 0.04
+            },
+            "clamp": {
+              "min": 0,
+              "max": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

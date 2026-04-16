@@ -1,0 +1,561 @@
+{
+  "version": "brasix-robot-ai-v1-3",
+  "description": "Configuracao declarativa dos perfis de robos do Brasix runtime 1.3. Todos os parametros numericos sao normalizados de 0 a 1. No caso do horizonte de planejamento, 0 representa leitura imediata e 1 representa cerca de 24 horas futuras de encadeamento logistico.",
+  "parameter_groups": {
+    "economy": {
+      "id": "economy",
+      "label": "Economia",
+      "description": "Controla reserva de caixa, apetite de expansao, disciplina de margem e tendencia de recuo para bases seguras.",
+      "parameters": [
+        {
+          "id": "cash_reserve_ratio",
+          "label": "Reserva de caixa",
+          "short_label": "reserva",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Quanto do capital o robo tenta preservar antes de expandir a frota ou assumir operacoes mais caras."
+        },
+        {
+          "id": "risk_tolerance",
+          "label": "Tolerancia a risco",
+          "short_label": "risco",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Quanto o robo aceita operar apertado para buscar cidades, cargas e reposicionamentos mais ambiciosos."
+        },
+        {
+          "id": "fleet_growth_bias",
+          "label": "Pressao de frota",
+          "short_label": "frota",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Tendencia a abrir mais caminhoes ja na largada em vez de comecar com operacao mais enxuta."
+        },
+        {
+          "id": "margin_discipline",
+          "label": "Disciplina de margem",
+          "short_label": "margem",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Peso dado a lucro por ciclo e estabilidade de margem, evitando fretes vistosos mas ruins no custo total."
+        },
+        {
+          "id": "emergency_return_bias",
+          "label": "Retorno seguro",
+          "short_label": "retorno",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Propensao a voltar para cidades mais seguras, especialmente a sede, quando o robo perde encadeamento logistico."
+        }
+      ],
+      "presets": [
+        {
+          "id": "expansionista",
+          "label": "Expansionista",
+          "description": "Abre mais frota cedo e aceita operar com folga menor para ocupar espaco logistico primeiro.",
+          "values": {
+            "cash_reserve_ratio": 0.1,
+            "risk_tolerance": 0.8,
+            "fleet_growth_bias": 0.9,
+            "margin_discipline": 0.4,
+            "emergency_return_bias": 0.2
+          }
+        },
+        {
+          "id": "equilibrado",
+          "label": "Equilibrado",
+          "description": "Equilibra crescimento, caixa e margem sem se prender demais a um unico estilo.",
+          "values": {
+            "cash_reserve_ratio": 0.3,
+            "risk_tolerance": 0.5,
+            "fleet_growth_bias": 0.5,
+            "margin_discipline": 0.6,
+            "emergency_return_bias": 0.4
+          }
+        },
+        {
+          "id": "disciplinado",
+          "label": "Disciplinado",
+          "description": "Valoriza margem e caixa antes de acelerar frota, priorizando operacao previsivel.",
+          "values": {
+            "cash_reserve_ratio": 0.5,
+            "risk_tolerance": 0.3,
+            "fleet_growth_bias": 0.4,
+            "margin_discipline": 0.8,
+            "emergency_return_bias": 0.5
+          }
+        },
+        {
+          "id": "conservador",
+          "label": "Conservador",
+          "description": "Cresce devagar, preserva caixa e evita alongar a malha quando a operacao perde estabilidade.",
+          "values": {
+            "cash_reserve_ratio": 0.7,
+            "risk_tolerance": 0.2,
+            "fleet_growth_bias": 0.2,
+            "margin_discipline": 0.8,
+            "emergency_return_bias": 0.7
+          }
+        },
+        {
+          "id": "sobrevivente",
+          "label": "Sobrevivente",
+          "description": "Perfil de protecao forte. Segura capital, evita salto arriscado e recua rapido para base segura.",
+          "values": {
+            "cash_reserve_ratio": 0.9,
+            "risk_tolerance": 0.1,
+            "fleet_growth_bias": 0.1,
+            "margin_discipline": 0.7,
+            "emergency_return_bias": 0.9
+          }
+        }
+      ]
+    },
+    "network": {
+      "id": "network",
+      "label": "Malha",
+      "description": "Define a preferencia do robo por cidades-foco, cobertura de malha, trajetos curtos e profundidade de planejamento.",
+      "parameters": [
+        {
+          "id": "weight_hq_strength",
+          "label": "Forca da sede",
+          "short_label": "sede",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Peso dado a cidades com alto potencial de saida e boa capacidade de sustentar cadeia de fretes."
+        },
+        {
+          "id": "weight_city_scale",
+          "label": "Escala urbana",
+          "short_label": "escala",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Peso dado a cidades maiores, com mais populacao e maior impressao de centralidade economica."
+        },
+        {
+          "id": "weight_network_coverage",
+          "label": "Cobertura da malha",
+          "short_label": "malha",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Peso dado a cidades que abrem mais opcoes de origem e continuidade operacional."
+        },
+        {
+          "id": "weight_distance_efficiency",
+          "label": "Eficiencia de distancia",
+          "short_label": "distancia",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Peso dado a trajetos curtos e ciclos mais eficientes por hora, evitando deslocamentos longos demais."
+        },
+        {
+          "id": "planning_horizon_turns",
+          "label": "Horizonte de leitura",
+          "short_label": "horizonte",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "description": "Profundidade com que o robo valoriza o proximo encadeamento de fretes alem da entrega atual."
+        }
+      ],
+      "presets": [
+        {
+          "id": "equilibrado",
+          "label": "Equilibrado",
+          "description": "Mistura centros fortes, boa cobertura e leitura moderada de continuidade.",
+          "values": {
+            "weight_hq_strength": 0.7,
+            "weight_city_scale": 0.5,
+            "weight_network_coverage": 0.6,
+            "weight_distance_efficiency": 0.5,
+            "planning_horizon_turns": 0.4
+          }
+        },
+        {
+          "id": "hubs",
+          "label": "Hubs",
+          "description": "Busca sedes fortes e cidades de alta conectividade para manter mais rotas em torno do mesmo polo.",
+          "values": {
+            "weight_hq_strength": 0.9,
+            "weight_city_scale": 0.8,
+            "weight_network_coverage": 0.9,
+            "weight_distance_efficiency": 0.3,
+            "planning_horizon_turns": 0.6
+          }
+        },
+        {
+          "id": "corredores",
+          "label": "Corredores",
+          "description": "Prioriza ciclos curtos, sequencias rapidas e continuidade operacional por eficiencia de percurso.",
+          "values": {
+            "weight_hq_strength": 0.6,
+            "weight_city_scale": 0.3,
+            "weight_network_coverage": 0.6,
+            "weight_distance_efficiency": 0.9,
+            "planning_horizon_turns": 0.5
+          }
+        },
+        {
+          "id": "regionalista",
+          "label": "Regionalista",
+          "description": "Valoriza operar em zonas fortes conhecidas e manter encadeamentos mais estaveis ao redor da base.",
+          "values": {
+            "weight_hq_strength": 0.8,
+            "weight_city_scale": 0.4,
+            "weight_network_coverage": 0.5,
+            "weight_distance_efficiency": 0.7,
+            "planning_horizon_turns": 0.4
+          }
+        },
+        {
+          "id": "expansao",
+          "label": "Expansao",
+          "description": "Aceita cidades menos obvias se elas abrirem mais alcance futuro e encadeamento de rede.",
+          "values": {
+            "weight_hq_strength": 0.6,
+            "weight_city_scale": 0.4,
+            "weight_network_coverage": 0.9,
+            "weight_distance_efficiency": 0.4,
+            "planning_horizon_turns": 0.8
+          }
+        }
+      ]
+    },
+    "operations": {
+      "id": "operations",
+      "label": "Operacao",
+      "description": "Controla a preferencia por faturamento bruto, encaixe de carga, especializacao, origem na sede e reposicionamento util.",
+      "parameters": [
+        {
+          "id": "weight_revenue",
+          "label": "Peso de receita",
+          "short_label": "receita",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Quanto a IA persegue fretes de maior receita total, mesmo quando exigem trajetos mais exigentes."
+        },
+        {
+          "id": "weight_payload_fit",
+          "label": "Encaixe de carga",
+          "short_label": "carga",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Quanto a IA valoriza usar melhor a capacidade do caminhao e evitar viagens com baixo aproveitamento."
+        },
+        {
+          "id": "weight_specialization_fit",
+          "label": "Especializacao",
+          "short_label": "especial",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Quanto a IA valoriza cargas que parecem mais nobres ou mais especificas dentro do mix logistico."
+        },
+        {
+          "id": "weight_hq_origin_bonus",
+          "label": "Preferencia pela sede",
+          "short_label": "sede",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Peso dado a operar em torno da cidade-base em vez de se afastar muito cedo da origem principal."
+        },
+        {
+          "id": "weight_reposition_opportunity",
+          "label": "Reposicionamento util",
+          "short_label": "repos",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Quanto a IA aceita reposicionar para capturar proximo carregamento promissor em vez de encerrar o caminhao parado."
+        }
+      ],
+      "presets": [
+        {
+          "id": "equilibrado",
+          "label": "Equilibrado",
+          "description": "Mistura receita, encaixe e reposicionamento de forma estavel.",
+          "values": {
+            "weight_revenue": 0.7,
+            "weight_payload_fit": 0.6,
+            "weight_specialization_fit": 0.5,
+            "weight_hq_origin_bonus": 0.5,
+            "weight_reposition_opportunity": 0.6
+          }
+        },
+        {
+          "id": "faturamento",
+          "label": "Faturamento",
+          "description": "Puxa o robo para fretes de maior valor bruto e maior escala de receita por ciclo.",
+          "values": {
+            "weight_revenue": 1.0,
+            "weight_payload_fit": 0.5,
+            "weight_specialization_fit": 0.4,
+            "weight_hq_origin_bonus": 0.2,
+            "weight_reposition_opportunity": 0.7
+          }
+        },
+        {
+          "id": "especialista",
+          "label": "Especialista",
+          "description": "Valoriza cargas mais marcadas e oportunidades em que o encaixe logistico pareca mais seletivo.",
+          "values": {
+            "weight_revenue": 0.7,
+            "weight_payload_fit": 0.8,
+            "weight_specialization_fit": 1.0,
+            "weight_hq_origin_bonus": 0.3,
+            "weight_reposition_opportunity": 0.7
+          }
+        },
+        {
+          "id": "base_local",
+          "label": "Base local",
+          "description": "Prefere extrair valor perto da sede e recosturar operacao em torno do proprio hub.",
+          "values": {
+            "weight_revenue": 0.6,
+            "weight_payload_fit": 0.7,
+            "weight_specialization_fit": 0.4,
+            "weight_hq_origin_bonus": 1.0,
+            "weight_reposition_opportunity": 0.4
+          }
+        },
+        {
+          "id": "encadeador",
+          "label": "Encadeador",
+          "description": "Aceita mais reposicionamento se isso mantiver o caminhao sempre com proxima oportunidade viva.",
+          "values": {
+            "weight_revenue": 0.6,
+            "weight_payload_fit": 0.6,
+            "weight_specialization_fit": 0.5,
+            "weight_hq_origin_bonus": 0.3,
+            "weight_reposition_opportunity": 1.0
+          }
+        }
+      ]
+    },
+    "skill": {
+      "id": "skill",
+      "label": "Habilidades",
+      "description": "Controla leitura de continuidade, consistencia do score e qualidade de recuperacao da operacao.",
+      "parameters": [
+        {
+          "id": "foresight",
+          "label": "Leitura futura",
+          "short_label": "visao",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Capacidade de valorizar destinos e sedes que sustentam bons encadeamentos apos a entrega imediata."
+        },
+        {
+          "id": "evaluation_noise",
+          "label": "Ruido de avaliacao",
+          "short_label": "ruido",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Oscilacao do robo em torno da melhor escolha calculada. Valores altos deixam a IA mais irregular."
+        },
+        {
+          "id": "recovery_quality",
+          "label": "Recuperacao logistica",
+          "short_label": "recup",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Qualidade em achar o melhor reposicionamento quando a rota atual termina sem continuidade imediata."
+        },
+        {
+          "id": "consistency",
+          "label": "Consistencia",
+          "short_label": "const",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Tendencia a repetir linhas mais estaveis em vez de alternar demais o comportamento entre rodadas."
+        },
+        {
+          "id": "adaptation_speed",
+          "label": "Adaptacao",
+          "short_label": "adapta",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "description": "Velocidade com que o robo aceita mudar de polo ou rota ao perceber oportunidade melhor."
+        }
+      ],
+      "presets": [
+        {
+          "id": "iniciante",
+          "label": "Iniciante",
+          "description": "Leitura curta, recuperacao fraca e muito ruido nas escolhas.",
+          "values": {
+            "foresight": 0.2,
+            "evaluation_noise": 1.0,
+            "recovery_quality": 0.2,
+            "consistency": 0.3,
+            "adaptation_speed": 0.3
+          }
+        },
+        {
+          "id": "operacional",
+          "label": "Operacional",
+          "description": "Executa o basico com variacao perceptivel, mas ja consegue manter operacao funcional.",
+          "values": {
+            "foresight": 0.4,
+            "evaluation_noise": 0.7,
+            "recovery_quality": 0.4,
+            "consistency": 0.5,
+            "adaptation_speed": 0.5
+          }
+        },
+        {
+          "id": "solido",
+          "label": "Solido",
+          "description": "Perfil padrao confiavel para runtime normal, com boa leitura e pouca oscilacao grave.",
+          "values": {
+            "foresight": 0.6,
+            "evaluation_noise": 0.4,
+            "recovery_quality": 0.6,
+            "consistency": 0.6,
+            "adaptation_speed": 0.6
+          }
+        },
+        {
+          "id": "tatico",
+          "label": "Tatico",
+          "description": "Melhor leitura de encadeamento e recuperacao, com pouca hesitacao em trocar de eixo quando vale a pena.",
+          "values": {
+            "foresight": 0.8,
+            "evaluation_noise": 0.2,
+            "recovery_quality": 0.8,
+            "consistency": 0.7,
+            "adaptation_speed": 0.8
+          }
+        },
+        {
+          "id": "elite",
+          "label": "Elite",
+          "description": "Alta leitura de continuidade, score estavel e quase nenhum desperdicio de reposicionamento.",
+          "values": {
+            "foresight": 0.9,
+            "evaluation_noise": 0.0,
+            "recovery_quality": 0.9,
+            "consistency": 0.9,
+            "adaptation_speed": 0.9
+          }
+        }
+      ]
+    }
+  },
+  "basic_modes": {
+    "balanced": {
+      "id": "balanced",
+      "label": "Balanceada",
+      "description": "Mistura operadores equilibrados, hubs e especialistas leves na mesma mesa.",
+      "robot_archetype_order": [
+        "balanced_operator",
+        "hub_controller",
+        "specialist_dispatcher",
+        "regional_guardian",
+        "revenue_hunter"
+      ]
+    },
+    "aggressive": {
+      "id": "aggressive",
+      "label": "Agressiva",
+      "description": "Mesa mais inclinada a faturamento e ocupacao rapida da rede.",
+      "robot_archetype_order": [
+        "revenue_hunter",
+        "specialist_dispatcher",
+        "balanced_operator",
+        "revenue_hunter",
+        "hub_controller"
+      ]
+    },
+    "hubs": {
+      "id": "hubs",
+      "label": "Hubs",
+      "description": "Mesa mais territorial, presa a cidades fortes e reconstrucao de operacao perto da base.",
+      "robot_archetype_order": [
+        "hub_controller",
+        "regional_guardian",
+        "balanced_operator",
+        "hub_controller",
+        "specialist_dispatcher"
+      ]
+    },
+    "specialists": {
+      "id": "specialists",
+      "label": "Especialistas",
+      "description": "Mesa mais diversa entre encaixe de carga, reposicionamento e leitura de corredores.",
+      "robot_archetype_order": [
+        "specialist_dispatcher",
+        "revenue_hunter",
+        "balanced_operator",
+        "regional_guardian",
+        "hub_controller"
+      ]
+    }
+  },
+  "compatibility": {
+    "difficulty_skill_presets": {
+      "hard": "tatico",
+      "standard": "solido",
+      "sandbox": "operacional"
+    },
+    "archetypes": {
+      "balanced_operator": {
+        "label": "Equilibrado",
+        "description": "Opera com carteira estavel, mistura bom encaixe e continuidade sem obsessao por um unico eixo.",
+        "economy_preset_id": "equilibrado",
+        "network_preset_id": "equilibrado",
+        "operations_preset_id": "equilibrado",
+        "skill_preset_id": "solido"
+      },
+      "hub_controller": {
+        "label": "Controlador de hub",
+        "description": "Busca sede forte, volta mais para o proprio polo e valoriza encadeamento perto da base.",
+        "economy_preset_id": "disciplinado",
+        "network_preset_id": "hubs",
+        "operations_preset_id": "base_local",
+        "skill_preset_id": "tatico"
+      },
+      "specialist_dispatcher": {
+        "label": "Despachante especialista",
+        "description": "Se mexe mais pela rede e busca cargas em que o encaixe logistico pareca mais seletivo.",
+        "economy_preset_id": "expansionista",
+        "network_preset_id": "corredores",
+        "operations_preset_id": "especialista",
+        "skill_preset_id": "tatico"
+      },
+      "revenue_hunter": {
+        "label": "Cacador de faturamento",
+        "description": "Forca receita alta e aceita expandir mais cedo se o ciclo parecer grande o suficiente.",
+        "economy_preset_id": "expansionista",
+        "network_preset_id": "expansao",
+        "operations_preset_id": "faturamento",
+        "skill_preset_id": "operacional"
+      },
+      "regional_guardian": {
+        "label": "Guardiao regional",
+        "description": "Cresce mais devagar, preserva caixa e reconstrói operacao em torno de um nucleo regional forte.",
+        "economy_preset_id": "conservador",
+        "network_preset_id": "regionalista",
+        "operations_preset_id": "base_local",
+        "skill_preset_id": "solido"
+      }
+    }
+  }
+}

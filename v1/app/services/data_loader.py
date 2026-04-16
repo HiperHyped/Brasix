@@ -27,6 +27,8 @@ from app.config import (
     PRODUCT_INFERENCE_RULES_PATH,
     PRODUCT_MASTER_V1_1_PATH,
     PRODUCT_LOGISTICS_TYPE_CATALOG_PATH,
+    ROBOT_AI_V1_3_CONFIG_PATH,
+    ROBOT_AI_V1_3_RULES_PATH,
     REGION_PRODUCT_SUPPLY_MATRIX_PATH,
     ROUTE_GEOMETRY_TYPES_PATH,
     ROUTE_AUTO_ENGINE_CONFIG_PATH,
@@ -1127,6 +1129,14 @@ def load_ui_payload() -> dict[str, Any]:
         "component_registry": load_json(UI_COMPONENT_REGISTRY_PATH),
         "navigation_items": load_json(UI_NAVIGATION_ITEMS_PATH),
     }
+
+
+def load_robot_ai_v1_3_config_payload(path: Path | None = None) -> dict[str, Any]:
+    return dict(load_json(path or ROBOT_AI_V1_3_CONFIG_PATH))
+
+
+def load_robot_ai_v1_3_rules_payload(path: Path | None = None) -> dict[str, Any]:
+    return dict(load_json(path or ROBOT_AI_V1_3_RULES_PATH))
 
 
 def load_map_editor_payload(user_city_catalog: dict[str, Any] | None = None) -> dict[str, Any]:

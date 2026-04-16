@@ -7019,6 +7019,19 @@ html.game-runtime-page[data-editor-theme="night"] {
   background: var(--game-runtime-map-bg);
 }
 
+.game-runtime-truck-popup {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 460;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.game-runtime-truck-popup[hidden] {
+  display: none !important;
+}
+
 .game-runtime-overlay,
 .game-runtime-drawer,
 .game-runtime-player-card {
@@ -7043,6 +7056,10 @@ html.game-runtime-page[data-editor-theme="night"] {
   z-index: 401;
   width: min(360px, calc(100vw - 36px));
   grid-template-rows: auto minmax(0, 1fr);
+}
+
+.game-runtime-left-column.is-robots-only {
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .game-runtime-right-column {
@@ -7724,6 +7741,905 @@ html.game-runtime-page[data-editor-theme="night"] {
   color: #ffffff;
   font-size: 0.6rem;
   font-weight: 800;
+}
+
+.game-runtime-header-actions .ghost-button.is-active {
+  border-color: rgba(53, 109, 99, 0.28);
+  background: rgba(53, 109, 99, 0.12);
+  color: var(--green);
+}
+
+.game-runtime-opening-robot-ai-item {
+  min-width: 0;
+  grid-column: 1 / -1;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.game-runtime-robot-ai-open-button.is-active {
+  border-color: rgba(53, 109, 99, 0.28);
+  background: rgba(53, 109, 99, 0.12);
+  color: var(--green);
+}
+
+.game-runtime-robot-ai-summary,
+.game-runtime-robot-ai-summary-panel,
+.game-runtime-robot-ai-preset-buttons,
+.game-runtime-robot-ai-robot-tabs,
+.game-runtime-robot-ai-parameter-grid,
+.game-runtime-robot-ai-parameter-list {
+  display: grid;
+  gap: 10px;
+}
+
+.game-runtime-robot-ai-summary-card {
+  padding: 14px;
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  border-radius: 22px;
+  display: grid;
+  gap: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(246, 240, 229, 0.82)),
+    linear-gradient(135deg, rgba(53, 109, 99, 0.08), transparent 58%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.game-runtime-robot-ai-summary-card.is-compact {
+  padding: 16px 18px;
+  gap: 14px;
+}
+
+.game-runtime-robot-ai-summary-card.is-opening {
+  background:
+    radial-gradient(circle at top right, rgba(53, 109, 99, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 242, 231, 0.92));
+}
+
+.game-runtime-robot-ai-summary-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.game-runtime-robot-ai-summary-head > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.game-runtime-robot-ai-summary-head strong {
+  color: var(--text);
+}
+
+.game-runtime-robot-ai-summary-head span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+.game-runtime-robot-ai-section-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.game-runtime-robot-ai-opening-block {
+  display: grid;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-metric-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.game-runtime-robot-ai-metric-row.is-compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.game-runtime-robot-ai-metric-row article {
+  padding: 8px 10px;
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  border-radius: 14px;
+  display: grid;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.game-runtime-robot-ai-metric-row span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.game-runtime-robot-ai-metric-row strong {
+  color: var(--text);
+  font-size: 0.86rem;
+  line-height: 1.2;
+}
+
+.game-runtime-robot-ai-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-chip {
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(53, 109, 99, 0.14);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(53, 109, 99, 0.08);
+  color: var(--green);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.game-runtime-robot-ai-modal {
+  width: min(1400px, calc(100vw - 48px));
+  height: min(calc(100vh - 42px), 920px);
+}
+
+.game-runtime-robot-ai-body {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
+  overflow: hidden;
+}
+
+.game-runtime-robot-ai-mode-bar {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.92fr) minmax(0, 1.5fr);
+  gap: 12px;
+}
+
+.game-runtime-robot-ai-mode-field {
+  display: grid;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-mode-field > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.game-runtime-robot-ai-mode-toggle,
+.game-runtime-robot-ai-basic-modes {
+  display: grid;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-mode-toggle {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.game-runtime-robot-ai-basic-modes {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.game-runtime-robot-ai-mode-toggle.is-opening,
+.game-runtime-robot-ai-basic-modes.is-opening {
+  gap: 10px;
+}
+
+.game-runtime-robot-ai-toggle-button,
+.game-runtime-robot-ai-basic-mode-button,
+.game-runtime-robot-ai-preset-button,
+.game-runtime-robot-ai-tab,
+.game-runtime-robot-ai-group-preset-button {
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  border-radius: 16px;
+  display: grid;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+.game-runtime-robot-ai-toggle-button,
+.game-runtime-robot-ai-basic-mode-button,
+.game-runtime-robot-ai-preset-button,
+.game-runtime-robot-ai-group-preset-button {
+  padding: 10px 12px;
+}
+
+.game-runtime-robot-ai-toggle-button span,
+.game-runtime-robot-ai-basic-mode-button span,
+.game-runtime-robot-ai-preset-button span,
+.game-runtime-robot-ai-tab span,
+.game-runtime-robot-ai-group-preset-button span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.2;
+}
+
+.game-runtime-robot-ai-toggle-button strong,
+.game-runtime-robot-ai-basic-mode-button strong,
+.game-runtime-robot-ai-preset-button strong,
+.game-runtime-robot-ai-tab strong,
+.game-runtime-robot-ai-group-preset-button strong {
+  color: var(--text);
+}
+
+.game-runtime-robot-ai-toggle-button.is-compact,
+.game-runtime-robot-ai-basic-mode-button.is-compact {
+  min-height: 68px;
+  padding: 12px 14px;
+}
+
+.game-runtime-robot-ai-toggle-button:hover,
+.game-runtime-robot-ai-basic-mode-button:hover,
+.game-runtime-robot-ai-preset-button:hover,
+.game-runtime-robot-ai-tab:hover,
+.game-runtime-robot-ai-group-preset-button:hover,
+.game-runtime-robot-ai-toggle-button.is-active,
+.game-runtime-robot-ai-basic-mode-button.is-active,
+.game-runtime-robot-ai-preset-button.is-active,
+.game-runtime-robot-ai-tab.is-active,
+.game-runtime-robot-ai-group-preset-button.is-active {
+  border-color: rgba(53, 109, 99, 0.28);
+  background: rgba(53, 109, 99, 0.12);
+  box-shadow: 0 12px 24px rgba(53, 109, 99, 0.08);
+  transform: translateY(-1px);
+}
+
+.game-runtime-robot-ai-editor-shell {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  overflow: hidden;
+}
+
+.game-runtime-robot-ai-sidebar,
+.game-runtime-robot-ai-main {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.game-runtime-robot-ai-sidebar {
+  align-content: start;
+  max-height: 100%;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.game-runtime-robot-ai-main {
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.game-runtime-robot-ai-summary-panel {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.game-runtime-robot-ai-robot-tabs {
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(168px, 1fr);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  padding-bottom: 4px;
+}
+
+.game-runtime-robot-ai-tab {
+  min-height: 72px;
+  align-items: center;
+  padding: 12px 14px;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-tab > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.game-runtime-robot-ai-tab strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.94rem;
+}
+
+.game-runtime-robot-ai-tab.is-table strong {
+  display: block;
+}
+
+.game-runtime-robot-ai-tab .game-runtime-color-chip {
+  width: 18px;
+  height: 18px;
+  box-shadow: none;
+}
+
+.game-runtime-robot-ai-parameter-grid {
+  min-height: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.game-runtime-robot-ai-group {
+  padding: 12px;
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  border-radius: 18px;
+  display: grid;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.game-runtime-robot-ai-group-shell {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.game-runtime-robot-ai-group-presets {
+  display: grid;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-group-preset-button {
+  min-height: 56px;
+}
+
+.game-runtime-robot-ai-parameter-list {
+  grid-template-columns: 1fr;
+}
+
+.game-runtime-robot-ai-parameter-card {
+  padding: 10px 12px;
+  border: 1px solid rgba(114, 121, 110, 0.12);
+  border-radius: 16px;
+  display: grid;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.game-runtime-robot-ai-parameter-card small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.25;
+}
+
+.game-runtime-robot-ai-parameter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-slider {
+  width: 100%;
+  accent-color: var(--green);
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-header-actions .ghost-button.is-active,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-open-button.is-active,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-toggle-button,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-basic-mode-button,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-preset-button,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-tab,
+.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-group-preset-button,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-group,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-parameter-card,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-summary-card,
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-metric-row article {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-robot-ai-chip {
+  border-color: rgba(161, 212, 148, 0.2);
+  background: rgba(161, 212, 148, 0.12);
+  color: #a1d494;
+}
+
+@media (max-width: 1180px) {
+  .game-runtime-robot-ai-mode-bar,
+  .game-runtime-robot-ai-editor-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .game-runtime-robot-ai-group-shell,
+  .game-runtime-robot-ai-parameter-grid,
+  .game-runtime-robot-ai-basic-modes,
+  .game-runtime-robot-ai-metric-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .game-runtime-robot-ai-sidebar {
+    position: static;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .game-runtime-robot-ai-summary-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .game-runtime-opening-robot-ai-item,
+  .game-runtime-robot-ai-modal {
+    min-width: 0;
+    width: min(100vw - 24px, 100%);
+  }
+
+  .game-runtime-robot-ai-mode-toggle,
+  .game-runtime-robot-ai-basic-modes,
+  .game-runtime-robot-ai-group-shell,
+  .game-runtime-robot-ai-parameter-grid,
+  .game-runtime-robot-ai-metric-row {
+    grid-template-columns: 1fr;
+  }
+
+  .game-runtime-robot-ai-robot-tabs {
+    grid-auto-columns: minmax(148px, 1fr);
+  }
+}
+
+.game-runtime-robot-ai-modal {
+  width: min(1480px, calc(100vw - 24px));
+  height: min(calc(100vh - 28px), 790px);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(45, 90, 39, 0.14);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(252, 249, 241, 0.98), rgba(244, 239, 229, 0.96)),
+    linear-gradient(135deg, rgba(53, 109, 99, 0.08), transparent 58%);
+  box-shadow: 0 24px 56px rgba(24, 30, 26, 0.18);
+}
+
+.game-runtime-shell .game-runtime-robot-ai-modal {
+  margin-top: 18px;
+}
+
+.game-runtime-robot-ai-shell {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 14px 16px 14px;
+}
+
+.game-runtime-robot-ai-shell-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.game-runtime-robot-ai-title-block {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.game-runtime-robot-ai-title-block h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.16rem;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.game-runtime-robot-ai-eyebrow,
+.game-runtime-robot-ai-strip-label {
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.game-runtime-robot-ai-shell-actions,
+.game-runtime-robot-ai-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.game-runtime-robot-ai-top-button {
+  min-height: 30px;
+  padding: 0 13px;
+  border: 1px solid rgba(114, 121, 110, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease, color 140ms ease;
+}
+
+.game-runtime-robot-ai-top-button.is-secondary {
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.game-runtime-robot-ai-top-button:hover,
+.game-runtime-robot-ai-top-button:focus-visible {
+  border-color: rgba(53, 109, 99, 0.28);
+  background: rgba(53, 109, 99, 0.12);
+  color: var(--green);
+  box-shadow: 0 0 0 1px rgba(53, 109, 99, 0.08);
+}
+
+.game-runtime-robot-ai-body {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 8px;
+  overflow: hidden;
+}
+
+.game-runtime-robot-ai-main {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px;
+  overflow: hidden;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-robot-tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 118px;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-gutter: stable;
+  padding: 0 2px 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(53, 109, 99, 0.28) transparent;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-robot-tabs::-webkit-scrollbar {
+  height: 8px;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-robot-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-robot-tabs::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(53, 109, 99, 0.18);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-robot-tabs::-webkit-scrollbar-thumb:hover {
+  background: rgba(53, 109, 99, 0.3);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-tab {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(114, 121, 110, 0.16);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
+  transform: none;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-tab:hover,
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-tab.is-active {
+  border-color: rgba(53, 109, 99, 0.32);
+  background: color-mix(in srgb, var(--green) 10%, white);
+  color: var(--text);
+  box-shadow: 0 10px 22px rgba(53, 109, 99, 0.08), inset 0 0 0 1px rgba(53, 109, 99, 0.1);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-tab strong,
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-tab span {
+  color: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.game-runtime-robot-ai-tab-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--player-color, #3b84ff);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-parameter-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  align-content: start;
+  align-items: start;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-group {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-group-shell {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-group-presets {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-group-preset-button {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(114, 121, 110, 0.16);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  transform: none;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-group-preset-button:hover,
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-group-preset-button.is-active {
+  border-color: rgba(53, 109, 99, 0.28);
+  background: color-mix(in srgb, var(--green) 10%, white);
+  box-shadow: inset 0 0 0 1px rgba(53, 109, 99, 0.1);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-group-preset-button span {
+  color: inherit;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.game-runtime-robot-ai-group-panel {
+  min-width: 0;
+  padding: 10px 12px 11px;
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  border-radius: 20px;
+  display: grid;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.game-runtime-robot-ai-group-card-head {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.game-runtime-robot-ai-group-card-head > div {
+  min-width: 0;
+}
+
+.game-runtime-robot-ai-group-card-head strong {
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.game-runtime-robot-ai-group-card-head p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.22;
+  overflow-wrap: anywhere;
+}
+
+.game-runtime-robot-ai-target-chip {
+  min-height: 22px;
+  padding: 0 10px;
+  border: 1px solid rgba(53, 109, 99, 0.2);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(53, 109, 99, 0.08);
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-parameter-list {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-slider-row {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.game-runtime-robot-ai-slider-meta {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-slider-label {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.game-runtime-robot-ai-slider-value {
+  color: var(--green);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.game-runtime-robot-ai-help-badge {
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(53, 109, 99, 0.24);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(53, 109, 99, 0.08);
+  color: var(--green);
+  font-size: 0.64rem;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-slider {
+  width: 100%;
+  height: 14px;
+  appearance: none;
+  background: transparent;
+  accent-color: var(--green);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(114, 121, 110, 0.24);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 0 2px rgba(53, 109, 99, 0.12);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-slider::-moz-range-track {
+  height: 4px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(114, 121, 110, 0.24);
+}
+
+.game-runtime-robot-ai-modal .game-runtime-robot-ai-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 0 2px rgba(53, 109, 99, 0.12);
+}
+
+@media (max-width: 1240px) {
+  .game-runtime-robot-ai-modal {
+    width: min(calc(100vw - 20px), 100%);
+  }
+}
+
+@media (max-width: 1100px) {
+  .game-runtime-robot-ai-modal {
+    height: min(calc(100vh - 20px), 900px);
+  }
+
+  .game-runtime-robot-ai-modal .game-runtime-robot-ai-parameter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .game-runtime-shell .game-runtime-robot-ai-modal {
+    margin-top: 10px;
+  }
+
+  .game-runtime-robot-ai-shell-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .game-runtime-robot-ai-shell-actions {
+    justify-content: space-between;
+  }
+
+  .game-runtime-robot-ai-modal .game-runtime-robot-ai-robot-tabs {
+    grid-auto-columns: 108px;
+  }
+
+  .game-runtime-robot-ai-modal .game-runtime-robot-ai-group-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .game-runtime-robot-ai-modal .game-runtime-robot-ai-group-presets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .game-runtime-robot-ai-shell {
+    padding: 12px;
+  }
+
+  .game-runtime-robot-ai-title-block h2 {
+    font-size: 1rem;
+  }
+
+  .game-runtime-robot-ai-modal .game-runtime-robot-ai-robot-tabs {
+    grid-auto-columns: 96px;
+  }
+
+  .game-runtime-robot-ai-modal .game-runtime-robot-ai-group-presets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 html.game-runtime-page[data-editor-theme="night"] .game-runtime-status-pill,
@@ -8550,6 +9466,10 @@ body.game-setup-page {
   width: min(1320px, 100%);
 }
 
+.game-runtime-shell .game-setup-modal-company.is-robots-only {
+  width: min(760px, 100%);
+}
+
 .game-runtime-shell .game-runtime-analytics-modal {
   width: min(1380px, 100%);
 }
@@ -8567,6 +9487,56 @@ body.game-setup-page {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.game-runtime-analytics-player-selector {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  padding-bottom: 2px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 90, 39, 0.28) rgba(255, 255, 255, 0.38);
+}
+
+.game-runtime-analytics-player-selector::-webkit-scrollbar {
+  height: 7px;
+}
+
+.game-runtime-analytics-player-selector::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.36);
+}
+
+.game-runtime-analytics-player-selector::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(45, 90, 39, 0.28);
+}
+
+.game-runtime-analytics-player-button {
+  min-width: 168px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.game-runtime-analytics-player-button i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+  background: var(--analytics-player-color, #356d63);
+}
+
+.game-runtime-analytics-player-button span,
+.game-runtime-analytics-player-button small {
+  line-height: 1.1;
 }
 
 .game-runtime-analytics-content {
@@ -8674,6 +9644,24 @@ body.game-setup-page {
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+}
+
+.game-runtime-analytics-bar-head.is-compact {
+  align-items: flex-start;
+}
+
+.game-runtime-analytics-bar-label {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.game-runtime-analytics-inline-meta {
+  color: var(--game-runtime-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
 }
 
 .game-runtime-analytics-bar-head strong,
@@ -8795,6 +9783,14 @@ html[data-editor-theme="night"] .game-runtime-analytics-line-chart {
   background: linear-gradient(180deg, rgba(27, 33, 35, 0.92), rgba(20, 24, 26, 0.92));
 }
 
+html[data-editor-theme="night"] .game-runtime-analytics-player-selector::-webkit-scrollbar-track {
+  background: rgba(20, 24, 26, 0.44);
+}
+
+html[data-editor-theme="night"] .game-runtime-analytics-player-selector::-webkit-scrollbar-thumb {
+  background: rgba(127, 148, 154, 0.32);
+}
+
 html[data-editor-theme="night"] .game-runtime-analytics-section,
 html[data-editor-theme="night"] .game-runtime-analytics-metric {
   border-color: rgba(127, 148, 154, 0.18);
@@ -8824,6 +9820,10 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
     width: 100%;
   }
 
+  .game-runtime-analytics-player-button {
+    min-width: 146px;
+  }
+
   .game-runtime-analytics-metric-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -8850,6 +9850,29 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
   overflow: hidden;
 }
 
+.game-runtime-opening-body.is-robots-only {
+  height: auto;
+  grid-template-rows: auto;
+  align-content: start;
+  overflow: auto;
+}
+
+.game-runtime-opening-setup-body {
+  display: grid;
+  gap: 0;
+}
+
+.game-runtime-opening-setup-modal {
+  width: min(980px, 100%);
+}
+
+.game-runtime-opening-company-body {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
 .game-runtime-opening-top-box {
   display: grid;
   grid-template-columns: minmax(190px, 240px) minmax(220px, 280px) minmax(0, 1fr);
@@ -8858,6 +9881,10 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
   border-radius: 20px;
   border: 1px solid rgba(45, 90, 39, 0.14);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 242, 231, 0.92));
+}
+
+.game-runtime-opening-top-box.is-initial {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 .game-runtime-opening-top-item {
@@ -8869,6 +9896,10 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
   border-radius: 16px;
   border: 1px solid rgba(45, 90, 39, 0.12);
   background: rgba(255, 255, 255, 0.72);
+}
+
+.game-runtime-opening-top-item.is-palette {
+  grid-column: 1 / -1;
 }
 
 .game-runtime-opening-top-head {
@@ -8907,6 +9938,10 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
 .game-runtime-opening-palette .game-runtime-color-chip {
   width: 18px;
   height: 18px;
+}
+
+.game-runtime-opening-top-box.is-initial .game-runtime-opening-palette {
+  min-height: 22px;
 }
 
 .game-runtime-opening-layout {
@@ -9543,6 +10578,21 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
   border-top: 3px solid var(--freight-color, var(--green));
 }
 
+.game-runtime-truck-popup .game-runtime-contract-chip {
+  width: 100%;
+  margin: 0;
+  background: rgba(255, 252, 246, 0.96);
+  box-shadow: 0 18px 30px rgba(20, 24, 22, 0.18);
+}
+
+.game-runtime-truck-popup .game-runtime-route-card-value {
+  margin-right: 0;
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-truck-popup .game-runtime-contract-chip {
+  background: rgba(27, 33, 35, 0.96);
+}
+
 .game-setup-freight-route {
   display: grid;
   gap: 8px;
@@ -9896,6 +10946,10 @@ html[data-editor-theme="night"] .game-setup-compatibility-note.is-active {
 
   .game-setup-company-economy-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .game-runtime-opening-setup-modal {
+    width: min(960px, 100%);
   }
 }
 
