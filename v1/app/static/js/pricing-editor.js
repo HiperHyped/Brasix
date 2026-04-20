@@ -7,6 +7,7 @@ import {
   sortPopulationBands,
 } from "./shared/leaflet-map.js";
 import { escapeHtml, numberFormatter, roundNumber } from "./shared/formatters.js";
+import { freightSpecializationBucketForProduct, freightValueClassBucket } from "./shared/freight-pricing-model.js?v=20260417-freight-model-1";
 import { buildOpeningContextState, openingBandPricePath } from "./shared/opening-pricing.js?v=20260413-opening-2";
 
 const THEME_KEY = "brasix:v1:pricing-editor-theme";
@@ -980,26 +981,7 @@ function flowQuantityTons(flow) {
 
 function logisticsSpecializationKey(flow) {
   const product = freightProductRecord(flow);
-  const logisticsTypeId = String(product?.logistics_type_id || "").toLowerCase();
-  if (product.temperature_control_required || /frigor|refrig/.test(logisticsTypeId)) {
-    return "refrigerated";
-  }
-  if (/animais_vivos|carga_viva|live|animal/.test(logisticsTypeId)) {
-    return "live";
-  }
-  if (product.hazardous || /perigos|hazard|quim|gas_comprimido/.test(logisticsTypeId)) {
-    return "hazardous";
-  }
-  if (/tanque|liquid|gas|granel_liquido/.test(logisticsTypeId)) {
-    return "tank";
-  }
-  if (/granel/.test(logisticsTypeId)) {
-    return "bulk";
-  }
-  if (/palet|carga_geral|container|bau|sider/.test(logisticsTypeId)) {
-    return "palletized";
-  }
-  return "general";
+  return freightSpecializationBucketForProduct(product);
 }
 
 function specializationMultiplier(flow) {
@@ -1020,11 +1002,11 @@ function productSurchargeMultiplier(flow) {
   const product = freightProductRecord(flow);
   const config = state.pricingDocument?.freight || {};
   let multiplier = 1;
-  const valueClass = String(product?.value_class || "").toLowerCase();
-  if (valueClass === "medium") {
+  const valueClassBucket = freightValueClassBucket(product?.value_class);
+  if (valueClassBucket === "medium") {
     multiplier *= Number(config.value_class_medium_multiplier || 1);
   }
-  if (valueClass === "high") {
+  if (valueClassBucket === "high") {
     multiplier *= Number(config.value_class_high_multiplier || 1);
   }
   if (product?.perishable) {
@@ -1038,10 +1020,6 @@ function productSurchargeMultiplier(flow) {
   }
   if (product?.hazardous) {
     multiplier *= Number(config.hazardous_multiplier || 1);
-  }
-  const priceReference = Number(product?.price_reference_brl_per_unit || 0);
-  if (priceReference > 0 && state.productPriceReferenceMedian > 0) {
-    multiplier *= Math.max(0.92, Math.min(1.18, Math.pow(priceReference / state.productPriceReferenceMedian, 0.08)));
   }
   return multiplier;
 }

@@ -42,25 +42,9 @@
         <span class="brand-divider"></span>
         <p>{{ runtime_label }}</p>
       </div>
-      <div id="game-runtime-status" class="game-runtime-status" aria-live="polite"></div>
     </div>
 
     <div class="editor-header-actions game-runtime-header-actions" aria-label="Acoes do jogo">
-      <a class="ghost-button" href="/jogo/v1-1" target="_blank" rel="noopener noreferrer">
-        <span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
-        <span>Jogo 1.1</span>
-      </a>
-      {% if not robots_only %}
-      <a class="ghost-button" href="/jogo/preparacao" target="_blank" rel="noopener noreferrer">
-        <span class="material-symbols-outlined" aria-hidden="true">apartment</span>
-        <span>Preparacao</span>
-      </a>
-      {% endif %}
-      <a class="ghost-button" href="/editores" target="_blank" rel="noopener noreferrer">
-        <span class="material-symbols-outlined" aria-hidden="true">widgets</span>
-        <span>Editores</span>
-      </a>
-
       <button id="game-runtime-robot-ai-button" class="ghost-button" type="button" data-runtime-open-modal="robot-ai">
         <span class="material-symbols-outlined" aria-hidden="true">tune</span>
         <span>Robos</span>
@@ -76,6 +60,7 @@
         <button class="game-runtime-speed-button" type="button" data-speed-id="x1">1x</button>
         <button class="game-runtime-speed-button is-active" type="button" data-speed-id="x4">4x</button>
         <button class="game-runtime-speed-button" type="button" data-speed-id="x12">12x</button>
+        <button class="game-runtime-speed-button" type="button" data-speed-id="x48">48x</button>
       </div>
 
       <div id="game-runtime-clock" class="game-runtime-clock" aria-live="polite"></div>
@@ -235,6 +220,7 @@
         <aside id="game-runtime-fleet-selection" class="game-setup-selector-summary" aria-label="Resumo da frota inicial"></aside>
       </div>
     </section>
+    {% endif %}
 
     <section class="editor-card game-setup-modal game-setup-modal-freights" data-runtime-modal="freights" hidden>
       <header class="game-setup-modal-head">
@@ -262,7 +248,6 @@
         <aside id="game-runtime-freight-selection" class="game-setup-selector-summary" aria-label="Resumo da carteira inicial"></aside>
       </div>
     </section>
-    {% endif %}
 
     <section class="editor-card game-setup-modal game-runtime-robot-ai-modal" data-runtime-modal="robot-ai" hidden>
       <div class="game-runtime-robot-ai-shell">
@@ -278,10 +263,12 @@
         </header>
 
         <div class="game-runtime-robot-ai-body">
-          <section class="game-runtime-robot-ai-main">
-            <div id="game-runtime-robot-ai-robot-tabs" class="game-runtime-robot-ai-robot-tabs" data-wheel-rail="robot-ai-tabs"></div>
-            <div id="game-runtime-robot-ai-parameter-grid" class="game-runtime-robot-ai-parameter-grid"></div>
-          </section>
+          <div class="game-runtime-robot-ai-editor-shell">
+            <section class="game-runtime-robot-ai-main">
+              <div id="game-runtime-robot-ai-robot-tabs" class="game-runtime-robot-ai-robot-tabs" data-wheel-rail="robot-ai-tabs"></div>
+              <div id="game-runtime-robot-ai-parameter-grid" class="game-runtime-robot-ai-parameter-grid"></div>
+            </section>
+          </div>
         </div>
       </div>
     </section>
@@ -309,7 +296,7 @@
 
 <script type="module">
   const gameRuntimeModuleUrl = new URL("{{ request.url_for('static', path='js/game-runtime-v1.js') }}", window.location.href);
-  gameRuntimeModuleUrl.searchParams.set("v", "20260416-game-runtime-13");
+  gameRuntimeModuleUrl.searchParams.set("v", "20260418-game-runtime-31");
 
   function showGameRuntimeLoadError(error) {
     const message = String(error?.message || error || "Falha ao carregar o jogo.");

@@ -37,25 +37,9 @@
         <span class="brand-divider"></span>
         <p>{{ runtime_label }}</p>
       </div>
-      <div id="game-runtime-status" class="game-runtime-status" aria-live="polite"></div>
     </div>
 
     <div class="editor-header-actions game-runtime-header-actions" aria-label="Acoes do jogo">
-      <a class="ghost-button" href="/jogo/v1-1" target="_blank" rel="noopener noreferrer">
-        <span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
-        <span>Jogo 1.1</span>
-      </a>
-      {% if not robots_only %}
-      <a class="ghost-button" href="/jogo/preparacao" target="_blank" rel="noopener noreferrer">
-        <span class="material-symbols-outlined" aria-hidden="true">apartment</span>
-        <span>Preparacao</span>
-      </a>
-      {% endif %}
-      <a class="ghost-button" href="/editores" target="_blank" rel="noopener noreferrer">
-        <span class="material-symbols-outlined" aria-hidden="true">widgets</span>
-        <span>Editores</span>
-      </a>
-
       <button id="game-runtime-analytics-button" class="ghost-button" type="button" data-runtime-open-modal="analytics">
         <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
         <span>Graficos</span>
@@ -66,6 +50,7 @@
         <button class="game-runtime-speed-button" type="button" data-speed-id="x1">1x</button>
         <button class="game-runtime-speed-button is-active" type="button" data-speed-id="x4">4x</button>
         <button class="game-runtime-speed-button" type="button" data-speed-id="x12">12x</button>
+        <button class="game-runtime-speed-button" type="button" data-speed-id="x48">48x</button>
       </div>
 
       <div id="game-runtime-clock" class="game-runtime-clock" aria-live="polite"></div>
@@ -258,7 +243,7 @@
 
 <script type="module">
   const gameRuntimeModuleUrl = new URL("{{ request.url_for('static', path='js/game-runtime-v1.js') }}", window.location.href);
-  gameRuntimeModuleUrl.searchParams.set("v", "20260416-game-runtime-12");
+  gameRuntimeModuleUrl.searchParams.set("v", "20260418-game-runtime-31");
 
   function showGameRuntimeLoadError(error) {
     const message = String(error?.message || error || "Falha ao carregar o jogo.");

@@ -1992,6 +1992,21 @@ html[data-editor-theme="night"] .segmented-button {
   color: var(--text);
 }
 
+html[data-editor-theme="night"] .game-runtime-analytics-finance-toggle {
+  border-color: rgba(161, 212, 148, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+html[data-editor-theme="night"] .game-runtime-analytics-finance-track {
+  background: rgba(161, 212, 148, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(161, 212, 148, 0.12);
+}
+
+html[data-editor-theme="night"] .game-runtime-analytics-finance-toggle.is-profit .game-runtime-analytics-finance-track {
+  background: rgba(205, 145, 73, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(205, 145, 73, 0.14);
+}
+
 html[data-editor-theme="night"] .segmented-button.is-active {
   background: linear-gradient(135deg, #2d5a27, #a1d494);
   color: #121411;
@@ -2879,9 +2894,12 @@ html[data-editor-theme="night"] .planner-step-surface-label {
 }
 
 .editor-hub-shell {
+  --editor-card-padding: 10px;
+  --editor-card-gap: 8px;
   height: 100vh;
   display: grid;
   grid-template-rows: var(--header-h) 1fr;
+  overflow: hidden;
 }
 
 .editor-hub-topbar {
@@ -2897,37 +2915,43 @@ html[data-editor-theme="night"] .planner-step-surface-label {
 
 .editor-hub-main {
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   display: grid;
-  align-content: start;
-  padding: 14px;
+  grid-template-rows: minmax(0, 1.72fr) minmax(0, 1fr);
+  align-content: stretch;
+  gap: 10px;
+  padding: 10px 12px 12px;
 }
 
 .editor-hub-section {
+  min-height: 0;
   display: grid;
-  align-content: start;
-  gap: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: stretch;
+  gap: 6px;
 }
 
 .editor-hub-section-head {
   display: grid;
-  gap: 6px;
-  margin-bottom: 14px;
+  gap: 3px;
+  margin-bottom: 0;
 }
 
 .editor-hub-section-head p {
   margin: 0;
   color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.24;
 }
 
 .editor-hub-section-kicker {
   width: fit-content;
-  padding: 7px 11px;
+  padding: 5px 9px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.86);
   color: #466052;
   font-family: var(--font-head);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2955,28 +2979,34 @@ html[data-editor-theme="night"] .planner-step-surface-label {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.88);
   color: var(--hub-accent-strong, var(--copper));
-  font-size: 0.7rem;
+  font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .editor-hub-grid {
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 8px;
 }
 
-.editor-hub-grid-functionalities {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
-  justify-content: start;
+.editor-hub-grid-editors {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.editor-hub-grid-games {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .editor-hub-link {
   --hub-accent: var(--green);
   --hub-accent-soft: rgba(45, 90, 39, 0.14);
   --hub-accent-strong: var(--green);
-  min-height: 220px;
+  min-height: 0;
+  height: 100%;
+  padding: 9px 10px;
   grid-template-rows: auto minmax(0, 1fr) auto;
   text-decoration: none;
   color: inherit;
@@ -3002,13 +3032,13 @@ html[data-editor-theme="night"] .planner-step-surface-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 .editor-hub-icon-shell {
-  width: 54px;
-  height: 54px;
-  border-radius: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: inline-grid;
   place-items: center;
   background: linear-gradient(135deg, var(--hub-accent-soft), rgba(255, 255, 255, 0.84));
@@ -3017,18 +3047,22 @@ html[data-editor-theme="night"] .planner-step-surface-label {
 }
 
 .editor-hub-icon-shell .material-symbols-outlined {
-  font-size: 28px;
+  font-size: 22px;
   font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
 }
 
 .editor-hub-card-copy {
   display: grid;
   align-content: start;
-  gap: 8px;
+  gap: 5px;
 }
 
 .editor-hub-card-copy h3 {
-  font-size: 1.28rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 1.14rem;
   line-height: 1.08;
   color: var(--text);
 }
@@ -3036,17 +3070,26 @@ html[data-editor-theme="night"] .planner-step-surface-label {
 .editor-hub-card-copy p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.58;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 0.88rem;
+  line-height: 1.34;
 }
 
 .editor-hub-card-footer {
-  padding-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid rgba(114, 121, 110, 0.14);
 }
 
 .editor-hub-path {
   color: #466052;
-  font-size: 0.74rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.04em;
 }
@@ -3055,20 +3098,138 @@ html[data-editor-theme="night"] .planner-step-surface-label {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: 28px;
+  padding: 0 10px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--hub-accent) 12%, white);
   color: var(--hub-accent-strong);
-  font-size: 0.76rem;
+  white-space: nowrap;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
+.editor-hub-grid-games .editor-hub-link {
+  padding: 9px 10px;
+}
+
+.editor-hub-grid-games .editor-hub-card-copy h3 {
+  font-size: 1.08rem;
+}
+
+.editor-hub-grid-games .editor-hub-card-copy p {
+  -webkit-line-clamp: 2;
+  font-size: 0.82rem;
+}
+
+.editor-hub-grid-editors .editor-hub-link {
+  padding: 7px 8px;
+}
+
+.editor-hub-grid-editors .editor-hub-icon-shell {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.editor-hub-grid-editors .editor-hub-icon-shell .material-symbols-outlined {
+  font-size: 19px;
+}
+
+.editor-hub-grid-editors .editor-hub-kind {
+  padding: 5px 8px;
+  font-size: 0.74rem;
+}
+
+.editor-hub-grid-editors .editor-hub-card-copy {
+  gap: 4px;
+}
+
+.editor-hub-grid-editors .editor-hub-card-copy h3 {
+  font-size: 1.06rem;
+  line-height: 1.04;
+}
+
+.editor-hub-grid-editors .editor-hub-card-copy p {
+  -webkit-line-clamp: 1;
+  font-size: 0.8rem;
+  line-height: 1.22;
+}
+
+.editor-hub-grid-editors .editor-hub-card-footer {
+  padding-top: 6px;
+}
+
+.editor-hub-grid-editors .editor-hub-path {
+  font-size: 0.74rem;
+}
+
+.editor-hub-grid-editors .editor-hub-open {
+  min-height: 24px;
+  padding: 0 8px;
+  font-size: 0.74rem;
+}
+
+.editor-hub-section-games .editor-hub-card-copy h3 {
+  -webkit-line-clamp: 2;
+}
+
+.editor-hub-section-games .editor-hub-card-copy p {
+  -webkit-line-clamp: 2;
+}
+
 @media (max-width: 1180px) {
-  .editor-hub-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .editor-hub-main {
+    overflow: auto;
+    grid-template-rows: auto auto;
+  }
+
+  .editor-hub-grid-editors {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+
+  .editor-hub-grid-games {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-height: 840px) and (min-width: 1181px) {
+  .editor-hub-main {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .editor-hub-section-kicker {
+    padding: 5px 9px;
+    font-size: 0.74rem;
+  }
+
+  .editor-hub-section-head p {
+    font-size: 0.82rem;
+  }
+
+  .editor-hub-link {
+    padding: 9px 10px;
+  }
+
+  .editor-hub-card-copy h3 {
+    font-size: 1.02rem;
+  }
+
+  .editor-hub-card-copy p,
+  .editor-hub-grid-games .editor-hub-card-copy p {
+    font-size: 0.78rem;
+  }
+
+  .editor-hub-icon-shell {
+    width: 38px;
+    height: 38px;
+  }
+
+  .editor-hub-grid-editors .editor-hub-card-copy p {
+    font-size: 0.74rem;
   }
 }
 
@@ -3083,14 +3244,14 @@ html[data-editor-theme="night"] .planner-step-surface-label {
 
   .editor-hub-main {
     padding: 12px;
+    overflow: auto;
+    grid-template-rows: auto auto;
   }
 
-  .editor-hub-grid {
+  .editor-hub-grid-editors,
+  .editor-hub-grid-games {
     grid-template-columns: 1fr;
-  }
-
-  .editor-hub-grid-functionalities {
-    grid-template-columns: 1fr;
+    grid-template-rows: none;
   }
 
   .editor-hub-card-footer {
@@ -7251,7 +7412,122 @@ html.game-runtime-page[data-editor-theme="night"] {
 
 .game-runtime-route-card {
   display: grid;
+  gap: 5px;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: start;
+}
+
+.game-runtime-human-hud .game-runtime-contract-chip,
+.game-runtime-drawer .game-runtime-contract-chip,
+.game-runtime-human-hud .game-runtime-truck-row-action,
+.game-runtime-drawer .game-runtime-truck-row-action {
+  width: 100%;
+  max-width: none;
+}
+
+.game-runtime-human-hud .game-runtime-route-card,
+.game-runtime-drawer .game-runtime-route-card {
+  width: 100%;
+  max-width: none;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+  justify-self: stretch;
+}
+
+.game-runtime-human-hud .game-runtime-route-card-company,
+.game-runtime-drawer .game-runtime-route-card-company,
+.game-runtime-human-hud .game-runtime-route-card-meta,
+.game-runtime-drawer .game-runtime-route-card-meta {
+  width: 100%;
+  justify-self: stretch;
+}
+
+.game-runtime-human-hud .game-runtime-route-card-company-tag,
+.game-runtime-drawer .game-runtime-route-card-company-tag,
+.game-runtime-human-hud .game-runtime-route-card-value,
+.game-runtime-drawer .game-runtime-route-card-value {
+  justify-self: end;
+}
+
+.game-runtime-route-card-company {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: 6px;
+  row-gap: 6px;
+  min-height: 36px;
+}
+
+.game-runtime-route-card-truck-media {
+  grid-column: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
+}
+
+.game-runtime-route-card-truck-visual {
+  width: auto;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.game-runtime-route-card-truck-visual img {
+  height: 100%;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  transform: scale(1.24);
+  transform-origin: center;
+}
+
+.game-runtime-route-card-truck-visual.is-empty {
+  color: rgba(45, 90, 39, 0.48);
+}
+
+.game-runtime-route-card-truck-visual.is-empty .material-symbols-outlined {
+  font-size: 1.5rem;
+}
+
+.game-runtime-route-card-truck-label {
+  min-width: 0;
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-runtime-route-card-company > .game-runtime-route-status-tag {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.game-runtime-route-card-company-tag {
+  grid-column: 3;
+  justify-self: end;
+  min-width: 0;
+  max-width: 132px;
+  min-height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: var(--player-color, var(--green));
+  color: var(--player-ink, #fffdf7);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .game-runtime-route-card-top {
@@ -7260,7 +7536,7 @@ html.game-runtime-page[data-editor-theme="night"] {
   align-items: center;
   gap: 6px;
   min-width: 0;
-  font-size: 0.86rem;
+  font-size: 0.8rem;
 }
 
 .game-runtime-route-card-id {
@@ -7276,7 +7552,7 @@ html.game-runtime-page[data-editor-theme="night"] {
 }
 
 .game-runtime-route-card-path {
-  font-size: 0.88rem;
+  font-size: 0.8rem;
   font-weight: 800;
   min-width: 0;
   overflow: hidden;
@@ -7298,7 +7574,6 @@ html.game-runtime-page[data-editor-theme="night"] {
 
 .game-runtime-route-card-meta-main {
   min-width: 0;
-  flex: 1 1 auto;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -7335,12 +7610,11 @@ html.game-runtime-page[data-editor-theme="night"] {
   border-radius: 999px;
   justify-self: end;
   align-self: center;
-  margin-right: -10px;
   background: rgba(53, 109, 99, 0.1);
   color: var(--text);
   font-size: 0.76rem;
   font-weight: 800;
-  text-align: right;
+  text-align: left;
   white-space: nowrap;
 }
 
@@ -7390,9 +7664,41 @@ html.game-runtime-page[data-editor-theme="night"] {
 }
 
 .game-runtime-dispatch-options {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
+}
+
+.game-runtime-dispatch-options .editor-header-action {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.game-runtime-dispatch-option-full {
+  flex: 1 1 100%;
+}
+
+.game-runtime-dispatch-suggestion {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.game-runtime-dispatch-suggestion .game-runtime-contract-chip {
+  width: fit-content;
+  max-width: 100%;
+  justify-self: start;
+  margin: 0;
+  background: rgba(255, 252, 246, 0.96);
+  box-shadow: 0 18px 30px rgba(20, 24, 22, 0.14);
+}
+
+.game-runtime-dispatch-suggestion .game-runtime-route-card-value {
+  margin-right: 0;
+}
+
+.game-runtime-dispatch-suggestion-empty {
+  margin-top: 10px;
 }
 
 .game-runtime-dispatch-map-frame {
@@ -7602,6 +7908,11 @@ html.game-runtime-page[data-editor-theme="night"] {
   white-space: nowrap;
 }
 
+.game-runtime-player-card-profile-badge {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .game-runtime-player-card-top div {
   min-width: 0;
   display: grid;
@@ -7652,7 +7963,8 @@ html.game-runtime-page[data-editor-theme="night"] {
 }
 
 .game-runtime-truck-row-action {
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   font: inherit;
   color: inherit;
   text-align: left;
@@ -8002,8 +8314,7 @@ html.game-runtime-page[data-editor-theme="night"] {
 .game-runtime-robot-ai-editor-shell {
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   overflow: hidden;
 }
@@ -8657,6 +8968,14 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-log-line {
 html.game-runtime-page[data-editor-theme="night"] .game-runtime-route-card-value {
   border-color: rgba(161, 212, 148, 0.2);
   background: rgba(161, 212, 148, 0.12);
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-route-card-truck-visual {
+  color: rgba(243, 245, 239, 0.9);
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-route-card-truck-visual.is-empty {
+  color: rgba(161, 212, 148, 0.56);
 }
 
 html.game-runtime-page[data-editor-theme="night"] .game-runtime-player-bar {
@@ -9484,9 +9803,80 @@ body.game-setup-page {
 }
 
 .game-runtime-analytics-tabs {
+  min-width: 0;
+}
+
+.game-runtime-analytics-tabs-row {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 12px;
+}
+
+.game-runtime-analytics-tab-list {
+  display: flex;
+  flex: 1 1 auto;
   flex-wrap: wrap;
   gap: 8px;
+  min-width: 0;
+}
+
+.game-runtime-analytics-finance-toggle {
+  margin-left: auto;
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 1px solid rgba(53, 109, 99, 0.16);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.56);
+  color: var(--text);
+}
+
+.game-runtime-analytics-finance-label {
+  color: var(--game-runtime-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.game-runtime-analytics-finance-label.is-active {
+  color: var(--text);
+}
+
+.game-runtime-analytics-finance-track {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(53, 109, 99, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(53, 109, 99, 0.08);
+}
+
+.game-runtime-analytics-finance-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(53, 109, 99, 0.96), rgba(72, 140, 125, 0.96));
+  box-shadow: 0 4px 10px rgba(20, 24, 22, 0.18);
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.game-runtime-analytics-finance-toggle.is-profit .game-runtime-analytics-finance-track {
+  background: rgba(179, 106, 43, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(179, 106, 43, 0.08);
+}
+
+.game-runtime-analytics-finance-toggle.is-profit .game-runtime-analytics-finance-thumb {
+  transform: translateX(18px);
+  background: linear-gradient(135deg, rgba(179, 106, 43, 0.96), rgba(205, 145, 73, 0.96));
 }
 
 .game-runtime-analytics-player-selector {
@@ -10408,9 +10798,70 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
   font-size: 3rem;
 }
 
+.game-setup-pill.is-hq {
+  border-color: rgba(140, 79, 16, 0.24);
+  background: color-mix(in srgb, var(--copper) 16%, white);
+  color: #8c4f10;
+}
+
+.game-setup-freight-hq-note {
+  color: #356b56;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.game-setup-freight-value-note {
+  color: #356b56 !important;
+  font-weight: 700;
+}
+
+.game-setup-freight-net-tag {
+  width: fit-content;
+  min-width: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(53, 109, 99, 0.1);
+  font-weight: 800 !important;
+  letter-spacing: 0.01em;
+}
+
+.game-setup-freight-net-tag.is-positive {
+  color: #356b56 !important;
+  background: rgba(53, 109, 99, 0.12);
+}
+
+.game-setup-freight-net-tag.is-negative {
+  color: #8c4f10 !important;
+  background: rgba(140, 79, 16, 0.12);
+}
+
 .game-setup-rail-copy {
   display: grid;
   gap: 4px;
+}
+
+html[data-editor-theme="night"] .game-setup-pill.is-hq {
+  border-color: rgba(255, 183, 123, 0.28);
+  background: rgba(140, 79, 16, 0.18);
+  color: #ffd9b5;
+}
+
+html[data-editor-theme="night"] .game-setup-freight-hq-note,
+html[data-editor-theme="night"] .game-setup-freight-value-note {
+  color: #bfdfd4 !important;
+}
+
+html[data-editor-theme="night"] .game-setup-freight-net-tag.is-positive {
+  color: #bfdfd4 !important;
+  background: rgba(88, 178, 161, 0.18);
+}
+
+html[data-editor-theme="night"] .game-setup-freight-net-tag.is-negative {
+  color: #e5b986 !important;
+  background: rgba(140, 79, 16, 0.2);
 }
 
 .game-setup-truck-card .game-setup-rail-copy {
@@ -10422,6 +10873,36 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.game-runtime-robot-ai-score-lines {
+  display: grid;
+  gap: 8px;
+}
+
+.game-runtime-robot-ai-score-line {
+  padding: 10px 12px;
+  border: 1px solid rgba(114, 121, 110, 0.14);
+  border-radius: 16px;
+  display: grid;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.game-runtime-robot-ai-score-line strong {
+  color: var(--text);
+  font-size: 0.82rem;
+}
+
+.game-runtime-robot-ai-score-line span,
+.game-runtime-robot-ai-score-note {
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.game-runtime-robot-ai-score-note {
+  margin: 0;
 }
 
 .game-setup-spec-grid {
@@ -10579,7 +11060,8 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
 }
 
 .game-runtime-truck-popup .game-runtime-contract-chip {
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   margin: 0;
   background: rgba(255, 252, 246, 0.96);
   box-shadow: 0 18px 30px rgba(20, 24, 22, 0.18);
@@ -10591,6 +11073,10 @@ html[data-editor-theme="night"] #game-runtime-analytics-button.is-active {
 
 html.game-runtime-page[data-editor-theme="night"] .game-runtime-truck-popup .game-runtime-contract-chip {
   background: rgba(27, 33, 35, 0.96);
+}
+
+html.game-runtime-page[data-editor-theme="night"] .game-runtime-dispatch-suggestion .game-runtime-contract-chip {
+  background: rgba(27, 33, 35, 0.92);
 }
 
 .game-setup-freight-route {
@@ -10659,9 +11145,39 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-truck-popup .gam
   padding-inline: 16px;
 }
 
+.game-setup-freight-card .game-setup-freight-toggle {
+  width: 100%;
+  justify-self: stretch;
+  justify-content: center;
+}
+
+.game-setup-primary-action {
+  border: 1px solid rgba(42, 108, 96, 0.18);
+  background: linear-gradient(135deg, #2f6259, #4a9789);
+  color: #f4fff9;
+  box-shadow: 0 14px 30px rgba(47, 98, 89, 0.22);
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+
+.game-setup-primary-action .material-symbols-outlined {
+  color: currentColor;
+}
+
+.game-setup-primary-action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: saturate(1.06);
+  box-shadow: 0 18px 34px rgba(47, 98, 89, 0.28);
+}
+
+.game-setup-primary-action:focus-visible {
+  outline: 2px solid rgba(74, 151, 137, 0.32);
+  outline-offset: 2px;
+}
+
 .game-setup-freight-toggle:disabled {
   opacity: 0.82;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .game-setup-company-economy-actions .editor-header-action:disabled,
@@ -10712,6 +11228,13 @@ html.game-runtime-page[data-editor-theme="night"] .game-runtime-truck-popup .gam
 }
 
 html[data-editor-theme="night"] .game-setup-company-purchase-button {
+  border-color: rgba(74, 151, 137, 0.28);
+  background: linear-gradient(135deg, #2f6259, #58b2a1);
+  color: #f2fff9;
+  box-shadow: 0 18px 36px rgba(10, 17, 19, 0.36);
+}
+
+html[data-editor-theme="night"] .game-setup-primary-action {
   border-color: rgba(74, 151, 137, 0.28);
   background: linear-gradient(135deg, #2f6259, #58b2a1);
   color: #f2fff9;

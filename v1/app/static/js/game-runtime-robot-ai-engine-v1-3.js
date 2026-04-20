@@ -1,4 +1,4 @@
-import { brasixRobotAiProfiles } from "./game-runtime-robot-ai-profiles-v1-3.js?v=20260416-game-runtime-13";
+import { brasixRobotAiProfiles } from "./game-runtime-robot-ai-profiles-v1-3.js?v=20260417-game-runtime-15";
 
 const rulesLibrary = window.__BRASIX_ROBOT_AI_V1_3_RULES__ || {};
 const profileSignalPaths = rulesLibrary.profile_signal_paths || {};

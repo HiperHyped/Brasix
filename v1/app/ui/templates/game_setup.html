@@ -288,7 +288,7 @@
 
 <script type="module">
   const gameSetupModuleUrl = new URL("{{ request.url_for('static', path='js/game-setup.js') }}", window.location.href);
-  gameSetupModuleUrl.searchParams.set("v", "20260413-game-setup-24");
+  gameSetupModuleUrl.searchParams.set("v", "20260417-game-setup-25");
 
   function showGameSetupLoadError(error) {
     const message = String(error?.message || error || "Falha ao carregar a preparacao inicial.");
